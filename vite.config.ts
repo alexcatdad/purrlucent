@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
@@ -10,6 +10,21 @@ const components = readdirSync(resolve(root, "src/components"), {
   .map((entry) => entry.name);
 
 export default defineConfig({
+  plugins: [
+    {
+      // Ships the generated tokens as the purrlucent/tokens.css export.
+      name: "purr-tokens-css",
+      generateBundle() {
+        // Storybook reuses this config for its own build; only the library ships tokens.css.
+        if (!this.environment.config.build.lib) return;
+        this.emitFile({
+          type: "asset",
+          fileName: "tokens.css",
+          source: readFileSync(resolve(root, "src/tokens/tokens.css")),
+        });
+      },
+    },
+  ],
   build: {
     lib: {
       entry: {

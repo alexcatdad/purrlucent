@@ -12,10 +12,11 @@
   "exports": {
     ".": "./dist/index.js",
     "./probe": "./dist/probe.js",
+    "./tokens.css": "./dist/tokens.css",
     "./custom-elements.json": "./dist/custom-elements.json"
   },
   "scripts": {
-    "build": "vite build && cem analyze",
+    "build": "bun src/tokens/generate.ts && vite build && cem analyze",
     "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\"",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
