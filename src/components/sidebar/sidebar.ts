@@ -16,8 +16,8 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * a tab stop. As an extra, Up and Down arrows, Home and End move among all
  * visible items (Left and Right are not used). Space or Enter on a link selects
  * it; Escape on a group button or inside its group closes it and focuses the
- * button. At phone width with a coarse pointer the sidebar collapses on its
- * own; shown again, it fills the width.
+ * button. On a narrow screen (600px or less) the sidebar collapses on its own;
+ * shown again, it fills the width.
  *
  * @slot - `purr-sidebar-item` children.
  * @csspart toggle - The button that hides and shows the sidebar.
@@ -115,9 +115,9 @@ export class PurrSidebar extends LitElement {
     parent.focus();
   };
 
-  // Phone width with a coarse pointer: the sidebar collapses on its own, so the
-  // app's own navigation (a bottom tab bar is preferred) takes over.
-  readonly #narrow = matchMedia("(max-width: 600px) and (pointer: coarse)");
+  // Narrow screen, any pointer: the sidebar collapses on its own, so the app's
+  // own navigation (a bottom tab bar is preferred) takes over.
+  readonly #narrow = matchMedia("(max-width: 600px)");
 
   #onNarrow = () => {
     if (this.#narrow.matches && !this.collapsed) this.#toggleCollapsed();

@@ -110,9 +110,9 @@ export const sidebarStyles = [
       block-size: 1.5rem;
     }
 
-    /* Phone width with a coarse pointer: the sidebar starts collapsed (see
+    /* Narrow screen, any pointer: the sidebar starts collapsed (see
        sidebar.ts); shown again, it fills the width, square and flat. */
-    @media (max-width: 600px) and (pointer: coarse) {
+    @media (max-width: 600px) {
       :host(:not([collapsed])) {
         inline-size: 100%;
         border-radius: 0;

@@ -329,6 +329,18 @@ test.describe("phone width with a coarse pointer", () => {
   });
 });
 
+test.describe("narrow window with a fine pointer", () => {
+  test.use({ viewport: { width: 500, height: 800 } });
+
+  test("the sidebar collapses on a narrow window too", async ({ page }) => {
+    await open(page);
+    expect(
+      await page.evaluate(() => matchMedia("(pointer: fine)").matches),
+    ).toBe(true);
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+  });
+});
+
 for (const [theme, material] of [
   ["dark", "glass"],
   ["light", "solid"],
@@ -358,8 +370,8 @@ forEachViewport(({ name, pointer, width }) => {
 
   test(`${name} layout`, async ({ page }) => {
     await open(page);
-    // Only phone width with a coarse pointer collapses on its own.
-    const narrow = width <= 600 && pointer === "coarse";
+    // Only a narrow screen collapses on its own, whatever the pointer.
+    const narrow = width <= 600;
     await expect(page.locator("#home")).toBeVisible({ visible: !narrow });
     await expect(page.getByRole("button", { name: /Library/ })).toBeVisible();
   });
