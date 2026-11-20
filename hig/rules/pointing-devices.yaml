@@ -1,0 +1,46 @@
+- id: pointing-devices/1
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Mouse and trackpad interactions behave consistently with each other and with what people expect.
+  check: rubric
+  layer: behaviors
+- id: pointing-devices/2
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: System-wide trackpad gestures are never overridden.
+  check: rubric
+  layer: behaviors
+- id: pointing-devices/3
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Pointer, keyboard and touch lead to the same results, so people can switch freely between them.
+  check: rubric
+  layer: behaviors
+- id: pointing-devices/4
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Controls that hide or fade out can be revealed by moving the pointer to them.
+  check: automated
+  layer: components
+- id: pointing-devices/5
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: A modifier key does the same thing everywhere in the library.
+  check: rubric
+  layer: behaviors
+- id: pointing-devices/6
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Interactive elements have generous hit areas, and adjacent bar buttons have no gaps between hit areas.
+  check: automated
+  test: src/behaviors/interaction.e2e.ts > a coarse pointer on a wide screen keeps the hit area at 44 by 44
+  layer: behaviors
+- id: pointing-devices/7
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Hover effects are consistent and useful; none are added only for show.
+  check: rubric
+  layer: behaviors
+- id: pointing-devices/8
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Cursors stay simple and match the available action, and no instructional text follows the pointer.
+  check: rubric
+  layer: behaviors
+- id: pointing-devices/9
+  source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
+  rule: Essential hidden controls are also available in a context menu.
+  check: rubric
+  layer: components

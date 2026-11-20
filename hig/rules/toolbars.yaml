@@ -1,0 +1,61 @@
+- id: toolbars/1
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: A toolbar holds few items; extra actions move into an overflow menu.
+  check: rubric
+  layer: components
+- id: toolbars/2
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Toolbar backgrounds and tinted controls are kept minimal so the bar surface shows through.
+  check: rubric
+  layer: components
+- id: toolbars/3
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Toolbar item labels avoid hues close to colorful content behind the bar.
+  check: rubric
+  layer: components
+- id: toolbars/4
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Toolbars use the library's standard controls so corners and spacing stay concentric.
+  check: rubric
+  layer: components
+- id: toolbars/5
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Each view has a short, useful title; it is not the app name.
+  check: rubric
+  layer: components
+- id: toolbars/6
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Back and close use the standard controls people already know.
+  check: rubric
+  layer: components
+- id: toolbars/7
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Each item has a clear meaning, preferably a simple recognizable symbol without a border.
+  check: rubric
+  layer: components
+- id: toolbars/8
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: At most one key action is emphasized, and it sits on the trailing side.
+  check: rubric
+  layer: components
+- id: toolbars/9
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Navigation sits at the leading edge, common controls in the middle, and important items at the trailing edge.
+  check: rubric
+  layer: components
+- id: toolbars/10
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Items are grouped by function, with at most about three groups.
+  check: rubric
+  layer: components
+- id: toolbars/11
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: A text-labeled action is never placed directly beside an icon action, so they read as separate.
+  check: rubric
+  layer: components
+- id: toolbars/12
+  source: https://developer.apple.com/design/human-interface-guidelines/toolbars
+  rule: Toolbar items are reachable by keyboard in a predictable order and have accessible names.
+  check: automated
+  test: src/components/toolbar/toolbar.e2e.ts > every item has an accessible name and is reached in reading order
+  layer: components

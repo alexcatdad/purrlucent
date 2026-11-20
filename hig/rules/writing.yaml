@@ -1,0 +1,40 @@
+- id: writing/1
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Copy has a consistent voice, with tone adjusted to what the person is doing.
+  check: rubric
+  layer: components
+- id: writing/2
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Copy is short, plain and free of jargon, written with accessibility and localization in mind.
+  check: rubric
+  layer: components
+- id: writing/3
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Button and link labels start with a verb and name the action.
+  check: rubric
+  layer: components
+- id: writing/4
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Capitalization and wording patterns are consistent across components and docs.
+  check: rubric
+  layer: components
+- id: writing/5
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Labels avoid possessive pronouns such as my and your unless they add meaning.
+  check: rubric
+  layer: components
+- id: writing/6
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Empty states say what is missing and offer a clear next step.
+  check: rubric
+  layer: components
+- id: writing/7
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Error messages sit next to the problem, avoid blame, and say how to fix it.
+  check: rubric
+  layer: components
+- id: writing/8
+  source: https://developer.apple.com/design/human-interface-guidelines/writing
+  rule: Every field has a clear label, with a hint about the expected format when useful.
+  check: rubric
+  layer: components

@@ -1,0 +1,67 @@
+{
+  "name": "purrlucent",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": [
+    "dist",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES"
+  ],
+  "customElements": "dist/custom-elements.json",
+  "exports": {
+    ".": "./dist/index.js",
+    "./sidebar": "./dist/sidebar.js",
+    "./surfaces": "./dist/surfaces.js",
+    "./button": "./dist/button.js",
+    "./segmented-control": "./dist/segmented-control.js",
+    "./toolbar": "./dist/toolbar.js",
+    "./tokens.css": "./dist/tokens.css",
+    "./custom-elements.json": "./dist/custom-elements.json"
+  },
+  "scripts": {
+    "build": "bun src/tokens/generate.ts && vite build && cem analyze",
+    "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\"",
+    "fmt:check": "bun fmt --check",
+    "typecheck": "tsc",
+    "prepare": "lefthook install",
+    "hig:check": "bun scripts/hig-check.ts check",
+    "hig:rubric": "bun scripts/hig-check.ts rubric",
+    "notices": "bun scripts/third-party-notices.ts",
+    "changeset": "changeset",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@changesets/cli": "3.0.3",
+    "@custom-elements-manifest/analyzer": "0.11.0",
+    "@guidepup/guidepup": "0.40.0",
+    "@guidepup/playwright": "0.21.0",
+    "@guidepup/virtual-screen-reader": "0.33.0",
+    "@playwright/test": "1.65.1",
+    "@storybook/addon-a11y": "10.6.8",
+    "@storybook/addon-docs": "10.6.8",
+    "@storybook/addon-vitest": "10.6.8",
+    "@storybook/web-components-vite": "10.6.8",
+    "@types/bun": "1.4.5",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "@vitest/browser-playwright": "5.1.1",
+    "eslint": "10.15.0",
+    "eslint-plugin-lit": "2.3.1",
+    "lefthook": "2.2.2",
+    "playwright": "1.65.1",
+    "storybook": "10.6.8",
+    "stylelint": "18.1.0",
+    "stylelint-config-standard": "41.1.0",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-eslint": "8.73.0",
+    "vite": "8.3.8",
+    "vitest": "5.1.1"
+  },
+  "dependencies": {
+    "lit": "3.3.3"
+  }
+}

@@ -1,0 +1,41 @@
+- id: right-to-left/1
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: Text alignment and layout follow the interface direction, using logical start and end properties.
+  check: automated
+  layer: components
+- id: right-to-left/2
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: A paragraph aligns to its own language, and every item in one list aligns the same way.
+  check: rubric
+  layer: components
+- id: right-to-left/3
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: Digits inside one number keep their order; only the order of numbered progress is reversed.
+  check: rubric
+  layer: components
+- id: right-to-left/4
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: Progress and sequence controls such as sliders and back buttons mirror.
+  check: automated
+  layer: components
+- id: right-to-left/5
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: A control that means a real direction, such as a right-pointing arrow, keeps its direction.
+  check: rubric
+  layer: components
+- id: right-to-left/6
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: Arrow keys in grouped controls move in the visual direction.
+  check: automated
+  test: src/behaviors/roving-focus.test.ts > under rtl, ArrowRight moves to the previous item
+  layer: behaviors
+- id: right-to-left/7
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: Photos and general artwork are not mirrored; ordered images reverse their order instead.
+  check: rubric
+  layer: components
+- id: right-to-left/8
+  source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+  rule: Icons showing direction or text flow mirror; logos, universal marks and real-world objects do not.
+  check: rubric
+  layer: tokens

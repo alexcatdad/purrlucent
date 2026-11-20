@@ -1,0 +1,52 @@
+- id: accessibility/1
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Text and icons can be enlarged to at least 200 percent without clipping or overlap.
+  check: automated
+  layer: components
+- id: accessibility/2
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Text and meaningful icons meet WCAG AA contrast, in light, dark and increased-contrast appearances.
+  check: automated
+  layer: tokens
+- id: accessibility/3
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: When default contrast falls short, a higher-contrast variant applies when the user asks for more contrast.
+  check: automated
+  layer: tokens
+- id: accessibility/4
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Status and state are never shown by color alone; add a shape, icon or text.
+  check: rubric
+  layer: components
+- id: accessibility/5
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Every control is at least 44 by 44 CSS pixels to hit, with room between neighbors, on coarse pointers.
+  check: automated
+  test: src/behaviors/interaction.e2e.ts > a coarse pointer on a wide screen keeps the hit area at 44 by 44
+  layer: behaviors
+- id: accessibility/6
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Every gesture-driven action also has an on-screen or keyboard way to do the same thing.
+  check: rubric
+  layer: components
+- id: accessibility/7
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: All functions work with the keyboard alone, and focus is always visible.
+  check: automated
+  test: src/behaviors/interaction.e2e.ts > the focus ring stays visible under forced colors
+  layer: behaviors
+- id: accessibility/8
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Every control exposes a name, role and state that a screen reader can announce.
+  check: automated
+  layer: components
+- id: accessibility/9
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Nothing essential disappears on a timer; auto-dismissing elements give people enough time.
+  check: rubric
+  layer: components
+- id: accessibility/10
+  source: https://developer.apple.com/design/human-interface-guidelines/accessibility
+  rule: Fast or blinking animation is avoided, and the reduced-motion preference is honored.
+  check: automated
+  layer: behaviors

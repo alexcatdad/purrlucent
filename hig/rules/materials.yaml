@@ -1,0 +1,38 @@
+- id: materials/1
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: The glass material is used only on the control and navigation layer, never on content.
+  check: automated
+  test: src/surfaces/surfaces.e2e.ts > list row and field shell never have a backdrop filter, glass or not
+  layer: surfaces
+- id: materials/2
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: Glass is applied sparingly to custom controls; most controls stay solid.
+  check: rubric
+  layer: surfaces
+- id: materials/3
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: The clearer, more see-through glass variant appears only over visually rich backgrounds.
+  check: rubric
+  layer: surfaces
+- id: materials/4
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: A material is chosen for its meaning and use, not for the color it happens to produce.
+  check: rubric
+  layer: surfaces
+- id: materials/5
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: Foreground colors on a material are vibrant enough to stay legible over any backdrop.
+  check: automated
+  test: src/surfaces/surfaces.e2e.ts > glass labels stay legible over any backdrop
+  layer: surfaces
+- id: materials/6
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: Blur and tint choices keep contrast and visual separation between a surface and what lies behind it.
+  check: automated
+  layer: surfaces
+- id: materials/7
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: Without backdrop blur, with reduced transparency, or with increased contrast, a glass surface renders solid.
+  check: automated
+  test: src/tokens/tokens.e2e.ts > glass falls back to solid under reduced transparency
+  layer: surfaces

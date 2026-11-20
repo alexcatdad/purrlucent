@@ -1,0 +1,57 @@
+- id: buttons/1
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: A button has enough space around it to stand apart from nearby content and other controls.
+  check: rubric
+  layer: components
+- id: buttons/2
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: Every custom button has a visible pressed state.
+  check: automated
+  test: src/behaviors/interaction.e2e.ts > the pressed state is visible while the pointer is down
+  layer: behaviors
+- id: buttons/3
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: The action people will most probably choose gets the prominent style; the rest stay quieter.
+  check: rubric
+  layer: components
+- id: buttons/4
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: Buttons with equal weight share one size; style, not size, marks the preferred choice.
+  check: rubric
+  layer: components
+- id: buttons/5
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: Button labels avoid colors close to colorful content behind them.
+  check: rubric
+  layer: components
+- id: buttons/6
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: Each button states its purpose through an icon, a short label, or both.
+  check: rubric
+  layer: components
+- id: buttons/7
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: Familiar actions use familiar icons; a short text label is used when it is clearer than an icon.
+  check: rubric
+  layer: components
+- id: buttons/8
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: Roles are primary, cancel, destructive or normal. Only the likeliest action is primary.
+  check: rubric
+  layer: components
+- id: buttons/9
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: A destructive action is never styled as the primary button, even when it is the likeliest choice.
+  check: automated
+  test: src/components/button/button.e2e.ts > a destructive button is never styled as the prominent button
+  layer: components
+- id: buttons/10
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: A button that opens another view for more input ends its label with an ellipsis.
+  check: rubric
+  layer: components
+- id: buttons/11
+  source: https://developer.apple.com/design/human-interface-guidelines/buttons
+  rule: A button whose action takes time shows a progress indicator inside itself.
+  check: rubric
+  layer: components

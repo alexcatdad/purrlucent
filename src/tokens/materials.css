@@ -1,0 +1,35 @@
+/* Solid is the default. Glass is opt-in with purr-material="glass" on any ancestor. */
+@layer purr.tokens {
+  :root {
+    --purr-material-bar: var(--purr-color-secondary-background);
+    --purr-material-panel: var(--purr-color-secondary-background);
+    --purr-material-sheet: light-dark(
+      var(--purr-color-background),
+      var(--purr-color-secondary-background)
+    );
+    --purr-material-filter: none;
+  }
+
+  @supports (backdrop-filter: blur(1px)) {
+    [purr-material="glass"] {
+      --purr-material-bar: var(--purr-glass-tint);
+      --purr-material-panel: var(--purr-glass-tint);
+      --purr-material-sheet: var(--purr-glass-tint);
+      --purr-material-filter: blur(var(--purr-glass-blur));
+    }
+  }
+
+  /* Reduced transparency and increased contrast win over glass. Listed as a
+     comma list so a browser that does not know a feature still honors the other. */
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    [purr-material="glass"] {
+      --purr-material-bar: var(--purr-color-secondary-background);
+      --purr-material-panel: var(--purr-color-secondary-background);
+      --purr-material-sheet: light-dark(
+        var(--purr-color-background),
+        var(--purr-color-secondary-background)
+      );
+      --purr-material-filter: none;
+    }
+  }
+}

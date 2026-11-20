@@ -1,0 +1,36 @@
+- id: dark-mode/1
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: The library offers no appearance switch of its own; it follows the system light or dark setting.
+  check: rubric
+  layer: tokens
+- id: dark-mode/2
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: Every component looks right and stays legible in both appearances.
+  check: automated
+  layer: components
+- id: dark-mode/3
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: Dark colors are designed, not mechanical inversions, with dimmer backgrounds and brighter foregrounds.
+  check: rubric
+  layer: tokens
+- id: dark-mode/4
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: Contrast holds in dark mode combined with increased contrast and reduced transparency.
+  check: automated
+  test: src/tokens/tokens.e2e.ts > glass falls back to solid under increased contrast in dark
+  layer: tokens
+- id: dark-mode/5
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: Raised layers such as popovers and sheets use a slightly lighter background than the base layer.
+  check: rubric
+  layer: surfaces
+- id: dark-mode/6
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: Icons and images that fail on one background get a variant for the other appearance.
+  check: rubric
+  layer: components
+- id: dark-mode/7
+  source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
+  rule: Text uses the label color tokens that adapt to each appearance.
+  check: automated
+  layer: components
