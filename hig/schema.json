@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Purrlucent HIG rule file: one list of rules per HIG page, hig/rules/<page-slug>.yaml",
+  "type": "array",
+  "items": { "$ref": "#/$defs/rule" },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "rule", "check", "layer"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "<page-slug>/<n>. The slug is the file name.",
+          "pattern": "^[a-z0-9-]+/[1-9][0-9]*$"
+        },
+        "source": {
+          "type": "string",
+          "description": "The HIG page this rule comes from.",
+          "pattern": "^https://developer\\.apple\\.com/design/human-interface-guidelines/[a-z0-9-]+(#[A-Za-z0-9-]+)?$"
+        },
+        "rule": {
+          "type": "string",
+          "description": "The rule in our own words. Never Apple text.",
+          "minLength": 20,
+          "maxLength": 240
+        },
+        "check": { "enum": ["automated", "rubric"] },
+        "test": {
+          "type": "string",
+          "description": "Automated rules only: '<test file> > <test name>'. Absent means pending.",
+          "pattern": "^[^>]+ > .+$"
+        },
+        "layer": { "enum": ["tokens", "behaviors", "surfaces", "components"] }
+      }
+    }
+  }
+}

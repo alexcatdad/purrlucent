@@ -1,0 +1,40 @@
+- id: segmented-controls/1
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: A segmented control offers closely related choices that affect one object, state or view.
+  check: rubric
+  layer: components
+- id: segmented-controls/2
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: A segmented control is chosen when grouping and a visible selected state matter.
+  check: rubric
+  layer: components
+- id: segmented-controls/3
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: One control is either all selection or all actions; the two are never mixed.
+  check: rubric
+  layer: components
+- id: segmented-controls/4
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: A control has about five to seven segments on wide screens and fewer on narrow ones.
+  check: rubric
+  layer: components
+- id: segmented-controls/5
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: Segments have equal width, and their content has a similar size.
+  check: rubric
+  layer: components
+- id: segmented-controls/6
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: Segments hold text or icons, not a mix of both in the same control.
+  check: rubric
+  layer: components
+- id: segmented-controls/7
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: Text segment labels are nouns or noun phrases.
+  check: rubric
+  layer: components
+- id: segmented-controls/8
+  source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
+  rule: The control exposes a radio-group style role with arrow-key movement and a visible selected segment.
+  check: automated
+  layer: components

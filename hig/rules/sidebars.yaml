@@ -1,0 +1,45 @@
+- id: sidebars/1
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: A sidebar floats above content on the control layer, and rich content may extend beneath it.
+  check: rubric
+  layer: surfaces
+- id: sidebars/2
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: People can hide and show the sidebar.
+  check: automated
+  layer: components
+- id: sidebars/3
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: Where it makes sense, people can customize the sidebar contents.
+  check: rubric
+  layer: components
+- id: sidebars/4
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: Deep hierarchies use disclosure controls, and the sidebar shows at most two levels.
+  check: rubric
+  layer: components
+- id: sidebars/5
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: Group titles are short and descriptive.
+  check: rubric
+  layer: components
+- id: sidebars/6
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: Familiar icons represent items, and icon color has a clear purpose.
+  check: rubric
+  layer: components
+- id: sidebars/7
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: On narrow screens, a bottom tab bar is preferred and the sidebar collapses.
+  check: rubric
+  layer: components
+- id: sidebars/8
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: Critical information and actions are not placed at the bottom of a sidebar.
+  check: rubric
+  layer: components
+- id: sidebars/9
+  source: https://developer.apple.com/design/human-interface-guidelines/sidebars
+  rule: A sidebar can collapse automatically when its container gets narrow.
+  check: automated
+  layer: components

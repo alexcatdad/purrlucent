@@ -1,0 +1,45 @@
+- id: gestures/1
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Every action can also be done with another input, such as keyboard or click.
+  check: rubric
+  layer: behaviors
+- id: gestures/2
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Gestures work the way people already expect, the same in every context.
+  check: rubric
+  layer: behaviors
+- id: gestures/3
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Gestures respond immediately and show feedback while they are in progress.
+  check: rubric
+  layer: behaviors
+- id: gestures/4
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: When a gesture is unavailable, the interface shows that, so people do not think it is broken.
+  check: rubric
+  layer: behaviors
+- id: gestures/5
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Custom gestures are added only for frequent specialized tasks, are easy to learn, and add to standard ones.
+  check: rubric
+  layer: behaviors
+- id: gestures/6
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Gestures do not collide with browser and system gestures such as edge swipes.
+  check: rubric
+  layer: behaviors
+- id: gestures/7
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Small controls keep their visual size on touch screens, and their touch target grows instead.
+  check: automated
+  layer: behaviors
+- id: gestures/8
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Touch is never the only way to reach a control; pointer and keyboard work too.
+  check: rubric
+  layer: behaviors
+- id: gestures/9
+  source: https://developer.apple.com/design/human-interface-guidelines/gestures
+  rule: Custom gestures work with both touch and trackpad input.
+  check: rubric
+  layer: behaviors

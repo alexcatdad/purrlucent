@@ -1,0 +1,40 @@
+- id: typography/1
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Body text is at least 13 CSS pixels on desktop and 17 on touch devices, and nothing is below 10 or 11.
+  check: automated
+  layer: tokens
+- id: typography/2
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Thin and light font weights are avoided; regular and heavier weights carry text.
+  check: automated
+  layer: tokens
+- id: typography/3
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Hierarchy comes from size, weight and color, and it holds when text is enlarged.
+  check: rubric
+  layer: tokens
+- id: typography/4
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Few typefaces are used; the font stack uses system fonts and ships no Apple fonts.
+  check: automated
+  layer: tokens
+- id: typography/5
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: A named set of text styles carries size, weight and line height, and components use those styles.
+  check: automated
+  layer: tokens
+- id: typography/6
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Layouts adapt to every text size, with little truncation and no overlapping.
+  check: automated
+  layer: components
+- id: typography/7
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Icons that carry meaning grow along with text size.
+  check: rubric
+  layer: components
+- id: typography/8
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: The most important content keeps its place and priority at large text sizes.
+  check: rubric
+  layer: components
