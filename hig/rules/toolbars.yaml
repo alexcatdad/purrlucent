@@ -57,4 +57,5 @@
   source: https://developer.apple.com/design/human-interface-guidelines/toolbars
   rule: Toolbar items are reachable by keyboard in a predictable order and have accessible names.
   check: automated
+  test: src/components/toolbar/toolbar.e2e.ts > every item has an accessible name and is reached in reading order
   layer: components
