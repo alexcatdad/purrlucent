@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./surfaces": "./dist/surfaces.js",
+    "./button": "./dist/button.js",
     "./tokens.css": "./dist/tokens.css",
     "./custom-elements.json": "./dist/custom-elements.json"
   },

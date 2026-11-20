@@ -43,6 +43,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/buttons
   rule: A destructive action is never styled as the primary button, even when it is the likeliest choice.
   check: automated
+  test: src/components/button/button.e2e.ts > a destructive button is never styled as the prominent button
   layer: components
 - id: buttons/10
   source: https://developer.apple.com/design/human-interface-guidelines/buttons
