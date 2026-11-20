@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "vite build && cem analyze",
-    "lint": "eslint \"src/**/*.ts\" && stylelint --allow-empty-input \"src/**/*.css\"",
+    "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\"",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
     "prepare": "lefthook install",
@@ -24,10 +24,14 @@
     "hig:rubric": "bun scripts/hig-check.ts rubric",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@custom-elements-manifest/analyzer": "0.11.0",
+    "@guidepup/virtual-screen-reader": "0.33.0",
+    "@playwright/test": "1.65.1",
     "@storybook/addon-a11y": "10.6.8",
     "@storybook/addon-vitest": "10.6.8",
     "@storybook/web-components-vite": "10.6.8",
