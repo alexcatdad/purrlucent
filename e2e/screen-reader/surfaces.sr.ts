@@ -1,6 +1,7 @@
 import { screenReaderTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 import { gotoStory } from "../helpers/story.ts";
+import { addClickSpacer } from "./setup.ts";
 import { traceState } from "./trace.ts";
 
 // VoiceOver on macOS, NVDA on Windows (see playwright.config.ts).
@@ -11,6 +12,7 @@ test("screen reader speaks the text on each surface", async ({
   screenReader,
 }) => {
   await gotoStory(page, "surfaces--text-only");
+  await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);
   for (let i = 0; i < 10; i++) {
