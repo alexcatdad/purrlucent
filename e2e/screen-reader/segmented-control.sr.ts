@@ -1,7 +1,7 @@
 import { screenReaderTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 import { gotoStory } from "../helpers/story.ts";
-import { addClickSpacer } from "./setup.ts";
+import { addClickSpacer, walkCompositeWithArrows } from "./setup.ts";
 import { traceState } from "./trace.ts";
 
 // VoiceOver on macOS, NVDA on Windows (see playwright.config.ts).
@@ -13,13 +13,25 @@ test("screen reader speaks each segment and the selected one", async ({
   await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);
-  for (let i = 0; i < 10; i++) {
-    if ((await screenReader.spokenPhraseLog()).join(" ").includes("Month"))
-      break;
-    await screenReader.next();
-    await traceState(`next ${i}`, page, screenReader);
+  let spoken: string;
+  if ("interact" in screenReader) {
+    // VoiceOver reads the group and each segment with its next-item command.
+    for (let i = 0; i < 10; i++) {
+      if ((await screenReader.spokenPhraseLog()).join(" ").includes("Month"))
+        break;
+      await screenReader.next();
+      await traceState(`next ${i}`, page, screenReader);
+    }
+    spoken = (await screenReader.spokenPhraseLog()).join(" ");
+  } else {
+    spoken = await walkCompositeWithArrows(
+      page,
+      screenReader,
+      "purr-segment",
+      2,
+    );
+    await traceState("arrows", page, screenReader);
   }
-  const spoken = (await screenReader.spokenPhraseLog()).join(" ");
   for (const text of ["Calendar range", "Day", "Week", "Month"])
     expect(spoken).toContain(text);
 });
