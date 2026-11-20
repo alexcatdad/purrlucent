@@ -18,7 +18,9 @@ export default withGuidepup({
   reportSlowTests: null,
   forbidOnly: true,
   reporter: [["github"], ["list"]],
-  use: { baseURL: `http://localhost:${port}` },
+  // Explicit so the CI upload step finds failure context, traces and logs.
+  outputDir: fileURLToPath(new URL("./test-results", import.meta.url)),
+  use: { baseURL: `http://localhost:${port}`, trace: "retain-on-failure" },
   projects: [
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
