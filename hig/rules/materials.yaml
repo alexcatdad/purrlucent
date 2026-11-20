@@ -2,6 +2,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/materials
   rule: The glass material is used only on the control and navigation layer, never on content.
   check: automated
+  test: src/surfaces/surfaces.e2e.ts > list row and field shell never have a backdrop filter, glass or not
   layer: surfaces
 - id: materials/2
   source: https://developer.apple.com/design/human-interface-guidelines/materials

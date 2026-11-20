@@ -3,8 +3,8 @@
 Lit web components that follow Apple's Human Interface Guidelines, built with
 plain CSS custom properties and shadow DOM.
 
-This repository is at the scaffold stage. The only element is `purr-probe`,
-which exists to prove the toolchain and will be removed.
+This repository is at the scaffold stage. It ships the tokens, behaviors and
+surfaces layers; components come next.
 
 ## Commands
 

@@ -33,6 +33,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(root, "src/index.ts"),
+        surfaces: resolve(root, "src/surfaces/surfaces.css.ts"),
         ...Object.fromEntries(
           components.map((name) => [
             name,
