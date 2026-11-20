@@ -56,6 +56,17 @@ export const TextOnly: Story = {
   `,
 };
 
+/** The surfaces over a high-contrast checkerboard, the hardest backdrop for text and edges. */
+export const PatternedBackdrop: Story = {
+  render: () =>
+    html`<div
+      style="padding: 16px; background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 24px 24px"
+    >
+      ${render()}
+    </div>`,
+  globals: { material: "glass" },
+};
+
 export const Glass: Story = {
   render,
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "rtl" },

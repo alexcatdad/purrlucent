@@ -23,6 +23,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/materials
   rule: Foreground colors on a material are vibrant enough to stay legible over any backdrop.
   check: automated
+  test: src/surfaces/surfaces.e2e.ts > glass labels stay legible over any backdrop
   layer: surfaces
 - id: materials/6
   source: https://developer.apple.com/design/human-interface-guidelines/materials
