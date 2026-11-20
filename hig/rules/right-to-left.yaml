@@ -27,6 +27,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
   rule: Arrow keys in grouped controls move in the visual direction.
   check: automated
+  test: src/behaviors/roving-focus.test.ts > under rtl, ArrowRight moves to the previous item
   layer: behaviors
 - id: right-to-left/7
   source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
