@@ -45,10 +45,13 @@ const render = () => html`
 
 export const Default: Story = { render };
 
-/** The text surfaces without the field's text input, for real screen readers:
- * a focused text input puts NVDA into focus mode, which stops reading the page. */
+/** The text surfaces without the field's text input, for real screen readers.
+ * A focused text input puts NVDA into focus mode, which stops reading the page,
+ * and a page with nothing focusable lets Guidepup's Tab move NVDA into the
+ * browser toolbar, so the story starts with one plain button. */
 export const TextOnly: Story = {
   render: () => html`
+    <button type="button">Start</button>
     <purr-bar-demo>Bar</purr-bar-demo>
     <purr-panel-demo>Panel</purr-panel-demo>
     <purr-sheet-demo>Sheet</purr-sheet-demo>

@@ -3,6 +3,11 @@ import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  // Pre-bundle Lit modules that stories import lazily; otherwise Vite discovers
+  // them mid-run and reloads, which breaks every browser test file.
+  optimizeDeps: {
+    include: ["lit/directives/if-defined.js"],
+  },
   test: {
     projects: [
       {
