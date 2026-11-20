@@ -14,7 +14,8 @@ test("screen reader speaks each segment and the selected one", async ({
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);
   let spoken: string;
-  if ("interact" in screenReader) {
+  // NVDA runs on the Windows runner, VoiceOver on macOS.
+  if (process.platform !== "win32") {
     // VoiceOver reads the group and each segment with its next-item command.
     for (let i = 0; i < 10; i++) {
       if ((await screenReader.spokenPhraseLog()).join(" ").includes("Month"))

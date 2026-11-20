@@ -14,7 +14,8 @@ test("screen reader announces the toolbar and its items", async ({
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);
   let spoken: string;
-  if ("interact" in screenReader) {
+  // NVDA runs on the Windows runner, VoiceOver on macOS.
+  if (process.platform !== "win32") {
     // VoiceOver treats a toolbar as a group: a user steps inside with VO+Shift+Down.
     if ((await screenReader.lastSpokenPhrase()).endsWith("toolbar")) {
       await screenReader.interact();
