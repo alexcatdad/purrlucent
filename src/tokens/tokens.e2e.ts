@@ -142,6 +142,11 @@ const reducedTransparencyFallback = async (
   await expectSolidAndLegible(page);
 };
 
+// Playwright's Firefox updates matchMedia() for emulated contrast but never
+// restyles the page: https://github.com/microsoft/playwright/issues/43916
+const FIREFOX_CONTRAST_BUG =
+  "Playwright cannot emulate prefers-contrast styling in Firefox (microsoft/playwright#43916)";
+
 const increasedContrastFallback = async (
   page: Page,
   theme: "light" | "dark",
@@ -183,8 +188,13 @@ test.describe("light color scheme", () => {
     browserName,
   }) => reducedTransparencyFallback(page, browserName, "light"));
 
-  test("glass falls back to solid under increased contrast", ({ page }) =>
-    increasedContrastFallback(page, "light"));
+  test("glass falls back to solid under increased contrast", ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName === "firefox", FIREFOX_CONTRAST_BUG);
+    return increasedContrastFallback(page, "light");
+  });
 
   test("glass falls back to solid without backdrop-filter support", ({
     page,
@@ -201,7 +211,11 @@ test.describe("dark color scheme", () => {
 
   test("glass falls back to solid under increased contrast in dark", ({
     page,
-  }) => increasedContrastFallback(page, "dark"));
+    browserName,
+  }) => {
+    test.skip(browserName === "firefox", FIREFOX_CONTRAST_BUG);
+    return increasedContrastFallback(page, "dark");
+  });
 
   test("glass falls back to solid without backdrop-filter support in dark", ({
     page,

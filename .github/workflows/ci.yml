@@ -71,8 +71,17 @@ jobs:
       - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run build-storybook
       - run: bun run test:e2e
+      # Playwright writes a missing baseline to its expected path. Upload any
+      # Linux baselines the run created so they can be reviewed and committed.
+      - name: Archive new Linux baselines
+        if: failure()
+        run: git ls-files --others --exclude-standard -- 'src/**/*-linux.png' | tar -czf new-linux-baselines.tgz -T -
       - if: failure()
-        run: echo "::error::If the failure is a missing *-linux.png snapshot, run the 'Update Linux screenshot baselines' workflow, download its artifact, extract it at the repository root and commit the files."
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: new-linux-baselines
+          path: new-linux-baselines.tgz
+          if-no-files-found: ignore
 
   audit:
     runs-on: ubuntu-latest
