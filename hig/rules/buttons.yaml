@@ -7,6 +7,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/buttons
   rule: Every custom button has a visible pressed state.
   check: automated
+  test: src/behaviors/interaction.e2e.ts > the pressed state is visible while the pointer is down
   layer: behaviors
 - id: buttons/3
   source: https://developer.apple.com/design/human-interface-guidelines/buttons
