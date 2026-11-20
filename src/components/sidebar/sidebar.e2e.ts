@@ -22,6 +22,12 @@ const open = async (page: Page, story = "default", globals = "") => {
   return gotoStory(page, `components-sidebar--${story}`, globals);
 };
 
+/** Shows the sidebar if it collapsed on its own at phone width. */
+const expand = async (page: Page) => {
+  const show = page.getByRole("button", { name: /^Show / });
+  if (await show.isVisible()) await show.click();
+};
+
 /** The id of the item that holds focus. */
 const focusedId = (page: Page) =>
   page.evaluate(() => document.activeElement?.id);
@@ -306,15 +312,17 @@ test("virtual screen reader speaks every item", async ({ page }) => {
 test.describe("phone width with a coarse pointer", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
-  test("the sidebar adapts to a narrow screen as stacked navigation", async ({
+  test("the sidebar collapses on a narrow screen and opens full width", async ({
     page,
   }) => {
-    const root = await open(page, "collapsed");
+    const root = await open(page);
     expect(
       await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
     ).toBe(true);
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await expect(page.locator("#home")).toBeHidden();
+    await page.getByRole("button", { name: "Show Library" }).click();
     await expect(page.locator("#home")).toBeVisible();
-    await expect(page.getByRole("button", { name: /Library/ })).toBeHidden();
     const sidebar = await page.locator("#sidebar").boundingBox();
     const rootBox = await root.boundingBox();
     expect(sidebar?.width).toBeCloseTo(rootBox?.width ?? 0, 0);
@@ -340,6 +348,7 @@ forEachViewport(({ name, pointer, width }) => {
     page,
   }) => {
     await open(page);
+    await expand(page);
     const box = await page.locator("#home a").boundingBox();
     if (pointer === "coarse") {
       expect(box?.height).toBeGreaterThanOrEqual(44);
@@ -348,18 +357,17 @@ forEachViewport(({ name, pointer, width }) => {
   });
 
   test(`${name} layout`, async ({ page }) => {
-    await open(page, "collapsed");
-    const stacked = width <= 600 && pointer === "coarse";
-    // Stacked navigation: full width, always open, nothing to hide.
-    await expect(page.locator("#home")).toBeVisible({ visible: stacked });
-    await expect(page.getByRole("button", { name: /Library/ })).toBeVisible({
-      visible: !stacked,
-    });
+    await open(page);
+    // Only phone width with a coarse pointer collapses on its own.
+    const narrow = width <= 600 && pointer === "coarse";
+    await expect(page.locator("#home")).toBeVisible({ visible: !narrow });
+    await expect(page.getByRole("button", { name: /Library/ })).toBeVisible();
   });
 
   for (const material of ["solid", "glass"]) {
     test(`screenshot at ${name} in ${material}`, async ({ page }) => {
       const root = await open(page, "group-open", `material:${material}`);
+      await expand(page);
       // The pixels barely differ, so also check the glass really is on.
       const filter = await page
         .locator("#sidebar")

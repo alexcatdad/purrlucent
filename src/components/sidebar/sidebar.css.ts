@@ -110,22 +110,13 @@ export const sidebarStyles = [
       block-size: 1.5rem;
     }
 
-    /* Phone width with a coarse pointer: stacked navigation. The sidebar fills
-       the width, square and flat, always shows its items, and has nothing to hide. */
+    /* Phone width with a coarse pointer: the sidebar starts collapsed (see
+       sidebar.ts); shown again, it fills the width, square and flat. */
     @media (max-width: 600px) and (pointer: coarse) {
-      :host,
-      :host([collapsed]) {
+      :host(:not([collapsed])) {
         inline-size: 100%;
         border-radius: 0;
         box-shadow: none;
-      }
-
-      :host([collapsed]) nav {
-        display: block;
-      }
-
-      .toggle {
-        display: none;
       }
     }
   `,

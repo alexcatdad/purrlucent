@@ -43,4 +43,5 @@
   source: https://developer.apple.com/design/human-interface-guidelines/sidebars
   rule: A sidebar can collapse automatically when its container gets narrow.
   check: automated
+  test: src/components/sidebar/sidebar.e2e.ts > the sidebar collapses on a narrow screen and opens full width
   layer: components
