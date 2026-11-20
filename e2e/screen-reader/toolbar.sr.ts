@@ -32,8 +32,9 @@ test("screen reader announces the toolbar and its items", async ({
     spoken = await walkCompositeWithArrows(
       page,
       screenReader,
-      "purr-toolbar button",
+      "purr-toolbar",
       3,
+      "purr-toolbar button",
     );
     await traceState("arrows", page, screenReader);
   }

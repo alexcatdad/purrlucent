@@ -16,20 +16,28 @@ type ArrowReader = {
 /**
  * NVDA switches to focus mode inside composite widgets (radio group, toolbar),
  * where its "next item" key is a plain Down arrow sent to the widget. NVDA users
- * move through these widgets with the arrow keys instead, so the test does too.
- * Re-focusing the first item makes NVDA announce the group's name, which
- * Guidepup's setup otherwise clears from the log.
+ * Tab into these widgets, which announces the group's name and current item,
+ * then move with the arrow keys. The test does the same, from a plain button
+ * placed just before the widget.
  */
 export async function walkCompositeWithArrows(
   page: Page,
   reader: ArrowReader,
-  firstItem: string,
+  widget: string,
   steps: number,
+  /** Item to make the widget's tab stop first (roving focus remembers the last one). */
+  tabStop?: string,
 ): Promise<string> {
-  await page.evaluate(() =>
-    (document.activeElement as HTMLElement | null)?.blur(),
-  );
-  await page.locator(firstItem).first().focus();
+  if (tabStop) await page.locator(tabStop).first().focus();
+  await page.evaluate((selector) => {
+    const before = document.createElement("button");
+    before.type = "button";
+    before.id = "sr-before";
+    before.textContent = "Before";
+    document.querySelector(selector)?.before(before);
+  }, widget);
+  await page.locator("#sr-before").focus();
+  await reader.press("Tab");
   for (let i = 0; i < steps; i++) await reader.press("ArrowRight");
   return (await reader.spokenPhraseLog()).join(" ");
 }
