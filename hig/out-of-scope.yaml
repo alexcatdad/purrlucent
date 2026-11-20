@@ -1,0 +1,14 @@
+- section: Technologies (all pages)
+  reason: Guidance for Apple-only services and frameworks, with no web equivalent.
+- section: Digital Crown, Apple Pencil, game controls, eye tracking, gyroscope and accelerometer, spatial input
+  reason: Hardware inputs that browsers do not expose in a comparable way.
+- section: Guidance only for visionOS, watchOS or tvOS (platform considerations of every page)
+  reason: This library targets macOS-style and iPadOS-style web apps on desktop, tablet and phone.
+- section: Platform-specific inputs such as Siri, Shortcuts, Voice Control, AssistiveTouch, Switch Control, Assistive Access
+  reason: Operating-system features the page cannot adopt. The library supports them indirectly through standard semantics and keyboard access.
+- section: System colors and system fonts as Apple ships them
+  reason: Apple fonts and Apple design resources must not be shipped. The library defines its own palette and uses system font stacks.
+- section: Standard system icon sets
+  reason: Apple's icon set cannot be shipped. The library has its own original icons.
+- section: App Store, widgets, app icons, launch screens, notifications and other native app surfaces
+  reason: These are native-app features that do not exist in a web component library.

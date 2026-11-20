@@ -1,0 +1,45 @@
+- id: layout/1
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: The most important content sits first in reading order, near the top and the leading side.
+  check: rubric
+  layer: components
+- id: layout/2
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Elements align to a shared grid, and indentation shows hierarchy.
+  check: rubric
+  layer: components
+- id: layout/3
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Related items are grouped with space, shapes or dividers so the grouping is clear.
+  check: rubric
+  layer: components
+- id: layout/4
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Extra detail is revealed progressively instead of showing every option at once.
+  check: rubric
+  layer: components
+- id: layout/5
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Controls look distinct from content, and content gets no control-layer treatment.
+  check: rubric
+  layer: surfaces
+- id: layout/6
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Layouts adapt to the space available through container and media queries, not to device type or orientation.
+  check: automated
+  layer: components
+- id: layout/7
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Functionality stays the same at every size; only how much is visible at once changes.
+  check: rubric
+  layer: components
+- id: layout/8
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Layouts survive larger text sizes without overlap, and hierarchy stays intact.
+  check: automated
+  layer: components
+- id: layout/9
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Critical controls and information are not pinned to the bottom edge of a desktop window.
+  check: rubric
+  layer: components

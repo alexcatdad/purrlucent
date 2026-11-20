@@ -1,0 +1,40 @@
+- id: keyboards/1
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: Every control can be reached and operated with the keyboard alone, with a visible focus indicator.
+  check: automated
+  layer: behaviors
+- id: keyboards/2
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: Standard shortcuts keep their usual meaning; none is repurposed for a custom action.
+  check: rubric
+  layer: behaviors
+- id: keyboards/3
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: Custom shortcuts exist only for the most frequent commands.
+  check: rubric
+  layer: behaviors
+- id: keyboards/4
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: Modifier keys keep their familiar meanings, such as a modifier while dragging.
+  check: rubric
+  layer: behaviors
+- id: keyboards/5
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: Shortcut modifiers are listed in the order Control, Option, Shift, Command.
+  check: rubric
+  layer: behaviors
+- id: keyboards/6
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: A shortcut never adds Shift to a key whose shifted character already needs Shift.
+  check: rubric
+  layer: behaviors
+- id: keyboards/7
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: A new shortcut is not made by adding a modifier to an existing shortcut for an unrelated command.
+  check: rubric
+  layer: behaviors
+- id: keyboards/8
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: Composite controls follow the matching keyboard pattern from the ARIA Authoring Practices.
+  check: automated
+  layer: behaviors

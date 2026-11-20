@@ -1,0 +1,45 @@
+- id: icons/1
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: Icons are simple, recognizable and carry little detail.
+  check: rubric
+  layer: tokens
+- id: icons/2
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: All icons share one size, level of detail, stroke weight and visual style.
+  check: rubric
+  layer: tokens
+- id: icons/3
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: Icon stroke weight matches the weight of the text beside it.
+  check: rubric
+  layer: components
+- id: icons/4
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: Asymmetric icons are padded for optical balance, not only centered by geometry.
+  check: rubric
+  layer: tokens
+- id: icons/5
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: A separate selected-state icon exists only when the plain one cannot show the state.
+  check: rubric
+  layer: components
+- id: icons/6
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: Icons are inclusive and read across cultures, and contain text only when it is essential.
+  check: rubric
+  layer: tokens
+- id: icons/7
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: Icons are vector SVG and scale cleanly.
+  check: automated
+  layer: tokens
+- id: icons/8
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: An icon without a visible label has an accessible text alternative.
+  check: automated
+  layer: components
+- id: icons/9
+  source: https://developer.apple.com/design/human-interface-guidelines/icons
+  rule: Icons do not depict replicas of Apple hardware, and no Apple icon set is shipped.
+  check: rubric
+  layer: tokens

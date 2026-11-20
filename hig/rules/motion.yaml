@@ -1,0 +1,30 @@
+- id: motion/1
+  source: https://developer.apple.com/design/human-interface-guidelines/motion
+  rule: Motion has a purpose, supports the task, and is never added only for decoration.
+  check: rubric
+  layer: components
+- id: motion/2
+  source: https://developer.apple.com/design/human-interface-guidelines/motion
+  rule: Motion is optional, so it is never the only way to convey information, and reduced motion removes or softens it.
+  check: automated
+  layer: behaviors
+- id: motion/3
+  source: https://developer.apple.com/design/human-interface-guidelines/motion
+  rule: Feedback motion follows the user's input and behaves believably.
+  check: rubric
+  layer: behaviors
+- id: motion/4
+  source: https://developer.apple.com/design/human-interface-guidelines/motion
+  rule: Feedback animations are short and precise.
+  check: automated
+  layer: tokens
+- id: motion/5
+  source: https://developer.apple.com/design/human-interface-guidelines/motion
+  rule: Frequent interactions get little or no added motion.
+  check: rubric
+  layer: components
+- id: motion/6
+  source: https://developer.apple.com/design/human-interface-guidelines/motion
+  rule: People never have to wait for an animation to finish before they can act; animations can be interrupted.
+  check: rubric
+  layer: behaviors

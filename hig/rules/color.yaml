@@ -1,0 +1,40 @@
+- id: color/1
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: One color keeps one meaning; a hue that signals interactivity or status is not reused for decoration.
+  check: rubric
+  layer: tokens
+- id: color/2
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Every color has light, dark, and increased-contrast values, and each pairing stays legible.
+  check: automated
+  layer: tokens
+- id: color/3
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Color is never the only carrier of meaning; interactivity and state have a second cue.
+  check: rubric
+  layer: components
+- id: color/4
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Components use semantic color tokens, never raw color values.
+  check: automated
+  layer: components
+- id: color/5
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Semantic tokens keep their purpose; a separator color is not used as a fill, a label color not as a background.
+  check: rubric
+  layer: tokens
+- id: color/6
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Color on translucent surfaces, and on text or symbols over them, is used sparingly and only for emphasis.
+  check: rubric
+  layer: surfaces
+- id: color/7
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Control labels avoid hues close to colorful content that scrolls beneath them.
+  check: rubric
+  layer: components
+- id: color/8
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: Wide-gamut colors have an sRGB fallback that stays distinguishable.
+  check: automated
+  layer: tokens
