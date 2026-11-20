@@ -18,10 +18,14 @@
     "build": "vite build && cem analyze",
     "lint": "eslint \"src/**/*.ts\" && stylelint --allow-empty-input \"src/**/*.css\"",
     "fmt:check": "bun fmt --check",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@custom-elements-manifest/analyzer": "0.11.0",
+    "@guidepup/virtual-screen-reader": "0.33.0",
+    "@playwright/test": "1.65.1",
     "@types/bun": "1.4.5",
     "@typescript/native": "npm:typescript@7.0.2",
     "eslint": "10.15.0",
