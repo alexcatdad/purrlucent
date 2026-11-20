@@ -5,14 +5,33 @@ import { expect, type Locator, type Page } from "@playwright/test";
 
 const wcag22aa = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
+/**
+ * Storybook's accessibility addon runs axe in the same frame when a story
+ * loads, and axe refuses a second concurrent run ("Axe is already running").
+ * Retry until the addon's run has finished, for at most about five seconds.
+ */
+async function analyzeWhenAxeIsFree(builder: AxeBuilder, page: Page) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await builder.analyze();
+    } catch (error) {
+      const busy = String(error).includes("Axe is already running");
+      if (!busy || attempt >= 25) throw error;
+      await page.waitForTimeout(200);
+    }
+  }
+}
+
 /** Runs axe with WCAG 2.2 AA tags on the locator's subtree and fails on any violation. */
 export async function expectAccessible(locator: Locator): Promise<void> {
   await locator.evaluate((el) => el.setAttribute("data-axe-target", ""));
   try {
-    const { violations } = await new AxeBuilder({ page: locator.page() })
-      .include("[data-axe-target]")
-      .withTags(wcag22aa)
-      .analyze();
+    const { violations } = await analyzeWhenAxeIsFree(
+      new AxeBuilder({ page: locator.page() })
+        .include("[data-axe-target]")
+        .withTags(wcag22aa),
+      locator.page(),
+    );
     expect(violations).toEqual([]);
   } finally {
     await locator.evaluate((el) => el.removeAttribute("data-axe-target"));
