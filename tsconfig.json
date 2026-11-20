@@ -15,5 +15,13 @@
     "noImplicitOverride": true,
     "skipLibCheck": true
   },
-  "include": ["src", "scripts", "e2e", ".storybook", "vite.config.ts", "vitest.config.ts", "playwright.config.ts"]
+  "include": [
+    "src",
+    "scripts",
+    "e2e",
+    ".storybook",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ]
 }
