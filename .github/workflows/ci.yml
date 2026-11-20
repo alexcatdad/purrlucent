@@ -71,6 +71,8 @@ jobs:
       - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run build-storybook
       - run: bun run test:e2e
+      - if: failure()
+        run: echo "::error::If the failure is a missing *-linux.png snapshot, run the 'Update Linux screenshot baselines' workflow, download its artifact, extract it at the repository root and commit the files."
 
   audit:
     runs-on: ubuntu-latest
