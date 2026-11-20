@@ -1,4 +1,6 @@
-import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 export type RubricRule = { id: string; rule: string; source: string };
 
@@ -141,22 +143,24 @@ export function buildPrompt(rules: RubricRule[], diff: string): string {
   ].join("\n");
 }
 
-async function run(cmd: string[]): Promise<string> {
-  const proc = Bun.spawn(cmd, { stdout: "pipe", stderr: "inherit" });
+async function run(cmd: string[], stdin?: Blob): Promise<string> {
+  const proc = Bun.spawn(cmd, {
+    stdin: stdin ?? "ignore",
+    stdout: "pipe",
+    stderr: "inherit",
+  });
   const out = await new Response(proc.stdout).text();
   if ((await proc.exited) !== 0) throw new Error(`${cmd.join(" ")} failed`);
   return out;
 }
 
-function setOutput(key: string, value: string) {
-  const output = process.env.GITHUB_OUTPUT;
-  if (output) appendFileSync(output, `${key}=${value}\n`);
-  else console.log(`${key}=${value}`);
-}
-
-/** Writes prompt.md and schema.json to `outDir` and sets the step outputs. */
-async function prepare(base: string, head: string, outDir: string) {
-  const range = `${base}...${head}`;
+/**
+ * Local pre-push review: runs Codex with the developer's own logged-in CLI (no
+ * API key in CI) on the rubric rules the pushed changes touch. Returns the
+ * number of failing rules; 0 when no rubric rule applies.
+ */
+async function review(base: string): Promise<number> {
+  const range = `${base}...HEAD`;
   const files = (await run(["git", "diff", "--name-only", range]))
     .split("\n")
     .filter((f) => f.startsWith("src/") && !f.endsWith(".png"));
@@ -164,33 +168,51 @@ async function prepare(base: string, head: string, outDir: string) {
     parseRules(await run(["bun", "run", "hig:rubric", "--", ...files])),
     files,
   );
-  setOutput("has_rules", String(rules.length > 0));
-  setOutput("rule_ids", JSON.stringify(rules.map((r) => r.id)));
-  if (!rules.length) return;
+  if (!rules.length) {
+    console.log("rubric: no rubric rules apply to these changes.");
+    return 0;
+  }
   const diff = await run(["git", "diff", range, "--", "src"]);
   if (diff.length > MAX_DIFF)
-    throw new Error(`diff is over ${MAX_DIFF} characters; split the PR`);
-  mkdirSync(outDir, { recursive: true });
-  writeFileSync(`${outDir}/prompt.md`, buildPrompt(rules, diff));
-  writeFileSync(`${outDir}/schema.json`, JSON.stringify(schema));
-}
-
-/** Sets the step outputs `body` (a JSON string) and `failed`. */
-function verdict(finalMessage: string, ruleIds: string) {
-  const { body, failed } = renderComment(
-    parseVerdicts(finalMessage, JSON.parse(ruleIds || "[]")),
+    throw new Error(`diff is over ${MAX_DIFF} characters; split the change`);
+  const dir = mkdtempSync(join(tmpdir(), "purr-rubric-"));
+  writeFileSync(join(dir, "schema.json"), JSON.stringify(schema));
+  const last = join(dir, "last-message.json");
+  console.log(`rubric: Codex is reviewing ${rules.length} rules…`);
+  await run(
+    [
+      "codex",
+      "exec",
+      "-m",
+      "gpt-6.1-terra",
+      "-s",
+      "read-only",
+      "--ephemeral",
+      "--output-schema",
+      join(dir, "schema.json"),
+      "-o",
+      last,
+      "-",
+    ],
+    new Blob([buildPrompt(rules, diff)]),
   );
-  setOutput("body", JSON.stringify(body));
-  setOutput("failed", String(failed));
+  const { body, failed } = renderComment(
+    parseVerdicts(
+      readFileSync(last, "utf8"),
+      rules.map((r) => r.id),
+    ),
+  );
+  console.log(body);
+  return failed;
 }
 
 if (import.meta.main) {
-  const [command, base, head, outDir = ".rubric"] = process.argv.slice(2);
-  if (command === "prepare" && base && head) await prepare(base, head, outDir);
-  else if (command === "verdict")
-    verdict(process.env.FINAL_MESSAGE ?? "", process.env.RULE_IDS ?? "");
-  else
-    throw new Error(
-      "usage: rubric-prompt.ts prepare <base> <head> [outDir] | verdict",
-    );
+  const [command, base = "origin/main"] = process.argv.slice(2);
+  if (command !== "review")
+    throw new Error("usage: rubric-prompt.ts review [base]");
+  const failed = await review(base);
+  if (failed) {
+    console.error(`rubric: ${failed} rule(s) failed; push blocked.`);
+    process.exit(1);
+  }
 }

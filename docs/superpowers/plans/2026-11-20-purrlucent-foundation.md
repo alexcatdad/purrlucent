@@ -117,7 +117,7 @@ Wave 0 found that `bun lint` is not in Bun 1.4.5 and that Vite 8 does not compil
 **Files:** `.github/workflows/ci.yml`, `.github/workflows/codeql.yml`, `.github/dependabot.yml`, `.github/pull_request_template.md`, `.github/rulesets/main.json`, `.gitleaks.toml`, `lefthook.yml` or an equivalent pre-commit hook config (choose after checking current docs in neo)
 
 **Interfaces:**
-- Produces CI job names that the ruleset requires: `lint`, `typecheck`, `build`, `unit`, `e2e`, `audit`, `secrets`, `codeql`. Tasks 9 and 12 add `screen-readers` and `rubric`.
+- Produces CI job names that the ruleset requires: `lint`, `typecheck`, `build`, `unit`, `e2e`, `audit`, `secrets`, `codeql`. Task 9 adds `screen-readers`, and Task 10b adds `hig`.
 
 - [ ] **Step 1:** Write `ci.yml`:
   - Bun setup and `bun install --frozen-lockfile`.
@@ -133,7 +133,7 @@ Wave 0 found that `bun lint` is not in Bun 1.4.5 and that Vite 8 does not compil
   - A changeset reminder.
 - [ ] **Step 5:** Write `.github/rulesets/main.json`:
   - Target `main`. PR required.
-  - Required checks: every job name above, plus `screen-readers` and `rubric`.
+  - Required checks: every job name above, plus `screen-readers` and `hig`.
   - Linear history. Signed commits.
   - Secret-scanning and code-scanning alerts resolved.
   - No force-push. No deletion.
@@ -310,17 +310,18 @@ Each component task has the same shape:
 
 ## Wave 4 (Tasks 12–14 run in parallel)
 
-### Task 12: AI rubric review in CI
+### Task 12: AI rubric review on push (local)
 
-**Files:** `.github/workflows/rubric.yml`, `scripts/rubric-prompt.ts`
+Changed after implementation: no API key is ever stored in GitHub Actions, so the review runs locally.
+
+**Files:** `lefthook.yml` (pre-push job), `scripts/rubric-prompt.ts`
 
 **Interfaces:**
 - Consumes `bun run hig:rubric`.
-- Produces the CI job `rubric`. It runs `codex exec -m gpt-6.1-terra` with the touched rubric rules and the PR diff, posts one PR comment with pass or fail per rule, and exits non-zero on any fail.
+- `bun scripts/rubric-prompt.ts review [base]` (default `origin/main`) runs `codex exec -m gpt-6.1-terra` through the developer's logged-in Codex CLI on the rubric rules the changes touch, prints pass or fail per rule, and exits non-zero on any fail, which blocks the push.
 
-- [ ] **Step 1:** Ask the maintainer to add the Codex API credential as a repository secret. Give the exact secret name, and confirm the current Codex CI auth method in neo first.
-- [ ] **Step 2:** Open a test PR that adds two `prominent` buttons to one toolbar story. Expected: `rubric` fails on the toolbar rule. Close the PR.
-- [ ] **Step 3:** Commit: `ci: add ai rubric review`.
+- [ ] **Step 1:** Change a toolbar story to two `prominent` buttons and run the review. Expected: it fails on the toolbar rule. Revert.
+- [ ] **Step 2:** Commit: `ci: run the ai rubric review locally on push`.
 
 ### Task 13: Docs site on GitHub Pages
 

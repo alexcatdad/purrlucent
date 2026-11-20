@@ -96,7 +96,7 @@ Every gate blocks: locally before commit or push, and in CI before merge.
 - Each rule is written in our own words, linked to its HIG page, and tagged with how it is checked:
   - **Automated:** a lint rule, unit test, browser test or screenshot test.
   - **Rubric:** a written checklist item, reviewed in two steps on every PR:
-    1. **AI review:** Codex with `gpt-6.1-terra` checks each rubric item the PR touches and posts the results on the PR. Its pass or fail is a required status check.
+    1. **AI review, locally on push:** a pre-push hook runs Codex with `gpt-6.1-terra` through the developer's own logged-in CLI on each rubric item the pushed changes touch, and blocks the push if any item fails. No API key is ever stored in GitHub Actions.
     2. **Maintainer:** the maintainer reviews the AI results and merges. GitHub does not let authors approve their own PRs, and PRs are opened from the maintainer's account, so the maintainer's merge is the final approval rather than a required approving review. Only the maintainer has write access.
 - The catalog is maintained by hand. It is never scraped or synced automatically from Apple's site.
 
@@ -122,7 +122,7 @@ Every gate blocks: locally before commit or push, and in CI before merge.
 A GitHub ruleset on `main`:
 
 - Pull request required.
-- All status checks pass, including the AI rubric review.
+- All status checks pass.
 - Linear history.
 - Signed commits.
 - Secret-scanning and code-scanning alerts resolved.

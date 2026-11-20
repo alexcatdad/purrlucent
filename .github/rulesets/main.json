@@ -36,7 +36,6 @@
           { "context": "secrets" },
           { "context": "codeql" },
           { "context": "screen-readers" },
-          { "context": "rubric" },
           { "context": "hig" }
         ]
       }
