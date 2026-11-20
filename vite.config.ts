@@ -26,6 +26,10 @@ export default defineConfig({
     },
   ],
   build: {
+    // Support policy: the last two versions of each evergreen browser (as of
+    // 2026-11-20). Vite's default target is older and makes Lightning CSS
+    // rewrite light-dark() into media queries.
+    target: ["chrome156", "edge156", "firefox159", "safari26", "ios26"],
     lib: {
       entry: {
         index: resolve(root, "src/index.ts"),

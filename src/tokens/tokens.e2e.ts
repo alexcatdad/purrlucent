@@ -36,10 +36,15 @@ const emulateTransparency = async (
 };
 
 // The machine's own setting leaks into the browser, so pin it to no preference.
-const openMaterials = async (page: Page, material: "solid" | "glass") => {
+// The decorator pins color-scheme from the theme global, so dark loads it explicitly.
+const openMaterials = async (
+  page: Page,
+  material: "solid" | "glass",
+  theme: "light" | "dark",
+) => {
   if (test.info().project.name === "chromium")
     await emulateTransparency(page, "no-preference");
-  await gotoStory(page, "tokens--materials");
+  await gotoStory(page, "tokens--materials", `theme:${theme}`);
   // The preview decorator resets the attribute on render; set ours after it.
   await page.locator("#bar").waitFor();
   await page.evaluate(
@@ -52,10 +57,15 @@ const openMaterials = async (page: Page, material: "solid" | "glass") => {
 const bar = (page: Page) =>
   page.locator("#bar").evaluate((el) => {
     const style = getComputedStyle(el);
-    const alpha = /\/\s*([\d.]+)(%?)\)/.exec(style.backgroundColor);
+    const color = style.backgroundColor;
+    // rgba(r, g, b, a) puts alpha last after a comma; rgb(r g b / a), oklch() and color() put it after a slash.
+    const [, slash] = color.split("/");
+    const commas = color.slice(color.indexOf("(") + 1, -1).split(",");
+    const raw = slash ?? (commas.length === 4 ? commas[3] : undefined);
+    const alpha = raw === undefined ? 1 : Number.parseFloat(raw);
     return {
       filter: style.backdropFilter,
-      alpha: alpha ? Number(alpha[1]) / (alpha[2] ? 100 : 1) : 1,
+      alpha: raw?.includes("%") ? alpha / 100 : alpha,
     };
   });
 
@@ -94,12 +104,12 @@ const contrast = (a: number[], b: number[]) => {
 };
 
 test("solid mode computes the material filter to none", async ({ page }) => {
-  await openMaterials(page, "solid");
+  await openMaterials(page, "solid", "light");
   expect((await bar(page)).filter).toBe("none");
 });
 
 test("glass mode computes the material filter to a blur", async ({ page }) => {
-  await openMaterials(page, "glass");
+  await openMaterials(page, "glass", "light");
   const { filter, alpha } = await bar(page);
   expect(filter).toMatch(/^blur\(\d+(\.\d+)?px\)$/);
   expect(alpha).toBeLessThan(1);
@@ -117,31 +127,33 @@ const expectSolidAndLegible = async (page: Page) => {
   expect(contrast(colors.label!, colors.bar!)).toBeGreaterThanOrEqual(4.5);
 };
 
-test("glass falls back to solid under reduced transparency", async ({
-  page,
-  browserName,
-}) => {
+const reducedTransparencyFallback = async (
+  page: Page,
+  browserName: string,
+  theme: "light" | "dark",
+) => {
   test.skip(
     browserName !== "chromium",
     "emulated through the Chromium protocol",
   );
-  await openMaterials(page, "glass");
+  await openMaterials(page, "glass", theme);
   expect((await bar(page)).filter).not.toBe("none");
   await emulateTransparency(page, "reduce");
   await expectSolidAndLegible(page);
-});
+};
 
-test("glass falls back to solid under increased contrast", async ({ page }) => {
-  await openMaterials(page, "glass");
+const increasedContrastFallback = async (
+  page: Page,
+  theme: "light" | "dark",
+) => {
+  await openMaterials(page, "glass", theme);
   expect((await bar(page)).filter).not.toBe("none");
   await page.emulateMedia({ contrast: "more" });
   await expectSolidAndLegible(page);
-});
+};
 
-test("glass falls back to solid without backdrop-filter support", async ({
-  page,
-}) => {
-  await openMaterials(page, "glass");
+const unsupportedFallback = async (page: Page, theme: "light" | "dark") => {
+  await openMaterials(page, "glass", theme);
   expect((await bar(page)).filter).not.toBe("none");
   // A browser cannot be made to drop backdrop-filter, so the shipped file is
   // swapped in with its @supports test pointed at a property nobody has.
@@ -161,6 +173,39 @@ test("glass falls back to solid without backdrop-filter support", async ({
     );
   }, unsupported);
   await expectSolidAndLegible(page);
+};
+
+test.describe("light color scheme", () => {
+  test.use({ colorScheme: "light" });
+
+  test("glass falls back to solid under reduced transparency", async ({
+    page,
+    browserName,
+  }) => reducedTransparencyFallback(page, browserName, "light"));
+
+  test("glass falls back to solid under increased contrast", ({ page }) =>
+    increasedContrastFallback(page, "light"));
+
+  test("glass falls back to solid without backdrop-filter support", ({
+    page,
+  }) => unsupportedFallback(page, "light"));
+});
+
+test.describe("dark color scheme", () => {
+  test.use({ colorScheme: "dark" });
+
+  test("glass falls back to solid under reduced transparency in dark", async ({
+    page,
+    browserName,
+  }) => reducedTransparencyFallback(page, browserName, "dark"));
+
+  test("glass falls back to solid under increased contrast in dark", ({
+    page,
+  }) => increasedContrastFallback(page, "dark"));
+
+  test("glass falls back to solid without backdrop-filter support in dark", ({
+    page,
+  }) => unsupportedFallback(page, "dark"));
 });
 
 test("every text role meets 4.5:1 against background in all four color schemes", async ({
@@ -182,4 +227,17 @@ test("every text role meets 4.5:1 against background in all four color schemes",
       ).toBeGreaterThanOrEqual(4.5);
     }
   }
+});
+
+test("the Storybook theme global switches token colors while the OS stays light", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  const barBackground = async (theme: string) => {
+    await gotoStory(page, "tokens--materials", `theme:${theme}`);
+    return page
+      .locator("#bar")
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+  };
+  expect(await barBackground("dark")).not.toBe(await barBackground("light"));
 });
