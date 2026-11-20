@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, svg } from "lit";
+import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { SelectionController } from "../../behaviors/selection.ts";
 import { PurrSidebarItem } from "./sidebar-item.ts";
@@ -17,7 +17,9 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * visible items (Left and Right are not used). Space or Enter on a link selects
  * it; Escape on a group button or inside its group closes it and focuses the
  * button. On a narrow screen (600px or less) the sidebar collapses on its own;
- * shown again, it fills the width.
+ * shown again, it fills the width. A collapse it made itself is undone when
+ * the screen widens; read the first state from `collapsed`, because
+ * `purr-collapse` can fire before a listener is attached.
  *
  * @slot - `purr-sidebar-item` children.
  * @csspart toggle - The button that hides and shows the sidebar.
@@ -120,25 +122,23 @@ export class PurrSidebar extends LitElement {
   readonly #narrow = matchMedia("(max-width: 600px)");
 
   // A collapse the sidebar made itself is undone when the screen widens again;
-  // one the person made, or undid, is theirs to keep.
+  // one the person or the app made, or undid, is theirs to keep.
   #autoCollapsed = false;
-  #started = false;
+  // The screen width last acted on, so a move in the page changes nothing but
+  // a crossing while detached is caught on reconnect.
+  #wasNarrow?: boolean;
 
   #onNarrow = () => {
-    if (this.#narrow.matches && !this.collapsed) {
-      this.#setCollapsed(true);
-      this.#autoCollapsed = true;
-    } else if (!this.#narrow.matches && this.#autoCollapsed && this.collapsed) {
+    this.#wasNarrow = this.#narrow.matches;
+    if (this.#narrow.matches && !this.collapsed) this.#setCollapsed(true, true);
+    else if (!this.#narrow.matches && this.#autoCollapsed && this.collapsed)
       this.#setCollapsed(false);
-    }
   };
 
   override connectedCallback() {
     super.connectedCallback();
     this.#narrow.addEventListener("change", this.#onNarrow);
-    // Only the first connection follows the screen; moving the element keeps its state.
-    if (!this.#started) this.#onNarrow();
-    this.#started = true;
+    if (this.#narrow.matches !== this.#wasNarrow) this.#onNarrow();
   }
 
   override disconnectedCallback() {
@@ -146,10 +146,16 @@ export class PurrSidebar extends LitElement {
     this.#narrow.removeEventListener("change", this.#onNarrow);
   }
 
+  // Any opening, including one the app sets, ends an automatic collapse.
+  protected override willUpdate(changed: PropertyValues<this>) {
+    if (changed.has("collapsed") && !this.collapsed)
+      this.#autoCollapsed = false;
+  }
+
   #toggleCollapsed = () => this.#setCollapsed(!this.collapsed);
 
-  #setCollapsed(collapsed: boolean) {
-    this.#autoCollapsed = false;
+  #setCollapsed(collapsed: boolean, auto = false) {
+    this.#autoCollapsed = auto;
     this.collapsed = collapsed;
     this.dispatchEvent(
       new CustomEvent("purr-collapse", {

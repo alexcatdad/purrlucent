@@ -28,6 +28,24 @@ const expand = async (page: Page) => {
     await page.getByRole("button", { name: /^Show / }).click();
 };
 
+/** Widens the window and waits until the page has handled the width change. */
+const widen = async (page: Page) => {
+  await page.evaluate(() => {
+    (window as unknown as { widened: Promise<void> }).widened = new Promise(
+      (resolve) =>
+        matchMedia("(max-width: 600px)").addEventListener(
+          "change",
+          () => requestAnimationFrame(() => resolve()),
+          { once: true },
+        ),
+    );
+  });
+  await page.setViewportSize({ width: 1024, height: 800 });
+  await page.evaluate(
+    () => (window as unknown as { widened: Promise<void> }).widened,
+  );
+};
+
 /** The id of the item that holds focus. */
 const focusedId = (page: Page) =>
   page.evaluate(() => document.activeElement?.id);
@@ -366,8 +384,47 @@ test.describe("narrow window with a fine pointer", () => {
     await open(page);
     await page.getByRole("button", { name: "Show Library" }).click();
     await page.getByRole("button", { name: "Hide Library" }).click();
-    await page.setViewportSize({ width: 1024, height: 800 });
+    await widen(page);
     await expect(page.locator("#home")).toBeHidden();
+  });
+
+  test("a sidebar the app closed stays closed when the window widens", async ({
+    page,
+  }) => {
+    await open(page);
+    const sidebar = page.locator("#sidebar");
+    await expect(sidebar).toHaveAttribute("collapsed", "");
+    await sidebar.evaluate((el: HTMLElement & { collapsed: boolean }) => {
+      el.collapsed = false;
+    });
+    await expect(page.locator("#home")).toBeVisible();
+    await sidebar.evaluate((el: HTMLElement & { collapsed: boolean }) => {
+      el.collapsed = true;
+    });
+    await widen(page);
+    await expect(page.locator("#home")).toBeHidden();
+  });
+
+  test("a sidebar detached while the window widens reopens when it returns", async ({
+    page,
+  }) => {
+    await open(page);
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await page.evaluate(() => {
+      const el = document.querySelector("#sidebar")!;
+      (window as unknown as { parked: [Element, Element] }).parked = [
+        el.parentElement!,
+        el,
+      ];
+      el.remove();
+    });
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await page.evaluate(() => {
+      const [parent, el] = (window as unknown as { parked: [Element, Element] })
+        .parked;
+      parent.append(el);
+    });
+    await expect(page.locator("#home")).toBeVisible();
   });
 });
 
