@@ -1,0 +1,8 @@
+pre-commit:
+  jobs:
+    - name: gitleaks
+      run: gitleaks git --pre-commit --staged --redact --verbose
+    - name: lint
+      run: bun run lint
+    - name: fmt
+      run: bun run fmt:check
