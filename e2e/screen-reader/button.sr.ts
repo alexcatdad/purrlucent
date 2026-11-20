@@ -14,13 +14,13 @@ test("screen reader announces each button as a button with its label", async ({
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);
   for (let i = 0; i < 10; i++) {
-    if ((await screenReader.spokenPhraseLog()).join(" ").includes("prominent"))
+    if ((await screenReader.spokenPhraseLog()).join(" ").includes("Save"))
       break;
     await screenReader.next();
     await traceState(`next ${i}`, page, screenReader);
   }
   const spoken = (await screenReader.spokenPhraseLog()).join(" ");
-  for (const label of ["plain", "bordered", "prominent"])
+  for (const label of ["Cancel", "Duplicate", "Save"])
     expect(spoken).toContain(label);
   expect(spoken.toLowerCase()).toContain("button");
 });
