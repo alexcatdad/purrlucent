@@ -68,6 +68,7 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
       - run: bun install --frozen-lockfile
+      - run: bun test
       - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run test:unit
 
