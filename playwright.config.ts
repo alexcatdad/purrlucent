@@ -16,7 +16,14 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: { animations: "disabled" },
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  // Firefox runs only in CI; locally Chromium and WebKit.
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+    ...(process.env.CI
+      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }]
+      : []),
+  ],
   // Serves a prebuilt storybook-static; run build-storybook before test:e2e.
   webServer: {
     command: `bunx vite preview --outDir storybook-static --port ${port} --strictPort`,

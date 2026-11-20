@@ -6,9 +6,12 @@ const toolbar = (description: string, items: string[]) => ({
   toolbar: { items, dynamicTitle: true },
 });
 
-// Each global becomes an attribute on the story root. The tokens layer reads
-// purr-material; theme and contrast follow the system preference, so the
-// theme and contrast attributes are inert (the library has no appearance switch).
+// Each global becomes an attribute on the document root. The tokens layer reads
+// purr-material. Theme "light" or "dark" sets an inline color-scheme on <html>,
+// where the tokens' light-dark() values resolve; "system" leaves the shipped
+// behavior (follow the OS). Storybook only: shipped tokens are unchanged. The
+// tokens offer no hook for contrast (it follows prefers-contrast), so the
+// contrast global stays inert.
 const attributes = {
   material: "purr-material",
   theme: "data-theme",
@@ -19,13 +22,13 @@ const attributes = {
 const preview: Preview = {
   globalTypes: {
     material: toolbar("Surface material", ["solid", "glass"]),
-    theme: toolbar("Color theme", ["light", "dark"]),
+    theme: toolbar("Color theme", ["system", "light", "dark"]),
     contrast: toolbar("Contrast", ["normal", "more"]),
     dir: toolbar("Text direction", ["ltr", "rtl"]),
   },
   initialGlobals: {
     material: "solid",
-    theme: "light",
+    theme: "system",
     contrast: "normal",
     dir: "ltr",
   },
@@ -35,6 +38,8 @@ const preview: Preview = {
       for (const [global, attribute] of Object.entries(attributes)) {
         document.documentElement.setAttribute(attribute, globals[global]);
       }
+      document.documentElement.style.colorScheme =
+        globals.theme === "system" ? "" : globals.theme;
       return story();
     },
   ],
