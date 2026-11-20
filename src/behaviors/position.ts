@@ -15,6 +15,8 @@ export function position(
   overlay: HTMLElement,
   placement: Placement,
 ): void {
+  // Fixed first: an in-flow overlay can size differently (stretch, wrap).
+  overlay.style.position = "fixed";
   const a = anchor.getBoundingClientRect();
   const { width, height } = overlay.getBoundingClientRect();
   const { clientWidth, clientHeight } = document.documentElement;
@@ -31,7 +33,6 @@ export function position(
   const alignLeft = placement.endsWith("start") !== rtl;
   const left = alignLeft ? a.left : a.right - width;
 
-  overlay.style.position = "fixed";
   overlay.style.top = `${clamp(top, height, clientHeight)}px`;
   overlay.style.left = `${clamp(left, width, clientWidth)}px`;
 }

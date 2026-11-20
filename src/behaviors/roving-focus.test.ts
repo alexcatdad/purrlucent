@@ -26,15 +26,22 @@ function setup(
     },
   );
   controller.hostConnected();
-  const press = (from: number, key: string) => {
+  const press = (
+    from: number,
+    key: string,
+    mods: Partial<
+      Record<"altKey" | "ctrlKey" | "metaKey" | "shiftKey", boolean>
+    > = {},
+  ) => {
     const event = new Event("keydown", { cancelable: true });
     Object.defineProperty(event, "key", { value: key });
+    Object.assign(event, mods);
     Object.defineProperty(event, "target", { value: items[from] });
     host.dispatchEvent(event);
     return event;
   };
   const focused = () => items.findIndex((item) => item.focused);
-  return { items, press, focused };
+  return { items, press, focused, controller };
 }
 
 test("only the active item has tabindex 0", () => {
@@ -85,6 +92,40 @@ test("under rtl, ArrowRight moves to the previous item", () => {
   expect(focused()).toBe(0);
   press(1, "ArrowLeft");
   expect(focused()).toBe(2);
+});
+
+test("the active index is clamped when items shrink", () => {
+  const { items, press, controller } = setup();
+  press(1, "End");
+  expect(items.map((i) => i.tabIndex)).toEqual([-1, -1, 0]);
+  items.length = 2;
+  controller.hostUpdated();
+  expect(items.map((i) => i.tabIndex)).toEqual([-1, 0]);
+});
+
+test("Alt, Ctrl and Meta disable the arrow, Home and End keys", () => {
+  const { press, focused } = setup();
+  for (const mod of ["altKey", "ctrlKey", "metaKey"] as const) {
+    for (const key of ["ArrowRight", "End", "Home"]) {
+      expect(press(0, key, { [mod]: true }).defaultPrevented).toBe(false);
+    }
+  }
+  expect(focused()).toBe(-1);
+});
+
+test("Shift does not disable the keys", () => {
+  const { press, focused } = setup();
+  press(0, "ArrowRight", { shiftKey: true });
+  expect(focused()).toBe(1);
+});
+
+test("activate seeds the tab stop without moving focus", () => {
+  const { items, controller, focused } = setup();
+  controller.activate(2);
+  expect(items.map((i) => i.tabIndex)).toEqual([-1, -1, 0]);
+  expect(focused()).toBe(-1);
+  controller.activate(9);
+  expect(items.map((i) => i.tabIndex)).toEqual([-1, -1, 0]);
 });
 
 test("handled keys are prevented, others are left alone", () => {
