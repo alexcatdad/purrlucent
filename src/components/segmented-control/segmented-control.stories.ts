@@ -26,11 +26,14 @@ const control = async (canvasElement: HTMLElement) => {
 
 // Axe ignores clip-path, so it would read the sliding label copy as covering
 // every label; check the control once the pill has arrived.
+// Slow CI runners can take well over the 1s default to finish a 200ms slide.
 const settled = (el: PurrSegmentedControl) =>
-  waitFor(() =>
-    expect(el.shadowRoot!.querySelector('[part="track"]')).not.toHaveClass(
-      "moving",
-    ),
+  waitFor(
+    () =>
+      expect(el.shadowRoot!.querySelector('[part="track"]')).not.toHaveClass(
+        "moving",
+      ),
+    { timeout: 5000 },
   );
 
 // Stories that other tests open as they are have no play function: a play

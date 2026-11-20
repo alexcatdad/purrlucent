@@ -22,10 +22,10 @@ const open = async (page: Page, story = "default", globals = "") => {
   return gotoStory(page, `components-sidebar--${story}`, globals);
 };
 
-/** Shows the sidebar if it collapsed on its own at phone width. */
+/** Shows the sidebar where it collapses on its own (600px or less). */
 const expand = async (page: Page) => {
-  const show = page.getByRole("button", { name: /^Show / });
-  if (await show.isVisible()) await show.click();
+  if ((page.viewportSize()?.width ?? Infinity) <= 600)
+    await page.getByRole("button", { name: /^Show / }).click();
 };
 
 /** The id of the item that holds focus. */
@@ -338,6 +338,36 @@ test.describe("narrow window with a fine pointer", () => {
       await page.evaluate(() => matchMedia("(pointer: fine)").matches),
     ).toBe(true);
     await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+  });
+
+  test("widening the window again restores a sidebar that collapsed on its own", async ({
+    page,
+  }) => {
+    await open(page);
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await expect(page.locator("#home")).toBeVisible();
+  });
+
+  test("a sidebar the person opened stays open when it moves in the page", async ({
+    page,
+  }) => {
+    await open(page);
+    await page.getByRole("button", { name: "Show Library" }).click();
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.parentElement!.append(el));
+    await expect(page.locator("#home")).toBeVisible();
+  });
+
+  test("a sidebar the person closed stays closed when the window widens", async ({
+    page,
+  }) => {
+    await open(page);
+    await page.getByRole("button", { name: "Show Library" }).click();
+    await page.getByRole("button", { name: "Hide Library" }).click();
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await expect(page.locator("#home")).toBeHidden();
   });
 });
 

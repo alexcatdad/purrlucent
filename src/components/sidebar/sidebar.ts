@@ -119,14 +119,26 @@ export class PurrSidebar extends LitElement {
   // own navigation (a bottom tab bar is preferred) takes over.
   readonly #narrow = matchMedia("(max-width: 600px)");
 
+  // A collapse the sidebar made itself is undone when the screen widens again;
+  // one the person made, or undid, is theirs to keep.
+  #autoCollapsed = false;
+  #started = false;
+
   #onNarrow = () => {
-    if (this.#narrow.matches && !this.collapsed) this.#toggleCollapsed();
+    if (this.#narrow.matches && !this.collapsed) {
+      this.#setCollapsed(true);
+      this.#autoCollapsed = true;
+    } else if (!this.#narrow.matches && this.#autoCollapsed && this.collapsed) {
+      this.#setCollapsed(false);
+    }
   };
 
   override connectedCallback() {
     super.connectedCallback();
     this.#narrow.addEventListener("change", this.#onNarrow);
-    this.#onNarrow();
+    // Only the first connection follows the screen; moving the element keeps its state.
+    if (!this.#started) this.#onNarrow();
+    this.#started = true;
   }
 
   override disconnectedCallback() {
@@ -134,8 +146,11 @@ export class PurrSidebar extends LitElement {
     this.#narrow.removeEventListener("change", this.#onNarrow);
   }
 
-  #toggleCollapsed = () => {
-    this.collapsed = !this.collapsed;
+  #toggleCollapsed = () => this.#setCollapsed(!this.collapsed);
+
+  #setCollapsed(collapsed: boolean) {
+    this.#autoCollapsed = false;
+    this.collapsed = collapsed;
     this.dispatchEvent(
       new CustomEvent("purr-collapse", {
         detail: { collapsed: this.collapsed },
@@ -143,7 +158,7 @@ export class PurrSidebar extends LitElement {
         composed: true,
       }),
     );
-  };
+  }
 
   override render() {
     return html`

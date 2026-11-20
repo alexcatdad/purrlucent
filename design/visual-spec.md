@@ -167,7 +167,7 @@ Nesting rule: inner radius = outer radius minus the visible inset between painte
 | `panel`        |   16 |     16 | Floating panel, sidebar, sheet                      |
 | `row`          |    8 |      8 | Sidebar row (panel 16 minus padding 8)              |
 
-An edge-attached bar and the full-width stacked sidebar have square outer corners.
+An edge-attached bar and a sidebar opened on a narrow screen have square outer corners.
 
 ### Elevation
 
@@ -323,7 +323,7 @@ Glass only on bar, sidebar, floating panel and sheet. Rows, field shells and con
 | Toggle hit region              |        28 x 28 |        44 x 44 |
 
 - Label starts are measured from the row's inline-start edge and mirror in RTL. A leaf row reserves the empty chevron slot so all level-1 labels align. The chevron starts at 12.
-- Floating: Sidebar material (glass) or `secondaryBackground` (solid), Panel elevation. Full-width stacked presentation: square corners, flat.
+- Floating: Sidebar material (glass) or `secondaryBackground` (solid), Panel elevation. Narrow screen (600px or less, any pointer): collapses on its own; opened again, it fills the width with square corners, flat. A collapse the sidebar made itself is undone when the screen widens.
 - The toggle stays where it is, with row colors and states.
 - The chevron uses `secondaryLabel` and rotates toward block-end when expanded.
 
