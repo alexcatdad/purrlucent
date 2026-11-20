@@ -13,15 +13,15 @@ const stories = ["default", "variants", "destructive", "disabled", "glass"];
 test("aria snapshot", async ({ page }) => {
   const root = await gotoStory(page, "components-button--variants");
   await expect(root).toMatchAriaSnapshot(`
-    - button "Plain"
-    - button "Bordered"
-    - button "Prominent"
+    - button "Cancel"
+    - button "Duplicate"
+    - button "Save"
   `);
 });
 
 test("a disabled button is exposed as disabled", async ({ page }) => {
   const root = await gotoStory(page, "components-button--disabled");
-  await expect(root.getByRole("button", { name: "Plain" })).toBeDisabled();
+  await expect(root.getByRole("button", { name: "Cancel" })).toBeDisabled();
 });
 
 for (const id of stories) {
@@ -66,6 +66,20 @@ test("a destructive button is never styled as the prominent button", async ({
   );
 });
 
+test("a disabled button differs by shape and weight, not color alone", async ({
+  page,
+}) => {
+  await gotoStory(page, "components-button--disabled");
+  for (const id of ["disabled-bordered", "disabled-prominent"]) {
+    const look = await page.locator(`#${id}`).evaluate((el) => ({
+      face: getComputedStyle(el, "::before").backgroundColor,
+      weight: Number(getComputedStyle(el).fontWeight),
+    }));
+    expect(look.face).toBe("rgba(0, 0, 0, 0)");
+    expect(look.weight).toBeLessThan(500);
+  }
+});
+
 test("the pressed state is visible on the button", async ({ page }) => {
   // Zero durations, so each face tone is read without waiting for a transition.
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -90,7 +104,7 @@ test("no horizontal overflow at 200% text zoom", async ({ page }) => {
 test("virtual screen reader speaks each button", async ({ page }) => {
   await gotoStory(page, "components-button--variants");
   const spoken = (await spokenPhrases(page)).join(" ");
-  for (const label of ["Plain", "Bordered", "Prominent"])
+  for (const label of ["Cancel", "Duplicate", "Save"])
     expect(spoken).toContain(label);
 });
 

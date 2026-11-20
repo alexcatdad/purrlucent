@@ -222,7 +222,7 @@ Glass only on bar, sidebar, floating panel and sheet. Rows, field shells and con
 
 ### Global modes
 
-- **Increased contrast** (`prefers-contrast: more`): use the `MoreContrast` columns; solid surfaces; elevation replaced by a 1px `controlBoundary` outline, drawn inside the geometry, on neutral faces only: Bordered and disabled filled buttons, segmented track, toolbar group, floating panel, sheet. No outline on `accentFill` or `selection` faces. The bar gets a 1px `controlBoundary` content-facing edge.
+- **Increased contrast** (`prefers-contrast: more`): use the `MoreContrast` columns; solid surfaces; elevation replaced by a 1px `controlBoundary` outline, drawn inside the geometry, on neutral faces only: Bordered buttons, segmented track, toolbar group, floating panel, sheet. No outline on `accentFill` or `selection` faces. The bar gets a 1px `controlBoundary` content-facing edge.
 - **Reduced transparency** (`prefers-reduced-transparency: reduce`): solid fallbacks; all control colors unchanged.
 - **Forced colors** (`forced-colors: active`): surfaces `Canvas` / `CanvasText`; buttons `ButtonFace` / `ButtonText` with a 1px `ButtonText` border, Plain included; selected segment and row `Highlight` / `HighlightText`; disabled `GrayText`; focus ring `Highlight`, on a selected face `HighlightText`. No glass, fades or shadows.
 
@@ -238,18 +238,18 @@ Glass only on bar, sidebar, floating panel and sheet. Rows, field shells and con
 | Hit region (minimum)   |  28 x 28 |  44 x 44 |
 | Type                   | `action` | `action` |
 
-| Variant                          | Rest                               | Hover                                   | Pressed                   | Disabled                         |
-| -------------------------------- | ---------------------------------- | --------------------------------------- | ------------------------- | -------------------------------- |
-| Plain                            | `accentText` on transparent        | hover fill for its surface (hover rule) | `fillPressed`             | `disabledLabel` on transparent   |
-| Bordered                         | `label` on `fillControl`           | `fillControlHover`                      | `fillPressed`             | `disabledLabel` on `fillControl` |
-| Prominent                        | `onAccent` on `accentFill`         | `accentFill` hover tone                 | `accentFill` pressed tone | `disabledLabel` on `fillControl` |
-| Destructive Plain                | `destructiveText` on transparent   | `destructiveFill`                       | destructive pressed tone  | `disabledLabel` on transparent   |
-| Destructive Bordered / Prominent | `destructiveText` on `fillControl` | `destructiveFill`                       | destructive pressed tone  | `disabledLabel` on `fillControl` |
+| Variant                          | Rest                               | Hover                                   | Pressed                   | Disabled                       |
+| -------------------------------- | ---------------------------------- | --------------------------------------- | ------------------------- | ------------------------------ |
+| Plain                            | `accentText` on transparent        | hover fill for its surface (hover rule) | `fillPressed`             | `disabledLabel` on transparent |
+| Bordered                         | `label` on `fillControl`           | `fillControlHover`                      | `fillPressed`             | `disabledLabel` on transparent |
+| Prominent                        | `onAccent` on `accentFill`         | `accentFill` hover tone                 | `accentFill` pressed tone | `disabledLabel` on transparent |
+| Destructive Plain                | `destructiveText` on transparent   | `destructiveFill`                       | destructive pressed tone  | `disabledLabel` on transparent |
+| Destructive Bordered / Prominent | `destructiveText` on `fillControl` | `destructiveFill`                       | destructive pressed tone  | `disabledLabel` on transparent |
 
 - All variants share dimensions and weight. Label color does not change on hover or press.
 - Focus: outside ring on the current face.
-- Disabled: no hover, press or scale.
-- Increased contrast: outline on Bordered, Destructive Bordered / Prominent and disabled filled faces. Reduced transparency: no change. Forced colors and reduced motion: global rules.
+- Disabled: no face, `body` weight (400) instead of `action` (500), no hover, press or scale. Shape and weight carry the state, not color alone.
+- Increased contrast: outline on Bordered, Destructive Bordered / Prominent. Disabled buttons have no face and no outline. Reduced transparency: no change. Forced colors and reduced motion: global rules.
 - **HIG:** the preferred nondestructive action takes the accent fill; a destructive action never does.
 
 ### Segmented control

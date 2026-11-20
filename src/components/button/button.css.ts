@@ -36,7 +36,7 @@ export const buttonStyles = css`
 
   /* Increased contrast outlines neutral faces only, never the accent fill. */
   :host([variant="bordered"])::before,
-  :host([variant="prominent"]:is([destructive], [disabled]))::before {
+  :host([variant="prominent"][destructive])::before {
     box-shadow: var(--purr-boundary);
   }
 
@@ -56,8 +56,16 @@ export const buttonStyles = css`
     color: var(--purr-color-destructive-text);
   }
 
+  /* Disabled is not shown by color alone: the face goes and the weight drops. */
   :host([disabled]) {
+    --purr-face: transparent;
+
     color: var(--purr-color-disabled-label);
+    font: var(--purr-font-body);
+  }
+
+  :host([disabled])::before {
+    box-shadow: none;
   }
 
   @media (forced-colors: active) {

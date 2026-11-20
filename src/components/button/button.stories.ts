@@ -22,8 +22,9 @@ const row = (content: unknown) =>
 
 const variants = ["plain", "bordered", "prominent"] as const;
 
-/** Title-case label for a variant. */
-const label = (variant: string) => variant[0]!.toUpperCase() + variant.slice(1);
+/** An action label for each variant: buttons name what they do. */
+const label = (variant: (typeof variants)[number]) =>
+  ({ plain: "Cancel", bordered: "Duplicate", prominent: "Save" })[variant];
 
 /** Counts purr-press events fired by the button with the given id. */
 const countPresses = (id: string) => {

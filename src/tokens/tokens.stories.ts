@@ -39,7 +39,7 @@ export const Palette: Story = {
 export const Materials: Story = {
   render: () => html`
     <div
-      style="padding: var(--purr-space-4); background: linear-gradient(90deg, var(--purr-color-accent-fill) 50%, var(--purr-color-warning) 50%);"
+      style="padding: var(--purr-space-4); background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 16px 16px;"
     >
       <div
         id="bar"

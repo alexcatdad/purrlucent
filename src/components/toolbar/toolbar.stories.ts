@@ -16,8 +16,7 @@ type Story = StoryObj;
 // Icons come from design/icons.
 const icon = (paths: SVGTemplateResult) =>
   html`<svg
-    width="16"
-    height="16"
+    style="inline-size: 1.25em; block-size: 1.25em"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
