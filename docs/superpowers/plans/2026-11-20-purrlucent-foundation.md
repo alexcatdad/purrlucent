@@ -4,9 +4,9 @@
 
 **Goal:** Take Purrlucent from an empty repository to its first 0.x GitHub Release: every quality gate running locally and in CI, the tokens, behaviors and surfaces layers, and four components.
 
-**Architecture:** Lit custom elements in shadow DOM, styled with plain CSS custom properties. Four layers: tokens → behaviors (Lit reactive controllers plus shared CSS) → surfaces → components. Gates: `bun lint` and Stylelint, Vitest browser tests through Storybook, Playwright accessibility-tree, axe, screenshot and screen reader tests, an HIG rules catalog, and an AI rubric review.
+**Architecture:** Lit custom elements in shadow DOM, styled with plain CSS custom properties. Four layers: tokens → behaviors (Lit reactive controllers plus shared CSS) → surfaces → components. Gates: ESLint (with `eslint-plugin-lit`) and Stylelint, Vitest browser tests through Storybook, Playwright accessibility-tree, axe, screenshot and screen reader tests, an HIG rules catalog, and an AI rubric review.
 
-**Tech Stack:** Bun 1.4.5, Lit 3.3.3, TypeScript 7.0.2, Vite 8.3.8, Storybook 10.6.8, Vitest 5.1.1, Playwright Test 1.65.1, axe-core 4.14, Guidepup 0.40 / `@guidepup/playwright` 0.21 / `@guidepup/virtual-screen-reader` 0.33, Stylelint 18.1, Custom Elements Manifest analyzer 0.11, Changesets 3.0.3, Gitleaks 8.30.1, OSV-Scanner 2.7.1, CodeQL.
+**Tech Stack:** Bun 1.4.5, Lit 3.3.3, TypeScript 7.0.2, Vite 8.3.8, Storybook 10.6.8, Vitest 5.1.1, Playwright Test 1.65.1, axe-core 4.14, Guidepup 0.40 / `@guidepup/playwright` 0.21 / `@guidepup/virtual-screen-reader` 0.33, ESLint 10.15, typescript-eslint 8.73 with `@typescript/typescript6`, eslint-plugin-lit 2.3.1, Stylelint 18.1, Custom Elements Manifest analyzer 0.11, Changesets 3.0.3, Gitleaks 8.30.1, OSV-Scanner 2.7.1, CodeQL.
 
 **Spec:** `docs/superpowers/specs/2026-11-20-purrlucent-design.md`
 
@@ -60,6 +60,19 @@
 - [ ] **Step 6:** Commit: `chore: scaffold purrlucent with bun, lit, vite and typescript`.
 
 ---
+
+### Task 1b: Lint switch and scaffold fixes (added after Wave 0)
+
+Wave 0 found that `bun lint` is not in Bun 1.4.5 and that Vite 8 does not compile standard decorators.
+
+**Files:** `eslint.config.js`, `package.json`, `bunfig.toml`, `README.md`, `tsconfig.json`
+
+- [ ] **Step 1:** Add ESLint 10.15, typescript-eslint 8.73, eslint-plugin-lit 2.3.1 and `typescript6` as `npm:@typescript/typescript6` (an alias, per Microsoft's TypeScript 7.0 notes, checked in neo), with exact versions. Make `bun run lint` run ESLint on `src/**/*.ts` and then Stylelint. Remove the unused `[lint]` section from `bunfig.toml`.
+- [ ] **Step 2:** Put a deliberate Lit template error in a scratch file. Expected: `bun run lint` fails with an `eslint-plugin-lit` rule. Remove the file. Expected: `bun run lint` exits 0.
+- [ ] **Step 3:** Pin every dev dependency exactly. Add `NOTICE` and `THIRD_PARTY_NOTICES` to `files`. Record "no decorators: `static properties` + `customElements.define`" in `README.md`'s contributor notes. Make sure `experimentalDecorators` is not enabled.
+- [ ] **Step 4:** Run build, lint, fmt:check, typecheck and test. Expected: all exit 0. Commit: `chore: switch lint to eslint with lit plugin, pin dev dependencies`.
+
+**All later tasks:** no decorators. Use `static properties` and `customElements.define`.
 
 ## Wave 1 (Tasks 2–6 run in parallel)
 
@@ -135,15 +148,14 @@
 **Interfaces:**
 - Produces:
   - **Rule entry:** `{ id: string /* <page-slug>/<n> */, source: url, rule: string /* own words */, check: "automated" | "rubric", test?: string /* test file and name */, layer: "tokens" | "behaviors" | "surfaces" | "components" }`.
-  - **`bun run hig:check`:** validates the schema. Fails when an `automated` rule names a test that does not exist, or when any `rule` text matches a sentence longer than 8 words on the cached source page, which guards against copying.
+  - **`bun run hig:check`:** validates the schema. Fails when an `automated` rule names a test that does not exist. No HIG page text is stored in the repository or cached (the spec forbids scraping). The task's reviewer reads the source pages in neo and confirms each rule is in our own words.
   - **`bun run hig:rubric -- <files...>`:** prints the rubric rules for the layers and components touched. Task 12 uses it.
 
 - [ ] **Step 1:** Write tests in `hig-check.test.ts`:
   - A valid entry passes.
   - An `automated` entry with a missing test fails with `missing test`.
-  - An entry whose `rule` copies a source sentence fails with `copied text`.
 - [ ] **Step 2:** Run `bun test scripts/hig-check.test.ts`. Expected: FAIL (`hig-check` not found).
-- [ ] **Step 3:** Implement `scripts/hig-check.ts`. Source pages are read once by a person in neo, and their text is stored locally in `hig/.cache/` (git-ignored) only for the copy check.
+- [ ] **Step 3:** Implement `scripts/hig-check.ts`.
 - [ ] **Step 4:** Write `out-of-scope.yaml` with a reason per excluded section. Write rule files for the HIG pages this plan touches: accessibility, color, dark-mode, layout, materials, motion, typography, writing, icons, right-to-left, buttons, segmented-controls, toolbars, sidebars, pointing-devices, keyboards, gestures.
 - [ ] **Step 5:** Run `bun run hig:check`. Expected: PASS. Rules whose tests come in later tasks are marked `check: automated` with `test` filled in by the owning task. Until then, `hig:check` reports them as `pending`, which it allows only when the `--allow-pending` flag is set. CI uses the flag until Task 10 lands.
 - [ ] **Step 6:** Commit: `feat: add hig rules catalog and validator`.

@@ -110,7 +110,8 @@ Every gate blocks: locally before commit or push, and in CI before merge.
 
 ### Code and security
 
-- Lint and format: `bun lint` (TypeScript, with `eslint-plugin-lit` for Lit templates), `bun fmt`, Stylelint (CSS). HIG and token rules that can be checked statically become custom rules: ESLint-format plugins loaded by `bun lint` for TypeScript and templates, Stylelint plugins for CSS. `bun lint` runs ESLint plugins with the same rule API as ESLint, per its docs; compatibility with `eslint-plugin-lit` is confirmed in the first setup step.
+- Lint and format: ESLint with `typescript-eslint` and `eslint-plugin-lit` (TypeScript and Lit templates), Stylelint (CSS), `bun fmt`. typescript-eslint needs the TypeScript 6 API, so `@typescript/typescript6` is installed side by side with TypeScript 7 until TypeScript 7.1 ships its API. HIG and token rules that can be checked statically become custom ESLint and Stylelint rules. (`bun lint` is described in Bun's docs but is not in Bun 1.4.5.)
+- No decorators: components declare `static properties` and register with `customElements.define`. Vite 8 does not compile standard decorators.
 - Types: TypeScript 7.
 - Secret leaks: Gitleaks as a pre-commit hook and in CI, plus GitHub secret scanning and push protection.
 - Vulnerable dependencies: `bun audit` and OSV-Scanner block CI. Dependabot version updates for Bun and GitHub Actions.
@@ -140,7 +141,7 @@ Versions as published on 2026-11-20.
 | Workshop, docs, component tests | Storybook 10.6.8 (`web-components-vite`) with the Vitest and accessibility addons |
 | Browser test runner | Vitest 5.1.1, browser mode, Playwright provider |
 | Accessibility tree, screenshot and screen reader tests | Playwright Test 1.65.1, axe-core 4.14, Guidepup 0.40 with `@guidepup/playwright` 0.21 |
-| Lint and format | `bun lint`, `bun fmt`, Stylelint 18.1 |
+| Lint and format | ESLint 10.15, typescript-eslint 8.73 (with `@typescript/typescript6`), eslint-plugin-lit 2.3.1, Stylelint 18.1, `bun fmt` |
 | Framework typings | Custom Elements Manifest analyzer 0.11 |
 | Releases | Changesets 3.0.3 |
 | Secrets | Gitleaks 8.30.1, GitHub secret scanning |
@@ -167,7 +168,7 @@ Versions as published on 2026-11-20.
 |---|---|---|
 | Component base | Lit: small, standard custom elements, one pattern for all components | Plain custom elements: a hand-written base class that duplicates Lit. FAST: its token system works best adopted whole. Stencil: its framework wrappers matter less now that React 19 supports custom elements |
 | Visual closeness | Apple's behavior with an original look | A close replica of Apple's visuals, which carries trade-dress risk for the project and its users |
-| Linter | `bun lint` + Stylelint | ESLint, which needs a TypeScript 6 side-by-side package until TypeScript 7.1. Biome, which does not lint Lit `html` templates |
+| Linter | ESLint + `eslint-plugin-lit` + Stylelint: the only verified Lit template linting | `bun lint`, which is not in Bun 1.4.5. Biome, which does not lint Lit `html` templates |
 | Package manager | Bun with a blocking audit | npm or pnpm, which get Dependabot security-fix PRs |
 | Distribution | GitHub Releases: no token needed to install | GitHub Packages, which needs a personal access token even for public installs. The npm registry |
 | Real screen readers | CI only | On developer machines, which needs operating-system security changes |
