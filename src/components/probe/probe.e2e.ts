@@ -11,7 +11,7 @@ const story = "probe--default";
 
 test("aria snapshot", async ({ page }) => {
   const root = await gotoStory(page, story);
-  await expect(root).toMatchAriaSnapshot(`- text: Hello, Purrlucent`);
+  await expect(root).toMatchAriaSnapshot(`- text: Probe`);
 });
 
 test("axe finds no WCAG 2.2 AA violations", async ({ page }) => {
@@ -23,10 +23,10 @@ test("no horizontal overflow at 200% text zoom", async ({ page }) => {
 });
 
 test("virtual screen reader speaks the default story", async ({ page }) => {
-  const root = await gotoStory(page, story);
-  expect(await spokenPhrases(root)).toEqual([
+  await gotoStory(page, story);
+  expect(await spokenPhrases(page)).toEqual([
     "document",
-    "Hello, Purrlucent",
+    "Probe",
     "end of document",
   ]);
 });

@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "vite build && cem analyze",
-    "lint": "eslint \"src/**/*.ts\" && stylelint --allow-empty-input \"src/**/*.css\"",
+    "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\"",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
     "test:e2e": "playwright test"

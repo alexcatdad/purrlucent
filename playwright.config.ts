@@ -17,6 +17,7 @@ export default defineConfig({
     toHaveScreenshot: { animations: "disabled" },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  // Serves a prebuilt storybook-static; run build-storybook before test:e2e.
   webServer: {
     command: `bunx vite preview --outDir storybook-static --port ${port} --strictPort`,
     url: `http://localhost:${port}/iframe.html`,
