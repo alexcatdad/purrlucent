@@ -17,6 +17,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
   rule: Contrast holds in dark mode combined with increased contrast and reduced transparency.
   check: automated
+  test: src/tokens/tokens.e2e.ts > every text role meets 4.5:1 against background in all four color schemes
   layer: tokens
 - id: dark-mode/5
   source: https://developer.apple.com/design/human-interface-guidelines/dark-mode

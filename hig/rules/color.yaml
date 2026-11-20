@@ -7,6 +7,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/color
   rule: Every color has light, dark, and increased-contrast values, and each pairing stays legible.
   check: automated
+  test: src/tokens/tokens.e2e.ts > every text role meets 4.5:1 against background in all four color schemes
   layer: tokens
 - id: color/3
   source: https://developer.apple.com/design/human-interface-guidelines/color

@@ -32,4 +32,5 @@
   source: https://developer.apple.com/design/human-interface-guidelines/materials
   rule: Without backdrop blur, with reduced transparency, or with increased contrast, a glass surface renders solid.
   check: automated
+  test: src/tokens/tokens.e2e.ts > glass falls back to solid under reduced transparency
   layer: surfaces
