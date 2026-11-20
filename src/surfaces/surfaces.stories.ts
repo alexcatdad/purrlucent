@@ -45,6 +45,17 @@ const render = () => html`
 
 export const Default: Story = { render };
 
+/** The text surfaces without the field's text input, for real screen readers:
+ * a focused text input puts NVDA into focus mode, which stops reading the page. */
+export const TextOnly: Story = {
+  render: () => html`
+    <purr-bar-demo>Bar</purr-bar-demo>
+    <purr-panel-demo>Panel</purr-panel-demo>
+    <purr-sheet-demo>Sheet</purr-sheet-demo>
+    <purr-list-row-demo>List row</purr-list-row-demo>
+  `,
+};
+
 export const Glass: Story = {
   render,
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "rtl" },
