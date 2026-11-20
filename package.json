@@ -4,7 +4,9 @@
   "type": "module",
   "license": "Apache-2.0",
   "files": [
-    "dist"
+    "dist",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES"
   ],
   "customElements": "dist/custom-elements.json",
   "exports": {
@@ -14,17 +16,20 @@
   },
   "scripts": {
     "build": "vite build && cem analyze",
-    "lint": "stylelint --allow-empty-input \"src/**/*.css\"",
+    "lint": "eslint \"src/**/*.ts\" && stylelint --allow-empty-input \"src/**/*.css\"",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc"
   },
   "devDependencies": {
-    "@custom-elements-manifest/analyzer": "0.11",
+    "@custom-elements-manifest/analyzer": "0.11.0",
     "@types/bun": "1.4.5",
-    "eslint-plugin-lit": "^2.3.1",
-    "stylelint": "18.1",
-    "stylelint-config-standard": "^41.1.0",
-    "typescript": "7.0.2",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "eslint": "10.15.0",
+    "eslint-plugin-lit": "2.3.1",
+    "stylelint": "18.1.0",
+    "stylelint-config-standard": "41.1.0",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-eslint": "8.73.0",
     "vite": "8.3.8"
   },
   "dependencies": {
