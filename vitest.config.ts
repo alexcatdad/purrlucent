@@ -19,9 +19,10 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
+            // Firefox runs in CI only: Playwright's Firefox cannot launch on the maintainer's macOS 27 machine.
             instances: [
               { browser: "chromium" },
-              { browser: "firefox" },
+              ...(process.env.CI ? [{ browser: "firefox" as const }] : []),
               { browser: "webkit" },
             ],
           },
