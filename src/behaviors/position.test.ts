@@ -99,6 +99,18 @@ test("uses fixed positioning", () => {
   expect(el.style.position).toBe("fixed");
 });
 
+test("measures the overlay after it is fixed, when its size depends on it", () => {
+  // In flow the overlay stretches to 300px wide; once fixed it shrinks to 120px.
+  const style = {} as Record<string, string>;
+  const el = {
+    style,
+    getBoundingClientRect: () =>
+      rect(0, 0, style.position === "fixed" ? 120 : 300, 100),
+  } as unknown as HTMLElement;
+  position(anchorAt(200, 50), el, "bottom-end");
+  expect(el.style.left).toBe("160px");
+});
+
 test("flips to the top near the bottom edge", () => {
   expect(place(anchorAt(100, 250), overlay(), "bottom-start")).toEqual({
     top: "150px",

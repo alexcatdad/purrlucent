@@ -42,7 +42,19 @@ export class RovingFocusController implements ReactiveController {
       .findIndex((i) => i === target || i.contains?.(target as Node));
   }
 
+  /** Makes `index` the tab stop without moving focus. */
+  activate(index: number): void {
+    const last = this.#opts.items().length - 1;
+    if (index < 0 || index > last) return;
+    this.#active = index;
+    this.#sync();
+  }
+
   #sync() {
+    this.#active = Math.max(
+      0,
+      Math.min(this.#active, this.#opts.items().length - 1),
+    );
     this.#opts
       .items()
       .forEach((item, i) => (item.tabIndex = i === this.#active ? 0 : -1));
@@ -63,6 +75,7 @@ export class RovingFocusController implements ReactiveController {
   };
 
   #onKeydown = (e: KeyboardEvent) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
     const from = this.#indexOf(e.target);
     if (from < 0) return;
     const last = this.#opts.items().length - 1;
