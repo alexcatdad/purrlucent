@@ -22,6 +22,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
   rule: Every control is at least 44 by 44 CSS pixels to hit, with room between neighbors, on coarse pointers.
   check: automated
+  test: src/behaviors/interaction.e2e.ts > a coarse pointer on a wide screen keeps the hit area at 44 by 44
   layer: behaviors
 - id: accessibility/6
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
@@ -32,6 +33,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
   rule: All functions work with the keyboard alone, and focus is always visible.
   check: automated
+  test: src/behaviors/interaction.e2e.ts > the focus ring stays visible under forced colors
   layer: behaviors
 - id: accessibility/8
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility

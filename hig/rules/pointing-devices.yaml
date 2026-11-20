@@ -27,6 +27,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
   rule: Interactive elements have generous hit areas, and adjacent bar buttons have no gaps between hit areas.
   check: automated
+  test: src/behaviors/interaction.e2e.ts > a coarse pointer on a wide screen keeps the hit area at 44 by 44
   layer: behaviors
 - id: pointing-devices/7
   source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
