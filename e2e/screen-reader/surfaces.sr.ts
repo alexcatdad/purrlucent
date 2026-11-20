@@ -3,16 +3,18 @@ import { expect } from "@playwright/test";
 import { gotoStory } from "../helpers/story.ts";
 
 // VoiceOver on macOS, NVDA on Windows (see playwright.config.ts).
-test("screen reader speaks the probe's slotted text", async ({
+test("screen reader speaks the text on each surface", async ({
   page,
   screenReader,
 }) => {
-  await gotoStory(page, "probe--default");
+  await gotoStory(page, "surfaces--default");
   await screenReader.navigateToWebContent();
   for (let i = 0; i < 10; i++) {
-    if ((await screenReader.spokenPhraseLog()).join(" ").includes("Probe"))
+    if ((await screenReader.spokenPhraseLog()).join(" ").includes("List row"))
       break;
     await screenReader.next();
   }
-  expect((await screenReader.spokenPhraseLog()).join(" ")).toContain("Probe");
+  const spoken = (await screenReader.spokenPhraseLog()).join(" ");
+  for (const text of ["Bar", "Panel", "Sheet", "List row"])
+    expect(spoken).toContain(text);
 });
