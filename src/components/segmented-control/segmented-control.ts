@@ -179,10 +179,18 @@ export class PurrSegmentedControl extends LitElement {
    */
   #syncMoving = () => {
     const cover = this.renderRoot.querySelector(".cover");
-    cover?.parentElement!.classList.toggle(
-      "moving",
-      cover.getAnimations().length > 0,
-    );
+    if (!cover) return;
+    // A finished transition can linger in the list; only a running one counts.
+    const slides = cover
+      .getAnimations()
+      .filter((s) => s.playState !== "finished");
+    cover.parentElement!.classList.toggle("moving", slides.length > 0);
+    // Not transitionend: some engines skip it for clip-path. A retargeted slide
+    // cancels the old one; settle on whatever is running then.
+    if (slides.length)
+      void Promise.allSettled(slides.map((s) => s.finished)).then(
+        this.#syncMoving,
+      );
   };
 
   override render() {
@@ -197,12 +205,7 @@ export class PurrSegmentedControl extends LitElement {
       <div class="row"><slot @slotchange=${this.#onSlotChange}></slot></div>
       ${
         placed
-          ? html`<div
-              class="cover"
-              aria-hidden="true"
-              @transitionend=${this.#syncMoving}
-              @transitioncancel=${this.#syncMoving}
-            >
+          ? html`<div class="cover" aria-hidden="true">
               ${this.#segments.map((s) => html`<span>${s.textContent}</span>`)}
             </div>`
           : nothing
