@@ -69,8 +69,8 @@ Every color, size and duration is a custom property with the `--purr-` prefix. O
 
 ```css
 :root {
-  --purr-color-accent: oklch(46% 0.15 250deg);
-  --purr-radius-medium: 0.5rem;
+  --purr-color-accent-fill: oklch(51% 0.17 250deg);
+  --purr-radius-control: 6px;
 }
 ```
 

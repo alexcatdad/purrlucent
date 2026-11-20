@@ -13,15 +13,15 @@ const stories = ["default", "variants", "destructive", "disabled", "glass"];
 test("aria snapshot", async ({ page }) => {
   const root = await gotoStory(page, "components-button--variants");
   await expect(root).toMatchAriaSnapshot(`
-    - button "plain"
-    - button "bordered"
-    - button "prominent"
+    - button "Plain"
+    - button "Bordered"
+    - button "Prominent"
   `);
 });
 
 test("a disabled button is exposed as disabled", async ({ page }) => {
   const root = await gotoStory(page, "components-button--disabled");
-  await expect(root.getByRole("button", { name: "plain" })).toBeDisabled();
+  await expect(root.getByRole("button", { name: "Plain" })).toBeDisabled();
 });
 
 for (const id of stories) {
@@ -51,12 +51,12 @@ test("a destructive button is never styled as the prominent button", async ({
   const background = (id: string) =>
     page
       .locator(`#${id}`)
-      .evaluate((el) => getComputedStyle(el).backgroundColor);
+      .evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   const prominent = await page.evaluate(() => {
     const el = document.createElement("purr-button");
     el.setAttribute("variant", "prominent");
     document.body.append(el);
-    const color = getComputedStyle(el).backgroundColor;
+    const color = getComputedStyle(el, "::before").backgroundColor;
     el.remove();
     return color;
   });
@@ -67,15 +67,18 @@ test("a destructive button is never styled as the prominent button", async ({
 });
 
 test("the pressed state is visible on the button", async ({ page }) => {
+  // Zero durations, so each face tone is read without waiting for a transition.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await gotoStory(page, "components-button--default");
   const button = page.locator("#button");
-  const opacity = () => button.evaluate((el) => getComputedStyle(el).opacity);
+  const face = () =>
+    button.evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   await button.hover();
-  const resting = await opacity();
+  const resting = await face();
   await page.mouse.down();
-  expect(await opacity()).not.toBe(resting);
+  expect(await face()).not.toBe(resting);
   await page.mouse.up();
-  expect(await opacity()).toBe(resting);
+  expect(await face()).toBe(resting);
 });
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
@@ -87,7 +90,7 @@ test("no horizontal overflow at 200% text zoom", async ({ page }) => {
 test("virtual screen reader speaks each button", async ({ page }) => {
   await gotoStory(page, "components-button--variants");
   const spoken = (await spokenPhrases(page)).join(" ");
-  for (const label of ["plain", "bordered", "prominent"])
+  for (const label of ["Plain", "Bordered", "Prominent"])
     expect(spoken).toContain(label);
 });
 

@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
@@ -11,6 +11,7 @@ import { controlStyles, segmentStyles } from "./segmented-control.css.ts";
  *
  * @attr {string} value - The value the control reports when this segment is selected.
  * @attr {boolean} selected - Marks the starting selection. After that the control owns it.
+ * @attr {boolean} disabled - Set by the control from its own `disabled`.
  * @slot - The segment's text label.
  * @csspart label - The wrapper around the label.
  */
@@ -19,17 +20,20 @@ export class PurrSegment extends LitElement {
   static override properties = {
     value: { type: String, reflect: true },
     selected: { type: Boolean, reflect: true },
+    disabled: { type: Boolean, reflect: true },
   };
   declare value: string;
   declare selected: boolean;
+  declare disabled: boolean;
   readonly pressable = new PressableController(this, {
-    disabled: () => false,
+    disabled: () => this.disabled,
   });
 
   constructor() {
     super();
     this.value = "";
     this.selected = false;
+    this.disabled = false;
   }
 
   override connectedCallback() {
@@ -39,6 +43,8 @@ export class PurrSegment extends LitElement {
 
   protected override updated() {
     this.setAttribute("aria-checked", String(this.selected));
+    if (this.disabled) this.setAttribute("aria-disabled", "true");
+    else this.removeAttribute("aria-disabled");
   }
 
   override render() {
@@ -55,8 +61,9 @@ export class PurrSegment extends LitElement {
  *
  * @attr {string} value - The value of the selected segment. Defaults to the segment marked `selected`, else the first.
  * @attr {string} label - The accessible name of the group. Required.
+ * @attr {boolean} disabled - Disables the whole control: no focus, no feedback.
  * @slot - `purr-segment` elements.
- * @csspart track - The container that holds the segments.
+ * @csspart track - The container that holds the segments and the selection pill.
  * @fires purr-change - The selection changed by the user. `detail.selected` is a one-item array.
  */
 export class PurrSegmentedControl extends LitElement {
@@ -64,9 +71,11 @@ export class PurrSegmentedControl extends LitElement {
   static override properties = {
     value: { type: String, reflect: true },
     label: { type: String },
+    disabled: { type: Boolean, reflect: true },
   };
   declare value: string;
   declare label: string;
+  declare disabled: boolean;
   readonly #selection = new SelectionController<string>(this, {
     mode: "single",
     required: true,
@@ -84,6 +93,7 @@ export class PurrSegmentedControl extends LitElement {
     super();
     this.value = "";
     this.label = "";
+    this.disabled = false;
     this.addEventListener("purr-change", (event) => {
       if (this.#syncing) return event.stopImmediatePropagation();
       const [selected] = (event as CustomEvent<{ selected: string[] }>).detail
@@ -114,6 +124,7 @@ export class PurrSegmentedControl extends LitElement {
    * only handles the horizontal arrows.
    */
   #onKeydown = (event: KeyboardEvent) => {
+    if (this.disabled) return;
     const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
     if (step && !(event.altKey || event.ctrlKey || event.metaKey)) {
       const from = this.#segments.indexOf(event.target as PurrSegment);
@@ -145,15 +156,57 @@ export class PurrSegmentedControl extends LitElement {
   }
 
   protected override updated() {
-    this.#segments.forEach((s) => (s.selected = s.value === this.value));
+    this.#segments.forEach((s) => {
+      s.selected = s.value === this.value;
+      s.disabled = this.disabled;
+    });
     this.#roving.activate(this.#segments.findIndex((s) => s.selected));
+    // A disabled segment takes no focus, not even from a click.
+    if (this.disabled)
+      this.#segments.forEach((s) => s.removeAttribute("tabindex"));
+    if (this.disabled) this.setAttribute("aria-disabled", "true");
+    else this.removeAttribute("aria-disabled");
     if (this.label) this.setAttribute("aria-label", this.label);
     else this.removeAttribute("aria-label");
+    this.#syncMoving();
   }
 
+  /**
+   * Marks the track while the pill travels, so the selected segment keeps its
+   * rest look until the pill arrives. `getAnimations()` flushes style, so a
+   * slide that this update started is seen at once; under reduced motion there
+   * is none and the pill snaps.
+   */
+  #syncMoving = () => {
+    const cover = this.renderRoot.querySelector(".cover");
+    cover?.parentElement!.classList.toggle(
+      "moving",
+      cover.getAnimations().length > 0,
+    );
+  };
+
   override render() {
-    return html`<div part="track">
-      <slot @slotchange=${this.#onSlotChange}></slot>
+    const index = this.#segments.findIndex((s) => s.value === this.value);
+    // The pill and its label copy appear only with a selection, in place.
+    const placed = index >= 0;
+    return html`<div
+      part="track"
+      style="--_n: ${this.#segments.length}; --_i: ${index}"
+    >
+      ${placed ? html`<div class="pill"></div>` : nothing}
+      <div class="row"><slot @slotchange=${this.#onSlotChange}></slot></div>
+      ${
+        placed
+          ? html`<div
+              class="cover"
+              aria-hidden="true"
+              @transitionend=${this.#syncMoving}
+              @transitioncancel=${this.#syncMoving}
+            >
+              ${this.#segments.map((s) => html`<span>${s.textContent}</span>`)}
+            </div>`
+          : nothing
+      }
     </div>`;
   }
 }

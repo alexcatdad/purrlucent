@@ -41,13 +41,16 @@ test("the focus ring stays visible under forced colors", async ({ page }) => {
 test("the pressed state is visible while the pointer is down", async ({
   page,
 }) => {
+  // Zero durations, so each face tone is read without waiting for a transition.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await gotoStory(page, story);
   const host = page.locator("#host");
-  const opacity = () => host.evaluate((el) => getComputedStyle(el).opacity);
+  const face = () =>
+    host.evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   await host.hover();
-  const resting = await opacity();
+  const resting = await face();
   await page.mouse.down();
-  expect(await opacity()).not.toBe(resting);
+  expect(await face()).not.toBe(resting);
   await page.mouse.up();
-  expect(await opacity()).toBe(resting);
+  expect(await face()).toBe(resting);
 });

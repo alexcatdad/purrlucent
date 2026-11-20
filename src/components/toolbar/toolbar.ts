@@ -1,7 +1,7 @@
 import { LitElement, html, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { barSurface } from "../../surfaces/surfaces.css.ts";
-import { toolbarStyles } from "./toolbar.css.ts";
+import { toolbarGroupStyles, toolbarStyles } from "./toolbar.css.ts";
 import { prominentIssue } from "./toolbar-rules.ts";
 
 const isItem = (el: Element): el is HTMLElement =>
@@ -11,17 +11,42 @@ const isItem = (el: Element): el is HTMLElement =>
   el.getAttribute("aria-disabled") !== "true";
 
 /**
+ * Related symbol items, such as icon-only buttons with an `aria-label`, on one shared face.
+ *
+ * @slot - The items.
+ */
+export class PurrToolbarGroup extends LitElement {
+  static override styles = toolbarGroupStyles;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+  }
+
+  override render() {
+    return html`<slot></slot>`;
+  }
+}
+
+customElements.define("purr-toolbar-group", PurrToolbarGroup);
+
+/**
  * A bar of controls with one tab stop and arrow-key navigation.
  *
- * @slot - Controls. At most one may be prominent (`variant="prominent"`), and it goes last.
+ * @slot - Controls and `purr-toolbar-group`s. At most one control may be prominent (`variant="prominent"`), and it goes last.
  * @csspart items - The row that lays out the slotted controls.
  */
 export class PurrToolbar extends LitElement {
   static override styles = [barSurface, toolbarStyles];
-  static override properties = { label: { type: String } };
+  static override properties = {
+    label: { type: String },
+    scrolled: { type: Boolean, reflect: true },
+  };
 
   /** Accessible name. Required. */
   declare label: string;
+  /** Set while content is scrolled beneath the bar; shows the scroll edge. */
+  declare scrolled: boolean;
 
   // Registers itself on the host; arrow keys, Home and End follow the text direction.
   readonly roving = new RovingFocusController(this, {
@@ -33,6 +58,7 @@ export class PurrToolbar extends LitElement {
   constructor() {
     super();
     this.label = "";
+    this.scrolled = false;
   }
 
   #slotted(): Element[] {
@@ -44,7 +70,9 @@ export class PurrToolbar extends LitElement {
   }
 
   #items(): HTMLElement[] {
-    return this.#slotted().filter(isItem);
+    return this.#slotted()
+      .flatMap((el) => (el instanceof PurrToolbarGroup ? [...el.children] : el))
+      .filter(isItem);
   }
 
   override connectedCallback() {
@@ -82,5 +110,6 @@ customElements.define("purr-toolbar", PurrToolbar);
 declare global {
   interface HTMLElementTagNameMap {
     "purr-toolbar": PurrToolbar;
+    "purr-toolbar-group": PurrToolbarGroup;
   }
 }

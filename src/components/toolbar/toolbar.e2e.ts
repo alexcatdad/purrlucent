@@ -44,9 +44,10 @@ test("aria snapshot", async ({ page }) => {
   const root = await openStory(page);
   await expect(root).toMatchAriaSnapshot(`
     - toolbar "Document actions":
-      - button "Search"
-      - button "Add"
-      - button "More"
+      - group:
+        - button "Search"
+        - button "Add"
+        - button "More"
       - button "Done"
   `);
 });
@@ -68,7 +69,7 @@ const addNeighbors = (page: Page) =>
 test("the toolbar is one tab stop", async ({ page }) => {
   await openStory(page);
   await addNeighbors(page);
-  const items = page.locator("#toolbar > button");
+  const items = page.locator("#toolbar purr-button");
   await expect(items).toHaveCount(4);
   expect(await items.evaluateAll((els) => els.map((e) => e.tabIndex))).toEqual([
     0, -1, -1, -1,
@@ -166,7 +167,7 @@ const rects = (page: Page) =>
         bar.right -
         parseFloat(style.borderRightWidth) -
         parseFloat(style.paddingRight),
-      items: [...toolbar.querySelectorAll(":scope > button")].map(box),
+      items: [...toolbar.querySelectorAll("purr-button")].map(box),
     };
   });
 
@@ -181,7 +182,7 @@ for (const [dir, name] of [
       await openStory(page, name);
       const { left, right, items } = await rects(page);
       const prominent = await page
-        .locator("#toolbar > button")
+        .locator("#toolbar purr-button")
         .evaluateAll((els) =>
           els.map((e) => e.getAttribute("variant") === "prominent"),
         );
@@ -199,13 +200,13 @@ for (const [dir, name] of [
   });
 }
 
-// pointing-devices/6: adjacent bar buttons leave no dead space between hit areas.
+// pointing-devices/6: adjacent items in a group leave no dead space between hit areas.
 for (const [dir, name] of [
   ["ltr", "default"],
   ["rtl", "rtl"],
 ] as const) {
   forEachViewport(({ name: viewport }) => {
-    test(`adjacent bar buttons have no gap between hit areas (${dir}, ${viewport})`, async ({
+    test(`adjacent group items have no gap between hit areas (${dir}, ${viewport})`, async ({
       page,
     }) => {
       await openStory(page, name);
@@ -273,7 +274,7 @@ test("the toolbar surface has a backdrop blur under glass and none when solid", 
   await openStory(page);
   expect(await filter()).toBe("none");
   await openStory(page, "default", "material:glass");
-  expect(await filter()).toMatch(/^blur\(\d+(\.\d+)?px\)$/);
+  expect(await filter()).toMatch(/^blur\(24px\) saturate\(/);
 });
 
 for (const globals of ["", "material:glass"]) {

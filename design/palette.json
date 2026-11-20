@@ -1,81 +1,166 @@
 {
   "roles": {
-    "accent": {
-      "light": "oklch(0.46 0.15 325)",
-      "dark": "oklch(0.77 0.12 325)",
-      "lightMoreContrast": "oklch(0.34 0.12 325)",
-      "darkMoreContrast": "oklch(0.87 0.07 325)"
-    },
-    "label": {
-      "light": "oklch(0.24 0.036 319)",
-      "dark": "oklch(0.93 0.016 75)",
-      "lightMoreContrast": "oklch(0.15 0.024 319)",
-      "darkMoreContrast": "oklch(0.985 0.006 75)"
-    },
-    "secondaryLabel": {
-      "light": "oklch(0.405 0.039 318)",
-      "dark": "oklch(0.8 0.032 315)",
-      "lightMoreContrast": "oklch(0.27 0.035 318)",
-      "darkMoreContrast": "oklch(0.92 0.018 315)"
-    },
-    "tertiaryLabel": {
-      "light": "oklch(0.5 0.035 318)",
-      "dark": "oklch(0.69 0.033 315)",
-      "lightMoreContrast": "oklch(0.38 0.035 318)",
-      "darkMoreContrast": "oklch(0.83 0.035 315)"
-    },
     "background": {
-      "light": "oklch(0.975 0.012 78)",
-      "dark": "oklch(0.195 0.027 312)",
-      "lightMoreContrast": "oklch(0.993 0.004 78)",
-      "darkMoreContrast": "oklch(0.13 0.018 312)"
+      "light": "0.975 0.007 35",
+      "dark": "0.18 0.010 35",
+      "lightMoreContrast": "0.995 0.002 35",
+      "darkMoreContrast": "0.12 0.006 35"
     },
     "secondaryBackground": {
-      "light": "oklch(0.94 0.021 73)",
-      "dark": "oklch(0.245 0.032 312)",
-      "lightMoreContrast": "oklch(0.967 0.014 73)",
-      "darkMoreContrast": "oklch(0.18 0.023 312)"
+      "light": "0.95 0.009 35",
+      "dark": "0.23 0.012 35",
+      "lightMoreContrast": "0.97 0.005 35",
+      "darkMoreContrast": "0.16 0.008 35"
     },
-    "separator": {
-      "light": "oklch(0.61 0.05 310)",
-      "dark": "oklch(0.56 0.055 310)",
-      "lightMoreContrast": "oklch(0.46 0.048 310)",
-      "darkMoreContrast": "oklch(0.735 0.055 310)"
+    "label": {
+      "light": "0.22 0.014 35",
+      "dark": "0.96 0.006 35",
+      "lightMoreContrast": "0.14 0.010 35",
+      "darkMoreContrast": "0.99 0.002 35"
     },
-    "fill": {
-      "light": "oklch(0.895 0.028 325)",
-      "dark": "oklch(0.315 0.044 312)",
-      "lightMoreContrast": "oklch(0.79 0.044 325)",
-      "darkMoreContrast": "oklch(0.43 0.052 312)"
+    "secondaryLabel": {
+      "light": "0.34 0.012 35",
+      "dark": "0.88 0.010 35",
+      "lightMoreContrast": "0.24 0.010 35",
+      "darkMoreContrast": "0.95 0.004 35"
     },
-    "destructive": {
-      "light": "oklch(0.46 0.15 15)",
-      "dark": "oklch(0.77 0.128 15)",
-      "lightMoreContrast": "oklch(0.345 0.115 15)",
-      "darkMoreContrast": "oklch(0.87 0.065 15)"
+    "tertiaryLabel": {
+      "light": "0.42 0.012 35",
+      "dark": "0.82 0.012 35",
+      "lightMoreContrast": "0.32 0.010 35",
+      "darkMoreContrast": "0.89 0.008 35"
     },
-    "success": {
-      "light": "oklch(0.435 0.075 166)",
-      "dark": "oklch(0.76 0.095 166)",
-      "lightMoreContrast": "oklch(0.325 0.057 166)",
-      "darkMoreContrast": "oklch(0.86 0.093 166)"
+    "disabledLabel": {
+      "light": "0.55 0.012 35",
+      "dark": "0.62 0.012 35",
+      "lightMoreContrast": "0.32 0.010 35",
+      "darkMoreContrast": "0.89 0.008 35"
     },
-    "warning": {
-      "light": "oklch(0.46 0.09 68)",
-      "dark": "oklch(0.79 0.115 72)",
-      "lightMoreContrast": "oklch(0.345 0.067 68)",
-      "darkMoreContrast": "oklch(0.885 0.087 76)"
+    "accentText": {
+      "light": "0.44 0.17 325",
+      "dark": "0.82 0.12 325",
+      "lightMoreContrast": "0.34 0.15 325",
+      "darkMoreContrast": "0.90 0.07 325"
+    },
+    "accentFill": {
+      "light": "0.51 0.17 325",
+      "dark": "0.76 0.14 325",
+      "lightMoreContrast": "0.40 0.14 325",
+      "darkMoreContrast": "0.87 0.09 325"
+    },
+    "onAccent": {
+      "light": "1 0 0",
+      "dark": "0.16 0.025 325",
+      "lightMoreContrast": "1 0 0",
+      "darkMoreContrast": "0.10 0.015 325"
+    },
+    "selection": {
+      "light": "0.50 0.12 325",
+      "dark": "0.74 0.11 325",
+      "lightMoreContrast": "0.38 0.11 325",
+      "darkMoreContrast": "0.86 0.07 325"
     },
     "focus": {
-      "light": "oklch(0.52 0.12 280)",
-      "dark": "oklch(0.74 0.12 280)",
-      "lightMoreContrast": "oklch(0.39 0.12 280)",
-      "darkMoreContrast": "oklch(0.84 0.073 280)"
+      "light": "0.44 0.17 325",
+      "dark": "0.82 0.12 325",
+      "lightMoreContrast": "0.34 0.15 325",
+      "darkMoreContrast": "0.90 0.07 325"
+    },
+    "destructiveText": {
+      "light": "0.44 0.16 25",
+      "dark": "0.82 0.10 24",
+      "lightMoreContrast": "0.34 0.13 25",
+      "darkMoreContrast": "0.92 0.04 24"
+    },
+    "destructiveFill": {
+      "light": "0.88 0.045 24",
+      "dark": "0.37 0.065 24",
+      "lightMoreContrast": "0.85 0.05 24",
+      "darkMoreContrast": "0.35 0.06 24"
+    },
+    "divider": {
+      "light": "0.22 0.014 35 / 0.13",
+      "dark": "0.96 0.006 35 / 0.16",
+      "lightMoreContrast": "0.42 0.012 35",
+      "darkMoreContrast": "0.75 0.012 35"
+    },
+    "controlBoundary": {
+      "light": "0.45 0.014 35",
+      "dark": "0.78 0.012 35",
+      "lightMoreContrast": "0.32 0.012 35",
+      "darkMoreContrast": "0.90 0.008 35"
+    },
+    "fillHover": {
+      "light": "0.935 0.008 35",
+      "dark": "0.27 0.012 35",
+      "lightMoreContrast": "0.92 0.006 35",
+      "darkMoreContrast": "0.24 0.010 35"
+    },
+    "fillControl": {
+      "light": "0.905 0.010 35",
+      "dark": "0.31 0.013 35",
+      "lightMoreContrast": "0.88 0.008 35",
+      "darkMoreContrast": "0.29 0.010 35"
+    },
+    "fillControlHover": {
+      "light": "0.875 0.012 35",
+      "dark": "0.35 0.014 35",
+      "lightMoreContrast": "0.84 0.009 35",
+      "darkMoreContrast": "0.34 0.012 35"
+    },
+    "fillPressed": {
+      "light": "0.84 0.014 35",
+      "dark": "0.39 0.015 35",
+      "lightMoreContrast": "0.80 0.010 35",
+      "darkMoreContrast": "0.39 0.014 35"
+    },
+    "success": {
+      "light": "0.435 0.075 166",
+      "dark": "0.76 0.095 166",
+      "lightMoreContrast": "0.325 0.057 166",
+      "darkMoreContrast": "0.86 0.093 166"
+    },
+    "warning": {
+      "light": "0.46 0.09 68",
+      "dark": "0.79 0.115 72",
+      "lightMoreContrast": "0.345 0.067 68",
+      "darkMoreContrast": "0.885 0.087 76"
+    },
+    "glassBarTint": {
+      "light": "0.99 0.004 35 / 0.79",
+      "dark": "0.20 0.010 35 / 0.79",
+      "lightMoreContrast": "0.97 0.005 35",
+      "darkMoreContrast": "0.16 0.008 35"
+    },
+    "glassSidebarTint": {
+      "light": "0.99 0.004 35 / 0.86",
+      "dark": "0.23 0.012 35 / 0.86",
+      "lightMoreContrast": "0.97 0.005 35",
+      "darkMoreContrast": "0.16 0.008 35"
+    },
+    "glassPanelTint": {
+      "light": "0.98 0.006 35 / 0.89",
+      "dark": "0.24 0.012 35 / 0.89",
+      "lightMoreContrast": "0.97 0.005 35",
+      "darkMoreContrast": "0.16 0.008 35"
+    },
+    "glassSheetTint": {
+      "light": "0.99 0.004 35 / 0.94",
+      "dark": "0.26 0.012 35 / 0.94",
+      "lightMoreContrast": "0.97 0.005 35",
+      "darkMoreContrast": "0.16 0.008 35"
+    },
+    "edgeHighlight": {
+      "light": "1 0 0 / 0.58",
+      "dark": "1 0 0 / 0.13",
+      "lightMoreContrast": "1 0 0 / 0",
+      "darkMoreContrast": "1 0 0 / 0"
+    },
+    "shadowColor": {
+      "light": "0.19 0.018 35",
+      "dark": "0.06 0.008 35",
+      "lightMoreContrast": "0.14 0.010 35",
+      "darkMoreContrast": "0.04 0.004 35"
     }
-  },
-  "glassTint": {
-    "light": "oklch(0.975 0.012 78 / 0.94)",
-    "dark": "oklch(0.195 0.027 312 / 0.94)"
-  },
-  "glassBlur": 16
+  }
 }

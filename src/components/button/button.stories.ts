@@ -22,6 +22,9 @@ const row = (content: unknown) =>
 
 const variants = ["plain", "bordered", "prominent"] as const;
 
+/** Title-case label for a variant. */
+const label = (variant: string) => variant[0]!.toUpperCase() + variant.slice(1);
+
 /** Counts purr-press events fired by the button with the given id. */
 const countPresses = (id: string) => {
   const button = document.getElementById(id) as PurrButton;
@@ -52,7 +55,7 @@ export const Variants: Story = {
     row(
       variants.map(
         (variant) =>
-          html`<purr-button variant=${variant}>${variant}</purr-button>`,
+          html`<purr-button variant=${variant}>${label(variant)}</purr-button>`,
       ),
     ),
 };
@@ -73,7 +76,8 @@ export const Destructive: Story = {
   // A destructive button never gets the prominent (accent-filled) look.
   play: () => {
     const filled = (id: string) =>
-      getComputedStyle(document.getElementById(id)!).backgroundColor;
+      getComputedStyle(document.getElementById(id)!, "::before")
+        .backgroundColor;
     expect(filled("destructive-prominent")).toBe(
       filled("destructive-bordered"),
     );
@@ -89,7 +93,7 @@ export const Disabled: Story = {
             id=${`disabled-${variant}`}
             variant=${variant}
             disabled
-            >${variant}</purr-button
+            >${label(variant)}</purr-button
           >`,
       ),
     ),
@@ -109,7 +113,7 @@ export const Glass: Story = {
     row(
       variants.map(
         (variant) =>
-          html`<purr-button variant=${variant}>${variant}</purr-button>`,
+          html`<purr-button variant=${variant}>${label(variant)}</purr-button>`,
       ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "rtl" },

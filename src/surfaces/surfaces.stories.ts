@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
-import { LitElement, html, type CSSResult } from "lit";
+import { LitElement, css, html, type CSSResult } from "lit";
 import { expect } from "storybook/test";
 import {
   barSurface,
@@ -14,7 +14,14 @@ const defineDemo = (tag: string, surface: CSSResult) =>
   customElements.define(
     tag,
     class extends LitElement {
-      static override styles = [surface];
+      static override styles = [
+        surface,
+        css`
+          :host {
+            font-family: var(--purr-font-family);
+          }
+        `,
+      ];
       override render() {
         return html`<slot></slot>`;
       }

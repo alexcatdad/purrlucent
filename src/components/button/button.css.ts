@@ -1,73 +1,80 @@
 import { css } from "lit";
 
-/** Look of each variant. Layout, focus ring, hit area, hover and pressed come from interactionStyles. */
+/**
+ * Look of each variant. Hit region, face states, focus ring and reduced motion
+ * come from interactionStyles; variants only set the face variables and label.
+ * Every variant rule has the same specificity, so source order decides.
+ */
 export const buttonStyles = css`
   :host {
-    gap: var(--purr-space-2);
-    padding: var(--purr-space-2) var(--purr-space-4);
-    border: 1px solid transparent;
-    border-radius: var(--purr-radius-medium);
-    background-color: transparent;
-    color: var(--purr-color-accent);
-    font: inherit;
-    font-family: var(--purr-font-family);
-    font-size: var(--purr-font-size-body);
-    line-height: 1.25;
+    padding: 0.375rem var(--purr-space-3);
+    border-radius: var(--purr-radius-control);
+    color: var(--purr-color-accent-text);
+    font: var(--purr-font-action);
     text-align: center;
     cursor: pointer;
     user-select: none;
+  }
+
+  @media (pointer: coarse) {
+    :host {
+      padding: 0.6875rem var(--purr-space-4);
+    }
   }
 
   [part="label"] {
     overflow-wrap: anywhere;
   }
 
-  :host([destructive]) {
-    color: var(--purr-color-destructive);
-  }
-
   :host([variant="bordered"]),
-  :host([variant="prominent"][destructive]) {
-    border-color: var(--purr-color-separator);
-    background-color: var(--purr-color-secondary-background);
+  :host([variant="prominent"]) {
+    --purr-face: var(--purr-color-fill-control);
+    --purr-face-hover: var(--purr-color-fill-control-hover);
+
+    color: var(--purr-color-label);
   }
 
-  /* A destructive button is never the primary one: it keeps the bordered look. */
-  :host([variant="prominent"]:not([destructive])) {
-    border-color: var(--purr-color-accent);
-    background-color: var(--purr-color-accent);
-    color: var(--purr-color-background);
-    font-weight: 600;
+  /* Increased contrast outlines neutral faces only, never the accent fill. */
+  :host([variant="bordered"])::before,
+  :host([variant="prominent"]:is([destructive], [disabled]))::before {
+    box-shadow: var(--purr-boundary);
   }
 
-  @media (hover: hover) {
-    :host([variant="prominent"]:not([destructive]):hover) {
-      background-color: var(--purr-color-accent);
-      filter: brightness(1.1);
-    }
+  /* The preferred action. A destructive or disabled one never takes the accent. */
+  :host([variant="prominent"]:where(:not([destructive], [disabled]))) {
+    --purr-face: var(--purr-color-accent-fill);
+    --purr-face-hover: var(--purr-color-accent-fill-hover);
+    --purr-face-pressed: var(--purr-color-accent-fill-pressed);
+
+    color: var(--purr-color-on-accent);
+  }
+
+  :host([destructive]) {
+    --purr-face-hover: var(--purr-color-destructive-fill);
+    --purr-face-pressed: var(--purr-color-destructive-pressed);
+
+    color: var(--purr-color-destructive-text);
   }
 
   :host([disabled]) {
-    opacity: 0.4;
-    cursor: default;
-    pointer-events: none;
+    color: var(--purr-color-disabled-label);
   }
 
   @media (forced-colors: active) {
-    :host([variant="bordered"]),
-    :host([variant="prominent"]) {
-      border-color: ButtonText;
-    }
+    :host([variant]) {
+      --purr-face: ButtonFace;
+      --purr-face-hover: ButtonFace;
+      --purr-face-pressed: ButtonFace;
 
-    :host([variant="prominent"]:not([destructive])) {
-      background-color: ButtonFace;
       color: ButtonText;
     }
 
     :host([disabled]) {
-      border-color: GrayText;
       color: GrayText;
-      opacity: 1;
+    }
+
+    :host::before {
+      border: 1px solid;
     }
   }
 `;

@@ -53,7 +53,7 @@ test("the selected item is marked current and stays highlighted", async ({
   const fill = (id: string) =>
     page
       .locator(`#${id} a`)
-      .evaluate((el) => getComputedStyle(el).backgroundColor);
+      .evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   expect(await fill("home")).not.toBe(await fill("settings"));
   await page.locator("#settings a").click();
   await expect(page.locator("#settings a")).toHaveAttribute(
@@ -282,11 +282,11 @@ test("focus ring and selected item stay visible under forced colors", async ({
   await page.keyboard.press("ArrowDown");
   const outline = await page
     .locator("#albums button")
-    .evaluate((el) => getComputedStyle(el).outlineStyle);
+    .evaluate((el) => getComputedStyle(el, "::before").outlineStyle);
   expect(outline).not.toBe("none");
   const selected = await page
     .locator("#home a")
-    .evaluate((el) => getComputedStyle(el).backgroundColor);
+    .evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   expect(selected).not.toBe("rgba(0, 0, 0, 0)");
 });
 

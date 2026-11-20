@@ -6,6 +6,9 @@ import { itemStyles } from "./sidebar.css.ts";
 // design/icons/chevron-right.svg
 const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.25 5.75 5.5 5.5q.75.75 0 1.5l-5.5 5.5" /></svg>`;
 
+// Leaves leave the chevron slot empty, so every level 1 label shares one edge.
+const label = html`<span class="label"><slot></slot></span>`;
+
 /**
  * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
  * by the sidebar because level 2 items follow it, a disclosure button.
@@ -75,15 +78,15 @@ export class PurrSidebarItem extends LitElement {
           aria-expanded=${this.expanded ? "true" : "false"}
           @click=${this.#toggle}
         >
-          ${chevron}<slot></slot>
+          ${chevron}${label}
         </button>`
       : html`<a
           class="control"
           part="control"
           href=${ifDefined(this.href)}
           aria-current=${this.selected ? "page" : nothing}
-          ><slot></slot
-        ></a>`;
+          >${label}</a
+        >`;
   }
 }
 

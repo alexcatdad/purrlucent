@@ -1,60 +1,161 @@
 import { css } from "lit";
 
+/*
+ * The track holds three layers in one grid cell: the sliding pill (below the
+ * segments), the row of segments, and a bold on-accent copy of the labels that
+ * is clipped to the pill. The copy sizes the equal columns at weight 600 and is
+ * shown only while the pill travels; at rest the selected segment paints its
+ * own label, hover and pressed tones over the pill. Faces are inset 2px.
+ */
 export const controlStyles = css`
   :host {
+    --_pad: calc(var(--purr-space-1) + 2px) calc(var(--purr-space-3) + 2px);
+
     display: inline-block;
-    box-sizing: border-box;
     max-inline-size: 100%;
-    font-family: var(--purr-font-family);
-    font-size: var(--purr-font-size-body);
+    font: var(--purr-font-body);
+  }
+
+  @media (pointer: coarse) {
+    :host {
+      --_pad: calc(0.5625rem + 2px) calc(0.875rem + 2px);
+    }
   }
 
   [part="track"] {
+    --purr-face-hover: var(--purr-color-fill-control-hover);
+    --_start: calc(var(--_i) * 100% / var(--_n) + 2px);
+    --_end: calc((var(--_n) - 1 - var(--_i)) * 100% / var(--_n) + 2px);
+
+    position: relative;
     display: grid;
-    grid-auto-flow: column;
+    overflow: clip;
+    border-radius: var(--purr-radius-control);
+    background-color: var(--purr-color-fill-control);
+    box-shadow: var(--purr-boundary);
+  }
+
+  .row,
+  .cover {
+    display: grid;
+    grid-area: 1 / 1;
     grid-auto-columns: 1fr;
-    gap: 2px;
-    padding: 2px;
-    background: var(--purr-color-secondary-background);
-    border: 1px solid var(--purr-color-separator);
-    border-radius: var(--purr-radius-medium);
+    grid-auto-flow: column;
+  }
+
+  .pill,
+  .cover {
+    pointer-events: none;
+    background-color: var(--purr-color-selection);
+  }
+
+  .pill {
+    position: absolute;
+    inset-block: 2px;
+    inset-inline: var(--_start) var(--_end);
+    border-radius: var(--purr-radius-control-inner);
+    box-shadow: var(--purr-elevation-control);
+    transition: inset var(--purr-duration-slide) var(--purr-ease-spring);
+  }
+
+  .cover {
+    position: relative;
+    visibility: hidden;
+    color: var(--purr-color-on-accent);
+    font: var(--purr-font-body-emphasized);
+    clip-path: inset(
+      2px var(--_end) 2px var(--_start) round var(--purr-radius-control-inner)
+    );
+    transition: clip-path var(--purr-duration-slide) var(--purr-ease-spring);
+  }
+
+  :host(:dir(rtl)) .cover {
+    clip-path: inset(
+      2px var(--_start) 2px var(--_end) round var(--purr-radius-control-inner)
+    );
+  }
+
+  .moving .cover {
+    visibility: visible;
+  }
+
+  .cover span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: var(--purr-hit-min);
+    min-block-size: var(--purr-hit-min);
+    padding: var(--_pad);
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+
+  [part="track"]:not(.moving) ::slotted([selected]) {
+    --purr-face-hover: var(--purr-color-selection-hover);
+    --purr-face-pressed: var(--purr-color-selection-pressed);
+
+    color: var(--purr-color-on-accent);
+    font: var(--purr-font-body-emphasized);
+    outline-color: var(--purr-color-on-accent);
+  }
+
+  :host([disabled]) .pill,
+  :host([disabled]) .cover {
+    background-color: var(--purr-color-fill-control-hover);
+    box-shadow: none;
+    color: var(--purr-color-disabled-label);
+  }
+
+  [part="track"]:not(.moving) ::slotted([selected][disabled]) {
+    color: var(--purr-color-disabled-label);
+  }
+
+  /* System colors replace the pill: the selected segment paints Highlight. */
+  @media (forced-colors: active) {
+    /* The copy stays in flow to size the columns, but never slides. */
+    .pill {
+      display: none;
+    }
+
+    .cover {
+      transition: none;
+    }
+
+    [part="track"]:not(.moving) ::slotted([selected]:not([disabled])) {
+      --purr-face-hover: Highlight;
+      --purr-face-pressed: Highlight;
+
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+      outline-color: HighlightText;
+    }
+
+    [part="track"]:not(.moving) ::slotted([selected][disabled]) {
+      color: GrayText;
+    }
   }
 `;
 
 export const segmentStyles = css`
-  @media not (pointer: coarse) {
-    :host {
-      min-inline-size: 0;
-    }
-  }
-
   :host {
-    padding-block: var(--purr-space-1);
-    padding-inline: var(--purr-space-3);
-    border: 2px solid transparent;
-    border-radius: var(--purr-radius-small);
+    padding: var(--_pad);
+    border-radius: var(--purr-radius-control);
     color: var(--purr-color-label);
     cursor: default;
     overflow-wrap: anywhere;
     text-align: center;
     user-select: none;
-    transition:
-      background-color var(--purr-duration-fast),
-      border-color var(--purr-duration-fast);
   }
 
-  :host([selected]) {
-    background-color: var(--purr-color-background);
-    border-color: var(--purr-color-accent);
+  :host::before {
+    inset: 2px;
+    border-radius: var(--purr-radius-control-inner);
   }
 
-  /* Forced colors drops the fills above, so the selection uses system colors. */
-  @media (forced-colors: active) {
-    :host([selected]) {
-      background-color: Highlight;
-      border-color: Highlight;
-      color: HighlightText;
-      forced-color-adjust: none;
-    }
+  /* The ring sits inside the face, which is inset 2px in the hit region. */
+  :host(:focus-visible) {
+    outline-offset: calc(var(--purr-focus-offset-inside) - 2px);
   }
 `;

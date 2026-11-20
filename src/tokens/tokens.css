@@ -3,41 +3,81 @@
   :root {
     color-scheme: light dark;
 
-    --purr-color-accent: light-dark(
-      oklch(46% 0.15 325deg),
-      oklch(77% 0.12 325deg)
-    );
-    --purr-color-label: light-dark(
-      oklch(24% 0.036 319deg),
-      oklch(93% 0.016 75deg)
-    );
-    --purr-color-secondary-label: light-dark(
-      oklch(40.5% 0.039 318deg),
-      oklch(80% 0.032 315deg)
-    );
-    --purr-color-tertiary-label: light-dark(
-      oklch(50% 0.035 318deg),
-      oklch(69% 0.033 315deg)
-    );
     --purr-color-background: light-dark(
-      oklch(97.5% 0.012 78deg),
-      oklch(19.5% 0.027 312deg)
+      oklch(97.5% 0.007 35deg),
+      oklch(18% 0.01 35deg)
     );
     --purr-color-secondary-background: light-dark(
-      oklch(94% 0.021 73deg),
-      oklch(24.5% 0.032 312deg)
+      oklch(95% 0.009 35deg),
+      oklch(23% 0.012 35deg)
     );
-    --purr-color-separator: light-dark(
-      oklch(61% 0.05 310deg),
-      oklch(56% 0.055 310deg)
+    --purr-color-label: light-dark(
+      oklch(22% 0.014 35deg),
+      oklch(96% 0.006 35deg)
     );
-    --purr-color-fill: light-dark(
-      oklch(89.5% 0.028 325deg),
-      oklch(31.5% 0.044 312deg)
+    --purr-color-secondary-label: light-dark(
+      oklch(34% 0.012 35deg),
+      oklch(88% 0.01 35deg)
     );
-    --purr-color-destructive: light-dark(
-      oklch(46% 0.15 15deg),
-      oklch(77% 0.128 15deg)
+    --purr-color-tertiary-label: light-dark(
+      oklch(42% 0.012 35deg),
+      oklch(82% 0.012 35deg)
+    );
+    --purr-color-disabled-label: light-dark(
+      oklch(55% 0.012 35deg),
+      oklch(62% 0.012 35deg)
+    );
+    --purr-color-accent-text: light-dark(
+      oklch(44% 0.17 325deg),
+      oklch(82% 0.12 325deg)
+    );
+    --purr-color-accent-fill: light-dark(
+      oklch(51% 0.17 325deg),
+      oklch(76% 0.14 325deg)
+    );
+    --purr-color-on-accent: light-dark(
+      oklch(100% 0 0deg),
+      oklch(16% 0.025 325deg)
+    );
+    --purr-color-selection: light-dark(
+      oklch(50% 0.12 325deg),
+      oklch(74% 0.11 325deg)
+    );
+    --purr-color-focus: light-dark(
+      oklch(44% 0.17 325deg),
+      oklch(82% 0.12 325deg)
+    );
+    --purr-color-destructive-text: light-dark(
+      oklch(44% 0.16 25deg),
+      oklch(82% 0.1 24deg)
+    );
+    --purr-color-destructive-fill: light-dark(
+      oklch(88% 0.045 24deg),
+      oklch(37% 0.065 24deg)
+    );
+    --purr-color-divider: light-dark(
+      oklch(22% 0.014 35deg / 13%),
+      oklch(96% 0.006 35deg / 16%)
+    );
+    --purr-color-control-boundary: light-dark(
+      oklch(45% 0.014 35deg),
+      oklch(78% 0.012 35deg)
+    );
+    --purr-color-fill-hover: light-dark(
+      oklch(93.5% 0.008 35deg),
+      oklch(27% 0.012 35deg)
+    );
+    --purr-color-fill-control: light-dark(
+      oklch(90.5% 0.01 35deg),
+      oklch(31% 0.013 35deg)
+    );
+    --purr-color-fill-control-hover: light-dark(
+      oklch(87.5% 0.012 35deg),
+      oklch(35% 0.014 35deg)
+    );
+    --purr-color-fill-pressed: light-dark(
+      oklch(84% 0.014 35deg),
+      oklch(39% 0.015 35deg)
     );
     --purr-color-success: light-dark(
       oklch(43.5% 0.075 166deg),
@@ -47,19 +87,66 @@
       oklch(46% 0.09 68deg),
       oklch(79% 0.115 72deg)
     );
-    --purr-color-focus: light-dark(
-      oklch(52% 0.12 280deg),
-      oklch(74% 0.12 280deg)
+    --purr-color-glass-bar-tint: light-dark(
+      oklch(99% 0.004 35deg / 79%),
+      oklch(20% 0.01 35deg / 79%)
     );
-    --purr-font-family:
-      system-ui, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
-    --purr-font-size-caption: 0.75rem;
-    --purr-font-size-footnote: 0.8125rem;
-    --purr-font-size-body: 1rem;
-    --purr-font-size-headline: 1.0625rem;
-    --purr-font-size-title3: 1.25rem;
-    --purr-font-size-title2: 1.375rem;
-    --purr-font-size-title1: 1.75rem;
+    --purr-color-glass-sidebar-tint: light-dark(
+      oklch(99% 0.004 35deg / 86%),
+      oklch(23% 0.012 35deg / 86%)
+    );
+    --purr-color-glass-panel-tint: light-dark(
+      oklch(98% 0.006 35deg / 89%),
+      oklch(24% 0.012 35deg / 89%)
+    );
+    --purr-color-glass-sheet-tint: light-dark(
+      oklch(99% 0.004 35deg / 94%),
+      oklch(26% 0.012 35deg / 94%)
+    );
+    --purr-color-edge-highlight: light-dark(
+      oklch(100% 0 0deg / 58%),
+      oklch(100% 0 0deg / 13%)
+    );
+    --purr-color-shadow-color: light-dark(
+      oklch(19% 0.018 35deg),
+      oklch(6% 0.008 35deg)
+    );
+    --purr-color-accent-fill-hover: light-dark(
+      color-mix(in srgb, var(--purr-color-accent-fill), #000 6%),
+      color-mix(in srgb, var(--purr-color-accent-fill), #fff 6%)
+    );
+    --purr-color-accent-fill-pressed: light-dark(
+      color-mix(in srgb, var(--purr-color-accent-fill), #000 12%),
+      color-mix(in srgb, var(--purr-color-accent-fill), #fff 12%)
+    );
+    --purr-color-selection-hover: light-dark(
+      color-mix(in srgb, var(--purr-color-selection), #000 6%),
+      color-mix(in srgb, var(--purr-color-selection), #fff 6%)
+    );
+    --purr-color-selection-pressed: light-dark(
+      color-mix(in srgb, var(--purr-color-selection), #000 12%),
+      color-mix(in srgb, var(--purr-color-selection), #fff 12%)
+    );
+    --purr-color-destructive-pressed: color-mix(
+      in srgb,
+      var(--purr-color-destructive-fill),
+      var(--purr-color-destructive-text) 12%
+    );
+    --purr-font-family: system-ui, sans-serif;
+    --purr-font-caption: 400 0.625rem/0.8125rem var(--purr-font-family);
+    --purr-font-footnote: 400 0.625rem/0.8125rem var(--purr-font-family);
+    --purr-font-body: 400 0.8125rem/1rem var(--purr-font-family);
+    --purr-font-action: 500 0.8125rem/1rem var(--purr-font-family);
+    --purr-font-body-emphasized: 600 0.8125rem/1rem var(--purr-font-family);
+    --purr-font-headline: 700 0.8125rem/1rem var(--purr-font-family);
+    --purr-font-title3: 400 0.9375rem/1.25rem var(--purr-font-family);
+    --purr-font-title2: 400 1.0625rem/1.375rem var(--purr-font-family);
+    --purr-font-title1: 400 1.375rem/1.625rem var(--purr-font-family);
+    --purr-radius-control: 8px;
+    --purr-radius-control-inner: 6px;
+    --purr-hit-min: 28px;
+    --purr-hit-absolute-min: 20px;
+    --purr-gap-bezeled: 0.75rem;
     --purr-space-1: 0.25rem;
     --purr-space-2: 0.5rem;
     --purr-space-3: 0.75rem;
@@ -68,55 +155,136 @@
     --purr-space-6: 1.5rem;
     --purr-space-7: 1.75rem;
     --purr-space-8: 2rem;
-    --purr-radius-small: 0.375rem;
-    --purr-radius-medium: 0.625rem;
-    --purr-radius-large: 1rem;
-    --purr-duration-fast: 120ms;
-    --purr-duration-base: 240ms;
-    --purr-glass-tint: light-dark(
-      oklch(97.5% 0.012 78deg / 94%),
-      oklch(19.5% 0.027 312deg / 94%)
-    );
-    --purr-glass-blur: 16px;
+    --purr-gap-bezel-less: 1.5rem;
+    --purr-radius-panel: 16px;
+    --purr-radius-row: 8px;
+    --purr-elevation-control:
+      0 1px 2px
+        color-mix(in srgb, var(--purr-color-shadow-color) 18%, transparent),
+      0 2px 5px
+        color-mix(in srgb, var(--purr-color-shadow-color) 10%, transparent);
+    --purr-elevation-panel:
+      0 1px 3px
+        color-mix(in srgb, var(--purr-color-shadow-color) 15%, transparent),
+      0 6px 18px
+        color-mix(in srgb, var(--purr-color-shadow-color) 12%, transparent);
+    --purr-elevation-sheet:
+      0 2px 6px
+        color-mix(in srgb, var(--purr-color-shadow-color) 18%, transparent),
+      0 16px 48px
+        color-mix(in srgb, var(--purr-color-shadow-color) 18%, transparent);
+    --purr-boundary: none;
+    --purr-focus-width: 2px;
+    --purr-focus-offset-outside: 2px;
+    --purr-focus-offset-inside: -2px;
+    --purr-face-hover: var(--purr-color-fill-hover);
+    --purr-face-pressed: var(--purr-color-fill-pressed);
+    --purr-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --purr-ease-spring: cubic-bezier(0.3, 1.15, 0.5, 1);
+    --purr-duration-press: 60ms;
+    --purr-duration-hover: 100ms;
+    --purr-duration-release: 120ms;
+    --purr-duration-slide: 200ms;
+    --purr-press-scale: 0.98;
+  }
+
+  @media (pointer: coarse) {
+    :root {
+      --purr-font-caption: 400 0.75rem/1rem var(--purr-font-family);
+      --purr-font-footnote: 400 0.8125rem/1.125rem var(--purr-font-family);
+      --purr-font-body: 400 1.0625rem/1.375rem var(--purr-font-family);
+      --purr-font-action: 500 1.0625rem/1.375rem var(--purr-font-family);
+      --purr-font-body-emphasized: 600 1.0625rem/1.375rem
+        var(--purr-font-family);
+      --purr-font-headline: 600 1.0625rem/1.375rem var(--purr-font-family);
+      --purr-font-title3: 400 1.25rem/1.5625rem var(--purr-font-family);
+      --purr-font-title2: 400 1.375rem/1.75rem var(--purr-font-family);
+      --purr-font-title1: 400 1.75rem/2.125rem var(--purr-font-family);
+      --purr-radius-control: 12px;
+      --purr-radius-control-inner: 10px;
+      --purr-hit-min: 44px;
+      --purr-hit-absolute-min: 28px;
+      --purr-gap-bezeled: 1rem;
+    }
   }
 
   @media (prefers-contrast: more) {
     :root {
-      --purr-color-accent: light-dark(
-        oklch(34% 0.12 325deg),
-        oklch(87% 0.07 325deg)
-      );
-      --purr-color-label: light-dark(
-        oklch(15% 0.024 319deg),
-        oklch(98.5% 0.006 75deg)
-      );
-      --purr-color-secondary-label: light-dark(
-        oklch(27% 0.035 318deg),
-        oklch(92% 0.018 315deg)
-      );
-      --purr-color-tertiary-label: light-dark(
-        oklch(38% 0.035 318deg),
-        oklch(83% 0.035 315deg)
-      );
       --purr-color-background: light-dark(
-        oklch(99.3% 0.004 78deg),
-        oklch(13% 0.018 312deg)
+        oklch(99.5% 0.002 35deg),
+        oklch(12% 0.006 35deg)
       );
       --purr-color-secondary-background: light-dark(
-        oklch(96.7% 0.014 73deg),
-        oklch(18% 0.023 312deg)
+        oklch(97% 0.005 35deg),
+        oklch(16% 0.008 35deg)
       );
-      --purr-color-separator: light-dark(
-        oklch(46% 0.048 310deg),
-        oklch(73.5% 0.055 310deg)
+      --purr-color-label: light-dark(
+        oklch(14% 0.01 35deg),
+        oklch(99% 0.002 35deg)
       );
-      --purr-color-fill: light-dark(
-        oklch(79% 0.044 325deg),
-        oklch(43% 0.052 312deg)
+      --purr-color-secondary-label: light-dark(
+        oklch(24% 0.01 35deg),
+        oklch(95% 0.004 35deg)
       );
-      --purr-color-destructive: light-dark(
-        oklch(34.5% 0.115 15deg),
-        oklch(87% 0.065 15deg)
+      --purr-color-tertiary-label: light-dark(
+        oklch(32% 0.01 35deg),
+        oklch(89% 0.008 35deg)
+      );
+      --purr-color-disabled-label: light-dark(
+        oklch(32% 0.01 35deg),
+        oklch(89% 0.008 35deg)
+      );
+      --purr-color-accent-text: light-dark(
+        oklch(34% 0.15 325deg),
+        oklch(90% 0.07 325deg)
+      );
+      --purr-color-accent-fill: light-dark(
+        oklch(40% 0.14 325deg),
+        oklch(87% 0.09 325deg)
+      );
+      --purr-color-on-accent: light-dark(
+        oklch(100% 0 0deg),
+        oklch(10% 0.015 325deg)
+      );
+      --purr-color-selection: light-dark(
+        oklch(38% 0.11 325deg),
+        oklch(86% 0.07 325deg)
+      );
+      --purr-color-focus: light-dark(
+        oklch(34% 0.15 325deg),
+        oklch(90% 0.07 325deg)
+      );
+      --purr-color-destructive-text: light-dark(
+        oklch(34% 0.13 25deg),
+        oklch(92% 0.04 24deg)
+      );
+      --purr-color-destructive-fill: light-dark(
+        oklch(85% 0.05 24deg),
+        oklch(35% 0.06 24deg)
+      );
+      --purr-color-divider: light-dark(
+        oklch(42% 0.012 35deg),
+        oklch(75% 0.012 35deg)
+      );
+      --purr-color-control-boundary: light-dark(
+        oklch(32% 0.012 35deg),
+        oklch(90% 0.008 35deg)
+      );
+      --purr-color-fill-hover: light-dark(
+        oklch(92% 0.006 35deg),
+        oklch(24% 0.01 35deg)
+      );
+      --purr-color-fill-control: light-dark(
+        oklch(88% 0.008 35deg),
+        oklch(29% 0.01 35deg)
+      );
+      --purr-color-fill-control-hover: light-dark(
+        oklch(84% 0.009 35deg),
+        oklch(34% 0.012 35deg)
+      );
+      --purr-color-fill-pressed: light-dark(
+        oklch(80% 0.01 35deg),
+        oklch(39% 0.014 35deg)
       );
       --purr-color-success: light-dark(
         oklch(32.5% 0.057 166deg),
@@ -126,17 +294,44 @@
         oklch(34.5% 0.067 68deg),
         oklch(88.5% 0.087 76deg)
       );
-      --purr-color-focus: light-dark(
-        oklch(39% 0.12 280deg),
-        oklch(84% 0.073 280deg)
+      --purr-color-glass-bar-tint: light-dark(
+        oklch(97% 0.005 35deg),
+        oklch(16% 0.008 35deg)
       );
+      --purr-color-glass-sidebar-tint: light-dark(
+        oklch(97% 0.005 35deg),
+        oklch(16% 0.008 35deg)
+      );
+      --purr-color-glass-panel-tint: light-dark(
+        oklch(97% 0.005 35deg),
+        oklch(16% 0.008 35deg)
+      );
+      --purr-color-glass-sheet-tint: light-dark(
+        oklch(97% 0.005 35deg),
+        oklch(16% 0.008 35deg)
+      );
+      --purr-color-edge-highlight: light-dark(
+        oklch(100% 0 0deg / 0%),
+        oklch(100% 0 0deg / 0%)
+      );
+      --purr-color-shadow-color: light-dark(
+        oklch(14% 0.01 35deg),
+        oklch(4% 0.004 35deg)
+      );
+      --purr-elevation-control: none;
+      --purr-elevation-panel: inset 0 0 0 1px var(--purr-color-control-boundary);
+      --purr-elevation-sheet: inset 0 0 0 1px var(--purr-color-control-boundary);
+      --purr-boundary: inset 0 0 0 1px var(--purr-color-control-boundary);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     :root {
-      --purr-duration-fast: 0ms;
-      --purr-duration-base: 0ms;
+      --purr-duration-press: 0ms;
+      --purr-duration-hover: 0ms;
+      --purr-duration-release: 0ms;
+      --purr-duration-slide: 0ms;
+      --purr-press-scale: 1;
     }
   }
 }
@@ -145,34 +340,48 @@
 @layer purr.tokens {
   :root {
     --purr-material-bar: var(--purr-color-secondary-background);
+    --purr-material-sidebar: var(--purr-color-secondary-background);
     --purr-material-panel: var(--purr-color-secondary-background);
-    --purr-material-sheet: light-dark(
-      var(--purr-color-background),
-      var(--purr-color-secondary-background)
-    );
-    --purr-material-filter: none;
+    --purr-material-sheet: var(--purr-color-secondary-background);
+    --purr-material-bar-filter: none;
+    --purr-material-sidebar-filter: none;
+    --purr-material-panel-filter: none;
+    --purr-material-sheet-filter: none;
+
+    /* A zero shadow, not none, so surfaces can list it before their elevation. */
+    --purr-material-edge: 0 0 transparent;
   }
 
   @supports (backdrop-filter: blur(1px)) {
     [purr-material="glass"] {
-      --purr-material-bar: var(--purr-glass-tint);
-      --purr-material-panel: var(--purr-glass-tint);
-      --purr-material-sheet: var(--purr-glass-tint);
-      --purr-material-filter: blur(var(--purr-glass-blur));
+      --purr-material-bar: var(--purr-color-glass-bar-tint);
+      --purr-material-sidebar: var(--purr-color-glass-sidebar-tint);
+      --purr-material-panel: var(--purr-color-glass-panel-tint);
+      --purr-material-sheet: var(--purr-color-glass-sheet-tint);
+      --purr-material-bar-filter: blur(24px) saturate(125%);
+      --purr-material-sidebar-filter: blur(28px) saturate(118%);
+      --purr-material-panel-filter: blur(32px) saturate(115%);
+      --purr-material-sheet-filter: blur(36px) saturate(108%);
+      --purr-material-edge: inset 0 1px 0 var(--purr-color-edge-highlight);
     }
   }
 
-  /* Reduced transparency and increased contrast win over glass. Listed as a
-     comma list so a browser that does not know a feature still honors the other. */
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  /* Reduced transparency, increased contrast and forced colors win over glass.
+     Listed as a comma list so a browser that does not know a feature still
+     honors the others. Elevation stays. */
+  @media (prefers-reduced-transparency: reduce),
+    (prefers-contrast: more),
+    (forced-colors: active) {
     [purr-material="glass"] {
       --purr-material-bar: var(--purr-color-secondary-background);
+      --purr-material-sidebar: var(--purr-color-secondary-background);
       --purr-material-panel: var(--purr-color-secondary-background);
-      --purr-material-sheet: light-dark(
-        var(--purr-color-background),
-        var(--purr-color-secondary-background)
-      );
-      --purr-material-filter: none;
+      --purr-material-sheet: var(--purr-color-secondary-background);
+      --purr-material-bar-filter: none;
+      --purr-material-sidebar-filter: none;
+      --purr-material-panel-filter: none;
+      --purr-material-sheet-filter: none;
+      --purr-material-edge: 0 0 transparent;
     }
   }
 }
