@@ -33,8 +33,7 @@ test("screen reader announces the toolbar and its items", async ({
       page,
       screenReader,
       "purr-toolbar",
-      3,
-      "purr-toolbar button",
+      4,
     );
     await traceState("arrows", page, screenReader);
   }

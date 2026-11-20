@@ -28,9 +28,8 @@ test("screen reader speaks each segment and the selected one", async ({
     spoken = await walkCompositeWithArrows(
       page,
       screenReader,
-      // Tab lands on the checked segment; the arrows visit (and wrap to) the others.
       "purr-segmented-control",
-      2,
+      3,
     );
     await traceState("arrows", page, screenReader);
   }

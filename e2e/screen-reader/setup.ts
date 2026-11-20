@@ -18,17 +18,17 @@ type ArrowReader = {
  * where its "next item" key is a plain Down arrow sent to the widget. NVDA users
  * Tab into these widgets, which announces the group's name and current item,
  * then move with the arrow keys. The test does the same, from a plain button
- * placed just before the widget.
+ * placed just before the widget. Tab lands on whichever item roving focus
+ * remembers, so Home moves to the first item; it is pressed twice because NVDA
+ * can swallow the first key while it switches into focus mode. Then ArrowRight
+ * visits each remaining item.
  */
 export async function walkCompositeWithArrows(
   page: Page,
   reader: ArrowReader,
   widget: string,
-  steps: number,
-  /** Item to make the widget's tab stop first (roving focus remembers the last one). */
-  tabStop?: string,
+  items: number,
 ): Promise<string> {
-  if (tabStop) await page.locator(tabStop).first().focus();
   await page.evaluate((selector) => {
     const before = document.createElement("button");
     before.type = "button";
@@ -38,7 +38,9 @@ export async function walkCompositeWithArrows(
   }, widget);
   await page.locator("#sr-before").focus();
   await reader.press("Tab");
-  for (let i = 0; i < steps; i++) await reader.press("ArrowRight");
+  await reader.press("Home");
+  await reader.press("Home");
+  for (let i = 1; i < items; i++) await reader.press("ArrowRight");
   return (await reader.spokenPhraseLog()).join(" ");
 }
 
