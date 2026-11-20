@@ -37,4 +37,5 @@
   source: https://developer.apple.com/design/human-interface-guidelines/segmented-controls
   rule: The control exposes a radio-group style role with arrow-key movement and a visible selected segment.
   check: automated
+  test: src/components/segmented-control/segmented-control.e2e.ts > Tab enters on the selected segment, arrows move and select
   layer: components
