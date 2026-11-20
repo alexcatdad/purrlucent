@@ -209,7 +209,7 @@ Glass only on bar, sidebar, floating panel and sheet. Rows, field shells and con
 
 - Hover and press change the face tone only; the label keeps its color. No host opacity or brightness filter.
 - Press: scale the visible face to 0.98 with `easeStandard`; release with `easeSpring`. The hit region does not scale.
-- Reduced motion: all durations 0ms, no scale, pill placed directly.
+- Reduced motion: all durations 0ms, pill placed directly. The press scale stays, applied at once without animation, so a press is not shown by color alone.
 - Animations never block input and can be interrupted.
 
 ### Focus ring

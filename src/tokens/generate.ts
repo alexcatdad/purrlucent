@@ -145,7 +145,6 @@ const reducedMotion = {
   "duration-hover": "0ms",
   "duration-release": "0ms",
   "duration-slide": "0ms",
-  "press-scale": "1",
 };
 
 const media = (query: string, tokens: Record<string, string>) => `

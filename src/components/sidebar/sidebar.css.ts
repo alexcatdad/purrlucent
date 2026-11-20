@@ -137,7 +137,7 @@ export const itemStyles = [
        so level 1 labels share a leading edge; level 2 indents one more step.
        Fine rows split the 2px gap between rows inside their hit region. */
     .control {
-      --chevron: 0.875rem;
+      --chevron: 0.875em;
       --chevron-gap: 0.375rem;
       --inset: 0.0625rem;
 
@@ -153,7 +153,7 @@ export const itemStyles = [
 
     @media (pointer: coarse) {
       .control {
-        --chevron: 1rem;
+        --chevron: 1em;
         --chevron-gap: var(--purr-space-2);
         --inset: 0;
 
