@@ -2,9 +2,13 @@ import type { StorybookConfig } from "@storybook/web-components-vite";
 
 const config: StorybookConfig = {
   framework: "@storybook/web-components-vite",
-  stories: ["../src/**/*.stories.ts"],
+  stories: ["../docs/install.mdx", "../src/**/*.stories.ts"],
   core: { disableTelemetry: true },
-  addons: ["@storybook/addon-a11y", "@storybook/addon-vitest"],
+  addons: [
+    "@storybook/addon-a11y",
+    "@storybook/addon-docs",
+    "@storybook/addon-vitest",
+  ],
 };
 
 export default config;
