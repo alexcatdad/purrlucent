@@ -30,7 +30,7 @@
   layer: behaviors
 - id: keyboards/7
   source: https://developer.apple.com/design/human-interface-guidelines/keyboards
-  rule: A new shortcut is not made by adding a modifier to an existing shortcut for an unrelated command.
+  rule: Each shortcut belongs to one command family; a modifier variant of a shortcut always does a related action.
   check: rubric
   layer: behaviors
 - id: keyboards/8

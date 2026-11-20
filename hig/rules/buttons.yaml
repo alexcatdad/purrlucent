@@ -10,7 +10,7 @@
   layer: behaviors
 - id: buttons/3
   source: https://developer.apple.com/design/human-interface-guidelines/buttons
-  rule: The most likely action in a view gets the prominent style; other actions use quieter styles.
+  rule: The action people will most probably choose gets the prominent style; the rest stay quieter.
   check: rubric
   layer: components
 - id: buttons/4

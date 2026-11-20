@@ -64,7 +64,13 @@ function validate(value: unknown, s: Schema, path: string): string[] {
 function testExists(root: string, test: string): boolean {
   const [file = "", name = ""] = test.split(" > ").map((s) => s.trim());
   const path = join(root, file);
-  return existsSync(path) && readFileSync(path, "utf8").includes(name);
+  const quoted = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return (
+    existsSync(path) &&
+    new RegExp(`\\b(?:test|it)\\(\\s*(["'\`])${quoted}\\1`).test(
+      readFileSync(path, "utf8"),
+    )
+  );
 }
 
 export function checkCatalog(
@@ -75,6 +81,10 @@ export function checkCatalog(
   const pending: string[] = [];
   const seen = new Set<string>();
   for (const { file, slug, rules } of catalog) {
+    if (!Array.isArray(rules)) {
+      errors.push(`${file}: must be a list of rules`);
+      continue;
+    }
     for (const rule of rules) {
       const at = `${file}: ${(rule as Partial<Rule>).id ?? "?"}`;
       const schemaErrors = validate(rule, schema.$defs.rule as Schema, at);
