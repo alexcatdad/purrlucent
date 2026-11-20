@@ -13,6 +13,7 @@
     ".": "./dist/index.js",
     "./surfaces": "./dist/surfaces.js",
     "./button": "./dist/button.js",
+    "./segmented-control": "./dist/segmented-control.js",
     "./tokens.css": "./dist/tokens.css",
     "./custom-elements.json": "./dist/custom-elements.json"
   },
