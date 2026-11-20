@@ -11,6 +11,7 @@
   "customElements": "dist/custom-elements.json",
   "exports": {
     ".": "./dist/index.js",
+    "./sidebar": "./dist/sidebar.js",
     "./surfaces": "./dist/surfaces.js",
     "./tokens.css": "./dist/tokens.css",
     "./custom-elements.json": "./dist/custom-elements.json"

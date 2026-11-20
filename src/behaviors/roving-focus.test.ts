@@ -2,7 +2,11 @@ import { expect, test } from "bun:test";
 import { RovingFocusController } from "./roving-focus.ts";
 
 function setup(
-  opts: { orientation?: "horizontal" | "vertical"; wrap?: boolean } = {},
+  opts: {
+    orientation?: "horizontal" | "vertical";
+    wrap?: boolean;
+    tabStops?: "one" | "all";
+  } = {},
   rtl = false,
 ) {
   const host = Object.assign(new EventTarget(), {
@@ -23,6 +27,7 @@ function setup(
       items: () => items as unknown as HTMLElement[],
       orientation: opts.orientation ?? "horizontal",
       wrap: opts.wrap ?? false,
+      tabStops: opts.tabStops,
     },
   );
   controller.hostConnected();
@@ -49,6 +54,14 @@ test("only the active item has tabindex 0", () => {
   expect(items.map((i) => i.tabIndex)).toEqual([0, -1, -1]);
   press(0, "ArrowRight");
   expect(items.map((i) => i.tabIndex)).toEqual([-1, 0, -1]);
+});
+
+test("tabStops all leaves tabindex alone and still moves focus", () => {
+  const { items, press, focused } = setup({ tabStops: "all" });
+  expect(items.map((i) => i.tabIndex)).toEqual([-1, -1, -1]);
+  press(0, "ArrowRight");
+  expect(focused()).toBe(1);
+  expect(items.map((i) => i.tabIndex)).toEqual([-1, -1, -1]);
 });
 
 test("arrow keys move focus in the orientation", () => {

@@ -4,6 +4,8 @@ export type RovingFocusOptions = {
   items: () => HTMLElement[];
   orientation: "horizontal" | "vertical";
   wrap: boolean;
+  /** "one" (default): a single tab stop. "all": every item stays tabbable and the arrows are an extra. */
+  tabStops?: "one" | "all";
 };
 
 /** Roving tabindex: one tab stop, arrow keys, Home and End move focus. */
@@ -51,6 +53,7 @@ export class RovingFocusController implements ReactiveController {
   }
 
   #sync() {
+    if (this.#opts.tabStops === "all") return;
     this.#active = Math.max(
       0,
       Math.min(this.#active, this.#opts.items().length - 1),
