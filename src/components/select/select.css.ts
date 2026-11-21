@@ -240,6 +240,11 @@ export const optionStyles = css`
     color: var(--purr-color-disabled-foreground);
   }
 
+  /* The ring's own color matches the selection fill it sits on. */
+  :host(:not([aria-disabled="true"]):focus-visible) {
+    outline-color: var(--purr-color-selected-foreground);
+  }
+
   @media (forced-colors: active) {
     :host(:not([aria-disabled="true"]):focus),
     :host(:not([aria-disabled="true"])[data-active]),

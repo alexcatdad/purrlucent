@@ -469,31 +469,38 @@ for (const scheme of ["light", "dark"] as const) {
     test(`the option focus ring contrasts with the selection fill in ${scheme} with ${contrast} contrast`, async ({
       page,
     }) => {
-      await page.emulateMedia({ colorScheme: scheme, contrast });
+      await page.emulateMedia({
+        colorScheme: scheme,
+        contrast,
+        reducedMotion: "reduce",
+      });
       await gotoStory(page, story("preselected"));
       await trigger(page).focus();
       await page.keyboard.press("ArrowDown");
       await expect(option(page, "Fuji")).toBeFocused();
-      const ratio = await option(page, "Fuji").evaluate((el) => {
-        const style = getComputedStyle(el);
-        const ctx = document.createElement("canvas").getContext("2d")!;
-        const luminance = (color: string) => {
-          ctx.clearRect(0, 0, 1, 1);
-          ctx.fillStyle = color;
-          ctx.fillRect(0, 0, 1, 1);
-          const [r, g, b] = [...ctx.getImageData(0, 0, 1, 1).data].map((c) => {
-            const s = c / 255;
-            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-          });
-          return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
-        };
-        const [hi, lo] = [
-          luminance(style.outlineColor),
-          luminance(style.backgroundColor),
-        ].sort((a, b) => b - a);
-        return (hi! + 0.05) / (lo! + 0.05);
-      });
-      expect(ratio).toBeGreaterThanOrEqual(3);
+      const measure = () =>
+        option(page, "Fuji").evaluate((el) => {
+          const style = getComputedStyle(el);
+          const ctx = document.createElement("canvas").getContext("2d")!;
+          const luminance = (color: string) => {
+            ctx.clearRect(0, 0, 1, 1);
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 1, 1);
+            const [r, g, b] = [...ctx.getImageData(0, 0, 1, 1).data].map(
+              (c) => {
+                const s = c / 255;
+                return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+              },
+            );
+            return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+          };
+          const [hi, lo] = [
+            luminance(style.outlineColor),
+            luminance(style.backgroundColor),
+          ].sort((a, b) => b - a);
+          return (hi! + 0.05) / (lo! + 0.05);
+        });
+      await expect.poll(measure).toBeGreaterThanOrEqual(3);
     });
   }
 }

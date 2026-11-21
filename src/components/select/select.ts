@@ -259,8 +259,13 @@ export class PurrSelect extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    // Slotchange does not fire when an option's text changes.
-    this.#watch.observe(this, { subtree: true, characterData: true });
+    // Slotchange does not fire when an option's text changes; setting
+    // textContent replaces the text node (childList), typing edits it (characterData).
+    this.#watch.observe(this, {
+      subtree: true,
+      characterData: true,
+      childList: true,
+    });
   }
 
   override disconnectedCallback() {
