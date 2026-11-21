@@ -485,11 +485,13 @@ test("an external label names the field, even one added later", async ({
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      '<label for="ext">City</label><purr-input id="ext"></purr-input><purr-input id="late"></purr-input>' +
+      '<label for="ext">City <img alt="(required)"><span aria-hidden="true">*</span></label><purr-input id="ext"></purr-input><purr-input id="late"></purr-input>' +
         '<label for="own">Ignored</label><purr-input id="own" label="Postcode"></purr-input>',
     ),
   );
-  await expect(page.getByRole("textbox", { name: "City" })).toBeVisible();
+  await expect(
+    page.getByRole("textbox", { name: "City (required)", exact: true }),
+  ).toBeVisible();
   // The field's own label wins over an external one.
   await expect(page.locator("#own").getByRole("textbox")).toHaveAccessibleName(
     "Postcode",
