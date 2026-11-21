@@ -1,5 +1,6 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { nameFromLabels } from "../../behaviors/labels.ts";
 import { submitImplicitly } from "../input/input.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
 import {
@@ -32,7 +33,8 @@ const optionalNumber = {
  * is clamped to the range and snapped to the step grid when it is committed
  * (blur or Enter). The stepper buttons are not tab stops, repeat while held
  * and disable at the limits. The slotted text is a visible label; without it,
- * `label` becomes the accessible name. It takes part in forms like a native
+ * `label` becomes the accessible name, and without both a native
+ * `<label for>` names it. It takes part in forms like a native
  * input: it submits `name` with its value, a reset returns it to its `value`
  * attribute and a disabled fieldset disables it.
  *
@@ -107,6 +109,8 @@ export class PurrNumberField extends LitElement {
       this.#touched = true;
       this.#sync();
     });
+    // A label added after the field still names it before it is read out.
+    this.addEventListener("focusin", () => this.requestUpdate());
     this.value = null;
     this.min = null;
     this.max = null;
@@ -214,6 +218,7 @@ export class PurrNumberField extends LitElement {
   protected override updated() {
     if (this._labelled) this.#internals.states.add("labelled");
     else this.#internals.states.delete("labelled");
+    nameFromLabels(this.#input, this.labels, this._labelled || !!this.label);
     this.#sync();
   }
 

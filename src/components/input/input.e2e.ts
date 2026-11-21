@@ -478,6 +478,29 @@ test("a custom validity set before the first render is kept", async ({
   expect(result).toEqual([true, "Taken"]);
 });
 
+test("an external label names the field, even one added later", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML(
+      "beforeend",
+      '<label for="ext">City</label><purr-input id="ext"></purr-input><purr-input id="late"></purr-input>' +
+        '<label for="own">Ignored</label><purr-input id="own" label="Postcode"></purr-input>',
+    ),
+  );
+  await expect(page.getByRole("textbox", { name: "City" })).toBeVisible();
+  // The field's own label wins over an external one.
+  await expect(page.locator("#own").getByRole("textbox")).toHaveAccessibleName(
+    "Postcode",
+  );
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML("beforeend", '<label for="late">Country</label>'),
+  );
+  await page.locator("#late").evaluate((el) => (el as HTMLElement).focus());
+  await expect(page.getByRole("textbox", { name: "Country" })).toBeFocused();
+});
+
 test("a search field mirrors under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const sides = await page

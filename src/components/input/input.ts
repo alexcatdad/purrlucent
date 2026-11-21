@@ -1,5 +1,6 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { nameFromLabels } from "../../behaviors/labels.ts";
 import { inputStyles } from "./input.css.ts";
 
 const glass = svg`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>`;
@@ -29,7 +30,7 @@ export function submitImplicitly(form: HTMLFormElement | null) {
  * A single-line text field. A native input inside does the editing, so typing,
  * selection, IME, autofill and mobile keyboards behave as usual. The slotted
  * text is a visible label; without it, `label` becomes the input's accessible
- * name. It takes part in forms like a native input: it submits `name` with its
+ * name, and without both a native `<label for>` names it. It takes part in forms like a native input: it submits `name` with its
  * value, a reset returns it to its `value` attribute, a disabled fieldset
  * disables it, and the native validity (`required`, `pattern`, `type=email`...)
  * is the element's validity. Enter submits the form.
@@ -118,6 +119,8 @@ export class PurrInput extends LitElement {
       this.#touched = true;
       this.#sync();
     });
+    // A label added after the field still names it before it is read out.
+    this.addEventListener("focusin", () => this.requestUpdate());
     this.type = "text";
     this.value = "";
     this.size = "md";
@@ -203,6 +206,7 @@ export class PurrInput extends LitElement {
     this.#setState("search", this.type === "search");
     this.#setState("labelled", this._labelled);
     this.#setState("clearable", this.#clearable);
+    nameFromLabels(this.#input, this.labels, this._labelled || !!this.label);
     this.#sync();
   }
 

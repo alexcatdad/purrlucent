@@ -444,6 +444,24 @@ test("a number field without a label fails axe", async ({ page }) => {
   await expect(expectAccessible(root)).rejects.toThrow();
 });
 
+test("an external label names the number field, even one added later", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML(
+      "beforeend",
+      '<label for="ext">Guests</label><purr-number-field id="ext"></purr-number-field><purr-number-field id="late"></purr-number-field>',
+    ),
+  );
+  await expect(page.getByRole("spinbutton", { name: "Guests" })).toBeVisible();
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML("beforeend", '<label for="late">Nights</label>'),
+  );
+  await page.locator("#late").evaluate((el) => (el as HTMLElement).focus());
+  await expect(page.getByRole("spinbutton", { name: "Nights" })).toBeFocused();
+});
+
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("sizes")));
 });
