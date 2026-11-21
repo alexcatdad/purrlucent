@@ -22,6 +22,21 @@ export const barSurface = css`
       border-block-end: 1px solid var(--purr-color-input-border);
     }
   }
+
+  @media (forced-colors: active) {
+    :host {
+      border-block-end: 1px solid CanvasText;
+    }
+  }
+`;
+
+/* Forced colors drops box-shadow, so a floating surface needs a real edge. */
+const forcedEdge = css`
+  @media (forced-colors: active) {
+    :host {
+      border: 1px solid CanvasText;
+    }
+  }
 `;
 
 /** A floating sidebar. */
@@ -36,6 +51,8 @@ export const sidebarSurface = css`
     color: var(--purr-color-foreground);
     padding: var(--purr-space-2);
   }
+
+  ${forcedEdge}
 `;
 
 /** A floating panel, such as a popover. */
@@ -50,6 +67,8 @@ export const panelSurface = css`
     color: var(--purr-color-foreground);
     padding: var(--purr-space-4);
   }
+
+  ${forcedEdge}
 `;
 
 /** A modal sheet that rises above the content. */
@@ -64,6 +83,8 @@ export const sheetSurface = css`
     color: var(--purr-color-foreground);
     padding: var(--purr-space-6);
   }
+
+  ${forcedEdge}
 `;
 
 /** A row in a list of content. Never glass. */

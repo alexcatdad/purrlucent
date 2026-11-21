@@ -115,6 +115,132 @@ test("a selection is required: the selected segment cannot be cleared", async ({
   await expect.poll(() => selectedValue(page)).toBe("day");
 });
 
+const formId = "components-toggle-group--in-form";
+
+const submitted = (page: Page) =>
+  page
+    .locator("#form")
+    .evaluate((form) =>
+      [...new FormData(form as HTMLFormElement)].map(([k, v]) => [
+        k,
+        String(v),
+      ]),
+    );
+
+test("the form gets the selected value, and a reset returns to the start", async ({
+  page,
+}) => {
+  await open(page, formId);
+  expect(await submitted(page)).toEqual([["range", "week"]]);
+  await page.getByRole("radio", { name: "Month" }).click();
+  expect(await submitted(page)).toEqual([["range", "month"]]);
+  await page.locator("#form").evaluate((form) => {
+    (window as unknown as { changes: number }).changes = 0;
+    form.addEventListener(
+      "purr-change",
+      () => (window as unknown as { changes: number }).changes++,
+    );
+    (form as HTMLFormElement).reset();
+  });
+  await expect(page.getByRole("radio", { name: "Week" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  expect(await submitted(page)).toEqual([["range", "week"]]);
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { changes: number }).changes,
+    ),
+  ).toBe(0);
+});
+
+test("a disabled fieldset disables the group and submits nothing", async ({
+  page,
+}) => {
+  await open(page, formId);
+  await page
+    .locator("#fieldset")
+    .evaluate((el) => ((el as HTMLFieldSetElement).disabled = true));
+  await expect(page.getByRole("radio", { name: "Week" })).toBeDisabled();
+  expect(await submitted(page)).toEqual([]);
+  await expect(page.locator("purr-toggle-group-item[tabindex]")).toHaveCount(0);
+});
+
+test("a disabled group has no tab stop and fires no purr-change", async ({
+  page,
+}) => {
+  await open(page, "components-toggle-group--disabled");
+  const changes = await page.locator("#control").evaluate(async (el) => {
+    let count = 0;
+    el.addEventListener("purr-change", () => count++);
+    el.querySelector<HTMLElement>("[value=month]")!.click();
+    return count;
+  });
+  expect(changes).toBe(0);
+  await page.keyboard.press("Tab");
+  expect(
+    await page.evaluate(() =>
+      document.querySelector("purr-toggle-group-item:focus"),
+    ),
+  ).toBeNull();
+  await expect(page.getByRole("radio", { name: "Week" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+});
+
+test("a disabled click in the same task as disabled = true selects nothing", async ({
+  page,
+}) => {
+  await open(page);
+  const changes = await page.locator("#control").evaluate((el) => {
+    let count = 0;
+    el.addEventListener("purr-change", () => count++);
+    (el as HTMLElement & { disabled: boolean }).disabled = true;
+    el.querySelector<HTMLElement>("[value=week]")!.click();
+    return count;
+  });
+  expect(changes).toBe(0);
+});
+
+test("an aria-label set by the consumer names the group", async ({ page }) => {
+  const root = await open(page);
+  await root.evaluate((el) => {
+    const group = document.createElement("purr-toggle-group");
+    group.setAttribute("aria-label", "Alignment");
+    group.id = "own-label";
+    group.innerHTML =
+      '<purr-toggle-group-item value="a">A</purr-toggle-group-item>';
+    el.append(group);
+  });
+  await expect(
+    page.getByRole("radiogroup", { name: "Alignment" }),
+  ).toBeVisible();
+  await expect(page.locator("#own-label")).toHaveAttribute(
+    "aria-label",
+    "Alignment",
+  );
+});
+
+test("a programmatic value change moves the selection without purr-change", async ({
+  page,
+}) => {
+  await open(page);
+  const changes = await page.locator("#control").evaluate(async (el) => {
+    let count = 0;
+    el.addEventListener("purr-change", () => count++);
+    (el as HTMLInputElement).value = "month";
+    await (el as unknown as { updateComplete: Promise<boolean> })
+      .updateComplete;
+    return count;
+  });
+  expect(changes).toBe(0);
+  await expect(page.getByRole("radio", { name: "Month" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+});
+
 // Review Focus 2: arrows follow the visual direction.
 test("under rtl, ArrowLeft selects the next segment and ArrowRight the previous", async ({
   page,
@@ -155,6 +281,53 @@ test("the selected segment stays visible under forced colors", async ({
   });
   await expect.poll(() => background("Day")).toBe(highlight);
   expect(await background("Week")).not.toBe(highlight);
+});
+
+test("under forced colors a disabled selected segment still differs from the others", async ({
+  page,
+}) => {
+  await open(page, "components-toggle-group--disabled");
+  await page.emulateMedia({ forcedColors: "active" });
+  const face = (name: string) =>
+    page
+      .getByRole("radio", { name })
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+  await expect
+    .poll(async () => (await face("Week")) !== (await face("Day")))
+    .toBe(true);
+  expect(
+    await page
+      .locator("#control")
+      .evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).toBe("solid");
+});
+
+test("a one-character segment keeps the per-size minimum width", async ({
+  page,
+}) => {
+  const root = await open(page);
+  const widths = await root.evaluate(async (el) => {
+    const group = document.createElement("purr-toggle-group");
+    group.setAttribute("label", "Digits");
+    group.innerHTML = [1, 2, 3]
+      .map(
+        (n) =>
+          `<purr-toggle-group-item value="${n}">${n}</purr-toggle-group-item>`,
+      )
+      .join("");
+    el.append(group);
+    await (group as unknown as { updateComplete: Promise<boolean> })
+      .updateComplete;
+    const probe = el.appendChild(document.createElement("div"));
+    probe.style.inlineSize = "calc(var(--purr-spacing) * 7.5)";
+    const min = probe.getBoundingClientRect().width;
+    return [
+      min,
+      ...[...group.children].map((i) => i.getBoundingClientRect().width),
+    ];
+  });
+  const [min, ...items] = widths as [number, ...number[]];
+  for (const w of items) expect(w).toBeGreaterThanOrEqual(min - 0.5);
 });
 
 // Review Focus 5: a tablet in landscape is wide but still touch.

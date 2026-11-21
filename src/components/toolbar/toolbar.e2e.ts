@@ -123,6 +123,42 @@ test("disabled items are skipped", async ({ page }) => {
   expect(await focusedLabel(page)).toBe("More");
 });
 
+/** Tab stops of the enabled items: exactly one should be 0. */
+const enabledStops = (page: Page) =>
+  page
+    .locator("#toolbar purr-button")
+    .evaluateAll((els) =>
+      els.filter((e) => !e.hasAttribute("disabled")).map((e) => e.tabIndex),
+    );
+
+test("disabling the tab stop moves it, and enabling the item keeps one stop", async ({
+  page,
+}) => {
+  await openStory(page);
+  const first = page.locator("#toolbar purr-button").first();
+  await first.evaluate((el) => ((el as HTMLButtonElement).disabled = true));
+  await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1]);
+  await first.evaluate((el) => ((el as HTMLButtonElement).disabled = false));
+  await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1, -1]);
+});
+
+test("controls added to or removed from a group keep one tab stop", async ({
+  page,
+}) => {
+  await openStory(page);
+  await page.locator("#toolbar purr-toolbar-group").evaluate((group) => {
+    const added = document.createElement("purr-button");
+    added.setAttribute("aria-label", "Extra");
+    group.append(added);
+  });
+  await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1, -1, -1]);
+  await page
+    .locator("#toolbar purr-button")
+    .first()
+    .evaluate((el) => el.remove());
+  await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1, -1]);
+});
+
 test("under rtl, ArrowRight moves to the previous item", async ({ page }) => {
   await openStory(page, "rtl");
   await page.keyboard.press("Tab");

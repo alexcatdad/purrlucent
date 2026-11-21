@@ -46,6 +46,7 @@ export const boxStyles = css`
     display: grid;
     flex: none;
     place-items: center;
+    box-sizing: border-box;
     inline-size: var(--_box);
     block-size: var(--_box);
     border-radius: var(--_r);
@@ -125,7 +126,8 @@ export const boxStyles = css`
     }
   }
 
-  :host(:state(pressed)) {
+  /* :not(:state(disabled)) matches the hover rules' specificity, so the later press wins. */
+  :host(:state(pressed):not(:state(disabled))) {
     --_tint: color-mix(in srgb, var(--purr-color-shade) 16%, transparent);
   }
 
@@ -181,6 +183,12 @@ export const boxStyles = css`
     :host(:state(disabled)) [part="box"] {
       border-color: GrayText;
       opacity: 1;
+    }
+
+    :host(:state(disabled):is(:state(checked), :state(indeterminate)))
+      [part="box"] {
+      background: GrayText;
+      color: Canvas;
     }
 
     :host(:focus-visible) [part="box"] {

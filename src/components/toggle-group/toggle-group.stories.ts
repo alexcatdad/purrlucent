@@ -65,6 +65,23 @@ export const Disabled: Story = {
   `,
 };
 
+/** In a form the group submits its value and follows reset and fieldset. */
+export const InForm: Story = {
+  render: () => html`
+    <form id="form" style="padding:var(--purr-space-4)">
+      <fieldset id="fieldset" style="border:0;padding:0;margin:0">
+        <purr-toggle-group id="control" name="range" label="Calendar range">
+          <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
+          <purr-toggle-group-item value="week" selected
+            >Week</purr-toggle-group-item
+          >
+          <purr-toggle-group-item value="month">Month</purr-toggle-group-item>
+        </purr-toggle-group>
+      </fieldset>
+    </form>
+  `,
+};
+
 /** Under right-to-left the group mirrors. */
 export const Rtl: Story = { render, globals: { dir: "rtl" } };
 

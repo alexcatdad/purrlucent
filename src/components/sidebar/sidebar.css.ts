@@ -199,6 +199,13 @@ export const itemStyles = [
       transform: scaleX(-1) rotate(90deg);
     }
 
+    /* The fill alone is faint, so increased contrast adds a stroke. */
+    @media (prefers-contrast: more) {
+      :host([selected]) .control::before {
+        box-shadow: inset 0 0 0 1px var(--purr-color-input-border);
+      }
+    }
+
     /* System colors replace ours; the selected row keeps Highlight in every state. */
     @media (forced-colors: active) {
       .chevron {

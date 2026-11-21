@@ -56,6 +56,8 @@ export class PurrSwitch extends LitElement {
     this.disabled = false;
     this.addEventListener("purr-press", () => {
       this.checked = !this.checked;
+      // Now, not in updated(): a purr-change listener reads form value and validity.
+      this.#syncChecked();
       this.dispatchEvent(
         new CustomEvent("purr-change", {
           detail: { checked: this.checked },
@@ -69,10 +71,26 @@ export class PurrSwitch extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     if (!this.hasAttribute("role")) this.setAttribute("role", "switch");
+    // Not slotchange: it misses an edit to the text of an assigned text node.
+    this.#labelObserver.observe(this, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+    this.#syncLabelled();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#labelObserver.disconnect();
   }
 
   formResetCallback() {
     this.checked = this.hasAttribute("checked");
+  }
+
+  formStateRestoreCallback(state: string) {
+    this.checked = state === "true";
   }
 
   formDisabledCallback() {
@@ -82,34 +100,41 @@ export class PurrSwitch extends LitElement {
   // After the update, so a changed `disabled` attribute is already reflected.
   protected override updated() {
     const disabled = this.matches(":disabled");
-    this.tabIndex = disabled ? -1 : 0;
-    this.setAttribute("aria-checked", String(this.checked));
+    // No tabindex at all, so a click does not focus it, as with a native input.
+    if (disabled) this.removeAttribute("tabindex");
+    else this.tabIndex = 0;
     if (disabled) this.setAttribute("aria-disabled", "true");
     else this.removeAttribute("aria-disabled");
     if (this.required) this.setAttribute("aria-required", "true");
     else this.removeAttribute("aria-required");
+    this.#syncChecked();
+  }
+
+  #syncChecked() {
+    this.setAttribute("aria-checked", String(this.checked));
     if (this.checked) this.#internals.states.add("checked");
     else this.#internals.states.delete("checked");
-    this.#internals.setFormValue(this.checked ? this.value : null);
+    // The state string is what formStateRestoreCallback receives.
+    this.#internals.setFormValue(
+      this.checked ? this.value : null,
+      String(this.checked),
+    );
     this.#internals.setValidity(
       { valueMissing: this.required && !this.checked },
       "Turn this on to continue.",
     );
   }
 
-  #onSlotChange = (event: Event) => {
-    const labelled = (event.target as HTMLSlotElement)
-      .assignedNodes()
-      .some((node) => node.textContent?.trim());
-    if (labelled) this.#internals.states.add("labelled");
+  #syncLabelled = () => {
+    if (this.textContent?.trim()) this.#internals.states.add("labelled");
     else this.#internals.states.delete("labelled");
   };
 
+  #labelObserver = new MutationObserver(this.#syncLabelled);
+
   override render() {
     return html`<span part="track"><span part="thumb"></span></span
-      ><span part="label"
-        ><slot @slotchange=${this.#onSlotChange}></slot
-      ></span>`;
+      ><span part="label"><slot></slot></span>`;
   }
 }
 

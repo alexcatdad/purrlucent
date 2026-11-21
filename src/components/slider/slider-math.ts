@@ -16,6 +16,17 @@ export function snap(value: number, { min, max, step }: Range) {
   return clamp(Number(onGrid.toFixed(places)), min, max);
 }
 
+/** A usable range from attribute input: a bad bound or step falls back, and max never sits below min. */
+export function toRange(min: number, max: number, step: number): Range {
+  const lo = Number.isFinite(min) ? min : 0;
+  const hi = Number.isFinite(max) ? max : 100;
+  return { min: lo, max: Math.max(lo, hi), step: step > 0 ? step : 1 };
+}
+
+/** The value as shown and submitted: on the step grid and in range, or the minimum when it is not a number. */
+export const currentValue = (value: number, range: Range) =>
+  Number.isFinite(value) ? snap(value, range) : range.min;
+
 /** Where the value sits in the range, from 0 to 1. */
 export const fractionOf = (value: number, { min, max }: Range) =>
   max > min ? clamp((value - min) / (max - min), 0, 1) : 0;

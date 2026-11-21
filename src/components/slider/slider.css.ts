@@ -114,8 +114,13 @@ export const sliderStyles = css`
         color-mix(in srgb, var(--purr-color-shade) 12%, transparent);
   }
 
+  /* The thumb stays as it is idle; only the fill and the ticks go muted. */
   :host(:disabled) {
-    opacity: 0.5;
+    --_fill: light-dark(var(--purr-color-muted-5), var(--purr-color-muted-4));
+  }
+
+  :host(:disabled) [part="ticks"] > span {
+    background-color: var(--purr-color-foreground-faint);
   }
 
   /* The ring follows the thumb, not the whole hit region. */
@@ -156,7 +161,6 @@ export const sliderStyles = css`
     }
 
     :host(:disabled) {
-      opacity: 1;
       color: GrayText;
     }
 

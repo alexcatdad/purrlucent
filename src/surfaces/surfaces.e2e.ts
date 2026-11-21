@@ -123,6 +123,19 @@ test("glass blurs and edges each surface over a patterned backdrop", async ({
   }
 });
 
+// Forced colors drops box-shadow, so each surface needs a real edge.
+test("surfaces keep a visible edge under forced colors", async ({ page }) => {
+  await openStory(page);
+  await page.emulateMedia({ forcedColors: "active" });
+  for (const id of ["bar", "panel", "sheet"]) {
+    const edge = await page.locator(`#${id}`).evaluate((el) => {
+      const { borderBlockEndStyle, borderBlockEndWidth } = getComputedStyle(el);
+      return `${borderBlockEndStyle} ${borderBlockEndWidth}`;
+    });
+    expect(edge, id).toBe("solid 1px");
+  }
+});
+
 test("aria snapshot", async ({ page }) => {
   const root = await openStory(page);
   await expect(root).toMatchAriaSnapshot(`

@@ -2,8 +2,9 @@ import type { ReactiveController, ReactiveControllerHost } from "lit";
 
 /**
  * Press behavior for a custom control: fires `purr-press` on a click (a pointer
- * click, a label, `click()` or assistive technology), on Enter, and on Space
- * (on key release, as a native button does).
+ * click, a label, `click()` or assistive technology). Enter and Space click the
+ * host, so `click` listeners run for the keyboard too (Space on key release, as
+ * a native button does).
  * While the pointer or Space is down the custom state `:state(pressed)` is set.
  * Key events from a descendant of the host are ignored.
  * The controller uses `opts.internals` when given, otherwise it calls
@@ -97,7 +98,7 @@ export class PressableController implements ReactiveController {
       event.preventDefault(); // keeps the page from scrolling
       this.#spaceDown = true;
       this.#set(true);
-    } else if (key === "Enter" && !repeat) this.#press();
+    } else if (key === "Enter" && !repeat) this.#host.click();
   };
 
   #keyup = (event: Event) => {
@@ -105,6 +106,6 @@ export class PressableController implements ReactiveController {
     if (key !== " " || target !== this.#host || !this.#spaceDown) return;
     this.#spaceDown = false;
     this.#set(false);
-    if (!this.#opts.disabled()) this.#press();
+    if (!this.#opts.disabled()) this.#host.click();
   };
 }

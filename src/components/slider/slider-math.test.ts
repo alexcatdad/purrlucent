@@ -1,8 +1,10 @@
 import { expect, test } from "bun:test";
 import {
   clamp,
+  currentValue,
   fractionOf,
   snap,
+  toRange,
   valueAfterKey,
   valueAt,
 } from "./slider-math.ts";
@@ -25,6 +27,19 @@ test("snap avoids floating point noise and stays in range", () => {
   expect(snap(0.3, { min: 0, max: 1, step: 0.1 })).toBe(0.3);
   expect(snap(98, { min: 0, max: 100, step: 25 })).toBe(100);
   expect(snap(99, { min: 0, max: 90, step: 25 })).toBe(90);
+});
+
+test("toRange replaces bad bounds and keeps max at or above min", () => {
+  expect(toRange(Number.NaN, Number.NaN, 1)).toEqual(range);
+  expect(toRange(10, 5, 1)).toEqual({ min: 10, max: 10, step: 1 });
+  expect(toRange(0, 100, 0)).toEqual(range);
+  expect(toRange(0, 100, Number.NaN)).toEqual(range);
+});
+
+test("currentValue snaps and clamps, and a bad number becomes the minimum", () => {
+  expect(currentValue(150, range)).toBe(100);
+  expect(currentValue(50.4, range)).toBe(50);
+  expect(currentValue(Number.NaN, { min: 5, max: 9, step: 1 })).toBe(5);
 });
 
 test("fractionOf maps the range to 0..1 and survives an empty range", () => {

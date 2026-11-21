@@ -65,6 +65,31 @@ test("a disabled box takes no focus and does not change", async ({ page }) => {
   expect(await control.evaluate((el) => (el as HTMLElement).tabIndex)).toBe(-1);
 });
 
+test("a disabled box is not focusable by a click or by script", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("checkbox", { name: "Network" });
+  await control.click({ force: true });
+  await control.evaluate((el) => el.focus());
+  await expect(control).not.toBeFocused();
+  await expect(control).not.toHaveAttribute("tabindex");
+});
+
+test("holding the mouse down on a checked box darkens it past hover", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("checkbox", { name: "Recents" });
+  const tint = () =>
+    control.evaluate((el) => getComputedStyle(el).getPropertyValue("--_tint"));
+  await control.hover();
+  expect(await tint()).toContain("8%");
+  await page.mouse.down();
+  expect(await tint()).toContain("16%");
+  await page.mouse.up();
+});
+
 test("the form gets the value only while the box is checked", async ({
   page,
 }) => {
@@ -161,6 +186,26 @@ test("a checked box stays visible under forced colors", async ({ page }) => {
             .backgroundColor,
       );
   expect(await background("Recents")).not.toBe(await background("Shared"));
+});
+
+test("under forced colors a disabled checked box is not drawn as an enabled one", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const box = (name: string) =>
+    page.getByRole("checkbox", { name }).evaluate((el) => {
+      const part = el.shadowRoot!.querySelector('[part="box"]')!;
+      return [
+        getComputedStyle(part).backgroundColor,
+        part.getBoundingClientRect().width,
+      ] as const;
+    });
+  const [, normalWidth] = await box("Recents");
+  await page.emulateMedia({ forcedColors: "active" });
+  const [enabled, width] = await box("Recents");
+  const [disabled] = await box("Favorites");
+  expect(disabled).not.toBe(enabled);
+  expect(width).toBe(normalWidth);
 });
 
 for (const name of ["states", "sizes", "in-form", "rtl", "glass"]) {

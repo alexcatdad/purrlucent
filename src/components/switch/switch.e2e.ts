@@ -58,6 +58,129 @@ test("a disabled switch takes no focus and does not change", async ({
   expect(await control.evaluate((el) => (el as HTMLElement).tabIndex)).toBe(-1);
 });
 
+test("a click on a disabled switch does not focus it", async ({ page }) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("switch", { name: "AirDrop" });
+  const box = (await control.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(control).not.toBeFocused();
+  expect(await control.evaluate((el) => el.hasAttribute("tabindex"))).toBe(
+    false,
+  );
+});
+
+test("purr-change fires after the form value, validity and aria-checked are updated", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const seen = await page.locator("#sync").evaluate(
+    (el) =>
+      new Promise<unknown>((resolve) => {
+        const form = (el as HTMLElement).closest("form")!;
+        el.addEventListener("purr-change", () =>
+          resolve({
+            data: new FormData(form).get("sync"),
+            valid: form.checkValidity(),
+            aria: el.getAttribute("aria-checked"),
+          }),
+        );
+        (el as HTMLElement).click();
+      }),
+  );
+  expect(seen).toEqual({ data: "yes", valid: true, aria: "true" });
+});
+
+test("a restored form state turns the switch on or off", async ({ page }) => {
+  await gotoStory(page, story("in-form"));
+  const control = page.getByRole("switch", { name: "Sync" });
+  await control.evaluate((el) =>
+    (
+      el as HTMLElement & { formStateRestoreCallback(state: string): void }
+    ).formStateRestoreCallback("true"),
+  );
+  await expect(control).toBeChecked();
+  expect(await submitted(page)).toContainEqual(["sync", "yes"]);
+  await control.evaluate((el) =>
+    (
+      el as HTMLElement & { formStateRestoreCallback(state: string): void }
+    ).formStateRestoreCallback("false"),
+  );
+  await expect(control).not.toBeChecked();
+});
+
+test("a label filled in later by editing its text node shows", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  const labelled = await root.evaluate(async (el) => {
+    const bare = document.createElement("purr-switch");
+    const text = document.createTextNode("");
+    bare.append(text);
+    el.append(bare);
+    await (bare as HTMLElement & { updateComplete: Promise<boolean> })
+      .updateComplete;
+    const before = bare.matches(":state(labelled)");
+    text.data = "Later";
+    await new Promise((resolve) => setTimeout(resolve));
+    return [before, bare.matches(":state(labelled)")];
+  });
+  expect(labelled).toEqual([false, true]);
+});
+
+test("the thumb shadow animates with the other thumb properties", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  expect(
+    await page
+      .locator("#switch")
+      .evaluate(
+        (el) =>
+          getComputedStyle(el.shadowRoot!.querySelector('[part="thumb"]')!)
+            .transitionProperty,
+      ),
+  ).toContain("box-shadow");
+});
+
+test.describe("forced colors", () => {
+  test.use({ forcedColors: "active" });
+
+  const colors = (page: Page, selector: string) =>
+    page.locator(selector).evaluate((el) => {
+      const style = (part: string) =>
+        getComputedStyle(el.shadowRoot!.querySelector(`[part="${part}"]`)!);
+      return {
+        track: style("track").backgroundColor,
+        border: style("track").borderTopColor,
+        thumb: style("thumb").backgroundColor,
+      };
+    });
+
+  test("a disabled switch differs from an enabled one", async ({ page }) => {
+    await gotoStory(page, story("states"));
+    const nth = (i: number) => colors(page, `purr-switch:nth-of-type(${i})`);
+    const [off, on, disabled, disabledOn] = [
+      await nth(1),
+      await nth(2),
+      await nth(3),
+      await nth(4),
+    ] as const;
+    expect(disabled.border).not.toBe(off.border);
+    expect(disabled.thumb).not.toBe(off.thumb);
+    expect(disabledOn.track).not.toBe(on.track);
+  });
+
+  test("a pressed thumb keeps a system color", async ({ page }) => {
+    await gotoStory(page, story("default"));
+    const idle = await colors(page, "#switch");
+    const box = (await page.locator("#switch").boundingBox())!;
+    await page.mouse.move(box.x + 4, box.y + box.height / 2);
+    await page.mouse.down();
+    expect((await colors(page, "#switch")).thumb).toBe(idle.thumb);
+    await page.mouse.up();
+  });
+});
+
 test("the form gets the value only while the switch is on", async ({
   page,
 }) => {

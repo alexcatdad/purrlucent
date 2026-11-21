@@ -20,6 +20,10 @@ export const interactionStyles = css`
     min-block-size: var(--purr-size-hit-min);
   }
 
+  :host([hidden]) {
+    display: none;
+  }
+
   :host::before {
     content: "";
     position: absolute;
@@ -31,16 +35,16 @@ export const interactionStyles = css`
   }
 
   @media (hover: hover) {
-    :host(:not([disabled]):hover)::before {
+    :host(:not(:is([disabled], :disabled)):hover)::before {
       background-color: var(--purr-face-hover, var(--purr-color-muted-3));
     }
   }
 
-  :host(:not([disabled]):state(pressed))::before {
+  :host(:not(:is([disabled], :disabled)):state(pressed))::before {
     background-color: var(--purr-face-pressed, var(--purr-color-muted-pressed));
   }
 
-  :host([disabled]) {
+  :host(:is([disabled], :disabled)) {
     color: var(--purr-color-disabled-foreground);
     cursor: default;
   }
@@ -56,7 +60,7 @@ export const interactionStyles = css`
       transition: none;
     }
 
-    :host([disabled]) {
+    :host(:is([disabled], :disabled)) {
       color: GrayText;
     }
 

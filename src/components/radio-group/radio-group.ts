@@ -5,6 +5,9 @@ import { SelectionController } from "../../behaviors/selection.ts";
 import { boxStyles } from "../checkbox/checkbox.css.ts";
 import { groupStyles, radioStyles } from "./radio-group.css.ts";
 
+/** Keys the roving focus controller handles: only these choose a radio on keydown. */
+const MOVES = new Set(["ArrowLeft", "ArrowRight", "Home", "End"]);
+
 /**
  * One choice in a `purr-radio-group`. The slotted text is its label and
  * accessible name.
@@ -72,7 +75,9 @@ export class PurrRadio extends LitElement {
     this.#state("checked", this.checked);
     this.#state("disabled", off);
     // The group picks the tab stop among the enabled radios.
-    if (changed.has("disabled")) this.#group?.requestUpdate();
+    // A later `value` change re-derives which radio is checked.
+    if (changed.has("disabled") || changed.get("value") !== undefined)
+      this.#group?.requestUpdate();
   }
 
   #onSlotChange = (event: Event) => {
@@ -210,7 +215,7 @@ export class PurrRadioGroup extends LitElement {
       if (from < 0) return;
       event.preventDefault();
       enabled[(from + step + enabled.length) % enabled.length]!.focus();
-    } else if (!event.defaultPrevented) return;
+    } else if (!event.defaultPrevented || !MOVES.has(event.key)) return;
     const focused = enabled.find((r) => r.matches(":focus"));
     if (focused) this.#selection.select(focused.value);
   };
@@ -232,10 +237,11 @@ export class PurrRadioGroup extends LitElement {
     this.#syncing = false;
   }
 
-  protected override updated() {
+  protected override updated(changed: PropertyValues<this>) {
     const disabled = this.matches(":disabled");
     this.#radios.forEach((r) => {
-      r.checked = r.value === this.value;
+      // A radio without a value is never the choice: "" means none.
+      r.checked = this.value !== "" && r.value === this.value;
       r.requestUpdate();
     });
     this.#roving.activate(this.#enabled.findIndex((r) => r.checked));
@@ -243,12 +249,15 @@ export class PurrRadioGroup extends LitElement {
     else this.removeAttribute("aria-disabled");
     if (this.required) this.setAttribute("aria-required", "true");
     else this.removeAttribute("aria-required");
+    // Only a label that was cleared removes the name; a consumer's own aria-label stays.
     if (this.label) this.setAttribute("aria-label", this.label);
-    else this.removeAttribute("aria-label");
+    else if (changed.get("label")) this.removeAttribute("aria-label");
     this.#internals.setFormValue(this.value || null);
+    // The host takes no focus, so a failed submit focuses the first radio.
     this.#internals.setValidity(
       { valueMissing: this.required && !this.value },
       "Choose one of these options to continue.",
+      this.#enabled[0],
     );
   }
 

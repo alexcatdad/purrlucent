@@ -72,7 +72,8 @@ export const switchStyles = css`
       inset var(--purr-duration) var(--purr-ease-out),
       inline-size var(--purr-duration) var(--purr-ease-out),
       block-size var(--purr-duration) var(--purr-ease-out),
-      background-color var(--purr-duration-fast) var(--purr-ease-out);
+      background-color var(--purr-duration-fast) var(--purr-ease-out),
+      box-shadow var(--purr-duration-fast) var(--purr-ease-out);
   }
 
   [part="label"] {
@@ -113,8 +114,11 @@ export const switchStyles = css`
     );
     box-shadow:
       0 0 0 1px var(--purr-color-border),
+      0 0 0 1.5px color-mix(in srgb, var(--purr-color-thumb) 45%, transparent),
       inset 0 1px 1px
         color-mix(in srgb, var(--purr-color-thumb) 60%, transparent),
+      inset 0 -1px 1px
+        color-mix(in srgb, var(--purr-color-shade) 10%, transparent),
       0 calc(var(--purr-spacing) * 2.25) calc(var(--purr-spacing) * 3)
         color-mix(in srgb, var(--purr-color-shade) 10%, transparent);
   }
@@ -145,6 +149,11 @@ export const switchStyles = css`
       transition: none;
     }
 
+    /* Outranks the pressed thumb's translucent fill; checked below wins. */
+    :host(:state(pressed)) [part="thumb"] {
+      background: ButtonText;
+    }
+
     :host(:state(checked)) [part="track"] {
       background: Highlight;
     }
@@ -156,6 +165,22 @@ export const switchStyles = css`
     :host(:disabled) {
       opacity: 1;
       color: GrayText;
+    }
+
+    :host(:disabled) [part="track"] {
+      border-color: GrayText;
+    }
+
+    :host(:disabled) [part="thumb"] {
+      background: GrayText;
+    }
+
+    :host(:disabled:state(checked)) [part="track"] {
+      background: GrayText;
+    }
+
+    :host(:disabled:state(checked)) [part="thumb"] {
+      background: Canvas;
     }
 
     :host(:focus-visible) [part="track"] {

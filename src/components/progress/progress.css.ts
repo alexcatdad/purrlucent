@@ -75,7 +75,9 @@ export const progressStyles = css`
       transition: none;
     }
 
+    /* The state rule's transparent color outranks the plain fill rule above. */
     :host(:state(indeterminate)) [part="fill"] {
+      background-color: Highlight;
       background-image: none;
     }
   }

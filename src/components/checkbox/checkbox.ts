@@ -92,7 +92,9 @@ export class PurrCheckbox extends LitElement {
   // After the update, so a changed `disabled` attribute is already reflected.
   protected override updated() {
     const disabled = this.matches(":disabled");
-    this.tabIndex = disabled ? -1 : 0;
+    // No tabindex at all: -1 would still let a click or focus() take focus.
+    if (disabled) this.removeAttribute("tabindex");
+    else this.tabIndex = 0;
     this.setAttribute(
       "aria-checked",
       this.indeterminate ? "mixed" : String(this.checked),

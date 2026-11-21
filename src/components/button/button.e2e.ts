@@ -171,6 +171,134 @@ test("the focus ring stays visible under forced colors", async ({ page }) => {
   ).not.toBe("none");
 });
 
+test("a disabled fieldset makes the button inert, as a native button is", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, "components-button--default");
+  await root.evaluate((el) => {
+    el.insertAdjacentHTML(
+      "beforeend",
+      `<form id="f"><fieldset id="fs" disabled>
+        <purr-button id="b" type="submit">Save</purr-button>
+      </fieldset></form>`,
+    );
+    const form = document.getElementById("f")!;
+    const log = (what: string) => (form.dataset.log += `${what} `);
+    form.dataset.log = "";
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      log("submit");
+    });
+    form.addEventListener("purr-press", () => log("press"));
+  });
+  const log = page.locator("#f");
+  const button = page.locator("#b");
+  await expect(button).toHaveAttribute("aria-disabled", "true");
+  await expect(button).toHaveAttribute("tabindex", "-1");
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Space");
+  await expect(log).toHaveAttribute("data-log", "");
+  await page
+    .locator("#fs")
+    .evaluate((el) => ((el as HTMLFieldSetElement).disabled = false));
+  await expect(button).not.toHaveAttribute("aria-disabled");
+  await expect(button).toHaveAttribute("tabindex", "0");
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await expect(log).toHaveAttribute("data-log", "submit press ");
+});
+
+test("Enter and Space fire click, as a native button does", async ({
+  page,
+}) => {
+  await gotoStory(page, "components-button--default");
+  const button = page.locator("#button");
+  await button.evaluate((el) => {
+    el.dataset.clicks = "0";
+    el.addEventListener("click", () => (el.dataset.clicks += "x"));
+  });
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Space");
+  await expect(button).toHaveAttribute("data-clicks", "0xx");
+});
+
+test("a click on a disabled button reaches no listener", async ({ page }) => {
+  const root = await gotoStory(page, "components-button--disabled");
+  const button = root.getByRole("button", { name: "Cancel" });
+  await button.evaluate((el) => {
+    el.dataset.clicks = "0";
+    el.addEventListener("click", () => (el.dataset.clicks += "x"));
+  });
+  const box = (await button.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(button).toHaveAttribute("data-clicks", "0");
+});
+
+test("a button keeps its own tabindex, also across disabling", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, "components-button--default");
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML(
+      "beforeend",
+      `<purr-button id="r" tabindex="-1">Roving</purr-button>`,
+    ),
+  );
+  const button = page.locator("#r");
+  await expect(button).toHaveAttribute("tabindex", "-1");
+  await button.evaluate((el) => el.setAttribute("disabled", ""));
+  await expect(button).toHaveAttribute("tabindex", "-1");
+  await button.evaluate((el) => el.removeAttribute("disabled"));
+  await expect(button).not.toHaveAttribute("aria-disabled");
+  await expect(button).toHaveAttribute("tabindex", "-1");
+});
+
+test("the hidden attribute hides the button", async ({ page }) => {
+  const root = await gotoStory(page, "components-button--default");
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML(
+      "beforeend",
+      `<purr-button id="h" hidden>Hi</purr-button>`,
+    ),
+  );
+  await expect(page.locator("#h")).toBeHidden();
+});
+
+test("pressing shows feedback under forced colors", async ({ page }) => {
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  await gotoStory(page, "components-button--default");
+  const button = page.locator("#button");
+  const edge = () =>
+    button.evaluate((el) => getComputedStyle(el, "::before").borderTopColor);
+  const resting = await edge();
+  await button.hover();
+  await page.mouse.down();
+  expect(await edge()).not.toBe(resting);
+  await page.mouse.up();
+});
+
+test("increased contrast outlines every filled variant", async ({ page }) => {
+  await page.emulateMedia({ contrast: "more" });
+  const root = await gotoStory(page, "components-button--default");
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML(
+      "beforeend",
+      `<purr-button variant="primary">A</purr-button>
+       <purr-button variant="tinted">B</purr-button>
+       <purr-button destructive>C</purr-button>
+       <purr-button variant="primary" disabled>D</purr-button>`,
+    ),
+  );
+  const shadows = await page
+    .locator("purr-button")
+    .evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el, "::before").boxShadow),
+    );
+  for (const shadow of shadows) expect(shadow).not.toBe("none");
+});
+
 forEachViewport(({ name }) => {
   for (const id of stories.slice(1)) {
     test(`screenshot of ${id} at ${name}`, async ({ page }) => {

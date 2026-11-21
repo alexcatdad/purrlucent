@@ -6,6 +6,9 @@ const glass = svg`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true"><path
 
 const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-6.489 5.8a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z" /></svg>`;
 
+const textFields =
+  "purr-input, input:is(:not([type]), [type=text], [type=search], [type=email], [type=url], [type=tel], [type=password], [type=number])";
+
 /**
  * A single-line text field. A native input inside does the editing, so typing,
  * selection, IME, autofill and mobile keyboards behave as usual. The slotted
@@ -22,10 +25,13 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * @attr {string} name - The name submitted with a form.
  * @attr {string} placeholder - Hint shown while empty.
  * @attr {boolean} required - The form is invalid while the field is empty.
- * @attr {boolean} readonly - The value can be selected but not edited.
+ * @attr {boolean} readonly - The value can be selected but not edited, and a search field cannot be cleared.
  * @attr {boolean} disabled - No focus, nothing submitted.
  * @attr {string} minlength - Shortest valid value.
  * @attr {string} maxlength - Longest allowed value.
+ * @attr {string} min - Smallest valid value of a `number` field.
+ * @attr {string} max - Largest valid value of a `number` field.
+ * @attr {string} step - Step of a `number` field; `any` allows decimals.
  * @attr {string} pattern - A regular expression the value must match.
  * @attr {string} autocomplete - The autofill hint.
  * @attr {string} inputmode - The virtual keyboard hint.
@@ -57,6 +63,9 @@ export class PurrInput extends LitElement {
     disabled: { type: Boolean, reflect: true },
     minlength: {},
     maxlength: {},
+    min: {},
+    max: {},
+    step: {},
     pattern: {},
     autocomplete: {},
     inputmode: {},
@@ -74,6 +83,9 @@ export class PurrInput extends LitElement {
   declare disabled: boolean;
   declare minlength: string | undefined;
   declare maxlength: string | undefined;
+  declare min: string | undefined;
+  declare max: string | undefined;
+  declare step: string | undefined;
   declare pattern: string | undefined;
   declare autocomplete: string | undefined;
   declare inputmode: string | undefined;
@@ -81,9 +93,15 @@ export class PurrInput extends LitElement {
 
   readonly #internals = this.attachInternals();
   #touched = false;
+  readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
 
   constructor() {
     super();
+    // A blocked submit or reportValidity() is an interaction too.
+    this.addEventListener("invalid", () => {
+      this.#touched = true;
+      this.#sync();
+    });
     this.type = "text";
     this.value = "";
     this.size = "md";
@@ -98,9 +116,59 @@ export class PurrInput extends LitElement {
     return this.renderRoot.querySelector<HTMLInputElement>("input");
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.#labelWatch.observe(this, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    this.#syncLabelled();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#labelWatch.disconnect();
+  }
+
+  get form() {
+    return this.#internals.form;
+  }
+
+  get labels() {
+    return this.#internals.labels;
+  }
+
+  get validity() {
+    return this.#internals.validity;
+  }
+
+  get validationMessage() {
+    return this.#internals.validationMessage;
+  }
+
+  get willValidate() {
+    return this.#internals.willValidate;
+  }
+
+  checkValidity() {
+    return this.#internals.checkValidity();
+  }
+
+  reportValidity() {
+    return this.#internals.reportValidity();
+  }
+
+  setCustomValidity(message: string) {
+    this.#input?.setCustomValidity(message);
+    this.#sync();
+  }
+
   formResetCallback() {
     this.#touched = false;
     this.value = this.getAttribute("value") ?? "";
+    // An unchanged value schedules no update, but the touched state must clear.
+    this.requestUpdate();
   }
 
   formDisabledCallback() {
@@ -115,6 +183,7 @@ export class PurrInput extends LitElement {
   protected override updated() {
     this.#setState("search", this.type === "search");
     this.#setState("labelled", this._labelled);
+    this.#setState("clearable", this.#clearable);
     this.#sync();
   }
 
@@ -132,6 +201,15 @@ export class PurrInput extends LitElement {
     this.#setState("user-invalid", invalid);
     if (invalid) input.setAttribute("aria-invalid", "true");
     else input.removeAttribute("aria-invalid");
+  }
+
+  get #clearable() {
+    return (
+      this.type === "search" &&
+      !!this.value &&
+      !this.readonly &&
+      !this.matches(":disabled")
+    );
   }
 
   #emit(name: "purr-input" | "purr-change") {
@@ -171,26 +249,38 @@ export class PurrInput extends LitElement {
     this.#emit("purr-change");
   }
 
+  // Native implicit submission: press the form's default button, or submit
+  // when this is the only field that could.
+  #submit() {
+    const form = this.#internals.form;
+    if (!form) return;
+    const button = [...form.elements].find(
+      (el) => (el as HTMLButtonElement).type === "submit",
+    ) as HTMLElement | undefined;
+    if (button) {
+      if (!button.matches(":disabled")) button.click();
+    } else if (form.querySelectorAll(textFields).length <= 1) {
+      form.requestSubmit();
+    }
+  }
+
   #onKeydown = (event: KeyboardEvent) => {
     if (event.isComposing || event.defaultPrevented) return;
-    if (event.key === "Enter") this.#internals.form?.requestSubmit();
-    else if (event.key === "Escape" && this.type === "search" && this.value) {
+    if (event.key === "Enter") this.#submit();
+    else if (event.key === "Escape" && this.#clearable) {
       event.preventDefault();
       this.#clear();
     }
   };
 
-  #onSlotChange = (event: Event) => {
-    this._labelled = (event.target as HTMLSlotElement)
-      .assignedNodes()
-      .some((node) => node.textContent?.trim());
-  };
+  // Watches the light DOM: editing a slotted label's text fires no slotchange.
+  #syncLabelled() {
+    this._labelled = !!this.textContent?.trim();
+  }
 
   override render() {
     const search = this.type === "search";
-    return html`<label part="label" for="control"
-        ><slot @slotchange=${this.#onSlotChange}></slot
-      ></label>
+    return html`<label part="label" for="control"><slot></slot></label>
       <div part="field">
         ${search ? glass : nothing}
         <input
@@ -206,6 +296,9 @@ export class PurrInput extends LitElement {
           ?disabled=${this.matches(":disabled")}
           minlength=${ifDefined(this.minlength)}
           maxlength=${ifDefined(this.maxlength)}
+          min=${ifDefined(this.min)}
+          max=${ifDefined(this.max)}
+          step=${ifDefined(this.step)}
           pattern=${ifDefined(this.pattern)}
           autocomplete=${ifDefined(this.autocomplete)}
           inputmode=${ifDefined(this.inputmode)}
@@ -215,7 +308,7 @@ export class PurrInput extends LitElement {
           @keydown=${this.#onKeydown}
         />
         ${
-          search && this.value && !this.matches(":disabled")
+          this.#clearable
             ? html`<button
                 part="clear"
                 type="button"

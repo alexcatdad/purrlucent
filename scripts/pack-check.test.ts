@@ -19,7 +19,11 @@ type Target = string | { types: string; default: string };
 
 // Inside node_modules, so the app finds the package's own dependencies (lit)
 // the way an installed app does, without a network install.
-const app = join(process.cwd(), "node_modules/.cache/pack-check");
+// The process id keeps parallel checkouts that share node_modules apart.
+const app = join(
+  process.cwd(),
+  `node_modules/.cache/pack-check-${process.pid}`,
+);
 const installed = join(app, "node_modules/purrlucent");
 const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
   version: string;

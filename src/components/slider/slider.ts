@@ -1,9 +1,9 @@
 import { LitElement, html, type PropertyValues } from "lit";
 import { sliderStyles } from "./slider.css.ts";
 import {
-  clamp,
+  currentValue,
   fractionOf,
-  snap,
+  toRange,
   valueAfterKey,
   valueAt,
   type Range,
@@ -74,7 +74,7 @@ export class PurrSlider extends LitElement {
     this.addEventListener("keydown", this.#onKeyDown);
     this.addEventListener("pointerdown", this.#onPointerDown);
     this.addEventListener("pointermove", this.#onPointerMove);
-    this.addEventListener("pointerup", this.#onPointerEnd);
+    this.addEventListener("pointerup", this.#onPointerUp);
     this.addEventListener("pointercancel", this.#onPointerEnd);
   }
 
@@ -84,8 +84,19 @@ export class PurrSlider extends LitElement {
     this.setAttribute("aria-orientation", "horizontal");
   }
 
+  // A drag cannot outlive the element: its pointer release no longer arrives.
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#internals.states.delete("dragging");
+    this.#startValue = undefined;
+  }
+
   formResetCallback() {
     this.value = Number(this.getAttribute("value") ?? 0);
+  }
+
+  formStateRestoreCallback(state: string) {
+    this.value = Number(state);
   }
 
   formDisabledCallback() {
@@ -93,15 +104,12 @@ export class PurrSlider extends LitElement {
   }
 
   get #range(): Range {
-    return {
-      min: this.min,
-      max: this.max,
-      step: this.step > 0 ? this.step : 1,
-    };
+    return toRange(this.min, this.max, this.step);
   }
 
+  // What is shown and submitted; `value` itself may be off the grid or out of range.
   get #current() {
-    return clamp(snap(this.value, this.#range), this.min, this.max);
+    return currentValue(this.value, this.#range);
   }
 
   get #rtl() {
@@ -119,7 +127,7 @@ export class PurrSlider extends LitElement {
   }
 
   #set(value: number) {
-    if (value === this.value) return;
+    if (value === this.#current) return;
     this.value = value;
     this.#emit("purr-input");
   }
@@ -141,9 +149,9 @@ export class PurrSlider extends LitElement {
     );
     if (next === undefined) return;
     event.preventDefault();
-    const before = this.value;
+    const before = this.#current;
     this.#set(next);
-    if (this.value !== before) this.#emit("purr-change");
+    if (this.#current !== before) this.#emit("purr-change");
   };
 
   #setFromPointer(event: PointerEvent) {
@@ -167,27 +175,38 @@ export class PurrSlider extends LitElement {
     if (event.button !== 0 || this.matches(":disabled")) return;
     this.setPointerCapture(event.pointerId);
     this.#internals.states.add("dragging");
-    this.#startValue = this.value;
+    this.#startValue = this.#current;
     this.focus();
-    this.#setFromPointer(event);
+    // A touch may turn into a scroll: it counts only once it lifts.
+    if (event.pointerType !== "touch") this.#setFromPointer(event);
   };
 
   #onPointerMove = (event: PointerEvent) => {
-    if (this.hasPointerCapture(event.pointerId)) this.#setFromPointer(event);
+    if (this.hasPointerCapture(event.pointerId) && !this.matches(":disabled")) {
+      this.#setFromPointer(event);
+    }
+  };
+
+  #onPointerUp = (event: PointerEvent) => {
+    if (event.pointerType === "touch" && this.#startValue !== undefined) {
+      this.#setFromPointer(event);
+    }
+    this.#onPointerEnd();
   };
 
   #onPointerEnd = () => {
     if (this.#startValue === undefined) return;
     this.#internals.states.delete("dragging");
-    if (this.value !== this.#startValue) this.#emit("purr-change");
+    if (this.#current !== this.#startValue) this.#emit("purr-change");
     this.#startValue = undefined;
   };
 
   protected override updated(changed: PropertyValues<this>) {
     const disabled = this.matches(":disabled");
     this.tabIndex = disabled ? -1 : 0;
-    this.setAttribute("aria-valuemin", String(this.min));
-    this.setAttribute("aria-valuemax", String(this.max));
+    const { min, max } = this.#range;
+    this.setAttribute("aria-valuemin", String(min));
+    this.setAttribute("aria-valuemax", String(max));
     this.setAttribute("aria-valuenow", String(this.#current));
     if (this.label) this.setAttribute("aria-label", this.label);
     else if (changed.get("label")) this.removeAttribute("aria-label");

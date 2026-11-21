@@ -130,6 +130,121 @@ test("purr-input fires while dragging and purr-change once on release", async ({
   expect(log.at(-1)).toMatch(/^purr-change:/);
 });
 
+/** Counts the events a slider fires from now on, into `window.log`. */
+const logEvents = (control: Locator) =>
+  control.evaluate((el) => {
+    const log: string[] = [];
+    (window as unknown as { log: string[] }).log = log;
+    for (const type of ["purr-input", "purr-change"]) {
+      el.addEventListener(type, () => log.push(type));
+    }
+  });
+
+const events = (page: Page) =>
+  page.evaluate(() => (window as unknown as { log: string[] }).log);
+
+test("a value past the range or off the step fires nothing when a key lands on what is shown", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("slider", { name: "Volume" });
+  await control.evaluate(async (el) => {
+    const slider = el as HTMLElement & { value: number };
+    slider.value = 150;
+    await (el as HTMLElement & { updateComplete: Promise<boolean> })
+      .updateComplete;
+  });
+  expect(await now(control)).toBe("100");
+  await logEvents(control);
+  await control.focus();
+  await page.keyboard.press("End");
+  expect(await events(page)).toEqual([]);
+  await control.evaluate(async (el) => {
+    const slider = el as HTMLElement & { value: number };
+    slider.value = 50.4;
+    await (el as HTMLElement & { updateComplete: Promise<boolean> })
+      .updateComplete;
+  });
+  expect(await now(control)).toBe("50");
+});
+
+test("a value or bound that is not a number does not reach the ARIA values", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("slider", { name: "Volume" });
+  await control.evaluate((el) => {
+    el.setAttribute("value", "abc");
+    el.setAttribute("min", "x");
+  });
+  await expect(control).toHaveAttribute("aria-valuenow", "0");
+  await expect(control).toHaveAttribute("aria-valuemin", "0");
+});
+
+test("a restored form state sets the value", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("slider", { name: "Volume" });
+  await control.evaluate((el) =>
+    (
+      el as HTMLElement & { formStateRestoreCallback(state: string): void }
+    ).formStateRestoreCallback("40"),
+  );
+  await expect(control).toHaveAttribute("aria-valuenow", "40");
+});
+
+test("disabling the slider during a drag stops the drag", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("slider", { name: "Volume" });
+  const start = await at(control, 0.25);
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  const held = await now(control);
+  await control.evaluate((el) => el.setAttribute("disabled", ""));
+  const end = await at(control, 0.75);
+  await page.mouse.move(end.x, end.y, { steps: 3 });
+  expect(await now(control)).toBe(held);
+  await page.mouse.up();
+});
+
+test("removing the slider during a drag ends the dragging state", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("slider", { name: "Volume" });
+  const start = await at(control, 0.25);
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  expect(await control.evaluate((el) => el.matches(":state(dragging)"))).toBe(
+    true,
+  );
+  await control.evaluate((el) => {
+    const parent = el.parentElement!;
+    el.remove();
+    parent.append(el);
+  });
+  expect(await control.evaluate((el) => el.matches(":state(dragging)"))).toBe(
+    false,
+  );
+  await page.mouse.up();
+});
+
+test("a disabled slider keeps its thumb and dims only the fill", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const thumb = (name: string) =>
+    page.getByRole("slider", { name, exact: true }).evaluate((el) => {
+      const style = getComputedStyle(
+        el.shadowRoot!.querySelector('[part="thumb"]')!,
+      );
+      return [getComputedStyle(el).opacity, style.backgroundColor];
+    });
+  const [, idleThumb] = await thumb("Idle");
+  const [opacity, disabledThumb] = await thumb("Disabled");
+  expect(opacity).toBe("1");
+  expect(disabledThumb).toBe(idleThumb);
+});
+
 test("a disabled slider takes no focus and does not move", async ({ page }) => {
   await gotoStory(page, story("states"));
   const control = page.getByRole("slider", { name: "Disabled", exact: true });
@@ -279,6 +394,28 @@ test.describe("coarse pointer on a wide screen", () => {
     expect(
       await control.evaluate((el) => getComputedStyle(el).touchAction),
     ).toBe("pan-y");
+  });
+
+  test("a touch the browser takes over to scroll changes nothing", async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName !== "chromium", "needs a DevTools touch cancel");
+    await gotoStory(page, story("default"));
+    const control = page.getByRole("slider", { name: "Volume" });
+    await logEvents(control);
+    const point = await at(control, 0.9);
+    const touch = await page.context().newCDPSession(page);
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [point],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchCancel",
+      touchPoints: [],
+    });
+    expect(await now(control)).toBe("50");
+    expect(await events(page)).toEqual([]);
   });
 });
 

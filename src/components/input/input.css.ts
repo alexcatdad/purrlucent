@@ -79,7 +79,7 @@ export const inputStyles = css`
     );
   }
 
-  :host(:state(search)) [part="field"] {
+  :host(:state(clearable)) [part="field"] {
     padding-inline-end: 0;
   }
 
@@ -96,6 +96,13 @@ export const inputStyles = css`
     font: inherit;
     caret-color: var(--purr-color-accent);
     appearance: none;
+  }
+
+  /* The UA paints its autofill colour on the input; cover it with the shell's. */
+  [part="control"]:-webkit-autofill {
+    -webkit-text-fill-color: var(--purr-color-foreground);
+    box-shadow: inset 0 0 0 calc(var(--purr-spacing) * 1000)
+      var(--purr-color-input);
   }
 
   [part="control"]::placeholder {

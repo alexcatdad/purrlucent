@@ -25,7 +25,7 @@ const open = async (page: Page, story = "default", globals = "") => {
 /** Shows the sidebar where it collapses on its own (600px or less). */
 const expand = async (page: Page) => {
   if ((page.viewportSize()?.width ?? Infinity) <= 600)
-    await page.getByRole("button", { name: /^Show / }).click();
+    await page.getByRole("button", { name: /^Library sidebar$/ }).click();
 };
 
 /** Widens the window and waits until the page has handled the width change. */
@@ -58,7 +58,7 @@ test("is a navigation landmark named by its label", async ({ page }) => {
 test("aria snapshot", async ({ page }) => {
   const root = await open(page, "group-open");
   await expect(root).toMatchAriaSnapshot(`
-    - button "Hide Library" [expanded]
+    - button "Library sidebar" [expanded]
     - navigation "Library":
       - link "Home"
       - button "Albums" [expanded]
@@ -139,7 +139,7 @@ test("Tab and Shift+Tab visit every button and visible link", async ({
   // WebKit on macOS does not Tab to links by default (system setting).
   test.skip(browserName === "webkit", "WebKit on macOS skips links on Tab");
   await open(page, "group-open");
-  await page.getByRole("button", { name: "Hide Library" }).focus();
+  await page.getByRole("button", { name: "Library sidebar" }).focus();
   const forward = ["home", "albums", "recent", "favorites", "settings"];
   for (const id of forward) {
     await page.keyboard.press("Tab");
@@ -271,12 +271,195 @@ test("right-to-left mirrors the chevron and the indent", async ({ page }) => {
 
 test("people can hide and show the sidebar", async ({ page }) => {
   await open(page);
-  const toggle = page.getByRole("button", { name: "Hide Library" });
+  const toggle = page.getByRole("button", { name: "Library sidebar" });
   await toggle.click();
   await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
   await expect(page.locator("#home")).toBeHidden();
-  await page.getByRole("button", { name: "Show Library" }).click();
+  await page.getByRole("button", { name: "Library sidebar" }).click();
   await expect(page.locator("#home")).toBeVisible();
+});
+
+test("the toggle keeps its name and controls the navigation", async ({
+  page,
+}) => {
+  await open(page);
+  const toggle = page.getByRole("button", { name: "Library sidebar" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(
+    await page.locator("#sidebar").evaluate((el) => {
+      const id = el.shadowRoot
+        ?.querySelector(".toggle")
+        ?.getAttribute("aria-controls");
+      return el.shadowRoot?.getElementById(id ?? "")?.localName;
+    }),
+  ).toBe("nav");
+});
+
+test("collapsing from outside moves focus from the hidden navigation to the toggle", async ({
+  page,
+}) => {
+  await open(page);
+  await page.locator("#settings a").focus();
+  await page
+    .locator("#sidebar")
+    .evaluate((el: HTMLElement & { collapsed: boolean }) => {
+      el.collapsed = true;
+    });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.querySelector("#sidebar")?.shadowRoot?.activeElement
+            ?.className,
+      ),
+    )
+    .toBe("toggle");
+});
+
+type Item = HTMLElement & {
+  expanded: boolean;
+  selected: boolean;
+  level: number;
+};
+
+test("a group opened or closed from outside shows or hides its children", async ({
+  page,
+}) => {
+  await open(page);
+  const albums = page.locator("#albums");
+  await albums.evaluate((el: Item) => (el.expanded = true));
+  await expect(page.locator("#recent")).toBeVisible();
+  await albums.evaluate((el: Item) => (el.expanded = false));
+  await expect(page.locator("#recent")).toBeHidden();
+});
+
+test("selecting a hidden child from outside opens its group", async ({
+  page,
+}) => {
+  await open(page);
+  await page.locator("#home").evaluate((el: Item) => (el.selected = false));
+  await page.locator("#favorites").evaluate((el: Item) => (el.selected = true));
+  await expect(page.locator("#albums button")).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await expect(page.locator("#favorites")).toBeVisible();
+});
+
+test("changing levels from outside re-derives the disclosure", async ({
+  page,
+}) => {
+  await open(page);
+  await expect(page.locator("#albums button[aria-expanded]")).toHaveCount(1);
+  for (const id of ["recent", "favorites"])
+    await page.locator(`#${id}`).evaluate((el: Item) => (el.level = 1));
+  await expect(page.locator("#albums button[aria-expanded]")).toHaveCount(0);
+  await expect(page.locator("#recent")).toBeVisible();
+});
+
+test("closing a group with Escape fires purr-toggle", async ({ page }) => {
+  await open(page, "group-open");
+  await page.evaluate(() => {
+    const events: boolean[] = [];
+    (window as unknown as { toggles: boolean[] }).toggles = events;
+    document
+      .querySelector("#sidebar")
+      ?.addEventListener("purr-toggle", (e) =>
+        events.push((e as CustomEvent).detail.expanded),
+      );
+  });
+  await page.locator("#recent a").focus();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#albums button")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { toggles: boolean[] }).toggles,
+    ),
+  ).toEqual([false]);
+});
+
+test("an item without href is a focusable control that arrows reach", async ({
+  page,
+}) => {
+  await open(page);
+  await page
+    .locator("#settings")
+    .evaluate((el) =>
+      el.insertAdjacentHTML(
+        "afterend",
+        '<purr-sidebar-item id="plain">Plain</purr-sidebar-item>',
+      ),
+    );
+  await page.locator("#home a").focus();
+  await page.keyboard.press("End");
+  expect(await focusedId(page)).toBe("plain");
+});
+
+test("a modified click does not select", async ({ page }) => {
+  await open(page);
+  const result = await page.evaluate(() => {
+    let count = 0;
+    document
+      .querySelector("#sidebar")
+      ?.addEventListener("purr-change", () => count++);
+    const link = document
+      .querySelector("#settings")!
+      .shadowRoot!.querySelector("a")!;
+    link.addEventListener("click", (e) => e.preventDefault());
+    link.dispatchEvent(
+      new MouseEvent("click", {
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+        ctrlKey: true,
+      }),
+    );
+    return { count, current: link.hasAttribute("aria-current") };
+  });
+  expect(result).toEqual({ count: 0, current: false });
+});
+
+test("purr-change fires again after the app moved the selection", async ({
+  page,
+}) => {
+  await open(page);
+  await page.locator("#settings a").click();
+  await page.evaluate(() => {
+    const get = (id: string) => document.querySelector<Item>(`#${id}`)!;
+    get("home").selected = true;
+    get("settings").selected = false;
+  });
+  const changes = await page.evaluate(async () => {
+    let count = 0;
+    document
+      .querySelector("#sidebar")
+      ?.addEventListener("purr-change", () => count++);
+    await new Promise((done) => requestAnimationFrame(done));
+    document
+      .querySelector("#settings")!
+      .shadowRoot!.querySelector("a")!
+      .click();
+    return count;
+  });
+  expect(changes).toBe(1);
+});
+
+test("the selected item gets a stroke under increased contrast", async ({
+  page,
+}) => {
+  await open(page);
+  await page.emulateMedia({ contrast: "more" });
+  const edge = (id: string) =>
+    page
+      .locator(`#${id} a`)
+      .evaluate((el) => getComputedStyle(el, "::before").boxShadow);
+  expect(await edge("home")).not.toBe("none");
+  expect(await edge("settings")).toBe("none");
 });
 
 for (const [name, story] of [
@@ -339,7 +522,7 @@ test.describe("phone width with a coarse pointer", () => {
     ).toBe(true);
     await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
     await expect(page.locator("#home")).toBeHidden();
-    await page.getByRole("button", { name: "Show Library" }).click();
+    await page.getByRole("button", { name: "Library sidebar" }).click();
     await expect(page.locator("#home")).toBeVisible();
     const sidebar = await page.locator("#sidebar").boundingBox();
     const rootBox = await root.boundingBox();
@@ -371,7 +554,7 @@ test.describe("narrow window with a fine pointer", () => {
     page,
   }) => {
     await open(page);
-    await page.getByRole("button", { name: "Show Library" }).click();
+    await page.getByRole("button", { name: "Library sidebar" }).click();
     await page
       .locator("#sidebar")
       .evaluate((el) => el.parentElement!.append(el));
@@ -382,8 +565,8 @@ test.describe("narrow window with a fine pointer", () => {
     page,
   }) => {
     await open(page);
-    await page.getByRole("button", { name: "Show Library" }).click();
-    await page.getByRole("button", { name: "Hide Library" }).click();
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await page.getByRole("button", { name: "Library sidebar" }).click();
     await widen(page);
     await expect(page.locator("#home")).toBeHidden();
   });

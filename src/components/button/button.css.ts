@@ -62,8 +62,8 @@ export const buttonStyles = css`
     border-radius: var(--purr-radius-full);
   }
 
-  /* Increased contrast outlines the neutral face. */
-  :host([variant="secondary"]:not([destructive]))::before {
+  /* Increased contrast outlines every face but the label-only ghost. */
+  :host(:not([variant="ghost"]))::before {
     box-shadow: var(--purr-boundary);
   }
 
@@ -120,7 +120,7 @@ export const buttonStyles = css`
     --_fg-disabled: color-mix(in srgb, var(--_tone-text) 40%, transparent);
   }
 
-  :host([disabled]) {
+  :host(:is([disabled], :disabled)) {
     --purr-face: var(--_face-disabled);
 
     color: var(--_fg-disabled);
@@ -135,12 +135,22 @@ export const buttonStyles = css`
       color: ButtonText;
     }
 
-    :host([disabled]) {
+    :host(:is([disabled], :disabled)) {
       color: GrayText;
     }
 
     :host::before {
       border: 1px solid;
+    }
+
+    :host(:state(pressed))::before {
+      border-color: Highlight;
+    }
+
+    @media (hover: hover) {
+      :host(:not(:is([disabled], :disabled)):hover)::before {
+        border-color: Highlight;
+      }
     }
   }
 `;

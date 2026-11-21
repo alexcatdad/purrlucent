@@ -57,27 +57,35 @@ export class PurrToggleGroupItem extends LitElement {
  * group. Arrow keys, Home and End move focus and select; they follow the visual
  * direction under `dir="rtl"`. Enter also selects the focused item. Space,
  * Tab and the arrows follow the APG radio group pattern; Enter, Home and End
- * are extras. Always set `label`: without it the group has no accessible name.
+ * are extras. Always set `label` (or `aria-label`): without either the group
+ * has no accessible name. It takes part in forms like a radio group: it
+ * submits `name` with the selected value, a form reset returns it to its
+ * starting selection, and a disabled fieldset disables it.
  *
  * @attr {string} value - The value of the selected item. Defaults to the item marked `selected`, else the first.
- * @attr {string} label - The accessible name of the group. Required.
+ * @attr {string} name - The name submitted with a form.
+ * @attr {string} label - The accessible name of the group.
  * @attr {string} size - `md` (default), `lg` or `xl`.
- * @attr {boolean} disabled - Disables the whole group: no focus, no feedback.
+ * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted.
  * @slot - `purr-toggle-group-item` elements.
  * @fires purr-change - The selection changed by the user. `detail.selected` is a one-item array.
  */
 export class PurrToggleGroup extends LitElement {
+  static formAssociated = true;
   static override styles = [groupStyles];
   static override properties = {
     value: { type: String, reflect: true },
+    name: { reflect: true },
     label: { type: String },
     size: { reflect: true },
     disabled: { type: Boolean, reflect: true },
   };
   declare value: string;
+  declare name: string;
   declare label: string;
   declare size: "md" | "lg" | "xl";
   declare disabled: boolean;
+  readonly #internals = this.attachInternals();
   readonly #selection = new SelectionController<string>(this, {
     mode: "single",
     required: true,
@@ -90,10 +98,15 @@ export class PurrToggleGroup extends LitElement {
   #items: PurrToggleGroupItem[] = [];
   /** True while the selection is synced from `value`: not a user change. */
   #syncing = false;
+  /** The selection a form reset returns to: the first one the group settled on. */
+  #initial: string | undefined;
+  /** ARIA attributes the group wrote itself, so it never removes a consumer's. */
+  readonly #owned = new Set<string>();
 
   constructor() {
     super();
     this.value = "";
+    this.name = "";
     this.label = "";
     this.size = "md";
     this.disabled = false;
@@ -104,9 +117,31 @@ export class PurrToggleGroup extends LitElement {
       if (selected !== undefined) this.value = selected;
     });
     this.addEventListener("purr-press", (event) => {
-      if (event.target instanceof PurrToggleGroupItem)
+      if (!this.#off && event.target instanceof PurrToggleGroupItem)
         this.#selection.select(event.target.value);
     });
+  }
+
+  // :disabled covers a disabled fieldset around the group; the property is
+  // current before the attribute is reflected.
+  get #off() {
+    return this.disabled || this.matches(":disabled");
+  }
+
+  /** Sets an attribute the group owns, and removes it only if the group set it. */
+  #own(name: string, value: string | null) {
+    if (value !== null) {
+      this.setAttribute(name, value);
+      this.#owned.add(name);
+    } else if (this.#owned.delete(name)) this.removeAttribute(name);
+  }
+
+  formResetCallback() {
+    if (this.#initial !== undefined) this.value = this.#initial;
+  }
+
+  formDisabledCallback() {
+    this.requestUpdate();
   }
 
   override connectedCallback() {
@@ -127,7 +162,7 @@ export class PurrToggleGroup extends LitElement {
    * only handles the horizontal arrows.
    */
   #onKeydown = (event: KeyboardEvent) => {
-    if (this.disabled) return;
+    if (this.#off) return;
     const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
     if (step && !(event.altKey || event.ctrlKey || event.metaKey)) {
       const from = this.#items.indexOf(event.target as PurrToggleGroupItem);
@@ -153,6 +188,7 @@ export class PurrToggleGroup extends LitElement {
     const value = pickValue(this.#items, this.value);
     if (value === undefined) return;
     this.value = value;
+    this.#initial ??= value;
     if (!this.#selection.selected.has(value)) {
       this.#syncing = true;
       this.#selection.select(value);
@@ -161,9 +197,10 @@ export class PurrToggleGroup extends LitElement {
   }
 
   protected override updated() {
+    const off = this.#off;
     this.#items.forEach((s, i) => {
       s.selected = s.value === this.value;
-      s.disabled = this.disabled;
+      s.disabled = off;
       s.toggleAttribute(
         "data-after-selected",
         this.#items[i - 1]?.value === this.value,
@@ -171,12 +208,10 @@ export class PurrToggleGroup extends LitElement {
     });
     this.#roving.activate(this.#items.findIndex((s) => s.selected));
     // A disabled item takes no focus, not even from a click.
-    if (this.disabled)
-      this.#items.forEach((s) => s.removeAttribute("tabindex"));
-    if (this.disabled) this.setAttribute("aria-disabled", "true");
-    else this.removeAttribute("aria-disabled");
-    if (this.label) this.setAttribute("aria-label", this.label);
-    else this.removeAttribute("aria-label");
+    if (off) this.#items.forEach((s) => s.removeAttribute("tabindex"));
+    this.#own("aria-disabled", off ? "true" : null);
+    this.#own("aria-label", this.label || null);
+    this.#internals.setFormValue(off ? null : this.value || null);
   }
 
   override render() {

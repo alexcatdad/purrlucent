@@ -1,4 +1,4 @@
-import { LitElement, html, type PropertyValues } from "lit";
+import { LitElement, html } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { buttonStyles } from "./button.css.ts";
@@ -35,9 +35,12 @@ export class PurrButton extends LitElement {
   declare destructive: boolean;
   declare disabled: boolean;
 
+  // :disabled also covers a disabled fieldset around the button.
   readonly pressable = new PressableController(this, {
-    disabled: () => this.disabled,
+    disabled: () => this.matches(":disabled"),
   });
+  #off = false;
+  #tabindex: string | null = null;
 
   constructor() {
     super();
@@ -60,12 +63,27 @@ export class PurrButton extends LitElement {
     if (!this.hasAttribute("role")) this.setAttribute("role", "button");
   }
 
-  protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("disabled")) {
-      this.tabIndex = this.disabled ? -1 : 0;
-      if (this.disabled) this.setAttribute("aria-disabled", "true");
-      else this.removeAttribute("aria-disabled");
+  formDisabledCallback() {
+    this.requestUpdate();
+  }
+
+  // After the update, so a changed `disabled` attribute is already reflected.
+  // A tabindex set from outside (a roving group) is kept and restored.
+  protected override updated() {
+    const off = this.matches(":disabled");
+    if (off !== this.#off) {
+      this.#off = off;
+      if (off) {
+        this.#tabindex = this.getAttribute("tabindex");
+        this.tabIndex = -1;
+        this.setAttribute("aria-disabled", "true");
+      } else {
+        if (this.#tabindex === null) this.removeAttribute("tabindex");
+        else this.setAttribute("tabindex", this.#tabindex);
+        this.removeAttribute("aria-disabled");
+      }
     }
+    if (!off && !this.hasAttribute("tabindex")) this.tabIndex = 0;
   }
 
   override render() {

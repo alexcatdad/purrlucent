@@ -75,9 +75,24 @@ export class PurrToolbar extends LitElement {
       .filter(isItem);
   }
 
+  // The tab stop follows which items are enabled, so an item that is disabled
+  // or enabled, added or removed inside a group updates it too.
+  readonly #watcher = new MutationObserver(() => this.requestUpdate());
+
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute("role", "toolbar");
+    this.#watcher.observe(this, {
+      attributes: true,
+      attributeFilter: ["disabled", "aria-disabled"],
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#watcher.disconnect();
   }
 
   protected override willUpdate(changed: PropertyValues<this>) {

@@ -11,6 +11,7 @@ export const groupStyles = css`
     --_size: var(--purr-size-md);
     --_pad: var(--purr-pad-control);
     --_sep: calc(var(--purr-spacing) * 3.5);
+    --_min: calc(var(--purr-spacing) * 7.5);
 
     display: inline-grid;
     grid-auto-columns: 1fr;
@@ -28,12 +29,21 @@ export const groupStyles = css`
   :host([size="lg"]) {
     --_size: var(--purr-size-lg);
     --_sep: calc(var(--purr-spacing) * 4.5);
+    --_min: calc(var(--purr-spacing) * 8.5);
   }
 
   :host([size="xl"]) {
     --_size: var(--purr-size-xl);
     --_pad: var(--purr-pad-control-xl);
     --_sep: calc(var(--purr-spacing) * 5);
+    --_min: calc(var(--purr-spacing) * 9.5);
+  }
+
+  /* Forced colors drop the track's shadow and fill: outline it instead. */
+  @media (forced-colors: active) {
+    :host {
+      outline: 1px solid CanvasText;
+    }
   }
 `;
 
@@ -44,6 +54,7 @@ export const itemStyles = css`
 
     gap: var(--purr-gap-icon);
     min-block-size: var(--_size);
+    min-inline-size: max(var(--_min), var(--purr-size-hit-min));
     padding: var(--purr-space-1) var(--_pad);
     cursor: default;
     overflow-wrap: anywhere;
@@ -135,8 +146,18 @@ export const itemStyles = css`
       outline-color: HighlightText;
     }
 
+    /* Disabled, selected: GrayText fill, the reverse of unselected GrayText text. */
     :host([selected][disabled]) {
-      color: GrayText;
+      --purr-face: GrayText;
+
+      forced-color-adjust: none;
+      background-color: GrayText;
+      color: Canvas;
+    }
+
+    :host(:not(:first-child))::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
     }
   }
 `;

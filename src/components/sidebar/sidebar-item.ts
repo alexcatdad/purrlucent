@@ -1,5 +1,4 @@
 import { LitElement, html, nothing, svg } from "lit";
-import { ifDefined } from "lit/directives/if-defined.js";
 import { parseLevel, type SidebarLevel } from "./level.ts";
 import { itemStyles } from "./sidebar.css.ts";
 
@@ -11,7 +10,8 @@ const label = html`<span class="label"><slot></slot></span>`;
 
 /**
  * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
- * by the sidebar because level 2 items follow it, a disclosure button.
+ * by the sidebar because level 2 items follow it, a disclosure button. Without
+ * an `href` it renders a plain button, so an app can handle the click itself.
  *
  * @slot - The item label.
  * @csspart control - The link or disclosure button.
@@ -80,13 +80,23 @@ export class PurrSidebarItem extends LitElement {
         >
           ${chevron}${label}
         </button>`
-      : html`<a
-          class="control"
-          part="control"
-          href=${ifDefined(this.href)}
-          aria-current=${this.selected ? "page" : nothing}
-          >${label}</a
-        >`;
+      : this.href
+        ? html`<a
+            class="control"
+            part="control"
+            href=${this.href}
+            aria-current=${this.selected ? "page" : nothing}
+            >${label}</a
+          >`
+        : // Without a destination an anchor is not focusable, so use a button.
+          html`<button
+            class="control"
+            part="control"
+            type="button"
+            aria-current=${this.selected ? "page" : nothing}
+          >
+            ${label}
+          </button>`;
   }
 }
 

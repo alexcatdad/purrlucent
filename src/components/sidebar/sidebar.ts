@@ -1,6 +1,5 @@
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
-import { SelectionController } from "../../behaviors/selection.ts";
 import { PurrSidebarItem } from "./sidebar-item.ts";
 import { sidebarStyles } from "./sidebar.css.ts";
 
@@ -38,10 +37,11 @@ export class PurrSidebar extends LitElement {
   declare label: string;
   declare collapsed: boolean;
 
-  readonly #selection = new SelectionController<PurrSidebarItem>(this, {
-    mode: "single",
-    required: false,
-  });
+  // An item's group, level or selection changed from outside; reveal only
+  // follows a selection, so an app can still close a group holding the page.
+  readonly #watcher = new MutationObserver((records) =>
+    this.#sync(records.some((record) => record.attributeName === "selected")),
+  );
   readonly #roving = new RovingFocusController(this, {
     items: () => this.#items().filter((item) => !item.hidden),
     orientation: "vertical",
@@ -80,17 +80,29 @@ export class PurrSidebar extends LitElement {
 
   #onSlotchange = () => this.#sync(true);
 
-  #onClick = (event: Event) => {
+  #onClick = (event: MouseEvent) => {
     const item = event.target;
     if (
       !(item instanceof PurrSidebarItem) ||
       item.expandable ||
       !item.href ||
-      item.selected
+      item.selected ||
+      // A modified click opens the link elsewhere; this page stays current.
+      event.button !== 0 ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
     )
       return;
     for (const other of this.#items()) other.selected = other === item;
-    this.#selection.select(item);
+    this.dispatchEvent(
+      new CustomEvent("purr-change", {
+        detail: { selected: [item] },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   };
 
   #onKeydown = (event: KeyboardEvent) => {
@@ -112,8 +124,8 @@ export class PurrSidebar extends LitElement {
             .find((candidate) => candidate.level === 1)
         : item;
     if (!parent?.expandable || !parent.expanded) return;
-    parent.expanded = false;
-    this.#sync();
+    // The button's own handler closes it and fires purr-toggle.
+    parent.renderRoot.querySelector("button")?.click();
     parent.focus();
   };
 
@@ -139,17 +151,26 @@ export class PurrSidebar extends LitElement {
     super.connectedCallback();
     this.#narrow.addEventListener("change", this.#onNarrow);
     if (this.#narrow.matches !== this.#wasNarrow) this.#onNarrow();
+    this.#watcher.observe(this, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ["expanded", "selected", "level"],
+    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#narrow.removeEventListener("change", this.#onNarrow);
+    this.#watcher.disconnect();
   }
 
-  // Any opening, including one the app sets, ends an automatic collapse.
   protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("collapsed") && !this.collapsed)
-      this.#autoCollapsed = false;
+    if (!changed.has("collapsed")) return;
+    // Any opening, including one the app sets, ends an automatic collapse.
+    if (!this.collapsed) this.#autoCollapsed = false;
+    // The navigation is about to be hidden; keep focus from falling to the page.
+    else if (this.matches(":focus-within"))
+      this.shadowRoot?.querySelector<HTMLElement>(".toggle")?.focus();
   }
 
   #toggleCollapsed = () => this.#setCollapsed(!this.collapsed);
@@ -173,12 +194,14 @@ export class PurrSidebar extends LitElement {
         part="toggle"
         type="button"
         aria-expanded=${this.collapsed ? "false" : "true"}
-        aria-label=${`${this.collapsed ? "Show" : "Hide"} ${this.label}`.trim()}
+        aria-controls="nav"
+        aria-label=${this.label ? `${this.label} sidebar` : "Sidebar"}
         @click=${this.#toggleCollapsed}
       >
         ${sidebarIcon}
       </button>
       <nav
+        id="nav"
         part="nav"
         aria-label=${this.label || nothing}
         @click=${this.#onClick}

@@ -84,15 +84,18 @@ test("typing edits the value and fires purr-input and purr-change", async ({
 test("the focus ring is drawn on the shell", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.keyboard.press("Tab");
-  expect(
-    await page
-      .locator("purr-input")
-      .evaluate(
-        (el) =>
-          getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
-            .outlineColor,
-      ),
-  ).not.toBe("rgba(0, 0, 0, 0)");
+  // The ring fades in, so the colour is transparent until the transition runs.
+  await expect
+    .poll(() =>
+      page
+        .locator("purr-input")
+        .evaluate(
+          (el) =>
+            getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
+              .outlineColor,
+        ),
+    )
+    .not.toBe("rgba(0, 0, 0, 0)");
 });
 
 test("a search field shows its clear button only while it has text", async ({
@@ -235,17 +238,224 @@ test("a disabled fieldset disables the fields and submits nothing", async ({
   expect(await submitted(page)).toEqual([]);
 });
 
-test("Enter submits the form", async ({ page }) => {
-  await gotoStory(page, story("in-form"));
-  await page.locator("#form").evaluate((form) => {
+/** Adds a default button to the form and records each submit's submitter. */
+const trackSubmits = (page: Page, button: string) =>
+  page.locator("#form").evaluate((form, markup) => {
+    form.insertAdjacentHTML("beforeend", markup);
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      form.setAttribute("data-submitted", "");
+      form.setAttribute(
+        "data-submitted",
+        (event as SubmitEvent).submitter?.getAttribute("name") ?? "none",
+      );
     });
-  });
+  }, button);
+
+test("Enter presses the form's default button, like a native input", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await trackSubmits(
+    page,
+    '<button type="submit" name="intent" value="save">Save</button>',
+  );
   await page.getByRole("textbox", { name: "Email" }).fill("a@example.com");
   await page.keyboard.press("Enter");
-  await expect(page.locator("#form")).toHaveAttribute("data-submitted", "");
+  await expect(page.locator("#form")).toHaveAttribute(
+    "data-submitted",
+    "intent",
+  );
+});
+
+test("Enter does not submit through a disabled default button", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await trackSubmits(
+    page,
+    '<button type="submit" name="intent" disabled></button>',
+  );
+  await page.getByRole("textbox", { name: "Email" }).fill("a@example.com");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#form")).not.toHaveAttribute("data-submitted");
+});
+
+test("Enter in a form with several fields and no button does not submit", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await trackSubmits(page, "");
+  await page.getByRole("textbox", { name: "Email" }).fill("a@example.com");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#form")).not.toHaveAttribute("data-submitted");
+});
+
+test("Enter in a form with one field and no button submits it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await page
+    .locator("#form")
+    .evaluate((form) =>
+      form.querySelectorAll("#name, #find").forEach((el) => el.remove()),
+    );
+  await trackSubmits(page, "");
+  await page.getByRole("textbox", { name: "Email" }).fill("a@example.com");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#form")).toHaveAttribute("data-submitted", "none");
+});
+
+test("a read-only search field offers no Clear and Escape keeps its value", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("search"));
+  await root.evaluate((el) => {
+    const host = document.createElement("purr-input");
+    host.id = "ro";
+    host.setAttribute("type", "search");
+    host.setAttribute("label", "Frozen");
+    host.setAttribute("value", "cats");
+    host.setAttribute("readonly", "");
+    el.append(host);
+    (window as unknown as { fired: number }).fired = 0;
+    for (const name of ["purr-input", "purr-change"])
+      host.addEventListener(name, () => {
+        (window as unknown as { fired: number }).fired++;
+      });
+  });
+  const host = page.locator("#ro");
+  await expect(host.getByRole("button")).toHaveCount(0);
+  await host.getByRole("searchbox").focus();
+  await page.keyboard.press("Escape");
+  await expect(host.getByRole("searchbox")).toHaveValue("cats");
+  expect(
+    await page.evaluate(() => (window as unknown as { fired: number }).fired),
+  ).toBe(0);
+});
+
+test("a number field takes step, min and max like a native input", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) => {
+    el.insertAdjacentHTML(
+      "beforeend",
+      '<form id="f"><purr-input id="n" type="number" label="Qty" min="1" max="5" step="any"></purr-input></form>',
+    );
+  });
+  const field = page.locator("#n").getByRole("spinbutton");
+  const ok = () =>
+    page
+      .locator("#f")
+      .evaluate((form) => (form as HTMLFormElement).checkValidity());
+  await field.fill("1.5");
+  expect(await ok()).toBe(true);
+  await field.fill("0.5");
+  expect(await ok()).toBe(false);
+  await field.fill("6");
+  expect(await ok()).toBe(false);
+  await page.locator("#n").evaluate((el) => el.setAttribute("step", "1"));
+  await field.fill("2.5");
+  expect(await ok()).toBe(false);
+});
+
+test("a reset clears the invalid state of a field whose value did not change", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const email = page.getByRole("textbox", { name: "Email" });
+  const host = page.locator("#email");
+  await email.focus();
+  await page.keyboard.press("Tab");
+  await expect(email).toHaveAttribute("aria-invalid", "true");
+  await page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).reset());
+  await expect(email).not.toHaveAttribute("aria-invalid");
+  expect(await host.evaluate((el) => el.matches(":state(user-invalid)"))).toBe(
+    false,
+  );
+});
+
+test("a blocked submit marks an untouched invalid field", async ({ page }) => {
+  await gotoStory(page, story("in-form"));
+  const email = page.getByRole("textbox", { name: "Email" });
+  await expect(email).not.toHaveAttribute("aria-invalid");
+  await page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).requestSubmit());
+  await expect(email).toHaveAttribute("aria-invalid", "true");
+  expect(
+    await page
+      .locator("#email")
+      .evaluate((el) => el.matches(":state(user-invalid)")),
+  ).toBe(true);
+});
+
+test("the host exposes the validity API", async ({ page }) => {
+  await gotoStory(page, story("in-form"));
+  const result = await page.locator("#email").evaluate((el) => {
+    const field = el as HTMLElement & {
+      checkValidity(): boolean;
+      setCustomValidity(message: string): void;
+      validity: ValidityState;
+      validationMessage: string;
+      form: HTMLFormElement;
+    };
+    const missing = field.validity.valueMissing;
+    (el as unknown as { value: string }).value = "a@example.com";
+    return new Promise((resolve) =>
+      requestAnimationFrame(() => {
+        const before = field.checkValidity();
+        field.setCustomValidity("Taken");
+        resolve([
+          missing,
+          before,
+          field.checkValidity(),
+          field.validity.customError,
+          field.validationMessage,
+          field.form.id,
+        ]);
+      }),
+    );
+  });
+  expect(result).toEqual([true, true, false, true, "Taken", "form"]);
+});
+
+test("a label whose text arrives later replaces the aria-label", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) => {
+    el.insertAdjacentHTML(
+      "beforeend",
+      '<purr-input id="late" label="Fallback"><span id="t"> </span></purr-input>',
+    );
+  });
+  const input = page.locator("#late").locator("input");
+  await expect(input).toHaveAttribute("aria-label", "Fallback");
+  await page.locator("#t").evaluate((el) => (el.textContent = "Email"));
+  await expect(input).not.toHaveAttribute("aria-label");
+});
+
+test("a disabled search field keeps its end inset", async ({ page }) => {
+  const root = await gotoStory(page, story("search"));
+  await root.evaluate((el) => {
+    el.insertAdjacentHTML(
+      "beforeend",
+      '<purr-input id="d" type="search" label="D" value="a long value" disabled></purr-input><purr-input id="c" type="search" label="C" value="x"></purr-input>',
+    );
+  });
+  const padEnd = (id: string) =>
+    page
+      .locator(id)
+      .evaluate(
+        (el) =>
+          getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
+            .paddingInlineEnd,
+      );
+  expect(await padEnd("#d")).not.toBe("0px");
+  await expect.poll(() => padEnd("#c")).toBe("0px");
 });
 
 test("a search field mirrors under rtl", async ({ page }) => {

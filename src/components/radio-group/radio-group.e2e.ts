@@ -83,6 +83,70 @@ test("Space chooses the focused radio", async ({ page }) => {
   expect(await chosen(page)).toBe("split");
 });
 
+test("Space chooses on key release, not on key down", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await radio(page, "Split view").focus();
+  await page.keyboard.down("Space");
+  expect(await chosen(page)).toBe("");
+  await page.keyboard.up("Space");
+  expect(await chosen(page)).toBe("split");
+});
+
+test("a failed submit focuses the first radio of an unchosen required group", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).reportValidity());
+  await expect(radio(page, "Small")).toBeFocused();
+});
+
+test("an aria-label set by the consumer stays when `label` is unset", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  const group = await root.evaluateHandle((el) => {
+    const made = document.createElement("purr-radio-group");
+    made.setAttribute("aria-label", "Theme");
+    el.append(made);
+    return made;
+  });
+  await group.evaluate(
+    (el) =>
+      (el as unknown as { updateComplete: Promise<boolean> }).updateComplete,
+  );
+  expect(await group.evaluate((el) => el.getAttribute("aria-label"))).toBe(
+    "Theme",
+  );
+});
+
+test("a radio whose value changes later is checked or unchecked to match", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  await radio(page, "Tabs").evaluate(
+    (el) => ((el as HTMLElement & { value: string }).value = "x"),
+  );
+  await expect(radio(page, "Tabs")).toHaveAttribute("aria-checked", "false");
+  await radio(page, "New windows").evaluate(
+    (el) => ((el as HTMLElement & { value: string }).value = "tabs"),
+  );
+  await expect(radio(page, "New windows")).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+});
+
+test("radios without a value are not shown as chosen", async ({ page }) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) => {
+    el.innerHTML = `<purr-radio-group label="Bare"><purr-radio>A</purr-radio><purr-radio>B</purr-radio></purr-radio-group>`;
+  });
+  await expect(radio(page, "A")).toHaveAttribute("aria-checked", "false");
+  await expect(radio(page, "B")).toHaveAttribute("aria-checked", "false");
+});
+
 test("a click chooses one radio and purr-change fires once", async ({
   page,
 }) => {

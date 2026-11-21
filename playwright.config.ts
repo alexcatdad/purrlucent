@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = 6006;
+// PURR_PORT lets several checkouts run their browser tests at the same time.
+const port = Number(process.env.PURR_PORT ?? 6006);
 
 export default defineConfig({
   globalSetup: "./e2e/helpers/fresh-storybook.ts",

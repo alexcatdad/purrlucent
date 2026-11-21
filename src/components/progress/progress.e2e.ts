@@ -112,6 +112,24 @@ test("the bar keeps a visible border under forced colors", async ({ page }) => {
   );
 });
 
+test("the indeterminate segment is drawn under forced colors", async ({
+  page,
+}) => {
+  await gotoStory(page, story("indeterminate"));
+  await page.emulateMedia({ forcedColors: "active" });
+  const fill = await page
+    .getByRole("progressbar")
+    .first()
+    .evaluate((el) => {
+      const { backgroundColor, backgroundImage } = getComputedStyle(
+        el.shadowRoot!.querySelector('[part="fill"]')!,
+      );
+      return { backgroundColor, backgroundImage };
+    });
+  expect(fill.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(fill.backgroundImage).toBe("none");
+});
+
 for (const name of ["determinate", "indeterminate", "rtl", "glass"]) {
   test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
     await expectAccessible(await gotoStory(page, story(name)));
