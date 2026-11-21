@@ -14,7 +14,7 @@ export default meta;
 
 type Story = StoryObj;
 
-const content = html`<strong>Sharing</strong>
+const content = html`<strong style="display:block">Sharing</strong>
   <p style="margin:var(--purr-space-1) 0 var(--purr-space-3)">
     Anyone with the link can view.
   </p>

@@ -135,9 +135,11 @@ export class PurrPopover extends LitElement {
       if (!started) this.#focusInside();
     } else {
       // Hiding the panel would drop focus on <body>; the trigger is where the user came from.
+      // The active element, not :focus-within: that pseudo-class needs the page itself to have focus.
+      const root = this.getRootNode() as Document | ShadowRoot;
+      const active = root.activeElement;
       const refocus =
-        this.matches(":focus-within") &&
-        !this.#trigger?.matches(":focus-within");
+        !!active && this.contains(active) && !this.#trigger?.contains(active);
       this.#anchored.hide();
       if (refocus) this.#trigger?.focus();
     }

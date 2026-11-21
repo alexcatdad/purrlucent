@@ -54,6 +54,11 @@ export const tooltipStyles = css`
       var(--purr-font-sans);
   }
 
+  /* A block, not the inline span it is made as: Firefox reports an inline box's text as overflow. */
+  ::slotted([role="tooltip"]) {
+    display: block;
+  }
+
   /* On a touch screen the bubble must never take a tap meant for what is under it. */
   @media (hover: none) {
     [part="bubble"] {

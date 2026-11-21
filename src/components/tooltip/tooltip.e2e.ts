@@ -169,25 +169,30 @@ test("the bubble is hoverable and persists while the pointer is on it", async ({
 
 test("a tap on touch never shows the bubble or blocks the tap", async ({
   browser,
+  browserName,
 }) => {
   const context = await browser.newContext({ hasTouch: true, isMobile: true });
   const page = await context.newPage();
   await gotoStory(page, story("default"));
   await page.evaluate(() => {
-    (window as unknown as { taps: number }).taps = 0;
-    document
-      .querySelector("purr-button")!
-      .addEventListener(
-        "click",
-        () => (window as never as { taps: number }).taps++,
-      );
+    const seen: string[] = [];
+    (window as never as { seen: string[] }).seen = seen;
+    for (const type of ["pointerup", "click"]) {
+      document
+        .querySelector("purr-button")!
+        .addEventListener(type, () => seen.push(type));
+    }
   });
   await target(page).tap();
   await page.waitForTimeout(900);
   await expect(bubble(page)).toBeHidden();
-  expect(
-    await page.evaluate(() => (window as never as { taps: number }).taps),
-  ).toBe(1);
+  const seen = await page.evaluate(
+    () => (window as never as { seen: string[] }).seen,
+  );
+  // Playwright's Firefox delivers the touch as pointer events but synthesizes no click from it.
+  expect(seen).toEqual(
+    browserName === "firefox" ? ["pointerup"] : ["pointerup", "click"],
+  );
   await context.close();
 });
 
@@ -238,7 +243,8 @@ test("under rtl start is the right-hand side", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const b = await box(bubble(page));
   const t = await box(target(page));
-  expect(b.x).toBeGreaterThanOrEqual(t.x + t.width);
+  // Layout snaps to fractions of a pixel, and Firefox rounds the two boxes differently.
+  expect(b.x).toBeGreaterThanOrEqual(t.x + t.width - 0.01);
 });
 
 test.describe("near the edges of a small viewport", () => {
