@@ -291,6 +291,8 @@ test("the page does not scroll while a dialog is open", async ({ page }) => {
   expect(await overflow()).toBe("hidden");
   await page.mouse.wheel(0, 400);
   expect(await page.evaluate(() => scrollY)).toBe(0);
+  // Escape reaches the dialog only once initial focus has moved into it.
+  await expect.poll(() => activeInside(page)).toBe(true);
   await page.keyboard.press("Escape");
   await expect(alert(page)).toBeHidden();
   await expect.poll(overflow).toBe("");

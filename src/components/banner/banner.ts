@@ -33,7 +33,7 @@ export class PurrBanner extends LitElement {
   declare tone: "info" | "destructive";
   declare closeLabel: string;
 
-  readonly #internals = this.attachInternals();
+  #role = "";
 
   constructor() {
     super();
@@ -42,10 +42,14 @@ export class PurrBanner extends LitElement {
     this.closeLabel = "Dismiss";
   }
 
-  // Default semantics, so an author's own role wins and the role exists from
-  // the first render.
+  // A role attribute, so it shows in the DOM and in the accessibility tree of
+  // every engine. An author's own role is kept; only our own value is replaced.
   protected override willUpdate() {
-    this.#internals.role = this.tone === "destructive" ? "alert" : "status";
+    if (this.hasAttribute("role") && this.getAttribute("role") !== this.#role) {
+      return;
+    }
+    this.#role = this.tone === "destructive" ? "alert" : "status";
+    this.setAttribute("role", this.#role);
   }
 
   #close() {

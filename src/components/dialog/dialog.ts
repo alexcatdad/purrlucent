@@ -146,7 +146,8 @@ export class PurrDialog extends LitElement {
   // A scroll region must be reachable by keyboard.
   #measure() {
     const body = this.#body;
-    this._scrolls = body.scrollHeight > body.clientHeight;
+    // Engines round the two heights differently; a pixel is not a scroll.
+    this._scrolls = body.scrollHeight - body.clientHeight > 1;
   }
 
   async #focusInitial() {

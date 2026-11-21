@@ -69,7 +69,9 @@ export const bannerStyles = css`
     font-weight: 700;
   }
 
+  /* Block, so an inline title (a strong) has a client width in every engine. */
   ::slotted([slot="title"]) {
+    display: block;
     margin: 0;
     font: inherit;
   }
