@@ -39,6 +39,10 @@
       "types": "./dist/types/components/input/input.d.ts",
       "default": "./dist/input.js"
     },
+    "./select": {
+      "types": "./dist/types/components/select/select.d.ts",
+      "default": "./dist/select.js"
+    },
     "./slider": {
       "types": "./dist/types/components/slider/slider.d.ts",
       "default": "./dist/slider.js"

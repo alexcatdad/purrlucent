@@ -10,3 +10,4 @@ export * from "./components/radio-group/radio-group.ts";
 export * from "./components/slider/slider.ts";
 export * from "./components/progress/progress.ts";
 export * from "./components/spinner/spinner.ts";
+export * from "./components/select/select.ts";

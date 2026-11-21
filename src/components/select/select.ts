@@ -1,0 +1,339 @@
+import { LitElement, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { DismissController } from "../../behaviors/dismiss.ts";
+import { position } from "../../behaviors/position.ts";
+import { matchIndex } from "./match.ts";
+import { optionStyles, selectStyles } from "./select.css.ts";
+
+const TYPE_AHEAD_MS = 500;
+
+/**
+ * One choice in a `purr-select`. Its text is the label. The select marks the
+ * chosen option with `aria-selected`; this element does nothing alone.
+ *
+ * @attr {string} value - What the select submits when this option is chosen. Defaults to the label.
+ * @attr {boolean} selected - The select's starting choice.
+ * @attr {boolean} disabled - Cannot be chosen.
+ * @slot - The label.
+ * @csspart check - The check mark shown on the chosen option.
+ */
+export class PurrOption extends LitElement {
+  static override styles = optionStyles;
+  static override properties = {
+    value: { reflect: true },
+    selected: { type: Boolean, reflect: true },
+    disabled: { type: Boolean, reflect: true },
+    chosen: { state: true },
+  };
+
+  declare value: string;
+  declare selected: boolean;
+  declare disabled: boolean;
+  declare chosen: boolean;
+
+  constructor() {
+    super();
+    this.value = "";
+    this.selected = false;
+    this.disabled = false;
+    this.chosen = false;
+  }
+
+  get label(): string {
+    return this.textContent?.trim() ?? "";
+  }
+
+  get optionValue(): string {
+    return this.value || this.label;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setAttribute("role", "option");
+    this.tabIndex = -1;
+  }
+
+  protected override updated() {
+    this.setAttribute("aria-selected", String(this.chosen));
+    if (this.disabled) this.setAttribute("aria-disabled", "true");
+    else this.removeAttribute("aria-disabled");
+  }
+
+  override render() {
+    return html`<svg part="check" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 12l5 5l10 -10" /></svg
+      ><slot></slot>`;
+  }
+}
+
+/**
+ * A pop-up button: shows the chosen option and opens a list to choose another.
+ * It follows the select-only combobox pattern: the trigger is a combobox and
+ * the options are real light-DOM children, so focus moves to the options
+ * while the list is open and returns to the trigger on close. It takes part
+ * in forms: it submits `name` with the chosen value, a form reset returns it
+ * to the option marked `selected`, and a disabled fieldset disables it.
+ *
+ * @attr {string} value - The chosen option's value. Empty when nothing is chosen.
+ * @attr {string} name - The name submitted with a form.
+ * @attr {string} label - The accessible name. Required.
+ * @attr {string} placeholder - Shown while nothing is chosen.
+ * @attr {boolean} required - The form is invalid while nothing is chosen.
+ * @attr {boolean} disabled - No focus, no list, nothing submitted.
+ * @attr {string} size - `md` (default), `lg` or `xl`.
+ * @attr {boolean} open - The list is showing.
+ * @slot - The `purr-option` children.
+ * @csspart trigger - The combobox that shows the choice.
+ * @csspart value - The chosen label or the placeholder.
+ * @csspart glyph - The up-down arrows.
+ * @csspart listbox - The popup.
+ * @fires purr-change - The user chose another option. `detail.value` holds its value.
+ */
+export class PurrSelect extends LitElement {
+  static formAssociated = true;
+  static override shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+  static override styles = selectStyles;
+  static override properties = {
+    value: { reflect: true },
+    name: { reflect: true },
+    label: { reflect: true },
+    placeholder: { reflect: true },
+    required: { type: Boolean, reflect: true },
+    disabled: { type: Boolean, reflect: true },
+    size: { reflect: true },
+    open: { type: Boolean, reflect: true },
+  };
+
+  declare value: string;
+  declare name: string;
+  declare label: string;
+  declare placeholder: string;
+  declare required: boolean;
+  declare disabled: boolean;
+  declare size: "md" | "lg" | "xl";
+  declare open: boolean;
+
+  readonly #internals = this.attachInternals();
+  #query = "";
+  #timer: ReturnType<typeof setTimeout> | undefined;
+  #focusOnOpen: PurrOption | undefined;
+  #started = false;
+
+  constructor() {
+    super();
+    this.value = "";
+    this.name = "";
+    this.label = "";
+    this.placeholder = "";
+    this.required = false;
+    this.disabled = false;
+    this.size = "md";
+    this.open = false;
+    new DismissController(this, {
+      enabled: () => this.open,
+      onDismiss: (reason) => this.#close(reason === "escape"),
+    });
+    this.addEventListener("keydown", this.#onKeydown);
+    this.addEventListener("click", this.#onClick);
+  }
+
+  get #options(): PurrOption[] {
+    return [...this.querySelectorAll("purr-option")];
+  }
+
+  get #chosen(): PurrOption | undefined {
+    return this.value
+      ? this.#options.find((o) => o.optionValue === this.value)
+      : undefined;
+  }
+
+  get #trigger(): HTMLElement {
+    return this.shadowRoot!.querySelector("[part=trigger]")!;
+  }
+
+  get #listbox(): HTMLElement {
+    return this.shadowRoot!.querySelector("[part=listbox]")!;
+  }
+
+  formResetCallback() {
+    this.value = this.#options.find((o) => o.selected)?.optionValue ?? "";
+  }
+
+  formDisabledCallback() {
+    this.requestUpdate();
+  }
+
+  #close(refocus: boolean) {
+    this.open = false;
+    if (refocus) this.#trigger.focus();
+  }
+
+  #choose(option: PurrOption) {
+    if (option.disabled) return;
+    const changed = option.optionValue !== this.value;
+    this.value = option.optionValue;
+    this.#close(true);
+    if (changed) {
+      this.dispatchEvent(
+        new CustomEvent("purr-change", {
+          detail: { value: this.value },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    }
+  }
+
+  #onClick = (event: Event) => {
+    const option = (event.target as Element).closest("purr-option");
+    if (option) this.#choose(option);
+  };
+
+  #onKeydown = (event: KeyboardEvent) => {
+    if (this.matches(":disabled") || event.ctrlKey || event.metaKey) return;
+    const { key } = event;
+    const options = this.#options.filter((o) => !o.disabled);
+    const active = (this.getRootNode() as Document | ShadowRoot).activeElement;
+    const current = options.findIndex((o) => o === active);
+    const go = (option: PurrOption | undefined) => {
+      event.preventDefault();
+      if (this.open) option?.focus();
+      else {
+        this.#focusOnOpen = option;
+        this.open = true;
+      }
+    };
+
+    if (key === "Tab") {
+      if (this.open) this.#close(true);
+    } else if (key === "ArrowDown" || key === "ArrowUp") {
+      go(
+        this.open
+          ? options[current + (key === "ArrowDown" ? 1 : -1)]
+          : undefined,
+      );
+    } else if (this.open && (key === "Home" || key === "End")) {
+      go(key === "Home" ? options[0] : options.at(-1));
+    } else if (key === "Enter" || (key === " " && !this.#query)) {
+      if (!this.open) go(undefined);
+      else {
+        event.preventDefault();
+        if (options[current]) this.#choose(options[current]);
+      }
+    } else if (
+      key.length === 1 &&
+      !event.altKey &&
+      (key !== " " || this.#query)
+    ) {
+      this.#query += key;
+      clearTimeout(this.#timer);
+      this.#timer = setTimeout(() => (this.#query = ""), TYPE_AHEAD_MS);
+      const hit = matchIndex(
+        options.map((o) => o.label),
+        this.#query,
+        this.open ? current : options.indexOf(this.#chosen!),
+      );
+      if (hit >= 0) go(options[hit]);
+    }
+  };
+
+  #reposition = () => position(this.#trigger, this.#listbox, "bottom-start");
+
+  #onSlotChange = () => {
+    if (!this.#started) {
+      this.#started = true;
+      if (!this.value) this.formResetCallback();
+    }
+    this.requestUpdate();
+  };
+
+  protected override willUpdate() {
+    if (this.open && this.matches(":disabled")) this.open = false;
+  }
+
+  protected override updated(changed: PropertyValues<this>) {
+    const chosen = this.#chosen;
+    for (const option of this.#options) option.chosen = option === chosen;
+    this.#internals.setFormValue(chosen ? this.value : null);
+    this.#internals.setValidity(
+      { valueMissing: this.required && !chosen },
+      "Choose an option to continue.",
+      this.#trigger,
+    );
+    if (!changed.has("open")) return;
+    const list = this.#listbox;
+    if (this.open && !list.matches(":popover-open")) {
+      list.style.setProperty(
+        "--_min-inline-size",
+        `${this.#trigger.offsetWidth}px`,
+      );
+      list.showPopover();
+      this.#reposition();
+      addEventListener("resize", this.#reposition);
+      addEventListener("scroll", this.#reposition, true);
+      (
+        this.#focusOnOpen ??
+        chosen ??
+        this.#options.find((o) => !o.disabled)
+      )?.focus();
+      this.#focusOnOpen = undefined;
+    } else if (!this.open && list.matches(":popover-open")) {
+      list.hidePopover();
+      removeEventListener("resize", this.#reposition);
+      removeEventListener("scroll", this.#reposition, true);
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    removeEventListener("resize", this.#reposition);
+    removeEventListener("scroll", this.#reposition, true);
+  }
+
+  override render() {
+    const chosen = this.#chosen;
+    const disabled = this.matches(":disabled");
+    // Not a <button>: WebKit leaves buttons out of the Tab order, a select is in it.
+    return html`<div
+        part="trigger"
+        role="combobox"
+        tabindex=${disabled ? -1 : 0}
+        aria-haspopup="listbox"
+        aria-expanded=${this.open}
+        aria-controls="list"
+        aria-label=${this.label || nothing}
+        aria-required=${this.required ? "true" : nothing}
+        aria-disabled=${disabled ? "true" : nothing}
+        @click=${() => !disabled && (this.open = !this.open)}
+      >
+        <span part="value" class=${chosen ? "" : "placeholder"}
+          >${chosen?.label ?? this.placeholder}</span
+        >${html`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 9l4 -4l4 4" />
+          <path d="M16 15l-4 4l-4 -4" />
+        </svg>`}
+      </div>
+      <div
+        part="listbox"
+        id="list"
+        role="listbox"
+        popover="manual"
+        aria-label=${this.label || nothing}
+      >
+        <slot @slotchange=${this.#onSlotChange}></slot>
+      </div>`;
+  }
+}
+
+customElements.define("purr-option", PurrOption);
+customElements.define("purr-select", PurrSelect);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "purr-option": PurrOption;
+    "purr-select": PurrSelect;
+  }
+}
