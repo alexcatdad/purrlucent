@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.2.1
+
+### Patch Changes
+
+- e929a1b: Checkbox and radio sizes now draw distinct boxes: 16px for `md`, 20px for `lg` and 24px for `xl`. Before, `lg` and `xl` drew the same 18px box.
+
 ## 0.2.0
 
 ### Minor Changes
