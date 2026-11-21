@@ -1,0 +1,46 @@
+- id: menus/1
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: Each item label is short and describes its action, starting with a verb for actions, without articles.
+  check: rubric
+  layer: components
+- id: menus/2
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: Unavailable items appear dimmed and do not respond to interaction, while the menu itself stays openable.
+  check: automated
+  test: src/components/menu/menu.e2e.ts > a disabled item cannot be activated or focused
+  layer: components
+- id: menus/3
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: An item whose action needs more input before it completes ends its label with an ellipsis.
+  check: rubric
+  layer: components
+- id: menus/4
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: An item that has a keyboard shortcut shows it.
+  check: rubric
+  layer: components
+- id: menus/5
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: Item icons are used sparingly, only where one clearly represents the item, and a group gives every item an icon or none.
+  check: rubric
+  layer: components
+- id: menus/6
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: Frequent and important items come first, and related items sit together in a group divided by separators.
+  check: rubric
+  layer: components
+- id: menus/7
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: Menus stay short; one that grows long is split or uses a submenu, except for dynamic content such as history.
+  check: rubric
+  layer: components
+- id: menus/8
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: Submenus are used sparingly, go one level deep, and take their label from the term the items share.
+  check: rubric
+  layer: components
+- id: menus/9
+  source: https://developer.apple.com/design/human-interface-guidelines/menus
+  rule: A single toggled item shows the current state, with a changing label or a checkmark for an attribute in effect.
+  check: rubric
+  layer: components

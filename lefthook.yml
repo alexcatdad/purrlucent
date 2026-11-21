@@ -11,4 +11,5 @@ pre-commit:
 pre-push:
   jobs:
     - name: rubric
-      run: bun scripts/rubric-prompt.ts review origin/main
+      use_stdin: true
+      run: bun scripts/rubric-prompt.ts pre-push origin/main

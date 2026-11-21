@@ -1,0 +1,46 @@
+- id: context-menus/1
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: A context menu opens at the pointer.
+  check: automated
+  test: src/components/menu/menu.e2e.ts > opens at the pointer and Escape returns focus to where it came from
+  layer: components
+- id: context-menus/2
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: A context menu holds only the commands most relevant to the item, in a small number of entries.
+  check: rubric
+  layer: components
+- id: context-menus/3
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: Context menus are supported consistently across the app, and every command in one is also reachable elsewhere in the interface.
+  check: rubric
+  layer: components
+- id: context-menus/4
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: Items that do not apply are left out instead of dimmed.
+  check: rubric
+  layer: components
+- id: context-menus/5
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: Keyboard shortcuts are not shown in a context menu.
+  check: rubric
+  layer: components
+- id: context-menus/6
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: Separators split the menu into about three groups at most.
+  check: rubric
+  layer: components
+- id: context-menus/7
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: When the menu opens above the pointer, the order reverses so the most used items stay nearest it.
+  check: rubric
+  layer: components
+- id: context-menus/8
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: Destructive items are listed last and marked as destructive.
+  check: rubric
+  layer: components
+- id: context-menus/9
+  source: https://developer.apple.com/design/human-interface-guidelines/context-menus
+  rule: A context menu has a title only when it clarifies the effect, such as the count of selected items.
+  check: rubric
+  layer: components

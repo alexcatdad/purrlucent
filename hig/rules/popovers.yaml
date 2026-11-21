@@ -1,0 +1,58 @@
+- id: popovers/1
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A popover holds a small amount of content, limited to a few related tasks.
+  check: rubric
+  layer: components
+- id: popovers/2
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: The arrow points straight at the element that opened the popover.
+  check: automated
+  test: src/components/popover/popover.e2e.ts > the arrow is on the side facing the trigger and points at its middle, on every side
+  layer: components
+- id: popovers/3
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A popover does not cover its trigger or content people need while it is open.
+  check: rubric
+  layer: components
+- id: popovers/4
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A press outside the popover closes it.
+  check: automated
+  test: src/components/popover/popover.e2e.ts > a press outside closes the panel
+  layer: components
+- id: popovers/5
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A press inside the popover keeps it open, so a multiple-choice popover stays until it is dismissed.
+  check: automated
+  test: src/components/popover/popover.e2e.ts > a press inside the panel keeps it open
+  layer: components
+- id: popovers/6
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A Done or Cancel button appears only where it clarifies whether the work is kept.
+  check: rubric
+  layer: components
+- id: popovers/7
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: Work is saved when a popover closes by itself, and discarded only through an explicit Cancel.
+  check: rubric
+  layer: components
+- id: popovers/8
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: Only one popover is open at a time, never a cascade, and nothing but an alert is layered over one.
+  check: rubric
+  layer: components
+- id: popovers/9
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: Opening another popover from a neighboring trigger takes one click and closes the first.
+  check: rubric
+  layer: components
+- id: popovers/10
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A popover is only as large as its content, and a change in size is animated.
+  check: rubric
+  layer: components
+- id: popovers/11
+  source: https://developer.apple.com/design/human-interface-guidelines/popovers
+  rule: A warning uses an alert dialog, not a popover.
+  check: rubric
+  layer: components

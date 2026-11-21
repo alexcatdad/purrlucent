@@ -1,0 +1,36 @@
+- id: offering-help/1
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: A tooltip appears when the pointer hovers its control.
+  check: automated
+  test: src/components/tooltip/tooltip.e2e.ts > hover shows the bubble after a delay, not at once
+  layer: components
+- id: offering-help/2
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: A tooltip describes only the control it belongs to, not nearby controls or the wider task.
+  check: rubric
+  layer: components
+- id: offering-help/3
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: A tooltip explains the action the control starts, often beginning with a verb, and does not repeat the control's name.
+  check: rubric
+  layer: components
+- id: offering-help/4
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: A tooltip is brief, about 60 to 75 characters, as a sentence fragment without articles.
+  check: rubric
+  layer: components
+- id: offering-help/5
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: Tooltip text uses sentence case and omits closing punctuation.
+  check: rubric
+  layer: components
+- id: offering-help/6
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: A control whose meaning changes with its state has tooltip text that follows the state.
+  check: rubric
+  layer: components
+- id: offering-help/7
+  source: https://developer.apple.com/design/human-interface-guidelines/offering-help
+  rule: Help names the specific action a standard control performs instead of explaining the control itself.
+  check: rubric
+  layer: components

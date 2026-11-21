@@ -1,8 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = 6006;
+// PURR_PORT lets several checkouts run their browser tests at the same time.
+const port = Number(process.env.PURR_PORT ?? 6006);
+
+// Browser tests start Playwright, which runs in CI only.
+if (!process.env.CI)
+  throw new Error(
+    "Browser tests run in CI only. Push the branch and read the e2e job.",
+  );
 
 export default defineConfig({
+  globalSetup: "./e2e/helpers/fresh-storybook.ts",
   testDir: "src",
   testMatch: "**/*.e2e.ts",
   fullyParallel: true,

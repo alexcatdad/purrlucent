@@ -1,16 +1,11 @@
 import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
+import {
+  compositeOver,
+  contrast,
+  resolveColors,
+} from "../../e2e/helpers/color.ts";
 import { gotoStory } from "../../e2e/helpers/story.ts";
-
-const textRoles = [
-  "label",
-  "secondary-label",
-  "tertiary-label",
-  "accent",
-  "destructive",
-  "success",
-  "warning",
-];
 
 const colorSchemes = [
   { colorScheme: "light", contrast: "no-preference" },
@@ -69,40 +64,6 @@ const bar = (page: Page) =>
     };
   });
 
-/** Resolves a CSS color to 8-bit sRGB through a canvas, so oklch needs no hand-written math. */
-const resolveColors = (page: Page, colors: Record<string, string>) =>
-  page.evaluate((entries) => {
-    const ctx = document.createElement("canvas").getContext("2d", {
-      willReadFrequently: true,
-    })!;
-    return Object.fromEntries(
-      Object.entries(entries).map(([key, css]) => {
-        const probe = document.createElement("div");
-        probe.style.color = css;
-        document.body.append(probe);
-        const resolved = getComputedStyle(probe).color;
-        probe.remove();
-        ctx.clearRect(0, 0, 1, 1);
-        ctx.fillStyle = resolved;
-        ctx.fillRect(0, 0, 1, 1);
-        return [key, [...ctx.getImageData(0, 0, 1, 1).data.slice(0, 3)]];
-      }),
-    ) as Record<string, [number, number, number]>;
-  }, colors);
-
-const luminance = ([r, g, b]: number[]) => {
-  const [lr, lg, lb] = [r, g, b].map((v) => {
-    const c = (v ?? 0) / 255;
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * lr! + 0.7152 * lg! + 0.0722 * lb!;
-};
-
-const contrast = (a: number[], b: number[]) => {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (hi! + 0.05) / (lo! + 0.05);
-};
-
 test("solid mode computes the material filter to none", async ({ page }) => {
   await openMaterials(page, "solid", "light");
   expect((await bar(page)).filter).toBe("none");
@@ -111,7 +72,7 @@ test("solid mode computes the material filter to none", async ({ page }) => {
 test("glass mode computes the material filter to a blur", async ({ page }) => {
   await openMaterials(page, "glass", "light");
   const { filter, alpha } = await bar(page);
-  expect(filter).toMatch(/^blur\(\d+(\.\d+)?px\)$/);
+  expect(filter).toMatch(/^blur\([\d.]+px\) saturate\([\d.]+%?\)$/);
   expect(alpha).toBeLessThan(1);
 });
 
@@ -121,7 +82,7 @@ const expectSolidAndLegible = async (page: Page) => {
   expect(filter).toBe("none");
   expect(alpha).toBe(1);
   const colors = await resolveColors(page, {
-    label: "var(--purr-color-label)",
+    label: "var(--purr-color-foreground)",
     bar: "var(--purr-material-bar)",
   });
   expect(contrast(colors.label!, colors.bar!)).toBeGreaterThanOrEqual(4.5);
@@ -222,24 +183,79 @@ test.describe("dark color scheme", () => {
   }) => unsupportedFallback(page, "dark"));
 });
 
+// Contrast pairs: [foreground roles, ground roles, minimum ratio].
+// Translucent roles are measured as they show: "<role>/<i>" is that role
+// composited over black, grey, white and the page.
+const opaque = ["background", "surface", "input"];
+const fills = ["muted-1", "muted-2", "muted-3", "muted-pressed"];
+const backdrops = ["#000", "#808080", "#fff"];
+const tints = ["overlay", "popover"];
+const overPage = (roles: string[]) => roles.map((r) => `${r}/3`);
+const glass = tints.flatMap((t) => [0, 1, 2, 3].map((i) => `${t}/${i}`));
+const text = [
+  "foreground",
+  "muted-foreground",
+  "accent-text",
+  "destructive-text",
+];
+const grounds = [...opaque, ...overPage(fills)];
+const pairs = (more: boolean): [string[], string[], number][] => [
+  [text, [...grounds, ...glass], 4.5],
+  [["ring", "input-border", "selected"], grounds, 3],
+  [["accent-foreground"], ["accent"], 4.5],
+  [["selected-foreground"], ["selected"], 4.5],
+  [["destructive-foreground"], ["destructive"], 4.5],
+  // The border is a hairline in default contrast and a real edge under more.
+  ...(more
+    ? ([[["border"], opaque, 3]] as [string[], string[], number][])
+    : []),
+];
+// Grounds that are translucent are measured as they show over each backdrop.
+const translucent = [...tints, ...fills];
+
 test("every text role meets 4.5:1 against background in all four color schemes", async ({
   page,
+  browserName,
 }) => {
   await gotoStory(page, "tokens--palette");
   for (const scheme of colorSchemes) {
+    const more = scheme.contrast === "more";
+    // FIREFOX_CONTRAST_BUG: Firefox would check the default values again.
+    if (more && browserName === "firefox") continue;
     await page.emulateMedia(scheme);
-    const colors = await resolveColors(page, {
-      background: "var(--purr-color-background)",
-      ...Object.fromEntries(
-        textRoles.map((role) => [role, `var(--purr-color-${role})`]),
+    const table = pairs(more);
+    const roles = new Set(table.flatMap(([f, g]) => [...f, ...g]));
+    const colors = await resolveColors(
+      page,
+      Object.fromEntries(
+        [...roles]
+          .filter((role) => !role.includes("/"))
+          .map((role) => [role, `var(--purr-color-${role})`]),
       ),
-    });
-    for (const role of textRoles) {
-      expect(
-        contrast(colors[role]!, colors.background!),
-        `${role} in ${scheme.colorScheme}, contrast ${scheme.contrast}`,
-      ).toBeGreaterThanOrEqual(4.5);
-    }
+    );
+    const pageColor = `rgb(${colors.background!.join(" ")})`;
+    for (const role of translucent)
+      (
+        await compositeOver(page, `var(--purr-color-${role})`, [
+          ...backdrops,
+          pageColor,
+        ])
+      ).forEach((shown, i) => (colors[`${role}/${i}`] = shown));
+    // A foreground may be translucent too, so it is measured as it shows on each ground.
+    for (const [foregrounds, under, need] of table)
+      for (const fg of foregrounds) {
+        const shown = await compositeOver(
+          page,
+          `var(--purr-color-${fg})`,
+          under.map((bg) => `rgb(${colors[bg]!.join(" ")})`),
+        );
+        under.forEach((bg, i) =>
+          expect(
+            contrast(shown[i]!, colors[bg]!),
+            `${fg} on ${bg} in ${scheme.colorScheme}, contrast ${scheme.contrast}`,
+          ).toBeGreaterThanOrEqual(need),
+        );
+      }
   }
 });
 

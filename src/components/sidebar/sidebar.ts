@@ -1,25 +1,28 @@
-import { LitElement, html, nothing, svg } from "lit";
+import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
-import { SelectionController } from "../../behaviors/selection.ts";
 import { PurrSidebarItem } from "./sidebar-item.ts";
+import { PurrSidebarSection } from "./sidebar-section.ts";
 import { sidebarStyles } from "./sidebar.css.ts";
 
-export { PurrSidebarItem };
+export { PurrSidebarItem, PurrSidebarSection };
 
 // design/icons/sidebar.svg
 const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9.5 4v16M13 10l1-2 1.5 1 1.5-1 1 2" /></svg>`;
 
 /**
- * A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children
- * (at most two levels). A level 1 item followed by level 2 items becomes a
+ * A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children,
+ * loose or grouped under `purr-sidebar-section` headings (at most two levels,
+ * and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a
  * disclosure button that shows and hides them. Every button and visible link is
  * a tab stop. As an extra, Up and Down arrows, Home and End move among all
  * visible items (Left and Right are not used). Space or Enter on a link selects
  * it; Escape on a group button or inside its group closes it and focuses the
- * button. At phone width with a coarse pointer the sidebar is stacked
- * navigation: full width, always open.
+ * button. On a narrow screen (600px or less) the sidebar collapses on its own;
+ * shown again, it fills the width. A collapse it made itself is undone when
+ * the screen widens; read the first state from `collapsed`, because
+ * `purr-collapse` can fire before a listener is attached.
  *
- * @slot - `purr-sidebar-item` children.
+ * @slot - `purr-sidebar-item` and `purr-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
  * @fires purr-change - The selected item changed. `detail.selected` is an array holding the new item.
@@ -30,16 +33,20 @@ export class PurrSidebar extends LitElement {
   static override properties = {
     label: { type: String },
     collapsed: { type: Boolean, reflect: true },
+    size: { reflect: true },
   };
 
   /** Accessible name of the navigation landmark. */
   declare label: string;
   declare collapsed: boolean;
+  /** `md` (default) or `lg`, the larger rows. */
+  declare size: "md" | "lg";
 
-  readonly #selection = new SelectionController<PurrSidebarItem>(this, {
-    mode: "single",
-    required: false,
-  });
+  // An item's group, level or selection changed from outside; reveal only
+  // follows a selection, so an app can still close a group holding the page.
+  readonly #watcher = new MutationObserver((records) =>
+    this.#sync(records.some((record) => record.attributeName === "selected")),
+  );
   readonly #roving = new RovingFocusController(this, {
     items: () => this.#items().filter((item) => !item.hidden),
     orientation: "vertical",
@@ -51,12 +58,16 @@ export class PurrSidebar extends LitElement {
     super();
     this.label = "";
     this.collapsed = false;
+    this.size = "md";
   }
 
-  #items(): PurrSidebarItem[] {
-    return [...this.children].filter(
-      (child): child is PurrSidebarItem => child instanceof PurrSidebarItem,
-    );
+  /** The items in document order, loose or inside a section. */
+  #items() {
+    return [
+      ...this.querySelectorAll<PurrSidebarItem>(
+        ":scope > purr-sidebar-item, :scope > purr-sidebar-section > purr-sidebar-item",
+      ),
+    ];
   }
 
   /** Derives each item's disclosure and visibility from the levels in order. */
@@ -64,9 +75,14 @@ export class PurrSidebar extends LitElement {
     let parent: PurrSidebarItem | undefined;
     const items = this.#items();
     items.forEach((item, i) => {
+      // A group of level 2 items never reaches across a section boundary.
+      if (item.parentElement !== items[i - 1]?.parentElement)
+        parent = undefined;
       if (item.level === 1) {
         parent = item;
-        item.expandable = items[i + 1]?.level === 2;
+        const next = items[i + 1];
+        item.expandable =
+          next?.level === 2 && next.parentElement === item.parentElement;
         item.hidden = false;
       } else {
         if (reveal && item.selected && parent) parent.expanded = true;
@@ -78,17 +94,29 @@ export class PurrSidebar extends LitElement {
 
   #onSlotchange = () => this.#sync(true);
 
-  #onClick = (event: Event) => {
+  #onClick = (event: MouseEvent) => {
     const item = event.target;
     if (
       !(item instanceof PurrSidebarItem) ||
       item.expandable ||
       !item.href ||
-      item.selected
+      item.selected ||
+      // A modified click opens the link elsewhere; this page stays current.
+      event.button !== 0 ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
     )
       return;
     for (const other of this.#items()) other.selected = other === item;
-    this.#selection.select(item);
+    this.dispatchEvent(
+      new CustomEvent("purr-change", {
+        detail: { selected: [item] },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   };
 
   #onKeydown = (event: KeyboardEvent) => {
@@ -107,16 +135,69 @@ export class PurrSidebar extends LitElement {
         ? items
             .slice(0, items.indexOf(item))
             .reverse()
-            .find((candidate) => candidate.level === 1)
+            .find(
+              (candidate) =>
+                candidate.level === 1 &&
+                candidate.parentElement === item.parentElement,
+            )
         : item;
     if (!parent?.expandable || !parent.expanded) return;
-    parent.expanded = false;
-    this.#sync();
+    // The button's own handler closes it and fires purr-toggle.
+    parent.renderRoot.querySelector("button")?.click();
     parent.focus();
   };
 
-  #toggleCollapsed = () => {
-    this.collapsed = !this.collapsed;
+  // Narrow screen, any pointer: the sidebar collapses on its own, so the app's
+  // own navigation (a bottom tab bar is preferred) takes over.
+  readonly #narrow = matchMedia("(max-width: 600px)");
+
+  // A collapse the sidebar made itself is undone when the screen widens again;
+  // one the person or the app made, or undid, is theirs to keep.
+  #autoCollapsed = false;
+  // The screen width last acted on, so a move in the page changes nothing but
+  // a crossing while detached is caught on reconnect.
+  #wasNarrow?: boolean;
+
+  #onNarrow = () => {
+    this.#wasNarrow = this.#narrow.matches;
+    if (this.#narrow.matches && !this.collapsed) this.#setCollapsed(true, true);
+    else if (!this.#narrow.matches && this.#autoCollapsed && this.collapsed)
+      this.#setCollapsed(false);
+  };
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.#narrow.addEventListener("change", this.#onNarrow);
+    if (this.#narrow.matches !== this.#wasNarrow) this.#onNarrow();
+    this.#watcher.observe(this, {
+      attributes: true,
+      subtree: true,
+      // Items added to or removed from a section raise no slotchange here.
+      childList: true,
+      attributeFilter: ["expanded", "selected", "level"],
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#narrow.removeEventListener("change", this.#onNarrow);
+    this.#watcher.disconnect();
+  }
+
+  protected override willUpdate(changed: PropertyValues<this>) {
+    if (!changed.has("collapsed")) return;
+    // Any opening, including one the app sets, ends an automatic collapse.
+    if (!this.collapsed) this.#autoCollapsed = false;
+    // The navigation is about to be hidden; keep focus from falling to the page.
+    else if (this.matches(":focus-within"))
+      this.shadowRoot?.querySelector<HTMLElement>(".toggle")?.focus();
+  }
+
+  #toggleCollapsed = () => this.#setCollapsed(!this.collapsed);
+
+  #setCollapsed(collapsed: boolean, auto = false) {
+    this.#autoCollapsed = auto;
+    this.collapsed = collapsed;
     this.dispatchEvent(
       new CustomEvent("purr-collapse", {
         detail: { collapsed: this.collapsed },
@@ -124,7 +205,7 @@ export class PurrSidebar extends LitElement {
         composed: true,
       }),
     );
-  };
+  }
 
   override render() {
     return html`
@@ -133,12 +214,14 @@ export class PurrSidebar extends LitElement {
         part="toggle"
         type="button"
         aria-expanded=${this.collapsed ? "false" : "true"}
-        aria-label=${`${this.collapsed ? "Show" : "Hide"} ${this.label}`.trim()}
+        aria-controls="nav"
+        aria-label=${this.label ? `${this.label} sidebar` : "Sidebar"}
         @click=${this.#toggleCollapsed}
       >
         ${sidebarIcon}
       </button>
       <nav
+        id="nav"
         part="nav"
         aria-label=${this.label || nothing}
         @click=${this.#onClick}

@@ -23,7 +23,7 @@ type Schema = {
   properties?: Record<string, Schema>;
 };
 
-const TRADEMARKS =
+export const TRADEMARKS =
   /\b(Liquid Glass|Aqua|Cupertino|SF Symbols?|Human Interface)\b/i;
 
 /** Checks a value against the subset of JSON Schema that hig/schema.json uses. */

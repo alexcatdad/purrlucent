@@ -15,6 +15,9 @@ class FakeHost extends EventTarget {
     return { states: this.states };
   }
   requestUpdate() {}
+  click() {
+    this.dispatchEvent(new Event("click"));
+  }
 }
 
 let host: FakeHost;
@@ -52,6 +55,15 @@ test("Space fires purr-press once", () => {
   expect(presses).toBe(1);
 });
 
+test("Enter and Space dispatch a click on the host", () => {
+  let clicks = 0;
+  host.addEventListener("click", () => clicks++);
+  key("keydown", "Enter");
+  key("keydown", " ");
+  key("keyup", " ");
+  expect(clicks).toBe(2);
+});
+
 test("disabled hosts fire nothing", () => {
   disabled = true;
   key("keydown", "Enter");
@@ -59,13 +71,15 @@ test("disabled hosts fire nothing", () => {
   key("keyup", " ");
   pointer("pointerdown");
   pointer("pointerup");
+  pointer("click");
   expect(presses).toBe(0);
   expect(host.states.has("pressed")).toBe(false);
 });
 
-test("pointer-up inside fires purr-press", () => {
+test("a click fires purr-press", () => {
   pointer("pointerdown");
   pointer("pointerup");
+  pointer("click");
   expect(presses).toBe(1);
 });
 

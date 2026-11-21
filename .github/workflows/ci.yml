@@ -68,8 +68,9 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
       - run: bun install --frozen-lockfile
-      - run: bun test
+      # Before bun test: the package check renders the packed build in Chromium.
       - run: bunx playwright install --with-deps chromium firefox webkit
+      - run: bun test
       - run: bun run test:unit
 
   e2e:

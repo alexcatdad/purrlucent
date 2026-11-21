@@ -1,0 +1,27 @@
+- id: pop-up-buttons/1
+  source: https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons
+  rule: A select offers a flat list of mutually exclusive options; actions, multiple selection and submenus use a menu button instead.
+  check: rubric
+  layer: components
+- id: pop-up-buttons/2
+  source: https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons
+  rule: Before a choice is made the select shows a default or placeholder, preferably the option most people want.
+  check: automated
+  test: src/components/select/select.e2e.ts > the placeholder shows while nothing is chosen
+  layer: components
+- id: pop-up-buttons/3
+  source: https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons
+  rule: A label tells people what the options affect before they open the select.
+  check: automated
+  test: src/components/select/select.e2e.ts > a select without a label fails axe
+  layer: components
+- id: pop-up-buttons/4
+  source: https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons
+  rule: A select is chosen over visible options when space is tight and not every option needs to be seen at once.
+  check: rubric
+  layer: components
+- id: pop-up-buttons/5
+  source: https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons
+  rule: A rarely needed set of extra choices goes behind a Custom option instead of adding controls to the page.
+  check: rubric
+  layer: components

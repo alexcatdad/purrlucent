@@ -1,0 +1,39 @@
+- id: sliders/1
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: A horizontal slider has its minimum on the leading side and its maximum on the trailing side, mirrored in right-to-left layouts.
+  check: automated
+  test: src/components/slider/slider.e2e.ts > under rtl the minimum is at the right and the keys swap
+  layer: components
+- id: sliders/2
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: Custom track colors or end icons are used only when they help convey what the slider adjusts.
+  check: rubric
+  layer: components
+- id: sliders/3
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: Over a wide range, a slider is supplemented by a field and stepper for exact values.
+  check: rubric
+  layer: components
+- id: sliders/4
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: The effect of a change shows live while the thumb moves, not only on release.
+  check: automated
+  test: src/components/slider/slider.e2e.ts > purr-input fires while dragging and purr-change once on release
+  layer: components
+- id: sliders/5
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: A slider has a label that introduces it.
+  check: automated
+  test: src/components/slider/slider.e2e.ts > a slider without a label fails axe
+  layer: components
+- id: sliders/6
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: Tick marks can show the scale, and they are labeled sparingly, often only at the minimum and maximum.
+  check: automated
+  test: src/components/slider/slider.e2e.ts > tick marks are drawn from the ticks attribute
+  layer: components
+- id: sliders/7
+  source: https://developer.apple.com/design/human-interface-guidelines/sliders
+  rule: Hovering the thumb with a pointer can reveal its current value.
+  check: rubric
+  layer: components

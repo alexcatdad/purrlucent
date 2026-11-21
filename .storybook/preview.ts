@@ -40,6 +40,9 @@ const preview: Preview = {
       }
       document.documentElement.style.colorScheme =
         globals.theme === "system" ? "" : globals.theme;
+      // Control fills are translucent and tint whatever is behind them, so the
+      // page paints the background token, as an app does.
+      document.body.style.background = "var(--purr-color-background)";
       return story();
     },
   ],

@@ -3,9 +3,33 @@ import {
   buildPrompt,
   parseRules,
   parseVerdicts,
+  pushRanges,
   renderComment,
   scopeRules,
 } from "./rubric-prompt.ts";
+
+const zero = "0".repeat(40);
+const a = "a".repeat(40);
+const b = "b".repeat(40);
+
+test("an update reviews only the commits the remote does not have", () => {
+  expect(
+    pushRanges(`refs/heads/x ${b} refs/heads/x ${a}\n`, "origin/main"),
+  ).toEqual([{ base: a, head: b }]);
+});
+
+test("a new branch reviews against the base", () => {
+  expect(
+    pushRanges(`refs/heads/x ${b} refs/heads/x ${zero}\n`, "origin/main"),
+  ).toEqual([{ base: "origin/main", head: b }]);
+});
+
+test("a deletion or empty input reviews nothing", () => {
+  expect(
+    pushRanges(`(delete) ${zero} refs/heads/x ${a}\n`, "origin/main"),
+  ).toEqual([]);
+  expect(pushRanges("", "origin/main")).toEqual([]);
+});
 
 const rules = parseRules(
   [
@@ -35,7 +59,7 @@ test("keeps the toolbar rules for a toolbar story and drops the other component 
 
 test("matches a hyphenated page to its component folder", () => {
   const ids = scopeRules(rules, [
-    "src/components/segmented-control/segmented-control.ts",
+    "src/components/toggle-group/toggle-group.ts",
   ]).map((r) => r.id);
   expect(ids).toEqual(["segmented-controls/1", "layout/1"]);
 });

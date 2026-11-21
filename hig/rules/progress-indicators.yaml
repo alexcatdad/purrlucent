@@ -1,0 +1,59 @@
+- id: progress-indicators/1
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: A task with a known extent shows a bar that reports its value and fills in proportion to it.
+  check: automated
+  test: src/components/progress/progress.e2e.ts > a value sets aria-valuenow and the fill width
+  layer: components
+- id: progress-indicators/2
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: A task of unknown length shows an indeterminate indicator that reports no value.
+  check: automated
+  test: src/components/progress/progress.e2e.ts > without a value there is no aria-valuenow
+  layer: components
+- id: progress-indicators/3
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: An indicator keeps moving while work continues, so it never looks stalled.
+  check: automated
+  test: src/components/progress/progress.e2e.ts > the segment moves with motion allowed
+  layer: components
+- id: progress-indicators/4
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: A determinate bar fills from the leading edge to the trailing edge, mirrored in right-to-left layouts.
+  check: automated
+  test: src/components/progress/progress.e2e.ts > the fill grows from the right under rtl
+  layer: components
+- id: progress-indicators/5
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: Reported progress is accurate and advances at an even pace.
+  check: rubric
+  layer: components
+- id: progress-indicators/6
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: An indicator that learns its extent switches to determinate, and never changes between bar and circular shapes.
+  check: rubric
+  layer: components
+- id: progress-indicators/7
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: A description is added only when it helps, and it is short and specific instead of a vague word like loading.
+  check: rubric
+  layer: components
+- id: progress-indicators/8
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: Status appears in the same place across the app so people know where to look.
+  check: rubric
+  layer: components
+- id: progress-indicators/9
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: Work that can be stopped safely offers Cancel; work that would lose progress offers Pause, and cancelling it asks for confirmation.
+  check: rubric
+  layer: components
+- id: progress-indicators/10
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: A spinner serves background work or tight spaces, such as inside a button or field, and usually has no label.
+  check: rubric
+  layer: components
+- id: progress-indicators/11
+  source: https://developer.apple.com/design/human-interface-guidelines/progress-indicators
+  rule: An indicator appears only while the operation runs and is removed when it ends.
+  check: rubric
+  layer: components

@@ -1,39 +1,61 @@
-import { LitElement, html, type PropertyValues } from "lit";
+import { LitElement, html } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { buttonStyles } from "./button.css.ts";
 
-export type PurrButtonVariant = "plain" | "bordered" | "prominent";
+export type PurrButtonVariant = "primary" | "secondary" | "tinted" | "ghost";
+export type PurrButtonSize = "md" | "lg" | "xl";
 
 /**
- * A button. The label is the slotted text and is required for an accessible name.
- * A destructive button never takes the prominent look.
+ * A button. The label is the slotted text and is required for an accessible
+ * name; an `icon` button takes an `aria-label` instead. A destructive button
+ * never takes the filled primary look. With `type="submit"` or `type="reset"`
+ * it submits or resets the form it is in; the default `button` does neither.
  *
  * @fires purr-press - When the button is activated by pointer, Enter or Space.
- * @slot - The button label.
+ * @slot - The button label, with an optional leading svg icon.
  * @csspart label - The wrapper around the label.
  */
 export class PurrButton extends LitElement {
+  static formAssociated = true;
   static override styles = [interactionStyles, buttonStyles];
   static override properties = {
     variant: { reflect: true },
+    type: { reflect: true },
+    size: { reflect: true },
+    icon: { type: Boolean, reflect: true },
     destructive: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
   };
 
   declare variant: PurrButtonVariant;
+  declare type: "button" | "submit" | "reset";
+  declare size: PurrButtonSize;
+  declare icon: boolean;
   declare destructive: boolean;
   declare disabled: boolean;
 
+  // :disabled also covers a disabled fieldset around the button.
   readonly pressable = new PressableController(this, {
-    disabled: () => this.disabled,
+    disabled: () => this.matches(":disabled"),
   });
+  #off = false;
+  #tabindex: string | null = null;
 
   constructor() {
     super();
-    this.variant = "plain";
+    this.variant = "secondary";
+    this.type = "button";
+    this.size = "md";
+    this.icon = false;
     this.destructive = false;
     this.disabled = false;
+    // Like a native button: submit or reset the form the button belongs to.
+    this.addEventListener("purr-press", () => {
+      const { form } = this.pressable.internals;
+      if (this.type === "submit") form?.requestSubmit();
+      else if (this.type === "reset") form?.reset();
+    });
   }
 
   override connectedCallback() {
@@ -41,12 +63,27 @@ export class PurrButton extends LitElement {
     if (!this.hasAttribute("role")) this.setAttribute("role", "button");
   }
 
-  protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("disabled")) {
-      this.tabIndex = this.disabled ? -1 : 0;
-      if (this.disabled) this.setAttribute("aria-disabled", "true");
-      else this.removeAttribute("aria-disabled");
+  formDisabledCallback() {
+    this.requestUpdate();
+  }
+
+  // After the update, so a changed `disabled` attribute is already reflected.
+  // A tabindex set from outside (a roving group) is kept and restored.
+  protected override updated() {
+    const off = this.matches(":disabled");
+    if (off !== this.#off) {
+      this.#off = off;
+      if (off) {
+        this.#tabindex = this.getAttribute("tabindex");
+        this.tabIndex = -1;
+        this.setAttribute("aria-disabled", "true");
+      } else {
+        if (this.#tabindex === null) this.removeAttribute("tabindex");
+        else this.setAttribute("tabindex", this.#tabindex);
+        this.removeAttribute("aria-disabled");
+      }
     }
+    if (!off && !this.hasAttribute("tabindex")) this.tabIndex = 0;
   }
 
   override render() {

@@ -41,7 +41,9 @@ for (const id of ["bar", "panel", "sheet"]) {
     await openStory(page);
     expect(await backdropFilter(page, id)).toBe("none");
     await openStory(page, "material:glass");
-    expect(await backdropFilter(page, id)).toMatch(/^blur\(\d+(\.\d+)?px\)$/);
+    expect(await backdropFilter(page, id)).toMatch(
+      /^blur\([\d.]+px\) saturate\([\d.]+%?\)$/,
+    );
   });
 }
 
@@ -55,62 +57,82 @@ test("list row and field shell never have a backdrop filter, glass or not", asyn
   }
 });
 
-// materials/5: the tint is translucent, so each rendered surface's own label
-// color is checked against its own background over the extremes of any backdrop
-// (black, white) and the midpoint between them.
+// materials/5: the tint is translucent, so each rendered surface's background
+// is composited over the extremes of any backdrop (black, white) and the
+// midpoint between them. Its legibility floor: every text role at 4.5:1 and
+// the focus ring and selection face at 3:1, the weakest included.
+const glassForegrounds = [
+  ["label", 4.5],
+  ["secondary-label", 4.5],
+  ["tertiary-label", 4.5],
+  ["accent-text", 4.5],
+  ["destructive-text", 4.5],
+  ["focus", 3],
+  ["selection", 3],
+] as const;
+
 test("glass labels stay legible over any backdrop", async ({ page }) => {
   for (const theme of ["light", "dark"]) {
     await openStory(page, `material:glass;theme:${theme}`, patterned);
+    const colors = await resolveColors(
+      page,
+      Object.fromEntries(
+        glassForegrounds.map(([role]) => [role, `var(--purr-color-${role})`]),
+      ),
+    );
     for (const id of ["bar", "panel", "sheet"]) {
-      const { color, backgroundColor } = await page
+      const background = await page
         .locator(`#${id}`)
-        .evaluate((el) => {
-          const { color, backgroundColor } = getComputedStyle(el);
-          return { color, backgroundColor };
-        });
-      const label = (await resolveColors(page, { label: color })).label!;
-      const shown = await compositeOver(page, backgroundColor, [
+        .evaluate((el) => getComputedStyle(el).backgroundColor);
+      const shown = await compositeOver(page, background, [
         "#000",
         "#808080",
         "#fff",
       ]);
       for (const over of shown)
-        expect(
-          contrast(label, over),
-          `${id} in ${theme}`,
-        ).toBeGreaterThanOrEqual(4.5);
+        for (const [role, need] of glassForegrounds)
+          expect(
+            contrast(colors[role]!, over),
+            `${role} on ${id} in ${theme}`,
+          ).toBeGreaterThanOrEqual(need);
     }
   }
 });
 
-// Over a checkerboard, glass keeps a real blur, a tint strong enough to hide the
-// pattern, and a visible edge. It does not yet show the tint differs from the
-// plain page background, so materials/6 stays pending.
-test("glass blurs, tints and outlines each surface over a patterned backdrop", async ({
+// Over a checkerboard, glass keeps a real blur and a highlight edge, and no stroke.
+// It does not yet show the tint differs from the plain page background, so
+// materials/6 stays pending.
+test("glass blurs and edges each surface over a patterned backdrop", async ({
   page,
 }) => {
   await openStory(page, "material:glass", patterned);
   for (const id of ["bar", "panel", "sheet"]) {
     const style = await page.locator(`#${id}`).evaluate((el) => {
-      const { backdropFilter, backgroundColor, borderBlockEndWidth } =
+      const { backdropFilter, boxShadow, borderBlockEndStyle } =
         getComputedStyle(el);
-      return { backdropFilter, backgroundColor, borderBlockEndWidth };
+      return { backdropFilter, boxShadow, borderBlockEndStyle };
     });
     expect(
       Number.parseFloat(
-        style.backdropFilter.match(/blur\((.+)px\)/)?.[1] ?? "0",
+        style.backdropFilter.match(/blur\(([\d.]+)px\)/)?.[1] ?? "0",
       ),
       `${id} blur`,
     ).toBeGreaterThanOrEqual(8);
-    // Black and white backdrops differ by (1 - alpha) * 255 per channel.
-    const [overBlack, overWhite] = await compositeOver(
-      page,
-      style.backgroundColor,
-      ["#000", "#fff"],
-    );
-    for (const [i, channel] of overBlack!.entries())
-      expect(overWhite![i]! - channel, `${id} tint`).toBeLessThanOrEqual(51);
-    expect(Number.parseFloat(style.borderBlockEndWidth), `${id} edge`).toBe(1);
+    expect(style.boxShadow, `${id} edge`).toContain("inset");
+    expect(style.borderBlockEndStyle, `${id} stroke`).toBe("none");
+  }
+});
+
+// Forced colors drops box-shadow, so each surface needs a real edge.
+test("surfaces keep a visible edge under forced colors", async ({ page }) => {
+  await openStory(page);
+  await page.emulateMedia({ forcedColors: "active" });
+  for (const id of ["bar", "panel", "sheet"]) {
+    const edge = await page.locator(`#${id}`).evaluate((el) => {
+      const { borderBlockEndStyle, borderBlockEndWidth } = getComputedStyle(el);
+      return `${borderBlockEndStyle} ${borderBlockEndWidth}`;
+    });
+    expect(edge, id).toBe("solid 1px");
   }
 });
 

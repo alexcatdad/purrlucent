@@ -6,6 +6,8 @@ export type RovingFocusOptions = {
   wrap: boolean;
   /** "one" (default): a single tab stop. "all": every item stays tabbable and the arrows are an extra. */
   tabStops?: "one" | "all";
+  /** True for a key the focused item needs itself, such as the caret keys of a text field. */
+  ignore?: (event: KeyboardEvent) => boolean;
 };
 
 /** Roving tabindex: one tab stop, arrow keys, Home and End move focus. */
@@ -78,7 +80,7 @@ export class RovingFocusController implements ReactiveController {
   };
 
   #onKeydown = (e: KeyboardEvent) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || this.#opts.ignore?.(e)) return;
     const from = this.#indexOf(e.target);
     if (from < 0) return;
     const last = this.#opts.items().length - 1;

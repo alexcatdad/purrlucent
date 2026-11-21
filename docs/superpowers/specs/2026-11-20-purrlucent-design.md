@@ -74,7 +74,7 @@ Styling:
 Components follow the HIG guidance for the kind of device in use:
 
 - **Input:** when the primary pointer is coarse (`pointer: coarse`), components use touch-sized targets and touch patterns (for example popovers and action sheets instead of hover menus). With a fine pointer they use desktop sizes and patterns, including hover.
-- **Width:** layouts respond to the space available (container and viewport width). Narrow widths follow phone guidance, such as a sidebar becoming a stacked navigation.
+- **Width:** layouts respond to the space available (container and viewport width). Narrow widths follow phone guidance, such as a sidebar that collapses on its own and opens full width.
 - Adaptation lives in the behaviors and surfaces layers, so components inherit it.
 - Screenshot and behavior tests run at desktop, tablet and phone sizes, with fine and coarse pointers.
 

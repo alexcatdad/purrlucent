@@ -1,0 +1,36 @@
+- id: pull-down-buttons/1
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: A menu button lists commands directly related to the button's own action, such as the kinds of item an Add button can create.
+  check: rubric
+  layer: components
+- id: pull-down-buttons/2
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: Choosing an item runs its action and closes the menu.
+  check: automated
+  test: src/components/menu/menu.e2e.ts > a click on an item fires purr-select once and closes
+  layer: components
+- id: pull-down-buttons/3
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: Mutually exclusive choices that are not commands use a select instead of a menu button.
+  check: rubric
+  layer: components
+- id: pull-down-buttons/4
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: Primary actions are not hidden inside a single menu button that holds every action of a view.
+  check: rubric
+  layer: components
+- id: pull-down-buttons/5
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: A menu has at least three items; one or two items use buttons, toggles or switches instead.
+  check: rubric
+  layer: components
+- id: pull-down-buttons/6
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: A menu title is added only when it adds meaning beyond the button and its items.
+  check: rubric
+  layer: components
+- id: pull-down-buttons/7
+  source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
+  rule: A destructive item is marked as destructive and asks for confirmation before it acts.
+  check: rubric
+  layer: components

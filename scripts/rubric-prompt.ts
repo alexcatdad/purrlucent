@@ -42,7 +42,7 @@ export function parseRules(output: string): RubricRule[] {
 /** Rule page (hig/rules/<page>.yaml) to the component folder it governs. */
 export const PAGE_COMPONENT: Record<string, string> = {
   buttons: "button",
-  "segmented-controls": "segmented-control",
+  "segmented-controls": "toggle-group",
   sidebars: "sidebar",
   toolbars: "toolbar",
 };
@@ -154,13 +154,35 @@ async function run(cmd: string[], stdin?: Blob): Promise<string> {
   return out;
 }
 
+const ZERO = /^0+$/;
+
+/**
+ * The commit ranges a push sends, from the lines git gives a pre-push hook
+ * (`<local ref> <local sha> <remote ref> <remote sha>`). An update reviews only
+ * the commits the remote does not have yet; a new branch reviews against
+ * `newBranchBase`; a deletion reviews nothing.
+ */
+export function pushRanges(stdin: string, newBranchBase: string) {
+  return stdin
+    .split("\n")
+    .map((line) => line.trim().split(/\s+/))
+    .filter(
+      (parts): parts is [string, string, string, string] =>
+        parts.length === 4 && !ZERO.test(parts[1]!),
+    )
+    .map(([, head, , remote]) => ({
+      base: ZERO.test(remote) ? newBranchBase : remote,
+      head,
+    }));
+}
+
 /**
  * Local pre-push review: runs Codex with the developer's own logged-in CLI (no
  * API key in CI) on the rubric rules the pushed changes touch. Returns the
  * number of failing rules; 0 when no rubric rule applies.
  */
-async function review(base: string): Promise<number> {
-  const range = `${base}...HEAD`;
+async function review(base: string, head = "HEAD"): Promise<number> {
+  const range = `${base}...${head}`;
   const files = (await run(["git", "diff", "--name-only", range]))
     .split("\n")
     .filter((f) => f.startsWith("src/") && !f.endsWith(".png"));
@@ -208,9 +230,15 @@ async function review(base: string): Promise<number> {
 
 if (import.meta.main) {
   const [command, base = "origin/main"] = process.argv.slice(2);
-  if (command !== "review")
-    throw new Error("usage: rubric-prompt.ts review [base]");
-  const failed = await review(base);
+  if (command !== "review" && command !== "pre-push")
+    throw new Error("usage: rubric-prompt.ts review [base] | pre-push [base]");
+  // pre-push reads the pushed refs from stdin, so each commit is judged once.
+  const ranges =
+    command === "review"
+      ? [{ base, head: "HEAD" }]
+      : pushRanges(await Bun.stdin.text(), base);
+  let failed = 0;
+  for (const range of ranges) failed += await review(range.base, range.head);
   if (failed) {
     console.error(`rubric: ${failed} rule(s) failed; push blocked.`);
     process.exit(1);

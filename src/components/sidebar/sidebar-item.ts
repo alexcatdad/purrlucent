@@ -1,16 +1,23 @@
 import { LitElement, html, nothing, svg } from "lit";
-import { ifDefined } from "lit/directives/if-defined.js";
 import { parseLevel, type SidebarLevel } from "./level.ts";
 import { itemStyles } from "./sidebar.css.ts";
 
 // design/icons/chevron-right.svg
 const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.25 5.75 5.5 5.5q.75.75 0 1.5l-5.5 5.5" /></svg>`;
 
+// Leaves leave the chevron slot empty, so every level 1 label shares one edge.
+const label = html`<span class="label"><slot></slot></span>`;
+const icon = html`<slot name="icon"></slot>`;
+const detail = html`<slot name="detail"></slot>`;
+
 /**
  * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
- * by the sidebar because level 2 items follow it, a disclosure button.
+ * by the sidebar because level 2 items follow it, a disclosure button. Without
+ * an `href` it renders a plain button, so an app can handle the click itself.
  *
  * @slot - The item label.
+ * @slot icon - A leading svg icon, tinted with the accent text color.
+ * @slot detail - Trailing muted text, such as a count.
  * @csspart control - The link or disclosure button.
  * @csspart chevron - The disclosure arrow.
  * @fires purr-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
@@ -49,7 +56,7 @@ export class PurrSidebarItem extends LitElement {
     return this.#level;
   }
 
-  set level(value: SidebarLevel) {
+  set level(value: SidebarLevel | null | undefined) {
     const old = this.#level;
     this.#level = parseLevel(value);
     this.requestUpdate("level", old);
@@ -75,15 +82,25 @@ export class PurrSidebarItem extends LitElement {
           aria-expanded=${this.expanded ? "true" : "false"}
           @click=${this.#toggle}
         >
-          ${chevron}<slot></slot>
+          ${chevron}${icon}${label}${detail}
         </button>`
-      : html`<a
-          class="control"
-          part="control"
-          href=${ifDefined(this.href)}
-          aria-current=${this.selected ? "page" : nothing}
-          ><slot></slot
-        ></a>`;
+      : this.href
+        ? html`<a
+            class="control"
+            part="control"
+            href=${this.href}
+            aria-current=${this.selected ? "page" : nothing}
+            >${icon}${label}${detail}</a
+          >`
+        : // Without a destination an anchor is not focusable, so use a button.
+          html`<button
+            class="control"
+            part="control"
+            type="button"
+            aria-current=${this.selected ? "page" : nothing}
+          >
+            ${icon}${label}${detail}
+          </button>`;
   }
 }
 

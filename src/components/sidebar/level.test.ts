@@ -6,6 +6,11 @@ test("levels 1 and 2 are accepted", () => {
   expect(parseLevel(2)).toBe(2);
 });
 
+test("no level, as from a removed attribute, is level 1", () => {
+  expect(parseLevel(null)).toBe(1);
+  expect(parseLevel(undefined)).toBe(1);
+});
+
 test("a level 3 item throws in development", () => {
   expect(() => parseLevel(3)).toThrow(RangeError);
   expect(() => parseLevel(0)).toThrow(RangeError);

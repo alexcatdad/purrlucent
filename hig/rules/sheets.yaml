@@ -1,0 +1,47 @@
+- id: sheets/1
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: A sheet holds a scoped task closely tied to the current context, completed before returning to the parent view.
+  check: rubric
+  layer: components
+- id: sheets/2
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: While a modal sheet is open, the parent view cannot be interacted with.
+  check: automated
+  test: src/components/dialog/dialog.e2e.ts > the page behind is inert
+  layer: components
+- id: sheets/3
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: A sheet can be dismissed from outside its content, and a cancel handler can ask first when work would be lost.
+  check: automated
+  test: src/components/dialog/dialog.e2e.ts > pressing the backdrop closes a dismissible sheet and can be cancelled
+  layer: components
+- id: sheets/4
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: Cancel dismisses without saving, Done dismisses after completing or saving, and Back moves within a multistep flow.
+  check: rubric
+  layer: components
+- id: sheets/5
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: Done is paired with Cancel, or with Back in a multistep flow, and Cancel, Done and Back never appear together.
+  check: rubric
+  layer: components
+- id: sheets/6
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: Only one sheet shows at a time; a sheet that leads to another closes first.
+  check: rubric
+  layer: components
+- id: sheets/7
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: Long or multistep tasks use a full page or window instead of a sheet.
+  check: rubric
+  layer: components
+- id: sheets/8
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: Supplementary content that affects the main task uses a nonmodal panel instead of a modal sheet.
+  check: rubric
+  layer: components
+- id: sheets/9
+  source: https://developer.apple.com/design/human-interface-guidelines/sheets
+  rule: A sheet has a default size suited to its content and can grow for people who need more room.
+  check: rubric
+  layer: components

@@ -9,19 +9,106 @@
     "THIRD_PARTY_NOTICES"
   ],
   "customElements": "dist/custom-elements.json",
+  "types": "./dist/types/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./sidebar": "./dist/sidebar.js",
-    "./surfaces": "./dist/surfaces.js",
-    "./button": "./dist/button.js",
-    "./segmented-control": "./dist/segmented-control.js",
-    "./toolbar": "./dist/toolbar.js",
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./surfaces": {
+      "types": "./dist/types/surfaces/surfaces.css.d.ts",
+      "default": "./dist/surfaces.js"
+    },
+    "./banner": {
+      "types": "./dist/types/components/banner/banner.d.ts",
+      "default": "./dist/banner.js"
+    },
+    "./button": {
+      "types": "./dist/types/components/button/button.d.ts",
+      "default": "./dist/button.js"
+    },
+    "./checkbox": {
+      "types": "./dist/types/components/checkbox/checkbox.d.ts",
+      "default": "./dist/checkbox.js"
+    },
+    "./combobox": {
+      "types": "./dist/types/components/combobox/combobox.d.ts",
+      "default": "./dist/combobox.js"
+    },
+    "./dialog": {
+      "types": "./dist/types/components/dialog/dialog.d.ts",
+      "default": "./dist/dialog.js"
+    },
+    "./input": {
+      "types": "./dist/types/components/input/input.d.ts",
+      "default": "./dist/input.js"
+    },
+    "./menu": {
+      "types": "./dist/types/components/menu/menu.d.ts",
+      "default": "./dist/menu.js"
+    },
+    "./number-field": {
+      "types": "./dist/types/components/number-field/number-field.d.ts",
+      "default": "./dist/number-field.js"
+    },
+    "./popover": {
+      "types": "./dist/types/components/popover/popover.d.ts",
+      "default": "./dist/popover.js"
+    },
+    "./progress": {
+      "types": "./dist/types/components/progress/progress.d.ts",
+      "default": "./dist/progress.js"
+    },
+    "./radio-group": {
+      "types": "./dist/types/components/radio-group/radio-group.d.ts",
+      "default": "./dist/radio-group.js"
+    },
+    "./select": {
+      "types": "./dist/types/components/select/select.d.ts",
+      "default": "./dist/select.js"
+    },
+    "./sidebar": {
+      "types": "./dist/types/components/sidebar/sidebar.d.ts",
+      "default": "./dist/sidebar.js"
+    },
+    "./slider": {
+      "types": "./dist/types/components/slider/slider.d.ts",
+      "default": "./dist/slider.js"
+    },
+    "./spinner": {
+      "types": "./dist/types/components/spinner/spinner.d.ts",
+      "default": "./dist/spinner.js"
+    },
+    "./switch": {
+      "types": "./dist/types/components/switch/switch.d.ts",
+      "default": "./dist/switch.js"
+    },
+    "./textarea": {
+      "types": "./dist/types/components/textarea/textarea.d.ts",
+      "default": "./dist/textarea.js"
+    },
+    "./toggle": {
+      "types": "./dist/types/components/toggle/toggle.d.ts",
+      "default": "./dist/toggle.js"
+    },
+    "./toggle-group": {
+      "types": "./dist/types/components/toggle-group/toggle-group.d.ts",
+      "default": "./dist/toggle-group.js"
+    },
+    "./toolbar": {
+      "types": "./dist/types/components/toolbar/toolbar.d.ts",
+      "default": "./dist/toolbar.js"
+    },
+    "./tooltip": {
+      "types": "./dist/types/components/tooltip/tooltip.d.ts",
+      "default": "./dist/tooltip.js"
+    },
     "./tokens.css": "./dist/tokens.css",
     "./custom-elements.json": "./dist/custom-elements.json"
   },
   "scripts": {
-    "build": "bun src/tokens/generate.ts && vite build && cem analyze",
-    "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\"",
+    "build": "vite build && tsc -p tsconfig.build.json && cem analyze",
+    "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\" && bun scripts/style-check.ts",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
     "prepare": "lefthook install",

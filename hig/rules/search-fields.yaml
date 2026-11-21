@@ -1,0 +1,42 @@
+- id: search-fields/1
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: Placeholder text tells people what can be searched.
+  check: rubric
+  layer: components
+- id: search-fields/2
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: Results update while people type, narrowing as the query gets more specific.
+  check: rubric
+  layer: components
+- id: search-fields/3
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: Recent searches or suggested terms are offered before and during typing.
+  check: rubric
+  layer: components
+- id: search-fields/4
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: A search field shows its clear button only while it contains text.
+  check: automated
+  test: src/components/input/input.e2e.ts > a search field shows its clear button only while it has text
+  layer: components
+- id: search-fields/5
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: Escape clears a search field.
+  check: automated
+  test: src/components/input/input.e2e.ts > Escape clears a search field
+  layer: components
+- id: search-fields/6
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: The most relevant results come first, grouped by category when that helps.
+  check: rubric
+  layer: components
+- id: search-fields/7
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: A scope filter starts at the broadest scope and lets people narrow it.
+  check: rubric
+  layer: components
+- id: search-fields/8
+  source: https://developer.apple.com/design/human-interface-guidelines/search-fields
+  rule: Search sits in the same place and behaves the same across tablet and desktop layouts.
+  check: rubric
+  layer: components
