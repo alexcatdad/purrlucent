@@ -98,6 +98,17 @@ const view = html`
 const menuOf = (canvasElement: HTMLElement) =>
   canvasElement.querySelector<PurrMenu>("#menu")!;
 
+/** The accessibility check reads colours after play, so every fade has to be over. */
+const settled = (canvasElement: HTMLElement) =>
+  Promise.all(
+    [
+      ...document.getAnimations(),
+      ...[...canvasElement.querySelectorAll("purr-menu")].flatMap(
+        (menu) => menu.shadowRoot?.getAnimations() ?? [],
+      ),
+    ].map((animation) => animation.finished),
+  );
+
 /** Clicks the trigger, as a person would, so the menu is measured open. */
 const openMenu = async (canvasElement: HTMLElement) => {
   const el = menuOf(canvasElement);
@@ -105,6 +116,7 @@ const openMenu = async (canvasElement: HTMLElement) => {
   await userEvent.click(el.querySelector("[slot=trigger]")!);
   await el.updateComplete;
   expect(el.open).toBe(true);
+  await settled(canvasElement);
   return el;
 };
 
@@ -114,6 +126,7 @@ const openSubmenu = async (canvasElement: HTMLElement) => {
   const rtl = getComputedStyle(el).direction === "rtl";
   await userEvent.keyboard(rtl ? "{ArrowLeft}" : "{ArrowRight}");
   await userEvent.keyboard("{ArrowDown}");
+  await settled(canvasElement);
   return el;
 };
 

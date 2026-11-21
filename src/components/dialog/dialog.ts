@@ -135,6 +135,8 @@ export class PurrDialog extends LitElement {
       dialog.showModal();
       if (!this.#locked) lockScroll();
       this.#locked = true;
+      // Now, not on the next resize callback: the body has its size already.
+      this.#measure();
       void this.#focusInitial();
     } else if (!this.open && dialog.open) {
       dialog.close();
