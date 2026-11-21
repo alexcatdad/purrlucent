@@ -209,6 +209,24 @@ test("under forced colors a disabled checked box is not drawn as an enabled one"
   expect(width).toBe(normalWidth);
 });
 
+test("each size draws a larger box than the one before", async ({ page }) => {
+  await gotoStory(page, story("sizes"));
+  const widths = await Promise.all(
+    ["md off", "lg off", "xl off"].map((name) =>
+      page
+        .getByRole("checkbox", { name })
+        .evaluate(
+          (el) =>
+            el
+              .shadowRoot!.querySelector('[part="box"]')!
+              .getBoundingClientRect().width,
+        ),
+    ),
+  );
+  expect(widths[1]).toBeGreaterThan(widths[0]!);
+  expect(widths[2]).toBeGreaterThan(widths[1]!);
+});
+
 for (const name of ["states", "sizes", "in-form", "rtl", "glass"]) {
   test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
     await expectAccessible(await gotoStory(page, story(name)));
