@@ -91,7 +91,7 @@ export class PurrTextarea extends LitElement {
   }
 
   get #control() {
-    return this.renderRoot.querySelector<HTMLTextAreaElement>("textarea");
+    return this.renderRoot?.querySelector<HTMLTextAreaElement>("textarea");
   }
 
   override connectedCallback() {

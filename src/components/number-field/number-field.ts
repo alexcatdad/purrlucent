@@ -121,7 +121,7 @@ export class PurrNumberField extends LitElement {
   }
 
   get #input() {
-    return this.renderRoot.querySelector<HTMLInputElement>("input");
+    return this.renderRoot?.querySelector<HTMLInputElement>("input");
   }
 
   get #bounds(): Bounds {
