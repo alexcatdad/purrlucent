@@ -458,6 +458,26 @@ test("a disabled search field keeps its end inset", async ({ page }) => {
   await expect.poll(() => padEnd("#c")).toBe("0px");
 });
 
+test("a custom validity set before the first render is kept", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  const result = await root.evaluate(async (el) => {
+    const field = document.createElement("purr-input") as HTMLElement & {
+      setCustomValidity(message: string): void;
+      validity: ValidityState;
+      validationMessage: string;
+      updateComplete: Promise<boolean>;
+    };
+    field.setAttribute("label", "Name");
+    field.setCustomValidity("Taken");
+    el.append(field);
+    await field.updateComplete;
+    return [field.validity.customError, field.validationMessage];
+  });
+  expect(result).toEqual([true, "Taken"]);
+});
+
 test("a search field mirrors under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const sides = await page

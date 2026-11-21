@@ -128,8 +128,11 @@ export class PurrInput extends LitElement {
     this._labelled = false;
   }
 
+  /** Kept here so a message set before the first render is not lost. */
+  #custom = "";
+
   get #input() {
-    return this.renderRoot.querySelector<HTMLInputElement>("input");
+    return this.renderRoot?.querySelector<HTMLInputElement>("input");
   }
 
   override connectedCallback() {
@@ -176,7 +179,7 @@ export class PurrInput extends LitElement {
   }
 
   setCustomValidity(message: string) {
-    this.#input?.setCustomValidity(message);
+    this.#custom = message;
     this.#sync();
   }
 
@@ -211,6 +214,7 @@ export class PurrInput extends LitElement {
   #sync() {
     const input = this.#input;
     if (!input) return;
+    input.setCustomValidity(this.#custom);
     const invalid = this.#touched && !input.validity.valid;
     this.#internals.setFormValue(input.value);
     this.#internals.setValidity(input.validity, input.validationMessage, input);
