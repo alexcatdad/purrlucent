@@ -65,6 +65,8 @@ const keepsKey = (toolbar: HTMLElement, event: KeyboardEvent) => {
   const field = event.composedPath()[0];
   if (!(field instanceof HTMLInputElement)) return false;
   const { selectionStart: start, selectionEnd: end, value } = field;
+  // number, email and checkbox inputs have no caret to protect.
+  if (start === null || end === null) return false;
   const rtl = toolbar.matches(":dir(rtl)");
   if (event.key === (rtl ? "ArrowLeft" : "ArrowRight"))
     return start !== end || end !== value.length;
@@ -77,6 +79,7 @@ const isItem = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement &&
   !(el instanceof PurrToolbarSeparator || el instanceof PurrToolbarTitle) &&
   el.getAttribute("role") !== "separator" &&
+  !el.hidden &&
   !el.hasAttribute("disabled") &&
   el.getAttribute("aria-disabled") !== "true";
 
@@ -163,7 +166,7 @@ export class PurrToolbar extends LitElement {
     this.setAttribute("role", "toolbar");
     this.#watcher.observe(this, {
       attributes: true,
-      attributeFilter: ["disabled", "aria-disabled"],
+      attributeFilter: ["disabled", "aria-disabled", "hidden"],
       childList: true,
       subtree: true,
     });

@@ -114,6 +114,10 @@ export const selectStyles = css`
       forced-color-adjust: none;
     }
 
+    [part="trigger"][aria-expanded="true"] {
+      border-color: Highlight;
+    }
+
     [part="trigger"][aria-disabled="true"] {
       border-color: GrayText;
       color: GrayText;

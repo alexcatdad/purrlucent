@@ -142,6 +142,38 @@ test("disabling the tab stop moves it, and enabling the item keeps one stop", as
   await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1, -1]);
 });
 
+test("hiding the tab stop moves it to a visible item", async ({ page }) => {
+  await openStory(page);
+  const visibleStops = () =>
+    page
+      .locator("#toolbar purr-button")
+      .evaluateAll((els) =>
+        els.filter((e) => !e.hasAttribute("hidden")).map((e) => e.tabIndex),
+      );
+  const first = page.locator("#toolbar purr-button").first();
+  await first.evaluate((el) => el.setAttribute("hidden", ""));
+  await expect.poll(visibleStops).toEqual([0, -1, -1]);
+  await first.evaluate((el) => el.removeAttribute("hidden"));
+  await expect.poll(visibleStops).toEqual([0, -1, -1, -1]);
+});
+
+test("an arrow key leaves a field that has no caret, such as a number input", async ({
+  page,
+}) => {
+  await openStory(page);
+  await page
+    .locator("#toolbar")
+    .evaluate((el) =>
+      el.insertAdjacentHTML(
+        "afterbegin",
+        '<input id="count" type="number" aria-label="Count" />',
+      ),
+    );
+  await page.locator("#count").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#count")).not.toBeFocused();
+});
+
 test("controls added to or removed from a group keep one tab stop", async ({
   page,
 }) => {

@@ -105,6 +105,15 @@ export class PurrDialog extends LitElement {
     this.open = false;
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    // Removal takes the native dialog out of the top layer but leaves it open.
+    if (this.hasUpdated && this.open) {
+      this.#dialog!.close();
+      this.requestUpdate();
+    }
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#unlock();

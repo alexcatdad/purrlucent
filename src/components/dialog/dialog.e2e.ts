@@ -304,6 +304,43 @@ test("removing an open dialog releases the scroll lock", async ({ page }) => {
   ).toBe("");
 });
 
+test("a re-inserted open dialog is modal again and keeps the scroll lock", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-alert"));
+  await dialogEl(page).evaluate((el) => el.parentElement!.append(el));
+  await expect
+    .poll(() =>
+      dialogEl(page).evaluate((el) =>
+        el.shadowRoot!.querySelector("dialog")!.matches(":modal"),
+      ),
+    )
+    .toBe(true);
+  expect(
+    await page.evaluate(() => document.documentElement.style.overflow),
+  ).toBe("hidden");
+  expect(await isOpen(page)).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(alert(page)).toBeHidden();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.style.overflow))
+    .toBe("");
+});
+
+test("a sheet without a description leaves no gap under the title", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"));
+  const gap = await dialogEl(page).evaluate((el) => {
+    el.querySelector("[slot=description]")!.remove();
+    const root = el.shadowRoot!;
+    const text = root.querySelector("[part=text]")!.getBoundingClientRect();
+    const title = root.querySelector("[part=title]")!.getBoundingClientRect();
+    return text.height - title.height;
+  });
+  expect(gap).toBe(0);
+});
+
 test("a long body scrolls inside the dialog and is reachable by keyboard", async ({
   page,
 }) => {

@@ -485,6 +485,108 @@ test("the focus ring and the active option stay visible under forced colors", as
   expect(colors[0]).not.toBe(colors[1]);
 });
 
+/** Adds `markup` after the story, so a test can probe states no story shows. */
+const mount = (page: Page, markup: string) =>
+  page.evaluate((markup) => {
+    const host = document.createElement("div");
+    host.innerHTML = markup;
+    document.body.append(host);
+  }, markup);
+
+const abc = `
+  <purr-option value="a">Alpha</purr-option>
+  <purr-option value="b">Beta</purr-option>
+  <purr-option value="c">Gamma</purr-option>`;
+
+test("a form reset returns a combobox to its starting value attribute", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<form id="probe"><purr-combobox label="Probe" value="b">${abc}</purr-combobox></form>`,
+  );
+  await expect(combo(page, "Probe")).toHaveValue("Beta");
+  await combo(page, "Probe").fill("Gamma");
+  await page.keyboard.press("Tab");
+  await page
+    .locator("#probe")
+    .evaluate((form) => (form as HTMLFormElement).reset());
+  await expect(combo(page, "Probe")).toHaveValue("Beta");
+});
+
+test("opening scrolls a long list to the chosen option", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const items = Array.from(
+    { length: 30 },
+    (_, i) => `<purr-option value="o${i}">Item ${i}</purr-option>`,
+  ).join("");
+  await mount(
+    page,
+    `<purr-combobox id="probe" label="Probe" value="o25">${items}</purr-combobox>`,
+  );
+  await combo(page, "Probe").focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(listbox(page)).toBeVisible();
+  await expect
+    .poll(() =>
+      page.locator("#probe").evaluate((el) => {
+        const list = el.shadowRoot!.querySelector("[part=listbox]")!;
+        const active = el
+          .querySelector("[data-active]")!
+          .getBoundingClientRect();
+        const box = list.getBoundingClientRect();
+        return active.top >= box.top && active.bottom <= box.bottom;
+      }),
+    )
+    .toBe(true);
+});
+
+test("leaving the field untouched keeps a value that has no visible text", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<purr-combobox id="probe" label="Probe">${abc}</purr-combobox>`,
+  );
+  await page.evaluate(() => {
+    const el = document.querySelector<HTMLElement & { value: string }>(
+      "#probe",
+    )!;
+    (window as unknown as { log: unknown[] }).log = [];
+    el.addEventListener("purr-change", (e) =>
+      (window as unknown as { log: unknown[] }).log.push(
+        (e as CustomEvent).detail,
+      ),
+    );
+    el.value = "zzz";
+  });
+  await combo(page, "Probe").focus();
+  await page.keyboard.press("Tab");
+  expect(
+    await page
+      .locator("#probe")
+      .evaluate((el) => (el as never as { value: string }).value),
+  ).toBe("zzz");
+  expect(await recorded(page)).toEqual([]);
+});
+
+test("the chevron changes its border when open under forced colors", async ({
+  page,
+}) => {
+  await page.emulateMedia({ forcedColors: "active" });
+  await gotoStory(page, story("default"));
+  const border = () =>
+    chevron(page).evaluate(
+      (el) => getComputedStyle(el, "::before").borderColor,
+    );
+  const closed = await border();
+  await chevron(page).click();
+  await expect(chevron(page)).toHaveAttribute("aria-expanded", "true");
+  expect(await border()).not.toBe(closed);
+});
+
 test("in dark mode the field stands out from the page", async ({ page }) => {
   await gotoStory(page, story("default"), "theme:dark");
   const { field, page: canvas } = await page

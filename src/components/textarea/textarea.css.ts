@@ -12,6 +12,7 @@ export const textareaStyles = [
       --_rows-h: calc(var(--purr-spacing) * 18);
 
       inline-size: calc(var(--purr-spacing) * 60);
+      max-inline-size: 100%;
     }
 
     [part="field"] {

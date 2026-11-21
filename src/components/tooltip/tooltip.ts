@@ -119,7 +119,7 @@ export class PurrTooltip extends LitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#tip.remove();
-    clearTimeout(this.#timer);
+    this.#hide();
   }
 
   protected override willUpdate(changed: PropertyValues<this>) {
@@ -127,7 +127,10 @@ export class PurrTooltip extends LitElement {
   }
 
   protected override updated(changed: PropertyValues<this>) {
-    if (!changed.has("shown")) return;
+    if (!changed.has("shown")) {
+      if (changed.has("placement") && this.shown) this.#anchored.place();
+      return;
+    }
     if (this.shown) this.#anchored.show();
     else this.#anchored.hide();
   }

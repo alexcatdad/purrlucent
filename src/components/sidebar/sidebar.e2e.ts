@@ -359,6 +359,39 @@ test("changing levels from outside re-derives the disclosure", async ({
   await expect(page.locator("#recent")).toBeVisible();
 });
 
+test("removing the level attribute returns the item to level 1", async ({
+  page,
+}) => {
+  await open(page);
+  for (const id of ["recent", "favorites"])
+    await page.locator(`#${id}`).evaluate((el) => el.removeAttribute("level"));
+  await expect
+    .poll(() => page.locator("#recent").evaluate((el: Item) => el.level))
+    .toBe(1);
+  await expect(page.locator("#albums button[aria-expanded]")).toHaveCount(0);
+});
+
+test("a section heading that wraps grows instead of overflowing", async ({
+  page,
+}) => {
+  await open(page);
+  await expand(page);
+  const heading = page.locator("#folders").locator(".heading");
+  const before = await heading.evaluate((el) => el.clientHeight);
+  await page.locator("#folders").evaluate((el) => {
+    el.setAttribute(
+      "label",
+      "Recently opened documents and shared projects of the whole team",
+    );
+  });
+  await expect
+    .poll(() => heading.evaluate((el) => el.scrollHeight - el.clientHeight))
+    .toBe(0);
+  await expect
+    .poll(() => heading.evaluate((el) => el.clientHeight))
+    .toBeGreaterThan(before);
+});
+
 test("closing a group with Escape fires purr-toggle", async ({ page }) => {
   await open(page, "group-open");
   await page.evaluate(() => {

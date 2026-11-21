@@ -1,5 +1,4 @@
 import { LitElement, html, nothing } from "lit";
-import type { PropertyValues } from "lit";
 import { DismissController } from "../../behaviors/dismiss.ts";
 import { matchIndex } from "./match.ts";
 import { PopupController } from "./popup.ts";
@@ -120,7 +119,8 @@ export class PurrSelect extends LitElement {
   #query = "";
   #timer: ReturnType<typeof setTimeout> | undefined;
   #focusOnOpen: PurrOption | undefined;
-  #started = false;
+  #start: string | undefined;
+  readonly #watch = new MutationObserver(() => this.requestUpdate());
   readonly #popup = new PopupController(
     this,
     () => this.#trigger,
@@ -164,7 +164,7 @@ export class PurrSelect extends LitElement {
   }
 
   formResetCallback() {
-    this.value = this.#options.find((o) => o.selected)?.optionValue ?? "";
+    this.value = this.#start ?? "";
   }
 
   formDisabledCallback() {
@@ -214,13 +214,16 @@ export class PurrSelect extends LitElement {
 
     if (key === "Tab") {
       if (this.open) this.#close(true);
+    } else if (key === "Escape") {
+      // Keeps an enclosing dialog open; the dismiss behavior closes the list.
+      if (this.open) event.preventDefault();
     } else if (key === "ArrowDown" || key === "ArrowUp") {
       go(
         this.open
           ? options[current + (key === "ArrowDown" ? 1 : -1)]
           : undefined,
       );
-    } else if (this.open && (key === "Home" || key === "End")) {
+    } else if (key === "Home" || key === "End") {
       go(key === "Home" ? options[0] : options.at(-1));
     } else if (key === "Enter" || (key === " " && !this.#query)) {
       if (!this.open) go(undefined);
@@ -246,18 +249,30 @@ export class PurrSelect extends LitElement {
   };
 
   #onSlotChange = () => {
-    if (!this.#started) {
-      this.#started = true;
-      if (!this.value) this.formResetCallback();
+    if (this.#start === undefined) {
+      this.#start =
+        this.value || this.#options.find((o) => o.selected)?.optionValue || "";
+      this.value = this.#start;
     }
     this.requestUpdate();
   };
+
+  override connectedCallback() {
+    super.connectedCallback();
+    // Slotchange does not fire when an option's text changes.
+    this.#watch.observe(this, { subtree: true, characterData: true });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#watch.disconnect();
+  }
 
   protected override willUpdate() {
     if (this.open && this.matches(":disabled")) this.open = false;
   }
 
-  protected override updated(changed: PropertyValues<this>) {
+  protected override updated() {
     const chosen = this.#chosen;
     for (const option of this.#options) option.chosen = option === chosen;
     this.#internals.setFormValue(chosen ? this.value : null);
@@ -266,7 +281,6 @@ export class PurrSelect extends LitElement {
       "Choose an option to continue.",
       this.#trigger,
     );
-    if (!changed.has("open")) return;
     if (this.#popup.sync(this.open)) {
       (
         this.#focusOnOpen ??

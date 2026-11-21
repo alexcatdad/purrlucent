@@ -121,6 +121,10 @@ export const comboboxStyles = css`
       forced-color-adjust: none;
     }
 
+    [part="button"][aria-expanded="true"]::before {
+      border-color: Highlight;
+    }
+
     [part="button"]:focus-visible {
       outline-color: Highlight;
     }

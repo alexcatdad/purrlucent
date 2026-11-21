@@ -69,6 +69,8 @@ export class PurrTextarea extends LitElement {
 
   readonly #internals = this.attachInternals();
   #touched = false;
+  // Kept here: the inner control does not exist before the first render.
+  #custom = "";
   readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
 
   constructor() {
@@ -136,7 +138,7 @@ export class PurrTextarea extends LitElement {
   }
 
   setCustomValidity(message: string) {
-    this.#control?.setCustomValidity(message);
+    this.#custom = message;
     this.#sync();
   }
 
@@ -165,6 +167,7 @@ export class PurrTextarea extends LitElement {
   #sync() {
     const control = this.#control;
     if (!control) return;
+    control.setCustomValidity(this.#custom);
     const invalid = this.#touched && !control.validity.valid;
     this.#internals.setFormValue(control.value);
     this.#internals.setValidity(

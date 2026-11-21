@@ -13,8 +13,10 @@ function isProduction(): boolean {
 /**
  * Validates a sidebar item level. A sidebar shows at most two levels: anything
  * else throws in development and is treated as level 2 in production builds.
+ * No value (a removed attribute) is the default, level 1.
  */
 export function parseLevel(value: unknown): SidebarLevel {
+  if (value == null) return 1;
   if (value === 1 || value === 2) return value;
   if (!isProduction())
     throw new RangeError(

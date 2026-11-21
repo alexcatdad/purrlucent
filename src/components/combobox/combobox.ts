@@ -95,7 +95,7 @@ export class PurrCombobox extends LitElement {
   // The typed text narrows the list only after an edit, not when it merely
   // opens on the chosen label.
   #filtering = false;
-  #started = false;
+  #start: string | undefined;
 
   constructor() {
     super();
@@ -150,7 +150,7 @@ export class PurrCombobox extends LitElement {
   }
 
   formResetCallback() {
-    this.value = this.#options.find((o) => o.selected)?.optionValue ?? "";
+    this.value = this.#start ?? "";
     this.#filtering = false;
     this.#syncText();
   }
@@ -194,8 +194,10 @@ export class PurrCombobox extends LitElement {
       (o) => !o.disabled && o.label.toLowerCase() === text.toLowerCase(),
     );
     if (hit) this.#setValue(hit.optionValue, hit.label);
-    else if (!text || this.allowCustom) this.#setValue(text, text);
-    else this.text = this.#chosen?.label ?? "";
+    // Empty text beside a value that shows nothing was never typed: keep it.
+    else if (this.allowCustom || (!text && (this.#chosen || !this.value))) {
+      this.#setValue(text, text);
+    } else this.text = this.#chosen?.label ?? "";
   }
 
   #choose(option: PurrOption) {
@@ -271,11 +273,11 @@ export class PurrCombobox extends LitElement {
   };
 
   #onOptions = () => {
-    if (!this.#started && this.#options.length) {
-      this.#started = true;
-      if (!this.value) {
-        this.value = this.#options.find((o) => o.selected)?.optionValue ?? "";
-      } else if (!this.text) this.#syncText();
+    if (this.#start === undefined && this.#options.length) {
+      this.#start =
+        this.value || this.#options.find((o) => o.selected)?.optionValue || "";
+      if (!this.value) this.value = this.#start;
+      else if (!this.text) this.#syncText();
     }
     this.requestUpdate();
   };
@@ -316,7 +318,6 @@ export class PurrCombobox extends LitElement {
     }
     this.shadowRoot!.querySelector("slot")!.assign(...listed);
     input.ariaActiveDescendantElement = this.open ? this._active : null;
-    this._active?.scrollIntoView({ block: "nearest" });
     this.#internals.setFormValue(this.value);
     this.#internals.setValidity(
       { valueMissing: this.required && !this.value },
@@ -325,6 +326,8 @@ export class PurrCombobox extends LitElement {
     );
     this.#popup.sync(this.open);
     if (this.open) this.#popup.reposition();
+    // After the popover shows: a hidden list cannot scroll.
+    this._active?.scrollIntoView({ block: "nearest" });
   }
 
   override render() {

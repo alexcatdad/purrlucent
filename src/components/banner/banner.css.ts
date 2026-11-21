@@ -16,7 +16,6 @@ export const bannerStyles = css`
     grid-template-areas:
       "icon text close"
       ". actions actions";
-    column-gap: var(--purr-space-3);
     max-inline-size: calc(var(--purr-spacing) * 86);
     font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
@@ -40,6 +39,7 @@ export const bannerStyles = css`
 
   ::slotted([slot="icon"]) {
     grid-area: icon;
+    margin-inline-end: var(--purr-space-3);
     box-sizing: border-box;
     inline-size: var(--_tile);
     block-size: var(--_tile);
@@ -59,6 +59,7 @@ export const bannerStyles = css`
 
   [part="text"] {
     grid-area: text;
+    margin-inline-end: var(--purr-space-3);
     min-inline-size: 0;
     overflow-wrap: anywhere;
   }

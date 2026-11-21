@@ -150,9 +150,12 @@ export const dialogStyles = css`
   }
 
   [part="description"] {
-    margin-block-start: var(--purr-space-1-5);
     font-weight: 500;
     font-size: var(--purr-text-xs);
+  }
+
+  ::slotted([slot="description"]) {
+    margin: var(--purr-space-1-5) 0 0;
   }
 
   /* The scroll box clips, so it bleeds past the content by a focus ring. */

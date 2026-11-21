@@ -36,8 +36,8 @@ export const numberFieldStyles = [
     }
 
     [part="field"] {
-      inline-size: calc(var(--purr-spacing) * 16 + var(--_sw));
-      padding-inline-end: calc(var(--_sw) + var(--_pad));
+      inline-size: calc(var(--purr-spacing) * 16 + var(--_stw));
+      padding-inline-end: calc(var(--_stw) + var(--_pad));
     }
 
     [part="control"] {

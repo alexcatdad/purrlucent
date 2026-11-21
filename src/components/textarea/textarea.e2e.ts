@@ -263,6 +263,48 @@ test("the field keeps a border under forced colors and a ring on focus", async (
   expect(style).toEqual(["solid", "solid"]);
 });
 
+test("a custom validity set before the first render is kept", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("default"));
+  const result = await root.evaluate(async (el) => {
+    const field = document.createElement("purr-textarea") as HTMLElement & {
+      setCustomValidity(message: string): void;
+      validity: ValidityState;
+      validationMessage: string;
+      updateComplete: Promise<boolean>;
+    };
+    field.setCustomValidity("Taken");
+    el.append(field);
+    await field.updateComplete;
+    return [field.validity.customError, field.validationMessage];
+  });
+  expect(result).toEqual([true, "Taken"]);
+});
+
+test("the field shrinks to a narrow container", async ({ page }) => {
+  const root = await gotoStory(page, story("default"));
+  const width = await root.evaluate((el) => {
+    const box = document.createElement("div");
+    box.style.inlineSize = "100px";
+    box.innerHTML = '<purr-textarea label="Narrow"></purr-textarea>';
+    el.append(box);
+    return box.firstElementChild!.getBoundingClientRect().width;
+  });
+  expect(width).toBeLessThanOrEqual(100);
+});
+
+test("an external label names the textarea", async ({ page }) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) => {
+    el.insertAdjacentHTML(
+      "beforeend",
+      '<label for="ext">Bio</label><purr-textarea id="ext"></purr-textarea>',
+    );
+  });
+  await expect(page.getByRole("textbox", { name: "Bio" })).toBeVisible();
+});
+
 test("the text is padded from the start edge under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const padding = await page.locator("purr-textarea").evaluate((el) => {

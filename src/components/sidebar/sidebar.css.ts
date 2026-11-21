@@ -284,7 +284,7 @@ export const sectionStyles = css`
   .heading {
     display: flex;
     align-items: center;
-    block-size: var(--_head);
+    min-block-size: var(--_head);
     padding-inline: var(--purr-pad-item);
     color: var(--purr-color-muted-foreground);
     font: 700 var(--_head-text) / var(--_head-leading) var(--purr-font-sans);

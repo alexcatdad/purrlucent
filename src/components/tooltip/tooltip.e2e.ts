@@ -75,6 +75,48 @@ test("hover shows the bubble after a delay, not at once", async ({ page }) => {
   await expect(page.getByRole("tooltip")).toHaveText("Add a new item");
 });
 
+test("the hover delay stays under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await gotoStory(page, story("default"));
+  await target(page).hover();
+  await expect(bubble(page)).toBeHidden();
+  await expect(bubble(page)).toBeVisible();
+});
+
+test("the face takes the panel material, opaque in the default light look", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open"), "theme:light");
+  const fills = await page.locator("purr-tooltip").evaluate((el) => {
+    const root = el.shadowRoot!;
+    const probe = document.createElement("div");
+    probe.style.background = "var(--purr-material-panel)";
+    root.append(probe);
+    const material = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return [
+      material,
+      getComputedStyle(root.querySelector("[part=face]")!).backgroundColor,
+    ];
+  });
+  expect(fills[1]).toBe(fills[0]);
+});
+
+test("long unbroken text wraps inside the face", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  const fits = await page.locator("purr-tooltip").evaluate(async (el) => {
+    const tooltip = el as HTMLElement & {
+      text: string;
+      updateComplete: Promise<boolean>;
+    };
+    tooltip.text = "x".repeat(400);
+    await tooltip.updateComplete;
+    const face = el.shadowRoot!.querySelector("[part=face]")!;
+    return face.scrollWidth <= face.clientWidth;
+  });
+  expect(fits).toBe(true);
+});
+
 test("keyboard focus shows it at once and blur hides it", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.keyboard.press("Tab");
@@ -175,6 +217,21 @@ test("the placements put the bubble on the requested side of the target", async 
     if (side === "start") expect(b.x + b.width).toBeLessThanOrEqual(t.x);
     if (side === "end") expect(b.x).toBeGreaterThanOrEqual(t.x + t.width);
   }
+});
+
+test("changing placement while shown moves the bubble", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  await expect(bubble(page)).toBeVisible();
+  await page.locator("purr-tooltip").evaluate((el) => {
+    el.setAttribute("placement", "top");
+  });
+  await expect
+    .poll(async () => {
+      const b = await box(bubble(page));
+      const t = await box(target(page));
+      return b.y + b.height <= t.y;
+    })
+    .toBe(true);
 });
 
 test("under rtl start is the right-hand side", async ({ page }) => {

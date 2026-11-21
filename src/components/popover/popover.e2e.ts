@@ -120,6 +120,7 @@ test("focus moving elsewhere closes the panel", async ({ page }) => {
   await trigger(page).click();
   await page.locator("#other").focus();
   await expect(dialog(page)).toBeHidden();
+  await expect(page.locator("#other")).toBeFocused();
 });
 
 test("open, show() and hide() work from script and purr-toggle reports them", async ({
@@ -263,6 +264,90 @@ test("the arrow and the panel share one fill and one edge", async ({
   });
   expect(colors.fill[1]).toBe(colors.fill[0]);
   expect(colors.edge).not.toBe("none");
+});
+
+test("the panel and the arrow take the panel material, opaque in the default light look", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open"), "theme:light");
+  const fills = await page.locator("#popover").evaluate((el) => {
+    const root = el.shadowRoot!;
+    const probe = document.createElement("div");
+    probe.style.background = "var(--purr-material-panel)";
+    root.append(probe);
+    const material = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return {
+      material,
+      panel: getComputedStyle(root.querySelector("[part=panel]")!)
+        .backgroundColor,
+      arrow: getComputedStyle(root.querySelector("[part=arrow]")!).fill,
+    };
+  });
+  expect(fills.panel).toBe(fills.material);
+  expect(fills.arrow).toBe(fills.material);
+});
+
+test("the arrow's edge is not clipped at its tip", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  await expect(page.locator("#popover [part=arrow]")).toHaveCSS(
+    "overflow",
+    "visible",
+  );
+});
+
+test("long unbroken content wraps inside the panel", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  const fits = await page.locator("#popover").evaluate(async (el) => {
+    const long = document.createElement("p");
+    long.textContent = "x".repeat(120);
+    el.append(long);
+    const panel = el.shadowRoot!.querySelector("[part=panel]")!;
+    return panel.scrollWidth <= panel.clientWidth;
+  });
+  expect(fits).toBe(true);
+});
+
+test("hide() or open=false while focus is inside returns focus to the trigger", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open"));
+  await expect(inside(page)).toBeFocused();
+  await page
+    .locator("#popover")
+    .evaluate((el) => (el as HTMLElement & { hide(): void }).hide());
+  await expect(dialog(page)).toBeHidden();
+  await expect(trigger(page)).toBeFocused();
+  await trigger(page).click();
+  await expect(inside(page)).toBeFocused();
+  await page.locator("#popover").evaluate((el) => {
+    (el as HTMLElement & { open: boolean }).open = false;
+  });
+  await expect(dialog(page)).toBeHidden();
+  await expect(trigger(page)).toBeFocused();
+});
+
+test("changing placement while open moves the panel", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  await page.locator("#popover").evaluate((el) => {
+    el.setAttribute("placement", "top");
+  });
+  await expect
+    .poll(async () => {
+      const panel = await box(dialog(page));
+      const target = await box(trigger(page));
+      return panel.y + panel.height <= target.y;
+    })
+    .toBe(true);
+});
+
+test("a popover moved in the DOM while open keeps showing its panel", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open"));
+  await page.locator("#popover").evaluate((el) => document.body.append(el));
+  await expect(dialog(page)).toBeVisible();
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
 });
 
 test.describe("near the edges of a small viewport", () => {

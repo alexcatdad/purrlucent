@@ -352,6 +352,165 @@ test("the focus ring and the selection stay visible under forced colors", async 
   expect(colors[0]).not.toBe(colors[1]);
 });
 
+/** Adds `markup` after the story, so a test can probe states no story shows. */
+const mount = (page: Page, markup: string) =>
+  page.evaluate((markup) => {
+    const host = document.createElement("div");
+    host.innerHTML = markup;
+    document.body.append(host);
+  }, markup);
+
+const abc = `
+  <purr-option value="a">Alpha</purr-option>
+  <purr-option value="b">Beta</purr-option>
+  <purr-option value="c">Gamma</purr-option>`;
+
+test("a form reset returns a select to its starting value attribute", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<form id="probe"><purr-select label="Probe" value="b">${abc}</purr-select></form>`,
+  );
+  await expect(selectedLabel(page, "Probe")).toHaveText("Beta");
+  await trigger(page, "Probe").click();
+  await option(page, "Gamma").click();
+  await page
+    .locator("#probe")
+    .evaluate((form) => (form as HTMLFormElement).reset());
+  await expect(selectedLabel(page, "Probe")).toHaveText("Beta");
+});
+
+test("Escape closes an open select without closing the dialog around it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<dialog id="probe"><purr-select label="Probe">${abc}</purr-select></dialog>`,
+  );
+  await page
+    .locator("#probe")
+    .evaluate((el) => (el as HTMLDialogElement).showModal());
+  await trigger(page, "Probe").click();
+  await expect(listbox(page)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(listbox(page)).toBeHidden();
+  await expect(page.locator("#probe")).toHaveAttribute("open", "");
+});
+
+test("a changed option label shows in the trigger", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<purr-select label="Probe" value="b">${abc}</purr-select>`,
+  );
+  await expect(selectedLabel(page, "Probe")).toHaveText("Beta");
+  await page.evaluate(() => {
+    document.querySelector('purr-option[value="b"]')!.textContent = "Renamed";
+  });
+  await expect(selectedLabel(page, "Probe")).toHaveText("Renamed");
+});
+
+test("Home and End open the closed list on the first and last option", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  for (const [key, name] of [
+    ["End", "Gala"],
+    ["Home", "McIntosh"],
+  ] as const) {
+    await trigger(page).focus();
+    await page.keyboard.press(key);
+    await expect(listbox(page)).toBeVisible();
+    await expect(option(page, name)).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(listbox(page)).toBeHidden();
+  }
+});
+
+test("a select moved in the DOM while open still shows its list", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  await trigger(page).click();
+  await expect(listbox(page)).toBeVisible();
+  await page.evaluate(() => {
+    const el = document.querySelector("purr-select")!;
+    el.parentElement!.append(el);
+  });
+  await expect(listbox(page)).toBeVisible();
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
+});
+
+test("the open list keeps at least the trigger's width when the trigger grows", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<purr-select label="Probe" style="inline-size:200px">${abc}</purr-select>`,
+  );
+  await trigger(page, "Probe").click();
+  await page.evaluate(() => {
+    document.querySelector<HTMLElement>(
+      'purr-select[label="Probe"]',
+    )!.style.inlineSize = "320px";
+    dispatchEvent(new Event("resize"));
+  });
+  await expect
+    .poll(async () => (await listbox(page).boundingBox())!.width)
+    .toBeGreaterThanOrEqual(320);
+});
+
+for (const scheme of ["light", "dark"] as const) {
+  for (const contrast of ["no-preference", "more"] as const) {
+    test(`the option focus ring contrasts with the selection fill in ${scheme} with ${contrast} contrast`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: scheme, contrast });
+      await gotoStory(page, story("preselected"));
+      await trigger(page).focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(option(page, "Fuji")).toBeFocused();
+      const ratio = await option(page, "Fuji").evaluate((el) => {
+        const style = getComputedStyle(el);
+        const ctx = document.createElement("canvas").getContext("2d")!;
+        const luminance = (color: string) => {
+          ctx.clearRect(0, 0, 1, 1);
+          ctx.fillStyle = color;
+          ctx.fillRect(0, 0, 1, 1);
+          const [r, g, b] = [...ctx.getImageData(0, 0, 1, 1).data].map((c) => {
+            const s = c / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+          });
+          return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+        };
+        const [hi, lo] = [
+          luminance(style.outlineColor),
+          luminance(style.backgroundColor),
+        ].sort((a, b) => b - a);
+        return (hi! + 0.05) / (lo! + 0.05);
+      });
+      expect(ratio).toBeGreaterThanOrEqual(3);
+    });
+  }
+}
+
+test("the trigger changes its border when open under forced colors", async ({
+  page,
+}) => {
+  await page.emulateMedia({ forcedColors: "active" });
+  await gotoStory(page, story("preselected"));
+  const border = () =>
+    trigger(page).evaluate((el) => getComputedStyle(el).borderColor);
+  const closed = await border();
+  await trigger(page).click();
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
+  expect(await border()).not.toBe(closed);
+});
+
 for (const name of [
   "default",
   "preselected",

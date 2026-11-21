@@ -132,6 +132,96 @@ test("a typed number is clamped and snapped when committed", async ({
   ]);
 });
 
+test("a custom validity set before the first render is kept", async ({
+  page,
+}) => {
+  await gotoStory(page, story("steps"));
+  const result = await page
+    .locator("purr-number-field")
+    .evaluate(async (el) => {
+      const field = document.createElement(
+        "purr-number-field",
+      ) as HTMLElement & {
+        setCustomValidity(message: string): void;
+        validity: ValidityState;
+        validationMessage: string;
+        updateComplete: Promise<boolean>;
+      };
+      field.setCustomValidity("Taken");
+      el.after(field);
+      await field.updateComplete;
+      return [field.validity.customError, field.validationMessage];
+    });
+  expect(result).toEqual([true, "Taken"]);
+});
+
+test("editing shortcuts with a modifier key do not change the value", async ({
+  page,
+}) => {
+  await gotoStory(page, story("steps"));
+  const field = page.getByRole("spinbutton");
+  await record(page.locator("purr-number-field"));
+  await field.focus();
+  for (const key of [
+    "Shift+Home",
+    "Meta+ArrowUp",
+    "Control+End",
+    "Alt+ArrowDown",
+  ])
+    await page.keyboard.press(key);
+  await expect(field).toHaveValue("5");
+  expect(await logged(page)).toEqual([]);
+});
+
+test("a read-only field keeps Home and End for the caret", async ({ page }) => {
+  await gotoStory(page, story("steps"));
+  const host = page.locator("purr-number-field");
+  await host.evaluate(
+    (el) => ((el as HTMLElement & { readonly: boolean }).readonly = true),
+  );
+  const prevented = await host.evaluate((el) => {
+    const input = el.shadowRoot!.querySelector("input")!;
+    const event = new KeyboardEvent("keydown", {
+      key: "Home",
+      bubbles: true,
+      cancelable: true,
+    });
+    input.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+});
+
+test("the form and its validity follow the typed text before a commit", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const form = page.locator("#form");
+  const valid = () =>
+    form.evaluate((f) => (f as HTMLFormElement).checkValidity());
+  await page.getByRole("spinbutton", { name: "Count" }).fill("5");
+  await page.getByRole("spinbutton", { name: "Age" }).fill("7");
+  expect(await submitted(page)).toEqual([
+    ["count", "6"],
+    ["age", "7"],
+  ]);
+  expect(await valid()).toBe(true);
+  await page.getByRole("spinbutton", { name: "Age" }).fill("");
+  expect(await valid()).toBe(false);
+});
+
+test("a script reset replaces typed text that is not a number", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const field = page.getByRole("spinbutton", { name: "Count" });
+  await field.fill("abc");
+  await page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).reset());
+  await expect(field).toHaveValue("4");
+});
+
 test("the buttons step, stop at the limits and are disabled there", async ({
   page,
 }) => {
@@ -367,6 +457,19 @@ test("virtual screen reader speaks the slotted label", async ({ page }) => {
 
 test.describe("coarse pointer on a wide screen", () => {
   test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
+
+  test("the stepper hit areas stay clear of the typed text", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("sizes"));
+    for (const control of await page.locator("purr-number-field").all()) {
+      const input = (await control.getByRole("spinbutton").boundingBox())!;
+      const button = (await control
+        .getByRole("button", { name: "Increase" })
+        .boundingBox())!;
+      expect(input.x + input.width).toBeLessThanOrEqual(button.x + 0.5);
+    }
+  });
 
   test("every field and both stepper buttons keep a 44 by 44 hit area", async ({
     page,

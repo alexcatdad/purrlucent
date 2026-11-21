@@ -116,16 +116,30 @@ export class PurrPopover extends LitElement {
     this.#panel.focus({ preventScroll: true });
   }
 
+  // Moving the element hides the panel (the anchor controller's disconnect); an open popover shows it again.
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && this.open) this.#anchored.show();
+  }
+
   protected override updated(changed: PropertyValues<this>) {
     this.#syncTrigger();
-    if (!changed.has("open")) return;
+    if (!changed.has("open")) {
+      if (changed.has("placement") && this.open) this.#anchored.place();
+      return;
+    }
     // A panel that starts open is part of the page as loaded: it does not take focus or announce itself.
     const started = changed.get("open") === undefined;
     if (this.open) {
       this.#anchored.show();
       if (!started) this.#focusInside();
     } else {
+      // Hiding the panel would drop focus on <body>; the trigger is where the user came from.
+      const refocus =
+        this.matches(":focus-within") &&
+        !this.#trigger?.matches(":focus-within");
       this.#anchored.hide();
+      if (refocus) this.#trigger?.focus();
     }
     if (!started) {
       this.dispatchEvent(

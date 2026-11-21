@@ -66,6 +66,49 @@ test("the keyboard closes the banner", async ({ page }) => {
   await expect(page.locator("purr-banner")).toBeHidden();
 });
 
+test("closing with the keyboard continues the tab order after the banner", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await page.locator("purr-banner").evaluate((el) => {
+    const next = document.createElement("input");
+    next.setAttribute("aria-label", "Next");
+    el.after(next);
+  });
+  await close(page).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("purr-banner")).toBeHidden();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("textbox", { name: "Next" })).toBeFocused();
+});
+
+test("an author-set role is kept", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await page.locator("purr-banner").evaluate((el) => {
+    el.setAttribute("role", "note");
+    el.setAttribute("tone", "destructive");
+  });
+  await expect(page.getByRole("note")).toHaveCount(1);
+});
+
+test("without an icon the text starts at the padding edge", async ({
+  page,
+}) => {
+  await gotoStory(page, story("without-icon"));
+  const { offset, padding } = await page
+    .locator("purr-banner")
+    .evaluate((el) => {
+      const title = el.querySelector("[slot=title]")!.getBoundingClientRect();
+      const rtl = getComputedStyle(el).direction === "rtl";
+      const box = el.getBoundingClientRect();
+      return {
+        offset: rtl ? box.right - title.right : title.left - box.left,
+        padding: parseFloat(getComputedStyle(el).paddingInlineStart),
+      };
+    });
+  expect(offset).toBeCloseTo(padding, 0);
+});
+
 test("a banner that appears does not take focus", async ({ page }) => {
   await gotoStory(page, story("closed"));
   await page

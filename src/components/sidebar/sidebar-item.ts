@@ -56,7 +56,7 @@ export class PurrSidebarItem extends LitElement {
     return this.#level;
   }
 
-  set level(value: SidebarLevel) {
+  set level(value: SidebarLevel | null | undefined) {
     const old = this.#level;
     this.#level = parseLevel(value);
     this.requestUpdate("level", old);

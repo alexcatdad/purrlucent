@@ -10,8 +10,8 @@ export const tooltipStyles = css`
     --_gap: var(--purr-space-1-5);
 
     display: inline-block;
-    /* Read by the element, not used: its computed value is the hover delay. */
-    transition-delay: calc(var(--purr-duration-slow) * 2);
+    /* Read by the element, not used: its computed value is the hover delay. A fixed time, not a motion token: the delay is behaviour and must survive reduced motion. */
+    transition-delay: 560ms;
   }
 
   :host([hidden]) {
@@ -43,8 +43,9 @@ export const tooltipStyles = css`
     max-inline-size: 100%;
     border-radius: var(--purr-radius);
     padding: var(--purr-space-1) var(--purr-space-1-5);
-    background: var(--purr-color-popover);
+    background: var(--purr-material-panel);
     backdrop-filter: var(--purr-material-panel-filter);
+    overflow-wrap: anywhere;
     box-shadow:
       inset 0 0 0 1px var(--purr-color-edge),
       var(--purr-elevation-panel);

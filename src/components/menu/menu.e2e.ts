@@ -177,6 +177,75 @@ test("a disabled item cannot be activated or focused", async ({ page }) => {
   expect(await selects(page)).toEqual([]);
 });
 
+test("arrows keep working after the pointer passes a disabled item", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await trigger(page).click();
+  const paste = (await item(page, "Paste ⌘V").boundingBox())!;
+  await page.mouse.move(paste.x + paste.width / 2, paste.y + paste.height / 2);
+  await page.waitForTimeout(300);
+  await expect(item(page, "Paste ⌘V")).not.toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(item(page, "Redo ⇧⌘Z")).toBeFocused();
+});
+
+test("an item that becomes checkable or plain later updates the check column", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const undo = page.locator("purr-menu-item").first();
+  await expect(undo).not.toHaveAttribute("indent", "");
+  await undo.evaluate((el) => {
+    (el as unknown as { type: string }).type = "checkbox";
+  });
+  await expect(undo).toHaveAttribute("indent", "");
+  await undo.evaluate((el) => {
+    (el as unknown as { type: string }).type = "";
+  });
+  await expect(undo).not.toHaveAttribute("indent", "");
+});
+
+test("a trigger marked aria-disabled does not open from the keyboard", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await trigger(page).evaluate((el) => {
+    el.setAttribute("aria-disabled", "true");
+    el.focus();
+  });
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowUp");
+  await expect(menu(page)).toBeHidden();
+});
+
+test("closing the menu with open=false returns focus to the trigger", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await trigger(page).click();
+  await expect(item(page, "Undo ⌘Z")).toBeFocused();
+  await page.locator("#menu").evaluate((el) => {
+    (el as unknown as { open: boolean }).open = false;
+  });
+  await expect(menu(page)).toBeHidden();
+  await expect(trigger(page)).toBeFocused();
+});
+
+for (const id of ["open", "rtl"]) {
+  test(`the shortcut keeps a gap from the label in ${id}`, async ({ page }) => {
+    await gotoStory(page, story(id));
+    const gap = await item(page, "Undo ⌘Z").evaluate((el) => {
+      const label = el.shadowRoot!.querySelector("[part=label]")!;
+      const detail = el.shadowRoot!.querySelector("[part=detail]")!;
+      const l = label.getBoundingClientRect();
+      const d = detail.getBoundingClientRect();
+      return Math.max(l.left - d.right, d.left - l.right);
+    });
+    expect(gap).toBeGreaterThanOrEqual(4);
+  });
+}
+
 test("a press outside closes every level", async ({ page }) => {
   await gotoStory(page, story("submenu"));
   await expect(menu(page, "Find")).toBeVisible();

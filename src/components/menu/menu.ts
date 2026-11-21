@@ -12,6 +12,7 @@ import {
 
 const TYPE_AHEAD_MS = 500;
 const HOVER_MS = 200;
+const DISABLED_TRIGGER = ":disabled, [aria-disabled=true]";
 
 /**
  * One command in a `purr-menu`. Its text is the label. With `type` it becomes a
@@ -322,7 +323,7 @@ export class PurrMenu extends LitElement {
     if (!target) return;
     const trigger = target.closest("[slot=trigger]");
     if (trigger) {
-      if (trigger.matches(":disabled, [aria-disabled=true]")) return;
+      if (trigger.matches(DISABLED_TRIGGER)) return;
       if (this.open) this.#close(true);
       else this.#openFromTrigger("first");
       return;
@@ -342,8 +343,12 @@ export class PurrMenu extends LitElement {
     const rtl = this.matches(":dir(rtl)");
     const parent = this.#parent;
 
-    if (target.closest("[slot=trigger]")) {
-      if (key === "ArrowDown" || key === "ArrowUp") {
+    const trigger = target.closest("[slot=trigger]");
+    if (trigger) {
+      if (
+        (key === "ArrowDown" || key === "ArrowUp") &&
+        !trigger.matches(DISABLED_TRIGGER)
+      ) {
         event.preventDefault();
         this.#openFromTrigger(key === "ArrowDown" ? "first" : "last");
       }
@@ -460,14 +465,30 @@ export class PurrMenu extends LitElement {
       if (this.#focusOnOpen) this.#focusItem();
       if (!this.#parent) this.#focusOnOpen = "first";
     } else if (!this.open && list.matches(":popover-open")) {
+      // Closing through `open` leaves focus on a row that is about to be hidden.
+      if (this.querySelector("purr-menu-item:focus"))
+        (this.#parent ?? this.#trigger ?? this.#opener)?.focus();
       list.hidePopover();
       removeEventListener("resize", this.#reposition);
       removeEventListener("scroll", this.#reposition, true);
     }
   }
 
+  // `type` can change after the slot was assigned, which slotchange does not report.
+  readonly #types = new MutationObserver(() => this.#onItems());
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.#types.observe(this, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["type"],
+    });
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.#types.disconnect();
     clearTimeout(this.#timer);
     clearTimeout(this.#hover);
     removeEventListener("resize", this.#reposition);

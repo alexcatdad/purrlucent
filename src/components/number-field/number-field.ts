@@ -95,6 +95,8 @@ export class PurrNumberField extends LitElement {
 
   readonly #internals = this.attachInternals();
   #touched = false;
+  // Kept here: the inner input does not exist before the first render.
+  #custom = "";
   #timer = 0;
   readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
 
@@ -175,13 +177,14 @@ export class PurrNumberField extends LitElement {
   }
 
   setCustomValidity(message: string) {
-    this.#input?.setCustomValidity(message);
+    this.#custom = message;
     this.#sync();
   }
 
   formResetCallback() {
     this.#touched = false;
     this.value = optionalNumber.fromAttribute(this.getAttribute("value"));
+    this.#showValue();
     this.requestUpdate();
   }
 
@@ -191,6 +194,13 @@ export class PurrNumberField extends LitElement {
 
   formStateRestoreCallback(state: string) {
     this.value = optionalNumber.fromAttribute(state);
+    this.#showValue();
+  }
+
+  // Lit writes the text only when the number changes, so typed junk would stay.
+  #showValue() {
+    const input = this.#input;
+    if (input) input.value = this.#text;
   }
 
   // The value is always a finite number on the step grid and inside the range.
@@ -207,11 +217,12 @@ export class PurrNumberField extends LitElement {
     this.#sync();
   }
 
-  #sync() {
+  #sync(value = this.value) {
     const input = this.#input;
     if (!input) return;
+    input.setCustomValidity(this.#custom);
     const invalid = this.#touched && !input.validity.valid;
-    this.#internals.setFormValue(this.value === null ? "" : String(this.value));
+    this.#internals.setFormValue(value === null ? "" : String(value));
     this.#internals.setValidity(input.validity, input.validationMessage, input);
     if (invalid) this.#internals.states.add("user-invalid");
     else this.#internals.states.delete("user-invalid");
@@ -290,8 +301,10 @@ export class PurrNumberField extends LitElement {
 
   #onInput = () => {
     const typed = parse(this.#input!.value);
-    if (typed === null || Number.isFinite(typed))
-      this.#emit("purr-input", typed);
+    if (typed !== null && !Number.isFinite(typed)) return;
+    // The form already sees what a commit would make of the typed text.
+    this.#sync(typed === null ? null : snap(typed, this.#bounds));
+    this.#emit("purr-input", typed);
   };
 
   #onKeydown = (event: KeyboardEvent) => {
@@ -301,6 +314,15 @@ export class PurrNumberField extends LitElement {
       submitImplicitly(this.#internals.form);
       return;
     }
+    // Text-editing shortcuts and a read-only field keep their native keys.
+    if (
+      event.shiftKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey ||
+      this.readonly
+    )
+      return;
     const next = valueAfterKey(event.key, this.#current, this.#bounds);
     if (next === undefined) return;
     event.preventDefault();

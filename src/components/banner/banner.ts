@@ -33,6 +33,8 @@ export class PurrBanner extends LitElement {
   declare tone: "info" | "destructive";
   declare closeLabel: string;
 
+  readonly #internals = this.attachInternals();
+
   constructor() {
     super();
     this.open = false;
@@ -40,8 +42,10 @@ export class PurrBanner extends LitElement {
     this.closeLabel = "Dismiss";
   }
 
-  protected override updated() {
-    this.setAttribute("role", this.tone === "destructive" ? "alert" : "status");
+  // Default semantics, so an author's own role wins and the role exists from
+  // the first render.
+  protected override willUpdate() {
+    this.#internals.role = this.tone === "destructive" ? "alert" : "status";
   }
 
   #close() {

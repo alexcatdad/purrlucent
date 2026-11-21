@@ -125,14 +125,15 @@ export const itemStyles = css`
     stroke-linejoin: round;
   }
 
+  /* The gap sits here: the detail below is ltr, so its own inline start is always the left. */
   [part="label"] {
     flex: 1;
+    margin-inline-end: var(--purr-space-2);
   }
 
   /* Shortcuts read left to right in every language. */
   [part="detail"] {
     direction: ltr;
-    margin-inline-start: var(--purr-space-2);
     color: var(--purr-color-muted-foreground);
   }
 

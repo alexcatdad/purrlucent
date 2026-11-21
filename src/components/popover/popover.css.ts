@@ -30,8 +30,9 @@ export const popoverStyles = css`
     border-radius: var(--purr-radius-lg);
     padding: var(--purr-pad-panel);
     overflow: visible;
-    background: var(--purr-color-popover);
+    background: var(--purr-material-panel);
     backdrop-filter: var(--purr-material-panel-filter);
+    overflow-wrap: anywhere;
     box-shadow:
       inset 0 0 0 1px var(--purr-color-edge),
       var(--purr-elevation-panel);
@@ -57,8 +58,9 @@ export const popoverStyles = css`
     position: absolute;
     inline-size: var(--_arrow-w);
     block-size: var(--_arrow-h);
-    fill: var(--purr-color-popover);
+    fill: var(--purr-material-panel);
     stroke: var(--purr-color-edge);
+    overflow: visible;
     stroke-width: 1px;
     stroke-linejoin: round;
     transform: translate(-50%, -50%) rotate(var(--_turn));
