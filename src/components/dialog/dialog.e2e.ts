@@ -376,6 +376,8 @@ test("a short body is not a tab stop", async ({ page }) => {
 test("alert actions sit side by side for two and stack for three", async ({
   page,
 }) => {
+  // Measured after the open animation, not during it.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await gotoStory(page, story("open-alert"));
   const [cancel, save] = await Promise.all(
     ["Cancel", "Save"].map((name) =>
@@ -386,13 +388,20 @@ test("alert actions sit side by side for two and stack for three", async ({
   expect(save!.x).toBeGreaterThan(cancel!.x);
 
   await gotoStory(page, story("open-stacked-alert"));
-  const [first, second] = await Promise.all(
-    ["Save", "Don’t Save"].map((name) =>
-      page.getByRole("button", { name, exact: true }).boundingBox(),
-    ),
-  );
+  const boxes = () =>
+    Promise.all(
+      ["Save", "Don’t Save"].map((name) =>
+        page.getByRole("button", { name, exact: true }).boundingBox(),
+      ),
+    );
+  await expect
+    .poll(async () => {
+      const [first, second] = await boxes();
+      return Math.abs(second!.width - first!.width);
+    })
+    .toBeLessThan(0.5);
+  const [first, second] = await boxes();
   expect(second!.y).toBeGreaterThan(first!.y);
-  expect(second!.width).toBeCloseTo(first!.width, 0);
 });
 
 test("under rtl the destructive action sits at the leading (right) edge", async ({

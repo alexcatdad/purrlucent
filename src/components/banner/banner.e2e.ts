@@ -43,17 +43,19 @@ test("the close button hides the banner and fires purr-close once", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  const closed = page.locator("purr-banner").evaluate(
-    (el) =>
-      new Promise<number>((resolve) => {
-        let count = 0;
-        el.addEventListener("purr-close", () => count++);
-        setTimeout(() => resolve(count), 300);
-      }),
-  );
+  // Listening before the click, so the count cannot race it.
+  await page.locator("purr-banner").evaluate((el) => {
+    const w = window as never as { closes: number };
+    w.closes = 0;
+    el.addEventListener("purr-close", () => w.closes++);
+  });
   await close(page).click();
   await expect(page.locator("purr-banner")).toBeHidden();
-  expect(await closed).toBe(1);
+  // A duplicate would follow right after the first event.
+  await page.waitForTimeout(300);
+  expect(
+    await page.evaluate(() => (window as never as { closes: number }).closes),
+  ).toBe(1);
   expect(
     await page.locator("purr-banner").evaluate((el) => el.hasAttribute("open")),
   ).toBe(false);
