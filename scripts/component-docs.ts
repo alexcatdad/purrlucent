@@ -1,8 +1,11 @@
 // Writes docs/components.md from the Custom Elements Manifest, so the reference
 // always matches the code. The descriptions come from the JSDoc on each element.
 //
-// usage: bun scripts/component-docs.ts   (after `bun run build`)
+// usage: bun scripts/component-docs.ts
+import { $ } from "bun";
 import { readFileSync, writeFileSync } from "node:fs";
+
+export const PAGE = "docs/components.md";
 
 type Described = { name: string; description?: string };
 type Attribute = Described & { type?: { text: string }; default?: string };
@@ -65,10 +68,13 @@ export function componentDocs(manifest: Manifest): string {
   );
 }
 
-if (import.meta.main)
-  writeFileSync(
-    "docs/components.md",
-    componentDocs(
-      JSON.parse(readFileSync("dist/custom-elements.json", "utf8")) as Manifest,
-    ),
+/** The page for the code as it is now, formatted the way `bun fmt` keeps it. */
+export async function currentDocs(): Promise<string> {
+  await $`bunx cem analyze`.quiet();
+  const page = componentDocs(
+    JSON.parse(readFileSync("dist/custom-elements.json", "utf8")) as Manifest,
   );
+  return $`bun fmt --stdin-filepath ${PAGE} < ${new Response(page)}`.text();
+}
+
+if (import.meta.main) writeFileSync(PAGE, await currentDocs());

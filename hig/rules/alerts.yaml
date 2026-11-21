@@ -1,0 +1,56 @@
+- id: alerts/1
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: Alerts are rare, and each carries only essential information and useful actions.
+  check: rubric
+  layer: components
+- id: alerts/2
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: Information with no required action is shown in context rather than in an alert.
+  check: rubric
+  layer: components
+- id: alerts/3
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: Alerts guard uncommon destructive actions that cannot be undone, not common or undoable ones.
+  check: rubric
+  layer: components
+- id: alerts/4
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: No alert appears at launch; startup problems show a quiet notice with cached or placeholder content.
+  check: rubric
+  layer: components
+- id: alerts/5
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: The title says what happened and why, in a direct and neutral tone, never just Error.
+  check: rubric
+  layer: components
+- id: alerts/6
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: Button labels are one or two words naming the result, and the cancel button is always titled Cancel.
+  check: rubric
+  layer: components
+- id: alerts/7
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: OK is the default button only in a purely informational alert; other alerts use a specific verb.
+  check: rubric
+  layer: components
+- id: alerts/8
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: The destructive style marks only a destructive action the person did not choose on purpose.
+  check: rubric
+  layer: components
+- id: alerts/9
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: An alert with a destructive action includes Cancel, and Cancel is never the default.
+  check: rubric
+  layer: components
+- id: alerts/10
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: The Escape key dismisses an alert as a cancel.
+  check: automated
+  test: src/components/dialog/dialog.e2e.ts > Escape asks to cancel, closes, and returns focus to the opener
+  layer: components
+- id: alerts/11
+  source: https://developer.apple.com/design/human-interface-guidelines/alerts
+  rule: An alert has a title, optional text and at most three buttons.
+  check: rubric
+  layer: components

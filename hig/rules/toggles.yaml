@@ -1,0 +1,58 @@
+- id: toggles/1
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A switch or checkbox controls exactly two opposing states; choosing from a list uses a select instead.
+  check: rubric
+  layer: components
+- id: toggles/2
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: Every switch and checkbox has a label that names what it controls.
+  check: automated
+  test: src/components/switch/switch.e2e.ts > a switch without a label fails axe
+  layer: components
+- id: toggles/3
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: The on and off states differ by shape or fill as well as by color, so the state reads without color vision.
+  check: rubric
+  layer: components
+- id: toggles/4
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A switch is used for an emphasized setting that governs a group; a single option uses a checkbox, and an existing checkbox is not swapped for a switch.
+  check: rubric
+  layer: components
+- id: toggles/5
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A checkbox can show a mixed state, and activating a mixed checkbox makes it checked.
+  check: automated
+  test: src/components/checkbox/checkbox.e2e.ts > a click on a mixed box makes it checked
+  layer: components
+- id: toggles/6
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A group of checkboxes whose relationship is unclear is introduced by a group label.
+  check: rubric
+  layer: components
+- id: toggles/7
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: Radio buttons present mutually exclusive choices; only one can be chosen and the arrow keys move the choice.
+  check: automated
+  test: src/components/radio-group/radio-group.e2e.ts > Tab enters on the chosen radio, arrows move, choose and wrap
+  layer: components
+- id: toggles/8
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A radio group holds about five options at most; longer lists use a select.
+  check: rubric
+  layer: components
+- id: toggles/9
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A single on or off setting uses a checkbox, not a lone radio button.
+  check: rubric
+  layer: components
+- id: toggles/10
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: Radio buttons laid out in a row share one spacing, set by the longest label.
+  check: rubric
+  layer: components
+- id: toggles/11
+  source: https://developer.apple.com/design/human-interface-guidelines/toggles
+  rule: A toggle button changes its appearance for each state, and an icon-only one has an icon that conveys its purpose.
+  check: rubric
+  layer: components

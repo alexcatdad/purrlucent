@@ -1,0 +1,16 @@
+- id: steppers/1
+  source: https://developer.apple.com/design/human-interface-guidelines/steppers
+  rule: A stepper sits next to a field that shows the value it changes, and it is clear which value that is.
+  check: rubric
+  layer: components
+- id: steppers/2
+  source: https://developer.apple.com/design/human-interface-guidelines/steppers
+  rule: When values can change by a lot, the stepper is paired with a field where a value can be typed.
+  check: rubric
+  layer: components
+- id: steppers/3
+  source: https://developer.apple.com/design/human-interface-guidelines/steppers
+  rule: Over a large range there is a faster way to step than one increment at a time, such as page keys.
+  check: automated
+  test: src/components/number-field/number-math.test.ts > arrow keys step by one, page keys by ten steps
+  layer: components

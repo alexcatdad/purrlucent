@@ -1,0 +1,54 @@
+- id: text-fields/1
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: A single-line field is used only for short values; longer text uses a text area.
+  check: rubric
+  layer: components
+- id: text-fields/2
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: Every field has a label that stays visible; placeholder text alone does not name it.
+  check: automated
+  test: src/components/input/input.e2e.ts > an input without a label fails axe
+  layer: components
+- id: text-fields/3
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: A password field masks what is typed.
+  check: automated
+  test: src/components/input/input.e2e.ts > a password field masks its value in the system font
+  layer: components
+- id: text-fields/4
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: A field is sized to the amount of text it expects.
+  check: rubric
+  layer: components
+- id: text-fields/5
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: Stacked fields have consistent widths and enough space that each label clearly belongs to one field.
+  check: rubric
+  layer: components
+- id: text-fields/6
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: The invalid state shows only after the person has interacted with the field, not on first render.
+  check: automated
+  test: src/components/input/input.e2e.ts > the invalid style and aria-invalid appear only after interaction
+  layer: components
+- id: text-fields/7
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: A numeric field accepts only numbers and honors its step, minimum and maximum.
+  check: automated
+  test: src/components/input/input.e2e.ts > a number field takes step, min and max like a native input
+  layer: components
+- id: text-fields/8
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: Text that is clipped or truncated can be read in full, for example through a hover tooltip.
+  check: rubric
+  layer: components
+- id: text-fields/9
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: Input that must be paired with a list of choices uses a combo box instead of a plain field.
+  check: rubric
+  layer: components
+- id: text-fields/10
+  source: https://developer.apple.com/design/human-interface-guidelines/text-fields
+  rule: Tab order through a form follows the visual order of its fields.
+  check: rubric
+  layer: components

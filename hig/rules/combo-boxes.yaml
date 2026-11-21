@@ -1,0 +1,29 @@
+- id: combo-boxes/1
+  source: https://developer.apple.com/design/human-interface-guidelines/combo-boxes
+  rule: The field starts with a meaningful default taken from the list, or is empty only when no default fits.
+  check: rubric
+  layer: components
+- id: combo-boxes/2
+  source: https://developer.apple.com/design/human-interface-guidelines/combo-boxes
+  rule: A label says what kind of items to expect.
+  check: automated
+  test: src/components/combobox/combobox.e2e.ts > a combobox without a label fails axe
+  layer: components
+- id: combo-boxes/3
+  source: https://developer.apple.com/design/human-interface-guidelines/combo-boxes
+  rule: A combo box can accept a custom value typed by the person.
+  check: automated
+  test: src/components/combobox/combobox.e2e.ts > with allow-custom, unmatched text is kept as the value
+  layer: components
+- id: combo-boxes/4
+  source: https://developer.apple.com/design/human-interface-guidelines/combo-boxes
+  rule: Typing narrows the list to relevant choices, with the best matches first.
+  check: automated
+  test: src/components/combobox/combobox.e2e.ts > typing filters, ranks and opens the list
+  layer: components
+- id: combo-boxes/5
+  source: https://developer.apple.com/design/human-interface-guidelines/combo-boxes
+  rule: The list is at least as wide as the field, so no choice is clipped by it.
+  check: automated
+  test: src/components/combobox/combobox.e2e.ts > the popup is at least as wide as the field
+  layer: components
