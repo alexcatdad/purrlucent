@@ -384,9 +384,10 @@ test("a section heading that wraps grows instead of overflowing", async ({
       "Recently opened documents and shared projects of the whole team",
     );
   });
+  // Engines round the two heights differently; a pixel is not an overflow.
   await expect
     .poll(() => heading.evaluate((el) => el.scrollHeight - el.clientHeight))
-    .toBe(0);
+    .toBeLessThanOrEqual(1);
   await expect
     .poll(() => heading.evaluate((el) => el.clientHeight))
     .toBeGreaterThan(before);
@@ -486,7 +487,9 @@ test("the selected item gets a stroke under increased contrast", async ({
   page,
 }) => {
   await open(page);
+  // Set before a load: Firefox does not restyle a loaded page for it.
   await page.emulateMedia({ contrast: "more" });
+  await gotoStory(page, "components-sidebar--default");
   const edge = (id: string) =>
     page
       .locator(`#${id} a`)
