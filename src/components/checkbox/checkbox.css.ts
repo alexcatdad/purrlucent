@@ -31,14 +31,14 @@ export const boxStyles = css`
     display: none;
   }
 
-  :host([size="lg"]),
-  :host([size="xl"]) {
+  :host([size="lg"]) {
     --_h: var(--purr-size-lg);
-    --_box: calc(var(--purr-spacing) * 4.5);
+    --_box: var(--purr-icon-lg);
   }
 
   :host([size="xl"]) {
     --_h: var(--purr-size-xl);
+    --_box: calc(var(--purr-spacing) * 6);
     --_gap: var(--purr-space-2);
   }
 
