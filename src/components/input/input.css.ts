@@ -2,10 +2,10 @@ import { css } from "lit";
 
 /*
  * The shell [part="field"] draws the fill, edge and focus ring; the native
- * input inside it only edits. Height comes from the size tokens, which already
- * grow on coarse pointers, and the clear button is a hit-min square.
+ * control inside it only edits. Height comes from the size tokens, which
+ * already grow on coarse pointers. Shared by the text area and number field.
  */
-export const inputStyles = css`
+export const fieldStyles = css`
   :host {
     --_h: var(--purr-size-md);
     --_pad: var(--purr-pad-control);
@@ -68,21 +68,6 @@ export const inputStyles = css`
     outline-color: var(--purr-color-ring);
   }
 
-  /* Room for about five characters beside the glyph and the clear button. */
-  :host(:state(search)) {
-    inline-size: max(
-      calc(var(--purr-spacing) * 30),
-      calc(
-        var(--_pad) + var(--purr-icon-lg) + var(--purr-gap-icon) * 2 +
-          var(--purr-size-hit-min) + var(--purr-spacing) * 12
-      )
-    );
-  }
-
-  :host(:state(clearable)) [part="field"] {
-    padding-inline-end: 0;
-  }
-
   [part="control"] {
     flex: 1;
     min-inline-size: 0;
@@ -108,67 +93,6 @@ export const inputStyles = css`
   [part="control"]::placeholder {
     color: var(--purr-color-muted-foreground);
     opacity: 1;
-  }
-
-  [part="control"]::-webkit-search-decoration,
-  [part="control"]::-webkit-search-cancel-button,
-  [part="control"]::-webkit-search-results-button {
-    appearance: none;
-    display: none;
-  }
-
-  /* With a web font the dots show as empty boxes until it loads. */
-  [part="control"][type="password"] {
-    font-family: system-ui, sans-serif;
-    letter-spacing: 0.125em;
-  }
-
-  [part="glyph"] {
-    flex: none;
-    inline-size: var(--purr-icon-lg);
-    block-size: auto;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  [part="clear"] {
-    flex: none;
-    display: grid;
-    place-items: center;
-    inline-size: var(--purr-size-hit-min);
-    block-size: var(--purr-size-hit-min);
-    margin: 0;
-    padding: 0;
-    border: 0;
-    border-radius: var(--purr-radius-full);
-    background: none;
-    color: var(--purr-color-muted-foreground);
-    cursor: default;
-    transition:
-      color var(--purr-duration-fast) var(--purr-ease-out),
-      opacity var(--purr-duration-slow) var(--purr-ease-out);
-
-    @starting-style {
-      opacity: 0;
-    }
-  }
-
-  [part="clear"] svg {
-    inline-size: var(--purr-icon-md);
-    block-size: auto;
-    fill: currentColor;
-  }
-
-  [part="clear"]:active {
-    color: var(--purr-color-foreground);
-  }
-
-  [part="clear"]:focus-visible {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
   }
 
   :host(:disabled) [part="field"] {
@@ -217,13 +141,96 @@ export const inputStyles = css`
     :host(:disabled) [part="control"] {
       -webkit-text-fill-color: GrayText;
     }
+  }
+`;
+
+export const inputStyles = [
+  fieldStyles,
+  css`
+    /* Room for about five characters beside the glyph and the clear button. */
+    :host(:state(search)) {
+      inline-size: max(
+        calc(var(--purr-spacing) * 30),
+        calc(
+          var(--_pad) + var(--purr-icon-lg) + var(--purr-gap-icon) * 2 +
+            var(--purr-size-hit-min) + var(--purr-spacing) * 12
+        )
+      );
+    }
+
+    :host(:state(clearable)) [part="field"] {
+      padding-inline-end: 0;
+    }
+
+    [part="control"]::-webkit-search-decoration,
+    [part="control"]::-webkit-search-cancel-button,
+    [part="control"]::-webkit-search-results-button {
+      appearance: none;
+      display: none;
+    }
+
+    /* With a web font the dots show as empty boxes until it loads. */
+    [part="control"][type="password"] {
+      font-family: system-ui, sans-serif;
+      letter-spacing: 0.125em;
+    }
+
+    [part="glyph"] {
+      flex: none;
+      inline-size: var(--purr-icon-lg);
+      block-size: auto;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     [part="clear"] {
-      color: ButtonText;
+      flex: none;
+      display: grid;
+      place-items: center;
+      inline-size: var(--purr-size-hit-min);
+      block-size: var(--purr-size-hit-min);
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--purr-radius-full);
+      background: none;
+      color: var(--purr-color-muted-foreground);
+      cursor: default;
+      transition:
+        color var(--purr-duration-fast) var(--purr-ease-out),
+        opacity var(--purr-duration-slow) var(--purr-ease-out);
+
+      @starting-style {
+        opacity: 0;
+      }
+    }
+
+    [part="clear"] svg {
+      inline-size: var(--purr-icon-md);
+      block-size: auto;
+      fill: currentColor;
+    }
+
+    [part="clear"]:active {
+      color: var(--purr-color-foreground);
     }
 
     [part="clear"]:focus-visible {
-      outline-color: Highlight;
+      outline: var(--purr-ring-width) solid var(--purr-color-ring);
+      outline-offset: calc(var(--purr-ring-width) * -1);
     }
-  }
-`;
+
+    @media (forced-colors: active) {
+      [part="clear"] {
+        color: ButtonText;
+      }
+
+      [part="clear"]:focus-visible {
+        outline-color: Highlight;
+      }
+    }
+  `,
+];

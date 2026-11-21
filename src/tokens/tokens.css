@@ -369,6 +369,9 @@
 
     /* A 1px inside outline that only shows under increased contrast. */
     --purr-boundary: none;
+
+    /* The hairline of a floating surface, as a color so a shape that is not a box can draw it too. */
+    --purr-color-edge: transparent;
     --purr-elevation-panel: var(--purr-shadow-lg);
     --purr-elevation-sheet: var(--purr-shadow-lg);
   }
@@ -384,6 +387,7 @@
       --purr-material-panel-filter: blur(var(--purr-blur-lg)) saturate(125%);
       --purr-material-sheet-filter: blur(var(--purr-blur-lg)) saturate(125%);
       --purr-material-edge: inset 0 0 0 1px var(--purr-color-overlay-border);
+      --purr-color-edge: var(--purr-color-overlay-border);
       --purr-color-secondary: color-mix(
         in srgb,
         var(--purr-color-foreground) 17%,
@@ -424,6 +428,7 @@
       --purr-material-panel-filter: none;
       --purr-material-sheet-filter: none;
       --purr-material-edge: 0 0 transparent;
+      --purr-color-edge: transparent;
       --purr-color-secondary: var(--purr-color-muted-2);
       --purr-color-secondary-pressed: var(--purr-color-muted-pressed);
       --purr-color-secondary-disabled: var(--purr-color-muted-disabled);
@@ -438,6 +443,7 @@
   @media (prefers-contrast: more) {
     :root {
       --purr-boundary: inset 0 0 0 1px var(--purr-color-input-border);
+      --purr-color-edge: var(--purr-color-input-border);
       --purr-elevation-panel: var(--purr-boundary);
       --purr-elevation-sheet: var(--purr-boundary);
     }

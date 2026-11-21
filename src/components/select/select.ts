@@ -1,9 +1,9 @@
 import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { DismissController } from "../../behaviors/dismiss.ts";
-import { position } from "../../behaviors/position.ts";
 import { matchIndex } from "./match.ts";
-import { optionStyles, selectStyles } from "./select.css.ts";
+import { PopupController } from "./popup.ts";
+import { listboxStyles, optionStyles, selectStyles } from "./select.css.ts";
 
 const TYPE_AHEAD_MS = 500;
 
@@ -95,7 +95,7 @@ export class PurrSelect extends LitElement {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
   };
-  static override styles = selectStyles;
+  static override styles = [selectStyles, listboxStyles];
   static override properties = {
     value: { reflect: true },
     name: { reflect: true },
@@ -121,6 +121,11 @@ export class PurrSelect extends LitElement {
   #timer: ReturnType<typeof setTimeout> | undefined;
   #focusOnOpen: PurrOption | undefined;
   #started = false;
+  readonly #popup = new PopupController(
+    this,
+    () => this.#trigger,
+    () => this.#listbox,
+  );
 
   constructor() {
     super();
@@ -240,8 +245,6 @@ export class PurrSelect extends LitElement {
     }
   };
 
-  #reposition = () => position(this.#trigger, this.#listbox, "bottom-start");
-
   #onSlotChange = () => {
     if (!this.#started) {
       this.#started = true;
@@ -264,33 +267,14 @@ export class PurrSelect extends LitElement {
       this.#trigger,
     );
     if (!changed.has("open")) return;
-    const list = this.#listbox;
-    if (this.open && !list.matches(":popover-open")) {
-      list.style.setProperty(
-        "--_min-inline-size",
-        `${this.#trigger.offsetWidth}px`,
-      );
-      list.showPopover();
-      this.#reposition();
-      addEventListener("resize", this.#reposition);
-      addEventListener("scroll", this.#reposition, true);
+    if (this.#popup.sync(this.open)) {
       (
         this.#focusOnOpen ??
         chosen ??
         this.#options.find((o) => !o.disabled)
       )?.focus();
       this.#focusOnOpen = undefined;
-    } else if (!this.open && list.matches(":popover-open")) {
-      list.hidePopover();
-      removeEventListener("resize", this.#reposition);
-      removeEventListener("scroll", this.#reposition, true);
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    removeEventListener("resize", this.#reposition);
-    removeEventListener("scroll", this.#reposition, true);
   }
 
   override render() {

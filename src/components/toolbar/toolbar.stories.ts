@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html, svg, type SVGTemplateResult } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import "../button/button.ts";
+import "../input/input.ts";
 import "./toolbar.ts";
 
 const meta = {
@@ -117,6 +118,73 @@ export const SolidRtlDisabled = matrix({ dir: "rtl" });
 export const GlassLight = matrix({ material: "glass" });
 export const GlassLightRtl = matrix({ material: "glass", dir: "rtl" });
 export const GlassDark = matrix({ material: "glass", theme: "dark" });
+
+const back = svg`<path d="m14.5 5.5-6 6.5 6 6.5" />`;
+const forward = svg`<path d="m9.5 5.5 6 6.5-6 6.5" />`;
+
+const iconButton = (label: string, paths: SVGTemplateResult) =>
+  html`<purr-button aria-label=${label} variant="ghost" icon
+    >${icon(paths)}</purr-button
+  >`;
+
+// Every part of a window toolbar; `size` is the toolbar's and its controls'.
+const chrome = (size: "md" | "xl") =>
+  html`<style>
+      purr-toolbar svg {
+        display: block;
+      }
+    </style>
+    <purr-toolbar id="toolbar" label="Window" size=${size}>
+      <purr-toolbar-group>
+        ${iconButton("Back", back)}${iconButton("Forward", forward)}
+      </purr-toolbar-group>
+      <purr-toolbar-title
+        >Window Title<span slot="subtitle"
+          >Subtitle, edited</span
+        ></purr-toolbar-title
+      >
+      <purr-toolbar-group>
+        ${iconButton("Add", plus)}
+        <purr-toolbar-separator></purr-toolbar-separator>
+        ${iconButton("More", more)}
+      </purr-toolbar-group>
+      <purr-input
+        id="search"
+        type="search"
+        size=${size}
+        label="Search"
+        placeholder="Search"
+      ></purr-input>
+      <purr-button variant="primary" size=${size}>Done</purr-button>
+    </purr-toolbar>`;
+
+/** A title with a subtitle, groups, a separator, a search field and the prominent item. */
+export const Chrome: Story = { render: () => chrome("xl") };
+
+/** The compact bar: md controls, the subtitle beside the title. */
+export const Compact: Story = { render: () => chrome("md") };
+
+export const ChromeGlassDarkRtl: Story = {
+  render: () => chrome("xl"),
+  globals: { material: "glass", theme: "dark", dir: "rtl" },
+};
+
+/** A search field takes the toolbar's capsule material and is one stop. */
+export const SearchField: Story = {
+  render: () =>
+    html`<purr-toolbar id="toolbar" label="Find">
+      <purr-input
+        id="search"
+        type="search"
+        size="xl"
+        label="Search"
+        placeholder="Search"
+        value="Search term"
+      ></purr-input>
+      <purr-toolbar-separator></purr-toolbar-separator>
+      <purr-button size="xl" variant="primary">Done</purr-button>
+    </purr-toolbar>`,
+};
 
 export const Glass: Story = {
   render: () => render({ disabled: [1] }),

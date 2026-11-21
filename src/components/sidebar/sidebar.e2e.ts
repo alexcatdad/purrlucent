@@ -611,6 +611,239 @@ test.describe("narrow window with a fine pointer", () => {
   });
 });
 
+/** What `value` (a color or length using tokens) computes to on the page. */
+const resolve = (page: Page, property: "color" | "width", value: string) =>
+  page.evaluate(
+    ([name, css]) => {
+      const probe = document.createElement("div");
+      probe.style.setProperty(name!, css!);
+      document.body.append(probe);
+      const result = getComputedStyle(probe).getPropertyValue(name!);
+      probe.remove();
+      return result;
+    },
+    [property, value],
+  );
+
+const style = (page: Page, selector: string, property: string) =>
+  page
+    .locator(selector)
+    .first()
+    .evaluate(
+      (el, name) => getComputedStyle(el).getPropertyValue(name),
+      property,
+    );
+
+test("sections are named groups and their items are links", async ({
+  page,
+}) => {
+  const root = await open(page, "sections");
+  await expect(root).toMatchAriaSnapshot(`
+    - button "Library sidebar" [expanded]
+    - navigation "Library":
+      - group "Library":
+        - link "Inbox Detail"
+        - link "Today 12"
+        - link "Plain"
+      - group "Folders":
+        - button "Work" [expanded]
+        - link "Reports"
+        - link "Archive 3"
+  `);
+});
+
+test("a section heading is drawn but not read a second time", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  const heading = page.locator("#folders").locator(".heading");
+  await expect(heading).toBeVisible();
+  await expect(heading).toHaveText("Folders");
+  await expect(heading).toHaveAttribute("aria-hidden", "true");
+});
+
+test("an item icon takes the accent text color and the icon size token", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  const icon = "#inbox svg";
+  expect(await style(page, icon, "color")).toBe(
+    await resolve(page, "color", "var(--purr-color-accent-text)"),
+  );
+  expect(await style(page, icon, "width")).toBe(
+    await resolve(page, "width", "var(--purr-icon-md)"),
+  );
+});
+
+test("item detail text is muted and sits at the trailing end", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  const detail = "#today [slot=detail]";
+  expect(await style(page, detail, "color")).toBe(
+    await resolve(page, "color", "var(--purr-color-muted-foreground)"),
+  );
+  const [row, text] = await Promise.all([
+    page.locator("#today a").boundingBox(),
+    page.locator(detail).boundingBox(),
+  ]);
+  expect(row!.x + row!.width - (text!.x + text!.width)).toBeLessThan(16);
+});
+
+test("an item without an icon keeps the label where the icon column ends", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  const left = (selector: string) =>
+    page.locator(selector).evaluate((el) => el.getBoundingClientRect().left);
+  // Plain has no icon, so its label starts before Today's.
+  expect(await left("#plain .label")).toBeLessThan(await left("#today .label"));
+});
+
+test("large rows, headings and icons are bigger than the default", async ({
+  page,
+}) => {
+  const measure = async (name: string) => {
+    await open(page, name);
+    return page.evaluate(() => {
+      const item = document.querySelector("#today")!;
+      return {
+        row: item.getBoundingClientRect().height,
+        icon: item.querySelector("svg")!.getBoundingClientRect().width,
+        heading: parseFloat(
+          getComputedStyle(
+            document
+              .querySelector("#library")!
+              .shadowRoot!.querySelector(".heading")!,
+          ).fontSize,
+        ),
+        text: parseFloat(
+          getComputedStyle(item.shadowRoot!.querySelector("a")!).fontSize,
+        ),
+      };
+    });
+  };
+  const [md, lg] = [await measure("sections"), await measure("large")];
+  expect(lg.row).toBeGreaterThan(md.row);
+  expect(lg.icon).toBeGreaterThan(md.icon);
+  expect(lg.heading).toBeGreaterThan(md.heading);
+  expect(lg.text).toBeGreaterThan(md.text);
+  await expect(page.locator("#sidebar")).toHaveAttribute("size", "lg");
+});
+
+test("arrows, Home and End cross section boundaries", async ({ page }) => {
+  await open(page, "sections");
+  await page.locator("#inbox a").focus();
+  for (const id of ["today", "plain", "work", "reports", "archive"]) {
+    await page.keyboard.press("ArrowDown");
+    expect(await focusedId(page)).toBe(id);
+  }
+  await page.keyboard.press("Home");
+  expect(await focusedId(page)).toBe("inbox");
+  await page.keyboard.press("End");
+  expect(await focusedId(page)).toBe("archive");
+});
+
+test("Escape in a section closes the group of that section only", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  await page.locator("#reports a").focus();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#work button")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  expect(await focusedId(page)).toBe("work");
+  await page.locator("#plain a").focus();
+  await page.keyboard.press("Escape");
+  expect(await focusedId(page)).toBe("plain");
+});
+
+test("a level 2 item added to a section makes the item before it a group", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  await page
+    .locator("#plain")
+    .evaluate((el) =>
+      el.insertAdjacentHTML(
+        "afterend",
+        '<purr-sidebar-item id="child" level="2" href="#child">Child</purr-sidebar-item>',
+      ),
+    );
+  await expect(page.locator("#plain button[aria-expanded]")).toHaveCount(1);
+  await expect(page.locator("#child")).toBeHidden();
+});
+
+test("a level 2 item first in a section does not join the section before it", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  await page
+    .locator("#folders")
+    .evaluate((el) =>
+      el.insertAdjacentHTML(
+        "afterbegin",
+        '<purr-sidebar-item id="orphan" level="2" href="#orphan">Orphan</purr-sidebar-item>',
+      ),
+    );
+  await expect(page.locator("#orphan")).toBeVisible();
+  await expect(page.locator("#plain button[aria-expanded]")).toHaveCount(0);
+});
+
+test("under rtl the icon sits at the leading edge on the right", async ({
+  page,
+}) => {
+  await open(page, "sections", "dir:rtl");
+  const [row, icon, detail] = await Promise.all([
+    page.locator("#today a").boundingBox(),
+    page.locator("#today svg").boundingBox(),
+    page.locator("#today [slot=detail]").boundingBox(),
+  ]);
+  expect(icon!.x).toBeGreaterThan(row!.x + row!.width / 2);
+  expect(detail!.x).toBeLessThan(row!.x + row!.width / 2);
+});
+
+test("the selected row keeps its icon and detail readable under forced colors", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  await page.emulateMedia({ forcedColors: "active" });
+  const color = (selector: string) => style(page, selector, "color");
+  const row = await color("#inbox a");
+  expect(await color("#inbox svg")).toBe(row);
+  expect(await color("#inbox [slot=detail]")).toBe(row);
+});
+
+for (const [name, story] of [
+  ["sections", "sections"],
+  ["large", "large"],
+] as const) {
+  for (const globals of ["", "material:glass"]) {
+    test(`axe finds no WCAG 2.2 AA violations (${name}, ${globals || "solid"})`, async ({
+      page,
+    }) => {
+      await expectAccessible(await open(page, story, globals));
+    });
+  }
+}
+
+test("no horizontal overflow at 200% text zoom with sections", async ({
+  page,
+}) => {
+  await expectNoOverflowAtTextZoom(await open(page, "large"));
+});
+
+test("the virtual screen reader speaks the sections as groups", async ({
+  page,
+}) => {
+  await open(page, "sections");
+  // The helper does not enter shadow roots, so the groups are checked by role.
+  expect(await spokenPhrases(page)).toContain("Inbox");
+  await expect(page.getByRole("group", { name: "Folders" })).toBeVisible();
+});
+
 for (const [theme, material] of [
   ["dark", "glass"],
   ["light", "solid"],
@@ -632,6 +865,18 @@ forEachViewport(({ name, pointer, width }) => {
     await open(page);
     await expand(page);
     const box = await page.locator("#home a").boundingBox();
+    if (pointer === "coarse") {
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+      expect(box?.width).toBeGreaterThanOrEqual(44);
+    }
+  });
+
+  test(`large items are at least 44 by 44 with a coarse pointer at ${name}`, async ({
+    page,
+  }) => {
+    await open(page, "large");
+    await expand(page);
+    const box = await page.locator("#today a").boundingBox();
     if (pointer === "coarse") {
       expect(box?.height).toBeGreaterThanOrEqual(44);
       expect(box?.width).toBeGreaterThanOrEqual(44);

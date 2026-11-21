@@ -16,3 +16,19 @@ export function matchIndex(
   }
   return -1;
 }
+
+/**
+ * The indexes of the labels that match `query`, case-insensitively: those that
+ * start with it first, then those that merely contain it, each in list order.
+ * An empty query matches every label.
+ */
+export function filterIndexes(labels: string[], query: string): number[] {
+  const needle = query.toLowerCase();
+  const found = labels
+    .map((label, index) => ({ at: label.toLowerCase().indexOf(needle), index }))
+    .filter(({ at }) => at >= 0);
+  return [
+    ...found.filter(({ at }) => at === 0),
+    ...found.filter(({ at }) => at > 0),
+  ].map(({ index }) => index);
+}

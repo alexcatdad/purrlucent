@@ -106,6 +106,31 @@ export const selectStyles = css`
     stroke-linejoin: round;
   }
 
+  @media (forced-colors: active) {
+    [part="trigger"] {
+      border: 1px solid ButtonText;
+      background: ButtonFace;
+      color: ButtonText;
+      forced-color-adjust: none;
+    }
+
+    [part="trigger"][aria-disabled="true"] {
+      border-color: GrayText;
+      color: GrayText;
+    }
+
+    [part="trigger"]:focus-visible {
+      outline-color: Highlight;
+    }
+
+    [part="value"].placeholder {
+      color: GrayText;
+    }
+  }
+`;
+
+/** The popup panel. Shared by every component that lists options under a field. */
+export const listboxStyles = css`
   [part="listbox"] {
     box-sizing: border-box;
     overflow-y: auto;
@@ -139,26 +164,6 @@ export const selectStyles = css`
   }
 
   @media (forced-colors: active) {
-    [part="trigger"] {
-      border: 1px solid ButtonText;
-      background: ButtonFace;
-      color: ButtonText;
-      forced-color-adjust: none;
-    }
-
-    [part="trigger"][aria-disabled="true"] {
-      border-color: GrayText;
-      color: GrayText;
-    }
-
-    [part="trigger"]:focus-visible {
-      outline-color: Highlight;
-    }
-
-    [part="value"].placeholder {
-      color: GrayText;
-    }
-
     [part="listbox"] {
       border: 1px solid CanvasText;
       background: Canvas;
@@ -207,7 +212,9 @@ export const optionStyles = css`
     opacity: 1;
   }
 
-  :host(:not([aria-disabled="true"]):focus) {
+  /* [data-active]: the option a combobox points at while focus stays in its field. */
+  :host(:not([aria-disabled="true"]):focus),
+  :host(:not([aria-disabled="true"])[data-active]) {
     background: var(--purr-color-selected);
     color: var(--purr-color-selected-foreground);
   }
@@ -231,6 +238,7 @@ export const optionStyles = css`
 
   @media (forced-colors: active) {
     :host(:not([aria-disabled="true"]):focus),
+    :host(:not([aria-disabled="true"])[data-active]),
     :host(:not([aria-disabled="true"]):hover) {
       background: Highlight;
       color: HighlightText;

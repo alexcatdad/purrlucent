@@ -65,3 +65,65 @@ export const MoreContrast: Story = {
   render: () => render({ open: true }),
   globals: { contrast: "more" },
 };
+
+// Icons come from design/icons.
+const inbox = html`<svg
+  slot="icon"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d="M4 13h4l1.5 3h5l1.5-3h4M5 5h14l2 8v6H3v-6z" />
+</svg>`;
+
+const folders = ({ size = "md" }: { size?: "md" | "lg" } = {}) => html`
+  <purr-sidebar id="sidebar" label="Library" size=${size}>
+    <purr-sidebar-section id="library" label="Library">
+      <purr-sidebar-item id="inbox" href="#inbox" selected
+        >${inbox}Inbox<span slot="detail">Detail</span></purr-sidebar-item
+      >
+      <purr-sidebar-item id="today" href="#today"
+        >${inbox}Today<span slot="detail">12</span></purr-sidebar-item
+      >
+      <purr-sidebar-item id="plain" href="#plain">Plain</purr-sidebar-item>
+    </purr-sidebar-section>
+    <purr-sidebar-section id="folders" label="Folders">
+      <purr-sidebar-item id="work" expanded>${inbox}Work</purr-sidebar-item>
+      <purr-sidebar-item id="reports" level="2" href="#reports"
+        >${inbox}Reports</purr-sidebar-item
+      >
+      <purr-sidebar-item id="archive" href="#archive"
+        >${inbox}Archive<span slot="detail">3</span></purr-sidebar-item
+      >
+    </purr-sidebar-section>
+  </purr-sidebar>
+`;
+
+/** Sections with headings, a leading icon and trailing detail text. */
+export const Sections: Story = {
+  render: () => folders(),
+  play: async ({ canvasElement }) => {
+    const groups = canvasElement.querySelectorAll("purr-sidebar-section");
+    await expect(
+      [...groups].map((group) => group.getAttribute("aria-label")),
+    ).toEqual(["Library", "Folders"]);
+    await expect(
+      canvasElement.querySelector("#work")?.hasAttribute("expandable"),
+    ).toBe(true);
+    await expect(
+      canvasElement.querySelector("#archive")?.hasAttribute("expandable"),
+    ).toBe(false);
+  },
+};
+
+/** Larger rows, headings and icons. */
+export const Large: Story = { render: () => folders({ size: "lg" }) };
+
+export const SectionsGlassDarkRtl: Story = {
+  render: () => folders(),
+  globals: { material: "glass", theme: "dark", dir: "rtl" },
+};

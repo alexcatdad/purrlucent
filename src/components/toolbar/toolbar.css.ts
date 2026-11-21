@@ -1,14 +1,50 @@
 import { css } from "lit";
 
-/* The bar is as tall as --purr-size-bar and centers extra-large controls. */
+/*
+ * The bar is as tall as --_bar and centers its controls, extra-large ones
+ * unless size="md". The group, separator and title inherit the private
+ * metrics below.
+ */
 export const toolbarStyles = css`
   :host {
+    --_ctl: var(--purr-size-xl);
+    --_bar: var(--purr-size-bar);
+    --_bar-face: var(--purr-visual-lg);
+    --_rule: calc(var(--purr-spacing) * 5.5);
+    --_stack: column;
+    --_stack-align: flex-start;
+    --_stack-gap: var(--purr-space-0-5);
+
     position: relative;
-    min-block-size: var(--purr-size-bar);
-    padding: calc((var(--purr-size-bar) - var(--purr-size-xl)) / 2)
-      var(--purr-space-3);
+    min-block-size: var(--_bar);
+    padding: calc((var(--_bar) - var(--_ctl)) / 2) var(--purr-space-3);
     font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
+  }
+
+  :host([size="md"]) {
+    --_ctl: var(--purr-size-md);
+    --_bar: max(
+      calc(var(--purr-spacing) * 10),
+      calc(var(--purr-size-md) + var(--purr-space-4))
+    );
+    --_bar-face: var(--purr-icon-lg);
+    --_rule: var(--purr-icon-md);
+    --_stack: row;
+    --_stack-align: baseline;
+    --_stack-gap: var(--purr-gap-icon);
+  }
+
+  /* A search field takes the capsule material of the group beside it. */
+  ::slotted(purr-input[type="search"]) {
+    --purr-color-input: var(--purr-color-overlay);
+    --purr-color-input-border: var(--purr-color-overlay-border);
+
+    inline-size: calc(var(--purr-spacing) * 39.75);
+  }
+
+  :host([size="md"]) ::slotted(purr-input[type="search"]) {
+    inline-size: calc(var(--purr-spacing) * 37.25);
   }
 
   [part="items"] {
@@ -48,6 +84,53 @@ export const toolbarStyles = css`
   }
 `;
 
+/* A 1px rule that cancels the gap on both sides, so the neighbors stay put. */
+export const toolbarSeparatorStyles = css`
+  :host {
+    flex: none;
+    inline-size: 1px;
+    block-size: var(--_rule);
+    margin-inline: calc((var(--purr-gap-controls) + 1px) / -2);
+    background: var(--purr-color-muted-3);
+  }
+
+  @media (forced-colors: active) {
+    :host {
+      background: ButtonBorder;
+    }
+  }
+`;
+
+export const toolbarTitleStyles = css`
+  :host {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  [part="stack"] {
+    display: flex;
+    flex-direction: var(--_stack);
+    align-items: var(--_stack-align);
+    gap: var(--_stack-gap);
+  }
+
+  [part="title"] {
+    font: 700 var(--purr-text-lg) / var(--purr-text-lg) var(--purr-font-sans);
+  }
+
+  /* Primary label color: the subtitle sits over scrolling content, where the
+     muted tone cannot hold 4.5:1. Size and weight carry the hierarchy. */
+  [part="subtitle"] {
+    color: var(--purr-color-foreground);
+    font: 500 var(--purr-text-xs) / var(--purr-leading-tight)
+      var(--purr-font-sans);
+  }
+
+  [part="subtitle"][hidden] {
+    display: none;
+  }
+`;
+
 /**
  * Related icon buttons in one raised container. Each round face is at least
  * as large as the hit minimum, and the padding centers it in an extra-large
@@ -56,14 +139,14 @@ export const toolbarStyles = css`
  */
 export const toolbarGroupStyles = css`
   :host {
-    --_tool: max(var(--purr-visual-lg), var(--purr-size-hit-min));
-    --_pad: calc((var(--purr-size-xl) - var(--_tool)) / 2);
+    --_tool: max(var(--_bar-face), var(--purr-size-hit-min));
+    --_pad: calc((var(--_ctl) - var(--_tool)) / 2);
     --_gap: calc(var(--purr-gap-controls) / 2);
 
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--purr-size-xl);
+    min-block-size: var(--_ctl);
     padding: var(--_pad) max(0px, calc(var(--_pad) - var(--_gap)));
     border-radius: var(--purr-radius);
     background-color: var(--purr-color-overlay);
@@ -81,6 +164,14 @@ export const toolbarGroupStyles = css`
     padding: 0;
     border-radius: var(--purr-radius-full);
     color: var(--purr-color-foreground);
+  }
+
+  /* The hit regions of the neighbors already touch it, so it takes no gap. */
+  ::slotted(purr-toolbar-separator) {
+    inline-size: 1px;
+    min-block-size: 0;
+    margin-inline: 0;
+    border-radius: 0;
   }
 
   ::slotted([disabled]) {

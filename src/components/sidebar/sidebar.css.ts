@@ -74,12 +74,32 @@ export const sidebarStyles = [
       inline-size: calc(var(--purr-spacing) * 64);
       max-inline-size: 100%;
       padding: 0 var(--purr-space-3) var(--purr-space-4);
-      font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-        var(--purr-font-sans);
+      font: 400 var(--_text) / var(--_leading) var(--purr-font-sans);
     }
 
     :host([hidden]) {
       display: none;
+    }
+
+    /* Row and heading metrics; the items and sections inherit them. */
+    :host {
+      --_text: var(--purr-text-sm);
+      --_leading: var(--purr-leading-normal);
+      --_row: max(calc(var(--purr-spacing) * 8), var(--purr-size-hit-min));
+      --_glyph: var(--purr-icon-md);
+      --_head: calc(var(--purr-spacing) * 4.5);
+      --_head-text: var(--purr-text-xs);
+      --_head-leading: var(--purr-leading-tight);
+    }
+
+    :host([size="lg"]) {
+      --_text: var(--purr-text-lg);
+      --_leading: var(--purr-leading-loose);
+      --_row: max(calc(var(--purr-spacing) * 10), var(--purr-size-hit-min));
+      --_glyph: calc(var(--purr-spacing) * 4.5);
+      --_head: var(--purr-icon-lg);
+      --_head-text: var(--purr-text-sm);
+      --_head-leading: var(--purr-leading-normal);
     }
 
     :host([collapsed]) {
@@ -148,14 +168,12 @@ export const itemStyles = [
       --_face-pressed: var(--_fill);
 
       display: grid;
-      grid-template-columns: var(--purr-icon-md) minmax(0, 1fr);
-      column-gap: var(--purr-space-1);
+      grid-template-columns:
+        calc(var(--purr-icon-md) + var(--purr-space-1)) auto minmax(0, 1fr)
+        auto;
       align-items: center;
       inline-size: 100%;
-      min-block-size: max(
-        calc(var(--purr-spacing) * 8),
-        var(--purr-size-hit-min)
-      );
+      min-block-size: var(--_row);
       padding: var(--purr-space-1) var(--purr-pad-item);
       text-align: start;
       text-decoration: none;
@@ -170,8 +188,24 @@ export const itemStyles = [
     }
 
     .label {
-      grid-column: 2;
+      grid-column: 3;
       overflow-wrap: anywhere;
+    }
+
+    /* An empty slot adds no column width and no margin. */
+    ::slotted([slot="icon"]) {
+      grid-column: 2;
+      inline-size: var(--_glyph);
+      block-size: var(--_glyph);
+      margin-inline-end: var(--purr-gap-icon);
+      color: var(--purr-color-accent-text);
+    }
+
+    ::slotted([slot="detail"]) {
+      grid-column: 4;
+      margin-inline-start: var(--purr-space-2);
+      font-weight: 500;
+      color: var(--purr-color-muted-foreground);
     }
 
     :host([selected]) .control {
@@ -181,6 +215,7 @@ export const itemStyles = [
 
     /* Points inline-end, mirrored in RTL, and turns toward block-end when open. */
     .chevron {
+      grid-column: 1;
       inline-size: var(--purr-icon-md);
       block-size: var(--purr-icon-md);
       color: var(--purr-color-muted-foreground);
@@ -221,7 +256,8 @@ export const itemStyles = [
         forced-color-adjust: none;
       }
 
-      :host([selected]) .chevron {
+      :host([selected]) .chevron,
+      :host([selected]) ::slotted([slot]) {
         color: inherit;
       }
 
@@ -231,3 +267,26 @@ export const itemStyles = [
     }
   `,
 ];
+
+export const sectionStyles = css`
+  :host {
+    display: block;
+  }
+
+  :host([hidden]) {
+    display: none;
+  }
+
+  :host(:not(:first-child)) {
+    margin-block-start: var(--purr-space-3);
+  }
+
+  .heading {
+    display: flex;
+    align-items: center;
+    block-size: var(--_head);
+    padding-inline: var(--purr-pad-item);
+    color: var(--purr-color-muted-foreground);
+    font: 700 var(--_head-text) / var(--_head-leading) var(--purr-font-sans);
+  }
+`;

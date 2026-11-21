@@ -201,7 +201,8 @@ test("under forced colors a disabled checked box is not drawn as an enabled one"
       ] as const;
     });
   const [, normalWidth] = await box("Recents");
-  await page.emulateMedia({ forcedColors: "active" });
+  // Zero durations, so no colour is read halfway through its transition.
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
   const [enabled, width] = await box("Recents");
   const [disabled] = await box("Favorites");
   expect(disabled).not.toBe(enabled);

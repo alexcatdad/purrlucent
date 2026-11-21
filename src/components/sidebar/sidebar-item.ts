@@ -7,6 +7,8 @@ const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill
 
 // Leaves leave the chevron slot empty, so every level 1 label shares one edge.
 const label = html`<span class="label"><slot></slot></span>`;
+const icon = html`<slot name="icon"></slot>`;
+const detail = html`<slot name="detail"></slot>`;
 
 /**
  * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
@@ -14,6 +16,8 @@ const label = html`<span class="label"><slot></slot></span>`;
  * an `href` it renders a plain button, so an app can handle the click itself.
  *
  * @slot - The item label.
+ * @slot icon - A leading svg icon, tinted with the accent text color.
+ * @slot detail - Trailing muted text, such as a count.
  * @csspart control - The link or disclosure button.
  * @csspart chevron - The disclosure arrow.
  * @fires purr-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
@@ -78,7 +82,7 @@ export class PurrSidebarItem extends LitElement {
           aria-expanded=${this.expanded ? "true" : "false"}
           @click=${this.#toggle}
         >
-          ${chevron}${label}
+          ${chevron}${icon}${label}${detail}
         </button>`
       : this.href
         ? html`<a
@@ -86,7 +90,7 @@ export class PurrSidebarItem extends LitElement {
             part="control"
             href=${this.href}
             aria-current=${this.selected ? "page" : nothing}
-            >${label}</a
+            >${icon}${label}${detail}</a
           >`
         : // Without a destination an anchor is not focusable, so use a button.
           html`<button
@@ -95,7 +99,7 @@ export class PurrSidebarItem extends LitElement {
             type="button"
             aria-current=${this.selected ? "page" : nothing}
           >
-            ${label}
+            ${icon}${label}${detail}
           </button>`;
   }
 }

@@ -1,16 +1,18 @@
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { PurrSidebarItem } from "./sidebar-item.ts";
+import { PurrSidebarSection } from "./sidebar-section.ts";
 import { sidebarStyles } from "./sidebar.css.ts";
 
-export { PurrSidebarItem };
+export { PurrSidebarItem, PurrSidebarSection };
 
 // design/icons/sidebar.svg
 const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9.5 4v16M13 10l1-2 1.5 1 1.5-1 1 2" /></svg>`;
 
 /**
- * A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children
- * (at most two levels). A level 1 item followed by level 2 items becomes a
+ * A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children,
+ * loose or grouped under `purr-sidebar-section` headings (at most two levels,
+ * and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a
  * disclosure button that shows and hides them. Every button and visible link is
  * a tab stop. As an extra, Up and Down arrows, Home and End move among all
  * visible items (Left and Right are not used). Space or Enter on a link selects
@@ -20,7 +22,7 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * the screen widens; read the first state from `collapsed`, because
  * `purr-collapse` can fire before a listener is attached.
  *
- * @slot - `purr-sidebar-item` children.
+ * @slot - `purr-sidebar-item` and `purr-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
  * @fires purr-change - The selected item changed. `detail.selected` is an array holding the new item.
@@ -31,11 +33,14 @@ export class PurrSidebar extends LitElement {
   static override properties = {
     label: { type: String },
     collapsed: { type: Boolean, reflect: true },
+    size: { reflect: true },
   };
 
   /** Accessible name of the navigation landmark. */
   declare label: string;
   declare collapsed: boolean;
+  /** `md` (default) or `lg`, the larger rows. */
+  declare size: "md" | "lg";
 
   // An item's group, level or selection changed from outside; reveal only
   // follows a selection, so an app can still close a group holding the page.
@@ -53,12 +58,16 @@ export class PurrSidebar extends LitElement {
     super();
     this.label = "";
     this.collapsed = false;
+    this.size = "md";
   }
 
-  #items(): PurrSidebarItem[] {
-    return [...this.children].filter(
-      (child): child is PurrSidebarItem => child instanceof PurrSidebarItem,
-    );
+  /** The items in document order, loose or inside a section. */
+  #items() {
+    return [
+      ...this.querySelectorAll<PurrSidebarItem>(
+        ":scope > purr-sidebar-item, :scope > purr-sidebar-section > purr-sidebar-item",
+      ),
+    ];
   }
 
   /** Derives each item's disclosure and visibility from the levels in order. */
@@ -66,9 +75,14 @@ export class PurrSidebar extends LitElement {
     let parent: PurrSidebarItem | undefined;
     const items = this.#items();
     items.forEach((item, i) => {
+      // A group of level 2 items never reaches across a section boundary.
+      if (item.parentElement !== items[i - 1]?.parentElement)
+        parent = undefined;
       if (item.level === 1) {
         parent = item;
-        item.expandable = items[i + 1]?.level === 2;
+        const next = items[i + 1];
+        item.expandable =
+          next?.level === 2 && next.parentElement === item.parentElement;
         item.hidden = false;
       } else {
         if (reveal && item.selected && parent) parent.expanded = true;
@@ -121,7 +135,11 @@ export class PurrSidebar extends LitElement {
         ? items
             .slice(0, items.indexOf(item))
             .reverse()
-            .find((candidate) => candidate.level === 1)
+            .find(
+              (candidate) =>
+                candidate.level === 1 &&
+                candidate.parentElement === item.parentElement,
+            )
         : item;
     if (!parent?.expandable || !parent.expanded) return;
     // The button's own handler closes it and fires purr-toggle.
@@ -154,6 +172,8 @@ export class PurrSidebar extends LitElement {
     this.#watcher.observe(this, {
       attributes: true,
       subtree: true,
+      // Items added to or removed from a section raise no slotchange here.
+      childList: true,
       attributeFilter: ["expanded", "selected", "level"],
     });
   }
