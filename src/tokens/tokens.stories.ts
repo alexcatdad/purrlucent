@@ -8,24 +8,21 @@ export default meta;
 type Story = StoryObj;
 
 const textRoles = [
-  "label",
-  "secondary-label",
-  "tertiary-label",
+  "foreground",
+  "muted-foreground",
   "accent-text",
   "destructive-text",
-  "success",
-  "warning",
 ];
 
 export const Palette: Story = {
   render: () => html`
     <div
-      style="background: var(--purr-color-background); padding: var(--purr-space-4); font-family: var(--purr-font-family);"
+      style="background: var(--purr-color-background); padding: var(--purr-space-4); font-family: var(--purr-font-sans);"
     >
       ${textRoles.map(
         (role) => html`
           <p
-            style="margin: 0 0 var(--purr-space-2); font: var(--purr-font-body); color: var(--purr-color-${role});"
+            style="margin: 0 0 var(--purr-space-2); font: 400 var(--purr-text-sm) / var(--purr-leading-normal) var(--purr-font-sans); color: var(--purr-color-${role});"
           >
             ${role}
           </p>
@@ -43,7 +40,7 @@ export const Materials: Story = {
     >
       <div
         id="bar"
-        style="padding: var(--purr-space-3); font-family: var(--purr-font-family); color: var(--purr-color-label); background: var(--purr-material-bar); backdrop-filter: var(--purr-material-bar-filter); box-shadow: var(--purr-material-edge);"
+        style="padding: var(--purr-space-3); font-family: var(--purr-font-sans); color: var(--purr-color-foreground); background: var(--purr-material-bar); backdrop-filter: var(--purr-material-bar-filter); box-shadow: var(--purr-material-edge);"
       >
         Toolbar
       </div>

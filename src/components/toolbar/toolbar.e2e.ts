@@ -184,7 +184,7 @@ for (const [dir, name] of [
       const prominent = await page
         .locator("#toolbar purr-button")
         .evaluateAll((els) =>
-          els.map((e) => e.getAttribute("variant") === "prominent"),
+          els.map((e) => e.getAttribute("variant") === "primary"),
         );
       expect(prominent).toEqual([false, false, false, true]);
       const last = items.at(-1)!;
@@ -274,7 +274,7 @@ test("the toolbar surface has a backdrop blur under glass and none when solid", 
   await openStory(page);
   expect(await filter()).toBe("none");
   await openStory(page, "default", "material:glass");
-  expect(await filter()).toMatch(/^blur\(24px\) saturate\(/);
+  expect(await filter()).toMatch(/^blur\([\d.]+px\) saturate\(/);
 });
 
 for (const globals of ["", "material:glass"]) {

@@ -1,29 +1,25 @@
 import { css } from "lit";
 
+/* The bar is as tall as --purr-size-bar and centers extra-large controls. */
 export const toolbarStyles = css`
   :host {
     position: relative;
-    min-block-size: calc(var(--purr-hit-min) + 2 * var(--purr-space-3));
-    padding: var(--purr-space-3);
-    font: var(--purr-font-body);
-  }
-
-  @media (pointer: coarse) {
-    :host {
-      min-block-size: calc(var(--purr-hit-min) + 2 * var(--purr-space-2));
-      padding: var(--purr-space-2) var(--purr-space-4);
-    }
+    min-block-size: var(--purr-size-bar);
+    padding: calc((var(--purr-size-bar) - var(--purr-size-xl)) / 2)
+      var(--purr-space-3);
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
+      var(--purr-font-sans);
   }
 
   [part="items"] {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--purr-gap-bezeled);
+    gap: var(--purr-gap-controls);
   }
 
   /* The one emphasized item sits at the trailing end. */
-  ::slotted([variant="prominent"]) {
+  ::slotted([variant="primary"]) {
     margin-inline-start: auto;
   }
 
@@ -41,7 +37,7 @@ export const toolbarStyles = css`
   /* Increased contrast already draws the control-boundary edge. */
   @media (prefers-reduced-transparency: reduce) and (not (prefers-contrast: more)) {
     :host([scrolled]) {
-      box-shadow: inset 0 -1px 0 var(--purr-color-divider);
+      box-shadow: inset 0 -1px 0 var(--purr-color-border);
     }
   }
 
@@ -52,34 +48,43 @@ export const toolbarStyles = css`
   }
 `;
 
-/** Related symbol items on one flat face; each item face is inset 2px in its cell. */
+/**
+ * Related icon buttons in one raised container. Each round face is at least
+ * as large as the hit minimum, and the padding centers it in an extra-large
+ * control height. The space between faces belongs to the hit regions, so
+ * there is no dead space between neighbors.
+ */
 export const toolbarGroupStyles = css`
   :host {
+    --_tool: max(var(--purr-visual-lg), var(--purr-size-hit-min));
+    --_pad: calc((var(--purr-size-xl) - var(--_tool)) / 2);
+    --_gap: calc(var(--purr-gap-controls) / 2);
+
     display: inline-flex;
-    border-radius: var(--purr-radius-control);
-    background-color: var(--purr-color-fill-control);
-    box-shadow: var(--purr-boundary);
+    align-items: center;
+    box-sizing: border-box;
+    min-block-size: var(--purr-size-xl);
+    padding: var(--_pad) max(0px, calc(var(--_pad) - var(--_gap)));
+    border-radius: var(--purr-radius);
+    background-color: var(--purr-color-overlay);
+    box-shadow: 0 0 0 1px var(--purr-color-overlay-border);
   }
 
   ::slotted(*) {
     --purr-face: transparent;
-    --purr-face-hover: var(--purr-color-fill-control-hover);
-    --purr-face-pressed: var(--purr-color-fill-pressed);
+    --purr-face-hover: var(--purr-color-muted-3);
+    --purr-face-pressed: var(--purr-color-muted-1);
+    --purr-face-inset: 0 var(--_gap);
 
+    inline-size: calc(var(--_tool) + 2 * var(--_gap));
+    min-block-size: var(--_tool);
     padding: 0;
-    border: 2px solid transparent;
-    border-radius: var(--purr-radius-control-inner);
-    background-color: transparent;
-    color: var(--purr-color-label);
-  }
-
-  /* Inside the face, which sits 2px in from the cell. */
-  ::slotted(:focus-visible) {
-    outline-offset: calc(var(--purr-focus-offset-inside) - 2px);
+    border-radius: var(--purr-radius-full);
+    color: var(--purr-color-foreground);
   }
 
   ::slotted([disabled]) {
-    color: var(--purr-color-disabled-label);
+    color: var(--purr-color-disabled-foreground);
   }
 
   @media (forced-colors: active) {
@@ -89,7 +94,6 @@ export const toolbarGroupStyles = css`
       --purr-face-hover: ButtonFace;
       --purr-face-pressed: ButtonFace;
 
-      border: 0;
       color: ButtonText;
     }
 

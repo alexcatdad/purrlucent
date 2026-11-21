@@ -2,10 +2,9 @@ import { css } from "lit";
 import { sidebarSurface } from "../../surfaces/surfaces.css.ts";
 
 /**
- * Face, states and ring of a row control or the toggle, after interactionStyles
- * but for an inner link or button, so `:active` stands in for the pressed state.
- * The face is `::before`, so a press scales it and never the hit region. Hover
- * and pressed read the tones the sidebar surface sets; a selected row sets its own.
+ * Face and focus ring of a row control or the toggle. The face is `::before`;
+ * each control sets `--_face-hover` and `--_face-pressed`. The ring sits inside
+ * the face and follows its radius.
  */
 const face = css`
   .control,
@@ -15,42 +14,34 @@ const face = css`
     box-sizing: border-box;
     border: 0;
     background: transparent;
-    color: var(--purr-color-label);
+    color: inherit;
     font: inherit;
-    cursor: pointer;
+    cursor: default;
   }
 
   .control::before,
   .toggle::before {
     content: "";
     position: absolute;
-    inset: var(--inset, 0) 0;
+    inset: 0;
     z-index: -1;
-    border-radius: var(--purr-radius-row);
-    background-color: var(--purr-face, transparent);
-    transition:
-      background-color var(--purr-duration-release) var(--purr-ease-standard),
-      scale var(--purr-duration-release) var(--purr-ease-spring);
+    border-radius: var(--purr-radius);
+    background-color: var(--_face, transparent);
+    transition: background-color var(--purr-duration-fast) var(--purr-ease-out);
   }
 
   @media (hover: hover) {
     .control:hover::before,
     .toggle:hover::before {
-      background-color: var(--purr-face-hover);
-      transition-duration:
-        var(--purr-duration-hover), var(--purr-duration-release);
+      background-color: var(--_face-hover);
     }
   }
 
   .control:active::before,
   .toggle:active::before {
-    background-color: var(--purr-face-pressed);
-    scale: var(--purr-press-scale);
-    transition-duration: var(--purr-duration-press);
-    transition-timing-function: var(--purr-ease-standard);
+    background-color: var(--_face-pressed);
   }
 
-  /* The ring sits inside the face and follows its radius. */
   .control:focus-visible,
   .toggle:focus-visible {
     outline: none;
@@ -58,8 +49,8 @@ const face = css`
 
   .control:focus-visible::before,
   .toggle:focus-visible::before {
-    outline: var(--purr-focus-width) solid var(--purr-color-focus);
-    outline-offset: var(--purr-focus-offset-inside);
+    outline: var(--purr-ring-width) solid var(--purr-color-ring);
+    outline-offset: calc(var(--purr-ring-width) * -1);
   }
 
   @media (forced-colors: active) {
@@ -80,9 +71,11 @@ export const sidebarStyles = [
   face,
   css`
     :host {
-      inline-size: 17rem;
+      inline-size: calc(var(--purr-spacing) * 64);
       max-inline-size: 100%;
-      font: var(--purr-font-body);
+      padding: 0 var(--purr-space-3) var(--purr-space-4);
+      font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
+        var(--purr-font-sans);
     }
 
     :host([hidden]) {
@@ -91,23 +84,37 @@ export const sidebarStyles = [
 
     :host([collapsed]) {
       inline-size: fit-content;
+      padding-block-end: 0;
     }
 
     :host([collapsed]) nav {
       display: none;
     }
 
+    /* The toggle sits at the trailing end of a bar as tall as a toolbar, so
+       the two line up side by side. Its round face is smaller than its hit
+       region. */
     .toggle {
-      display: inline-grid;
+      --_face-hover: var(--purr-color-muted-3);
+      --_face-pressed: var(--purr-color-muted-1);
+
+      display: grid;
       place-items: center;
-      min-inline-size: var(--purr-hit-min);
-      min-block-size: var(--purr-hit-min);
+      inline-size: var(--purr-size-xl);
+      block-size: var(--purr-size-xl);
+      margin-block: calc((var(--purr-size-bar) - var(--purr-size-xl)) / 2);
+      margin-inline-start: auto;
       padding: 0;
     }
 
+    .toggle::before {
+      inset: calc((100% - var(--purr-visual-lg)) / 2);
+      border-radius: var(--purr-radius-full);
+    }
+
     .toggle svg {
-      inline-size: 1.5rem;
-      block-size: 1.5rem;
+      inline-size: var(--purr-icon-md);
+      block-size: var(--purr-icon-md);
     }
 
     /* Narrow screen, any pointer: the sidebar starts collapsed (see
@@ -133,42 +140,33 @@ export const itemStyles = [
       display: none;
     }
 
-    /* One step is the chevron slot plus its gap. Every row reserves the slot,
-       so level 1 labels share a leading edge; level 2 indents one more step.
-       Fine rows split the 2px gap between rows inside their hit region. */
+    /* Every row reserves the chevron column, so level 1 labels share a leading
+       edge; level 2 indents one step. Hover is half the selected fill. */
     .control {
-      --chevron: 0.875em;
-      --chevron-gap: 0.375rem;
-      --inset: 0.0625rem;
+      --_fill: var(--purr-color-muted-3);
+      --_face-hover: color-mix(in srgb, var(--_fill) 50%, transparent);
+      --_face-pressed: var(--_fill);
 
       display: grid;
-      grid-template-columns: var(--chevron) minmax(0, 1fr);
-      column-gap: var(--chevron-gap);
+      grid-template-columns: var(--purr-icon-md) minmax(0, 1fr);
+      column-gap: var(--purr-space-1);
       align-items: center;
       inline-size: 100%;
-      padding: calc(0.375rem + var(--inset)) var(--purr-space-3);
+      min-block-size: max(
+        calc(var(--purr-spacing) * 8),
+        var(--purr-size-hit-min)
+      );
+      padding: var(--purr-space-1) var(--purr-pad-item);
       text-align: start;
       text-decoration: none;
     }
 
-    @media (pointer: coarse) {
-      .control {
-        --chevron: 1em;
-        --chevron-gap: var(--purr-space-2);
-        --inset: 0;
-
-        padding-block: 0.6875rem;
-      }
-
-      .chevron {
-        stroke-width: 2px;
-      }
+    :host([expandable]) .control {
+      font-weight: 500;
     }
 
     :host([level="2"]) .control {
-      padding-inline-start: calc(
-        var(--purr-space-3) + var(--chevron) + var(--chevron-gap)
-      );
+      padding-inline-start: calc(var(--purr-pad-item) + var(--purr-indent));
     }
 
     .label {
@@ -177,34 +175,16 @@ export const itemStyles = [
     }
 
     :host([selected]) .control {
-      --purr-face: var(--purr-color-selection);
-      --purr-face-hover: var(--purr-color-selection-hover);
-      --purr-face-pressed: var(--purr-color-selection-pressed);
-
-      color: var(--purr-color-on-accent);
-      font: var(--purr-font-body-emphasized);
-    }
-
-    :host([selected]) .control:focus-visible::before {
-      outline-color: var(--purr-color-on-accent);
+      --_face: var(--_fill);
+      --_face-hover: var(--_fill);
     }
 
     /* Points inline-end, mirrored in RTL, and turns toward block-end when open. */
     .chevron {
-      inline-size: var(--chevron);
-      block-size: var(--chevron);
-      color: var(--purr-color-secondary-label);
-      stroke-width: 1.5px;
-      transition: transform var(--purr-duration-release)
-        var(--purr-ease-standard);
-    }
-
-    .chevron path {
-      vector-effect: non-scaling-stroke;
-    }
-
-    :host([selected]) .chevron {
-      color: inherit;
+      inline-size: var(--purr-icon-md);
+      block-size: var(--purr-icon-md);
+      color: var(--purr-color-muted-foreground);
+      transition: transform var(--purr-duration) var(--purr-ease-out);
     }
 
     :host([expanded]) .chevron {
@@ -226,12 +206,16 @@ export const itemStyles = [
       }
 
       :host([selected]) .control {
-        --purr-face: Highlight;
-        --purr-face-hover: Highlight;
-        --purr-face-pressed: Highlight;
+        --_face: Highlight;
+        --_face-hover: Highlight;
+        --_face-pressed: Highlight;
 
         color: HighlightText;
         forced-color-adjust: none;
+      }
+
+      :host([selected]) .chevron {
+        color: inherit;
       }
 
       :host([selected]) .control:focus-visible::before {

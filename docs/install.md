@@ -43,6 +43,49 @@ import "purrlucent/button";
 <purr-button>Save</purr-button>
 ```
 
+`import "purrlucent"` loads every component at once. The [component reference](./components.md) lists each element with its attributes, slots, parts and events.
+
+### Page background and text
+
+Control fills are translucent and tint whatever is behind them, so paint the page with the background token. Set the text color and font the same way:
+
+```css
+body {
+  background: var(--purr-color-background);
+  color: var(--purr-color-foreground);
+  font-family: var(--purr-font-sans);
+}
+```
+
+### Font
+
+The font token is `"Inter", system-ui, sans-serif`. The package ships no font file. Load Inter in your app to get it, or leave it out and the system font is used.
+
+### Light and dark
+
+Colors follow the page's `color-scheme`, which the tokens set to `light dark`, so the components follow the system setting. To force one, set it yourself:
+
+```css
+:root {
+  color-scheme: dark;
+}
+```
+
+### Forms
+
+`purr-button` with `type="submit"` or `type="reset"` acts on the form it is in. The input controls, such as `purr-switch`, submit their `name` and `value` with the form, return to their starting state on reset, and are disabled by a disabled `fieldset`.
+
+```html
+<form>
+  <purr-switch name="wifi" checked>Wi-Fi</purr-switch>
+  <purr-button type="submit" variant="primary">Save</purr-button>
+</form>
+```
+
+### TypeScript
+
+The package ships type declarations. Each import adds its elements to `HTMLElementTagNameMap`, so `document.querySelector("purr-button")` is typed.
+
 The package also ships `purrlucent/custom-elements.json`, the Custom Elements Manifest. Editors and frameworks can use it for typings and completion.
 
 ## Upgrade
@@ -69,8 +112,8 @@ Every color, size and duration is a custom property with the `--purr-` prefix. O
 
 ```css
 :root {
-  --purr-color-accent-fill: oklch(51% 0.17 250deg);
-  --purr-radius-control: 6px;
+  --purr-color-accent: oklch(51% 0.17 250deg);
+  --purr-radius: 6px;
 }
 ```
 

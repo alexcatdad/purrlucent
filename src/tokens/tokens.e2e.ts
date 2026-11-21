@@ -82,7 +82,7 @@ const expectSolidAndLegible = async (page: Page) => {
   expect(filter).toBe("none");
   expect(alpha).toBe(1);
   const colors = await resolveColors(page, {
-    label: "var(--purr-color-label)",
+    label: "var(--purr-color-foreground)",
     bar: "var(--purr-material-bar)",
   });
   expect(contrast(colors.label!, colors.bar!)).toBeGreaterThanOrEqual(4.5);
@@ -183,50 +183,35 @@ test.describe("dark color scheme", () => {
   }) => unsupportedFallback(page, "dark"));
 });
 
-// The visual spec's contrast pairs: [foreground roles, ground roles, minimum ratio].
-// "glass-<surface>-tint/<i>" is that tint composited over black, grey, white and the page.
-const grounds = [
-  "background",
-  "secondary-background",
-  "fill-hover",
-  "fill-control",
-  "fill-control-hover",
-  "fill-pressed",
-];
+// Contrast pairs: [foreground roles, ground roles, minimum ratio].
+// Translucent roles are measured as they show: "<role>/<i>" is that role
+// composited over black, grey, white and the page.
+const opaque = ["background", "surface", "input"];
+const fills = ["muted-1", "muted-2", "muted-3", "muted-pressed"];
 const backdrops = ["#000", "#808080", "#fff"];
-const tints = ["bar", "sidebar", "panel", "sheet"].map(
-  (s) => `glass-${s}-tint`,
-);
+const tints = ["overlay", "popover"];
+const overPage = (roles: string[]) => roles.map((r) => `${r}/3`);
 const glass = tints.flatMap((t) => [0, 1, 2, 3].map((i) => `${t}/${i}`));
-const selection = ["selection", "selection-hover", "selection-pressed"];
+const text = [
+  "foreground",
+  "muted-foreground",
+  "accent-text",
+  "destructive-text",
+];
+const grounds = [...opaque, ...overPage(fills)];
 const pairs = (more: boolean): [string[], string[], number][] => [
-  [
-    [
-      "label",
-      "secondary-label",
-      "tertiary-label",
-      "accent-text",
-      "destructive-text",
-    ],
-    [...grounds, ...glass],
-    4.5,
-  ],
-  [["focus", "control-boundary", ...selection], [...grounds, ...glass], 3],
-  [["success", "warning"], ["background", "secondary-background"], 4.5],
-  [
-    ["on-accent"],
-    ["accent-fill", "accent-fill-hover", "accent-fill-pressed", ...selection],
-    4.5,
-  ],
-  [["destructive-text"], ["destructive-fill", "destructive-pressed"], 4.5],
-  // Disabled controls are exempt in default contrast; the divider is translucent there.
+  [text, [...grounds, ...glass], 4.5],
+  [["ring", "input-border", "selected"], grounds, 3],
+  [["accent-foreground"], ["accent"], 4.5],
+  [["selected-foreground"], ["selected"], 4.5],
+  [["destructive-foreground"], ["destructive"], 4.5],
+  // The border is a hairline in default contrast and a real edge under more.
   ...(more
-    ? ([
-        [["disabled-label"], grounds, 4.5],
-        [["divider"], ["background", "secondary-background"], 3],
-      ] as [string[], string[], number][])
+    ? ([[["border"], opaque, 3]] as [string[], string[], number][])
     : []),
 ];
+// Grounds that are translucent are measured as they show over each backdrop.
+const translucent = [...tints, ...fills];
 
 test("every text role meets 4.5:1 against background in all four color schemes", async ({
   page,
@@ -249,20 +234,28 @@ test("every text role meets 4.5:1 against background in all four color schemes",
       ),
     );
     const pageColor = `rgb(${colors.background!.join(" ")})`;
-    for (const tint of tints)
+    for (const role of translucent)
       (
-        await compositeOver(page, `var(--purr-color-${tint})`, [
+        await compositeOver(page, `var(--purr-color-${role})`, [
           ...backdrops,
           pageColor,
         ])
-      ).forEach((shown, i) => (colors[`${tint}/${i}`] = shown));
+      ).forEach((shown, i) => (colors[`${role}/${i}`] = shown));
+    // A foreground may be translucent too, so it is measured as it shows on each ground.
     for (const [foregrounds, under, need] of table)
-      for (const fg of foregrounds)
-        for (const bg of under)
+      for (const fg of foregrounds) {
+        const shown = await compositeOver(
+          page,
+          `var(--purr-color-${fg})`,
+          under.map((bg) => `rgb(${colors[bg]!.join(" ")})`),
+        );
+        under.forEach((bg, i) =>
           expect(
-            contrast(colors[fg]!, colors[bg]!),
+            contrast(shown[i]!, colors[bg]!),
             `${fg} on ${bg} in ${scheme.colorScheme}, contrast ${scheme.contrast}`,
-          ).toBeGreaterThanOrEqual(need);
+          ).toBeGreaterThanOrEqual(need),
+        );
+      }
   }
 });
 

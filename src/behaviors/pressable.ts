@@ -1,8 +1,9 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 
 /**
- * Press behavior for a custom control: fires `purr-press` on pointer-up inside
- * the host, on Enter, and on Space (on key release, as a native button does).
+ * Press behavior for a custom control: fires `purr-press` on a click (a pointer
+ * click, a label, `click()` or assistive technology), on Enter, and on Space
+ * (on key release, as a native button does).
  * While the pointer or Space is down the custom state `:state(pressed)` is set.
  * Key events from a descendant of the host are ignored.
  * The controller uses `opts.internals` when given, otherwise it calls
@@ -37,12 +38,11 @@ export class PressableController implements ReactiveController {
   hostConnected(): void {
     const host = this.#host;
     host.addEventListener("pointerdown", this.#down);
-    host.addEventListener("pointerup", this.#up);
+    host.addEventListener("click", this.#click);
     host.addEventListener("keydown", this.#keydown);
     host.addEventListener("keyup", this.#keyup);
     host.addEventListener("blur", this.#blur);
-    // Pointer-up runs on the host first, then bubbles here, so this only ever
-    // clears a press that ended outside the host or was cancelled.
+    // Ends the pressed state wherever the pointer is released or cancelled.
     host.ownerDocument.addEventListener("pointerup", this.#release);
     host.ownerDocument.addEventListener("pointercancel", this.#release);
   }
@@ -50,7 +50,7 @@ export class PressableController implements ReactiveController {
   hostDisconnected(): void {
     const host = this.#host;
     host.removeEventListener("pointerdown", this.#down);
-    host.removeEventListener("pointerup", this.#up);
+    host.removeEventListener("click", this.#click);
     host.removeEventListener("keydown", this.#keydown);
     host.removeEventListener("keyup", this.#keyup);
     host.removeEventListener("blur", this.#blur);
@@ -78,8 +78,8 @@ export class PressableController implements ReactiveController {
     this.#set(true);
   };
 
-  #up = () => {
-    if (this.#pressed && !this.#opts.disabled()) this.#press();
+  #click = () => {
+    if (!this.#opts.disabled()) this.#press();
   };
 
   #release = () => this.#set(false);

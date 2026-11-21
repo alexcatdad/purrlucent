@@ -22,17 +22,24 @@ export function position(
   const { clientWidth, clientHeight } = document.documentElement;
   const rtl = getComputedStyle(anchor).direction === "rtl";
 
+  // The overlay's block margins are the gap to the anchor, on whichever side it opens.
+  const style = getComputedStyle(overlay);
+  const outer =
+    height +
+    (parseFloat(style.marginTop) || 0) +
+    (parseFloat(style.marginBottom) || 0);
+
   const below = a.bottom;
-  const above = a.top - height;
+  const above = a.top - outer;
   const preferBelow = placement.startsWith("bottom");
   const fits = (top: number) =>
-    top >= INSET && top + height <= clientHeight - INSET;
+    top >= INSET && top + outer <= clientHeight - INSET;
   const [first, second] = preferBelow ? [below, above] : [above, below];
   const top = fits(first) || !fits(second) ? first : second;
 
   const alignLeft = placement.endsWith("start") !== rtl;
   const left = alignLeft ? a.left : a.right - width;
 
-  overlay.style.top = `${clamp(top, height, clientHeight)}px`;
+  overlay.style.top = `${clamp(top, outer, clientHeight)}px`;
   overlay.style.left = `${clamp(left, width, clientWidth)}px`;
 }

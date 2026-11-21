@@ -18,7 +18,7 @@ const defineDemo = (tag: string, surface: CSSResult) =>
         surface,
         css`
           :host {
-            font-family: var(--purr-font-family);
+            font-family: var(--purr-font-sans);
           }
         `,
       ];

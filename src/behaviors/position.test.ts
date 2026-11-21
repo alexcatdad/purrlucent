@@ -26,9 +26,11 @@ const overlay = (width = 120, height = 100) =>
   }) as unknown as HTMLElement;
 
 let direction = "ltr";
+let margins: Record<string, string> = {};
 
 beforeEach(() => {
   direction = "ltr";
+  margins = {};
   Object.defineProperty(globalThis, "document", {
     value: {
       documentElement: {
@@ -39,7 +41,7 @@ beforeEach(() => {
     configurable: true,
   });
   Object.defineProperty(globalThis, "getComputedStyle", {
-    value: () => ({ direction }),
+    value: () => ({ direction, ...margins }),
     configurable: true,
   });
 });
@@ -123,6 +125,16 @@ test("flips to the bottom near the top edge", () => {
     top: "40px",
     left: "100px",
   });
+});
+
+test("the overlay's block margins are the gap on either side", () => {
+  margins = { marginTop: "4px", marginBottom: "4px" };
+  // The margin box starts at the anchor's edge, so the border box sits 4px away from it.
+  expect(place(anchorAt(100, 50), overlay(), "bottom-start").top).toBe("80px");
+  // Flipped: margin box 108px tall ends at the anchor's top (250), border box 4px above it.
+  expect(place(anchorAt(100, 250), overlay(), "bottom-start").top).toBe(
+    "142px",
+  );
 });
 
 test("stays at least 8px inside every edge", () => {

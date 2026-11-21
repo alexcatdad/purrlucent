@@ -16,7 +16,6 @@ type Story = StoryObj;
 // Icons come from design/icons.
 const icon = (paths: SVGTemplateResult) =>
   html`<svg
-    style="inline-size: 1.25em; block-size: 1.25em"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -53,7 +52,9 @@ const render = ({
     (item, i) =>
       html`<purr-button
         aria-label=${ifDefined(item.icon ? item.label : undefined)}
-        variant=${prominent.includes(i) ? "prominent" : "plain"}
+        variant=${prominent.includes(i) ? "primary" : "ghost"}
+        size=${item.icon ? "md" : "xl"}
+        ?icon=${!!item.icon}
         ?disabled=${disabled.includes(i)}
       >
         ${item.icon ? icon(item.icon) : item.label}

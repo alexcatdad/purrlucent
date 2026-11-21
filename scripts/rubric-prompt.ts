@@ -42,7 +42,7 @@ export function parseRules(output: string): RubricRule[] {
 /** Rule page (hig/rules/<page>.yaml) to the component folder it governs. */
 export const PAGE_COMPONENT: Record<string, string> = {
   buttons: "button",
-  "segmented-controls": "segmented-control",
+  "segmented-controls": "toggle-group",
   sidebars: "sidebar",
   toolbars: "toolbar",
 };

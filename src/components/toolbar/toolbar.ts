@@ -33,7 +33,7 @@ customElements.define("purr-toolbar-group", PurrToolbarGroup);
 /**
  * A bar of controls with one tab stop and arrow-key navigation.
  *
- * @slot - Controls and `purr-toolbar-group`s. At most one control may be prominent (`variant="prominent"`), and it goes last.
+ * @slot - Controls and `purr-toolbar-group`s. At most one control may be prominent (`variant="primary"`), and it goes last.
  * @csspart items - The row that lays out the slotted controls.
  */
 export class PurrToolbar extends LitElement {
@@ -92,7 +92,7 @@ export class PurrToolbar extends LitElement {
 
   #onSlotChange() {
     const issue = prominentIssue(
-      this.#slotted().map((el) => el.getAttribute("variant") === "prominent"),
+      this.#slotted().map((el) => el.getAttribute("variant") === "primary"),
     );
     if (issue) console.warn(`purr-toolbar: ${issue}`);
     this.requestUpdate();

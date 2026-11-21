@@ -59,7 +59,7 @@ test("keeps the toolbar rules for a toolbar story and drops the other component 
 
 test("matches a hyphenated page to its component folder", () => {
   const ids = scopeRules(rules, [
-    "src/components/segmented-control/segmented-control.ts",
+    "src/components/toggle-group/toggle-group.ts",
   ]).map((r) => r.id);
   expect(ids).toEqual(["segmented-controls/1", "layout/1"]);
 });

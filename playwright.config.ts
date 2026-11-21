@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const port = 6006;
 
 export default defineConfig({
+  globalSetup: "./e2e/helpers/fresh-storybook.ts",
   testDir: "src",
   testMatch: "**/*.e2e.ts",
   fullyParallel: true,

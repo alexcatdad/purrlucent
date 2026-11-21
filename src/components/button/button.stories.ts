@@ -15,16 +15,33 @@ type Story = StoryObj;
 
 const row = (content: unknown) =>
   html`<div
-    style="display:flex;flex-wrap:wrap;gap:1rem;padding:1rem;background:var(--purr-color-background)"
+    style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--purr-space-4);padding:var(--purr-space-4)"
   >
     ${content}
   </div>`;
 
-const variants = ["plain", "bordered", "prominent"] as const;
+const variants = ["secondary", "primary", "tinted", "ghost"] as const;
+const sizes = ["md", "lg", "xl"] as const;
 
 /** An action label for each variant: buttons name what they do. */
 const label = (variant: (typeof variants)[number]) =>
-  ({ plain: "Cancel", bordered: "Duplicate", prominent: "Save" })[variant];
+  ({
+    secondary: "Duplicate",
+    primary: "Save",
+    tinted: "Share",
+    ghost: "Cancel",
+  })[variant];
+
+const plus = html`<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  aria-hidden="true"
+>
+  <path d="M12 5v14M5 12h14" />
+</svg>`;
 
 /** Counts purr-press events fired by the button with the given id. */
 const countPresses = (id: string) => {
@@ -35,8 +52,7 @@ const countPresses = (id: string) => {
 };
 
 export const Default: Story = {
-  render: () =>
-    html`<purr-button id="button" variant="bordered">Save</purr-button>`,
+  render: () => html`<purr-button id="button">Save</purr-button>`,
   play: async () => {
     const { button, presses } = countPresses("button");
     expect(button.getAttribute("role")).toBe("button");
@@ -61,6 +77,21 @@ export const Variants: Story = {
     ),
 };
 
+export const Sizes: Story = {
+  render: () =>
+    row([
+      ...sizes.map(
+        (size) => html`<purr-button size=${size}>${plus}Add item</purr-button>`,
+      ),
+      ...sizes.map(
+        (size) =>
+          html`<purr-button size=${size} icon aria-label="Add"
+            >${plus}</purr-button
+          >`,
+      ),
+    ]),
+};
+
 export const Destructive: Story = {
   render: () =>
     row(
@@ -74,14 +105,12 @@ export const Destructive: Story = {
           >`,
       ),
     ),
-  // A destructive button never gets the prominent (accent-filled) look.
+  // A destructive button never gets the filled primary look.
   play: () => {
     const filled = (id: string) =>
       getComputedStyle(document.getElementById(id)!, "::before")
         .backgroundColor;
-    expect(filled("destructive-prominent")).toBe(
-      filled("destructive-bordered"),
-    );
+    expect(filled("destructive-primary")).toBe(filled("destructive-tinted"));
   },
 };
 
@@ -99,7 +128,7 @@ export const Disabled: Story = {
       ),
     ),
   play: async () => {
-    const { button, presses } = countPresses("disabled-bordered");
+    const { button, presses } = countPresses("disabled-secondary");
     expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.tabIndex).toBe(-1);
     button.focus();
@@ -107,6 +136,20 @@ export const Disabled: Story = {
     await userEvent.keyboard(" ");
     await waitFor(() => expect(presses.count).toBe(0));
   },
+};
+
+/** Submit and reset buttons act on the form they are in. */
+export const InForm: Story = {
+  render: () => html`
+    <form
+      id="form"
+      style="display:flex;gap:var(--purr-space-2);padding:var(--purr-space-4)"
+    >
+      <input name="title" aria-label="Title" value="Draft" />
+      <purr-button type="reset">Reset</purr-button>
+      <purr-button type="submit" variant="primary">Save</purr-button>
+    </form>
+  `,
 };
 
 export const Glass: Story = {

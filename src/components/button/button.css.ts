@@ -1,75 +1,133 @@
 import { css } from "lit";
 
 /**
- * Look of each variant. Hit region, face states, focus ring and reduced motion
- * come from interactionStyles; variants only set the face variables and label.
- * Every variant rule has the same specificity, so source order decides.
+ * Look of each variant. Hit region, face states and focus ring come from
+ * interactionStyles; a variant only sets the private tones below, and the
+ * host maps them to the face and label for the rest and disabled states.
+ * Hover is halfway between the rest and pressed faces.
  */
 export const buttonStyles = css`
   :host {
-    padding: 0.375rem var(--purr-space-3);
-    border-radius: var(--purr-radius-control);
-    color: var(--purr-color-accent-text);
-    font: var(--purr-font-action);
-    text-align: center;
-    cursor: pointer;
-    user-select: none;
-  }
+    --_tone: var(--purr-color-accent);
+    --_tone-text: var(--purr-color-accent-text);
+    --_face: var(--purr-color-secondary);
+    --_face-pressed: var(--purr-color-secondary-pressed);
+    --_face-disabled: var(--purr-color-secondary-disabled);
+    --_fg: var(--purr-color-foreground);
+    --_fg-disabled: var(--purr-color-disabled-foreground);
+    --_size: var(--purr-size-md);
+    --purr-face: var(--_face);
+    --purr-face-pressed: var(--_face-pressed);
+    --purr-face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
 
-  @media (pointer: coarse) {
-    :host {
-      padding: 0.6875rem var(--purr-space-4);
-    }
+    min-block-size: var(--_size);
+    padding: var(--purr-space-1) var(--purr-pad-control);
+    border-radius: var(--purr-radius);
+    color: var(--_fg);
+    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+      var(--purr-font-sans);
+    text-align: center;
+    cursor: default;
+    user-select: none;
+    transition: color var(--purr-duration-fast) var(--purr-ease-out);
   }
 
   [part="label"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--purr-gap-icon);
     overflow-wrap: anywhere;
   }
 
-  :host([variant="bordered"]),
-  :host([variant="prominent"]) {
-    --purr-face: var(--purr-color-fill-control);
-    --purr-face-hover: var(--purr-color-fill-control-hover);
-
-    color: var(--purr-color-label);
+  ::slotted(svg) {
+    flex: none;
+    inline-size: var(--purr-icon-md);
+    block-size: var(--purr-icon-md);
   }
 
-  /* Increased contrast outlines neutral faces only, never the accent fill. */
-  :host([variant="bordered"])::before,
-  :host([variant="prominent"][destructive])::before {
+  :host([size="lg"]) {
+    --_size: var(--purr-size-lg);
+  }
+
+  :host([size="xl"]) {
+    --_size: var(--purr-size-xl);
+
+    padding-inline: var(--purr-pad-control-xl);
+  }
+
+  /* A round button that holds one icon. It needs an aria-label. */
+  :host([icon]) {
+    inline-size: var(--_size);
+    padding: 0;
+    border-radius: var(--purr-radius-full);
+  }
+
+  /* Increased contrast outlines the neutral face. */
+  :host([variant="secondary"]:not([destructive]))::before {
     box-shadow: var(--purr-boundary);
   }
 
-  /* The preferred action. A destructive or disabled one never takes the accent. */
-  :host([variant="prominent"]:where(:not([destructive], [disabled]))) {
-    --purr-face: var(--purr-color-accent-fill);
-    --purr-face-hover: var(--purr-color-accent-fill-hover);
-    --purr-face-pressed: var(--purr-color-accent-fill-pressed);
-
-    color: var(--purr-color-on-accent);
+  /* The preferred action. */
+  :host([variant="primary"]) {
+    --_face: var(--purr-color-accent);
+    --_face-pressed: color-mix(
+      in srgb,
+      var(--purr-color-accent),
+      var(--purr-color-shade) 10%
+    );
+    --_face-disabled: color-mix(
+      in srgb,
+      var(--purr-color-accent) 40%,
+      transparent
+    );
+    --_fg: var(--purr-color-accent-foreground);
+    --_fg-disabled: color-mix(
+      in srgb,
+      var(--purr-color-accent-foreground) 50%,
+      transparent
+    );
   }
 
+  :host([variant="ghost"]) {
+    --_face: transparent;
+    --_face-pressed: transparent;
+    --_face-disabled: transparent;
+    --_fg: var(--_tone-text);
+    --_fg-disabled: color-mix(in srgb, var(--_tone-text) 50%, transparent);
+    --purr-face-hover: var(--purr-color-muted-3);
+  }
+
+  :host([variant="ghost"]:state(pressed)) {
+    color: color-mix(
+      in srgb,
+      var(--_tone-text),
+      var(--purr-color-foreground) 25%
+    );
+  }
+
+  /* A destructive button takes the tinted look in red, never the filled one. */
   :host([destructive]) {
-    --purr-face-hover: var(--purr-color-destructive-fill);
-    --purr-face-pressed: var(--purr-color-destructive-pressed);
-
-    color: var(--purr-color-destructive-text);
+    --_tone: var(--purr-color-destructive);
+    --_tone-text: var(--purr-color-destructive-text);
   }
 
-  /* Disabled is not shown by color alone: the face goes and the weight drops. */
+  :host([variant="tinted"]),
+  :host([destructive]:not([variant="ghost"])) {
+    --_face: color-mix(in srgb, var(--_tone) 21%, transparent);
+    --_face-pressed: color-mix(in srgb, var(--_tone) 28%, transparent);
+    --_face-disabled: color-mix(in srgb, var(--_tone) 10%, transparent);
+    --_fg: var(--_tone-text);
+    --_fg-disabled: color-mix(in srgb, var(--_tone-text) 40%, transparent);
+  }
+
   :host([disabled]) {
-    --purr-face: transparent;
+    --purr-face: var(--_face-disabled);
 
-    color: var(--purr-color-disabled-label);
-    font: var(--purr-font-body);
-  }
-
-  :host([disabled])::before {
-    box-shadow: none;
+    color: var(--_fg-disabled);
   }
 
   @media (forced-colors: active) {
-    :host([variant]) {
+    :host {
       --purr-face: ButtonFace;
       --purr-face-hover: ButtonFace;
       --purr-face-pressed: ButtonFace;

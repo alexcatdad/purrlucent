@@ -59,13 +59,15 @@ test("disabled hosts fire nothing", () => {
   key("keyup", " ");
   pointer("pointerdown");
   pointer("pointerup");
+  pointer("click");
   expect(presses).toBe(0);
   expect(host.states.has("pressed")).toBe(false);
 });
 
-test("pointer-up inside fires purr-press", () => {
+test("a click fires purr-press", () => {
   pointer("pointerdown");
   pointer("pointerup");
+  pointer("click");
   expect(presses).toBe(1);
 });
 

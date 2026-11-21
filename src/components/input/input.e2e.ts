@@ -1,0 +1,356 @@
+import { expect, test, type Page } from "@playwright/test";
+import {
+  expectAccessible,
+  expectNoOverflowAtTextZoom,
+  spokenPhrases,
+} from "../../../e2e/helpers/a11y.ts";
+import { forEachViewport } from "../../../e2e/helpers/matrix.ts";
+import { gotoStory } from "../../../e2e/helpers/story.ts";
+
+const story = (name: string) => `components-input--${name}`;
+
+/** What the form would submit, as [name, value] pairs. */
+const submitted = (page: Page) =>
+  page
+    .locator("#form")
+    .evaluate((form) =>
+      [...new FormData(form as HTMLFormElement)].map(([k, v]) => [
+        k,
+        String(v),
+      ]),
+    );
+
+const valid = (page: Page) =>
+  page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).checkValidity());
+
+test("aria snapshot", async ({ page }) => {
+  const root = await gotoStory(page, story("states"));
+  await expect(root).toMatchAriaSnapshot(`
+    - textbox "Empty"
+    - textbox "Placeholder"
+    - textbox "Value"
+    - textbox "Disabled" [disabled]: Value
+    - textbox "Read only": Value
+    - textbox "Invalid" [invalid]: nope
+  `);
+});
+
+test("a slotted label names the input and a click on it focuses the field", async ({
+  page,
+}) => {
+  await gotoStory(page, story("labelled"));
+  const field = page.getByRole("textbox", { name: "Name" });
+  await expect(field).toHaveValue("Ada");
+  await page.locator("purr-input label").click();
+  await expect(field).toBeFocused();
+});
+
+test("focusing the host or clicking the shell focuses the input", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const field = page.getByRole("textbox", { name: "Name" });
+  await page.locator("purr-input").focus();
+  await expect(field).toBeFocused();
+  await field.blur();
+  const box = (await page.locator("purr-input").boundingBox())!;
+  await page.mouse.click(box.x + 2, box.y + box.height / 2);
+  await expect(field).toBeFocused();
+});
+
+test("typing edits the value and fires purr-input and purr-change", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await page.locator("purr-input").evaluate((el) => {
+    const log: string[] = [];
+    (window as unknown as { log: string[] }).log = log;
+    for (const name of ["purr-input", "purr-change"])
+      el.addEventListener(name, (event) =>
+        log.push(
+          `${name}:${(event as CustomEvent<{ value: string }>).detail.value}`,
+        ),
+      );
+  });
+  await page.getByRole("textbox", { name: "Name" }).pressSequentially("ab");
+  await page.keyboard.press("Tab");
+  expect(
+    await page.evaluate(() => (window as unknown as { log: string[] }).log),
+  ).toEqual(["purr-input:a", "purr-input:ab", "purr-change:ab"]);
+});
+
+test("the focus ring is drawn on the shell", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await page.keyboard.press("Tab");
+  expect(
+    await page
+      .locator("purr-input")
+      .evaluate(
+        (el) =>
+          getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
+            .outlineColor,
+      ),
+  ).not.toBe("rgba(0, 0, 0, 0)");
+});
+
+test("a search field shows its clear button only while it has text", async ({
+  page,
+}) => {
+  await gotoStory(page, story("search"));
+  const fields = page.locator("purr-input");
+  const clear = (i: number) => fields.nth(i).getByRole("button");
+  await expect(clear(0)).toHaveCount(0);
+  await expect(clear(1)).toHaveCount(1);
+  await expect(clear(2)).toHaveCount(0);
+  await fields.nth(0).getByRole("searchbox").fill("x");
+  await expect(clear(0)).toHaveCount(1);
+});
+
+test("Clear empties a search field, keeps focus in it and fires the events", async ({
+  page,
+}) => {
+  await gotoStory(page, story("search"));
+  const host = page.locator("purr-input").nth(1);
+  await host.evaluate((el) => {
+    const log: string[] = [];
+    (window as unknown as { log: string[] }).log = log;
+    for (const name of ["purr-input", "purr-change"])
+      el.addEventListener(name, (event) =>
+        log.push(
+          `${name}:${(event as CustomEvent<{ value: string }>).detail.value}`,
+        ),
+      );
+  });
+  await host.getByRole("button", { name: "Clear" }).click();
+  const field = host.getByRole("searchbox");
+  await expect(field).toHaveValue("");
+  await expect(field).toBeFocused();
+  await expect(host.getByRole("button")).toHaveCount(0);
+  expect(
+    await page.evaluate(() => (window as unknown as { log: string[] }).log),
+  ).toEqual(["purr-input:", "purr-change:"]);
+});
+
+test("Escape clears a search field", async ({ page }) => {
+  await gotoStory(page, story("search"));
+  const field = page.locator("purr-input").nth(1).getByRole("searchbox");
+  await field.focus();
+  await page.keyboard.press("Escape");
+  await expect(field).toHaveValue("");
+});
+
+test("a password field masks its value in the system font", async ({
+  page,
+}) => {
+  await gotoStory(page, story("password"));
+  const field = page.locator("purr-input").nth(1);
+  expect(
+    await field.evaluate((el) => {
+      const input = el.shadowRoot!.querySelector("input")!;
+      return [input.type, getComputedStyle(input).fontFamily];
+    }),
+  ).toEqual(["password", "system-ui, sans-serif"]);
+});
+
+test("a disabled field takes no focus", async ({ page }) => {
+  await gotoStory(page, story("states"));
+  const field = page.getByRole("textbox", { name: "Disabled" });
+  await expect(field).toBeDisabled();
+  await page.locator("purr-input").nth(3).click({ force: true });
+  await expect(field).not.toBeFocused();
+});
+
+test("a read-only field keeps its value", async ({ page }) => {
+  await gotoStory(page, story("states"));
+  const field = page.getByRole("textbox", { name: "Read only" });
+  await field.focus();
+  await page.keyboard.type("x");
+  await expect(field).toHaveValue("Value");
+});
+
+test("the invalid style and aria-invalid appear only after interaction", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const email = page.getByRole("textbox", { name: "Email" });
+  const host = page.locator("#email");
+  const invalidState = () =>
+    host.evaluate((el) => el.matches(":state(user-invalid)"));
+  expect(await invalidState()).toBe(false);
+  await expect(email).not.toHaveAttribute("aria-invalid");
+  await email.focus();
+  await page.keyboard.press("Tab");
+  expect(await invalidState()).toBe(true);
+  await expect(email).toHaveAttribute("aria-invalid", "true");
+  await email.fill("a@example.com");
+  expect(await invalidState()).toBe(false);
+});
+
+test("the form gets the value, and a reset returns the value attribute", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await page.getByRole("textbox", { name: "Email" }).fill("a@example.com");
+  await page.getByRole("searchbox", { name: "Find" }).fill("cats");
+  await page.getByRole("textbox", { name: "Name" }).fill("Grace");
+  expect(await submitted(page)).toEqual([
+    ["name", "Grace"],
+    ["email", "a@example.com"],
+    ["q", "cats"],
+  ]);
+  await page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).reset());
+  await expect(page.getByRole("textbox", { name: "Name" })).toHaveValue("Ada");
+  await expect(page.getByRole("textbox", { name: "Email" })).toHaveValue("");
+  await expect(page.getByRole("searchbox", { name: "Find" })).toHaveValue("");
+});
+
+test("required, type=email and pattern make the form invalid", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const email = page.getByRole("textbox", { name: "Email" });
+  expect(await valid(page)).toBe(false);
+  await email.fill("nope");
+  expect(await valid(page)).toBe(false);
+  await email.fill("a@example.com");
+  expect(await valid(page)).toBe(true);
+  await page
+    .locator("#name")
+    .evaluate((el) => el.setAttribute("pattern", "[0-9]+"));
+  expect(await valid(page)).toBe(false);
+});
+
+test("a disabled fieldset disables the fields and submits nothing", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await page
+    .locator("#fieldset")
+    .evaluate((el) => ((el as HTMLFieldSetElement).disabled = true));
+  await expect(page.getByRole("textbox", { name: "Name" })).toBeDisabled();
+  expect(await submitted(page)).toEqual([]);
+});
+
+test("Enter submits the form", async ({ page }) => {
+  await gotoStory(page, story("in-form"));
+  await page.locator("#form").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.setAttribute("data-submitted", "");
+    });
+  });
+  await page.getByRole("textbox", { name: "Email" }).fill("a@example.com");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#form")).toHaveAttribute("data-submitted", "");
+});
+
+test("a search field mirrors under rtl", async ({ page }) => {
+  await gotoStory(page, story("rtl"));
+  const sides = await page
+    .locator("purr-input")
+    .nth(1)
+    .evaluate((el) => {
+      const part = (name: string) =>
+        el.shadowRoot!.querySelector(name)!.getBoundingClientRect();
+      const [field, glyph, clear] = [
+        part('[part="field"]'),
+        part('[part="glyph"]'),
+        part('[part="clear"]'),
+      ];
+      return {
+        glyphRight: field.right - glyph.right,
+        glyphLeft: glyph.left - field.left,
+        clearLeft: clear.left - field.left,
+        clearRight: field.right - clear.right,
+      };
+    });
+  expect(sides.glyphRight).toBeLessThan(sides.glyphLeft);
+  expect(sides.clearLeft).toBeLessThan(sides.clearRight);
+});
+
+test("the field keeps a border under forced colors and a ring on focus", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await page.emulateMedia({ forcedColors: "active" });
+  await page.keyboard.press("Tab");
+  const style = await page.locator("purr-input").evaluate((el) => {
+    const css = getComputedStyle(
+      el.shadowRoot!.querySelector('[part="field"]')!,
+    );
+    return [css.borderStyle, css.outlineStyle];
+  });
+  expect(style).toEqual(["solid", "solid"]);
+});
+
+for (const name of [
+  "default",
+  "labelled",
+  "states",
+  "sizes",
+  "search",
+  "password",
+  "in-form",
+  "rtl",
+  "glass",
+]) {
+  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
+    await expectAccessible(await gotoStory(page, story(name)));
+  });
+}
+
+test("an input without a label fails axe", async ({ page }) => {
+  const root = await gotoStory(page, story("default"));
+  await root.evaluate((el) => {
+    const bare = document.createElement("purr-input");
+    bare.id = "bare";
+    el.append(bare);
+  });
+  await expect(page.locator("#bare").getByRole("textbox")).toBeVisible();
+  await expect(expectAccessible(root)).rejects.toThrow();
+});
+
+test("no horizontal overflow at 200% text zoom", async ({ page }) => {
+  await expectNoOverflowAtTextZoom(await gotoStory(page, story("search")));
+});
+
+// The virtual screen reader does not enter shadow roots, so it can only reach
+// the slotted label; the inner input's role and name are in the aria snapshot.
+test("virtual screen reader speaks the slotted label", async ({ page }) => {
+  await gotoStory(page, story("labelled"));
+  expect((await spokenPhrases(page)).join(" | ")).toContain("Name");
+});
+
+test.describe("coarse pointer on a wide screen", () => {
+  test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
+
+  test("every field and clear button keeps a 44 by 44 hit area", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("search"));
+    for (const control of await page.locator("purr-input").all()) {
+      const box = (await control.boundingBox())!;
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+    const clear = (await page
+      .locator("purr-input")
+      .nth(1)
+      .getByRole("button")
+      .boundingBox())!;
+    expect(clear.width).toBeGreaterThanOrEqual(44);
+    expect(clear.height).toBeGreaterThanOrEqual(44);
+  });
+});
+
+forEachViewport(({ name }) => {
+  for (const id of ["states", "sizes", "search", "password", "glass"]) {
+    test(`screenshot of ${id} at ${name}`, async ({ page }) => {
+      const root = await gotoStory(page, story(id));
+      await expect(root).toHaveScreenshot(`${id}-${name}.png`);
+    });
+  }
+});
