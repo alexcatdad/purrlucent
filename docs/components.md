@@ -189,7 +189,7 @@ import "purrlucent/input";
 
 ### `<purr-input>`
 
-A single-line text field. A native input inside does the editing, so typing, selection, IME, autofill and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the input's accessible name. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `pattern`, `type=email`...) is the element's validity. Enter submits the form.
+A single-line text field. A native input inside does the editing, so typing, selection, IME, autofill and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the input's accessible name, and without both a native `<label for>` names it. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `pattern`, `type=email`...) is the element's validity. Enter submits the form.
 
 | Attribute      | Type                   | Default  | Description                                                                                                                                          |
 | -------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -303,7 +303,7 @@ import "purrlucent/number-field";
 
 ### `<purr-number-field>`
 
-A numeric field with up and down stepper buttons, following the WAI-ARIA spinbutton pattern. ArrowUp and ArrowDown step, PageUp and PageDown step ten times, Home and End go to `min` and `max` when they are set. A typed number is clamped to the range and snapped to the step grid when it is committed (blur or Enter). The stepper buttons are not tab stops, repeat while held and disable at the limits. The slotted text is a visible label; without it, `label` becomes the accessible name. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute and a disabled fieldset disables it.
+A numeric field with up and down stepper buttons, following the WAI-ARIA spinbutton pattern. ArrowUp and ArrowDown step, PageUp and PageDown step ten times, Home and End go to `min` and `max` when they are set. A typed number is clamped to the range and snapped to the step grid when it is committed (blur or Enter). The stepper buttons are not tab stops, repeat while held and disable at the limits. The slotted text is a visible label; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute and a disabled fieldset disables it.
 
 | Attribute   | Type                    | Default    | Description                                                                                       |
 | ----------- | ----------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
@@ -660,7 +660,7 @@ import "purrlucent/textarea";
 
 ### `<purr-textarea>`
 
-A multi-line text field. A native textarea inside does the editing, so typing, selection, IME and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the textarea's accessible name. It takes part in forms like a native textarea: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `minlength`, `maxlength`) is the element's validity.
+A multi-line text field. A native textarea inside does the editing, so typing, selection, IME and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the textarea's accessible name, and without both a native `<label for>` names it. It takes part in forms like a native textarea: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `minlength`, `maxlength`) is the element's validity.
 
 | Attribute     | Type                   | Default      | Description                                                                      |
 | ------------- | ---------------------- | ------------ | -------------------------------------------------------------------------------- |

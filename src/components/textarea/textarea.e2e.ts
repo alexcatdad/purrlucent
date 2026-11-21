@@ -294,23 +294,22 @@ test("the field shrinks to a narrow container", async ({ page }) => {
   expect(width).toBeLessThanOrEqual(100);
 });
 
-// The accessible name comes from the slot or `label`; an external label
-// associates with the host and is reachable through `labels`.
-test("an external label is associated with the textarea host", async ({
+test("an external label names the textarea, even one added later", async ({
   page,
 }) => {
   const root = await gotoStory(page, story("default"));
-  const labels = await root.evaluate((el) => {
+  await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      '<label for="ext">Bio</label><purr-textarea id="ext"></purr-textarea>',
-    );
-    const field = el.querySelector("#ext") as HTMLElement & {
-      labels: NodeListOf<HTMLLabelElement>;
-    };
-    return [...field.labels].map((label) => label.textContent);
-  });
-  expect(labels).toEqual(["Bio"]);
+      '<label for="ext">Bio</label><purr-textarea id="ext"></purr-textarea><purr-textarea id="late"></purr-textarea>',
+    ),
+  );
+  await expect(page.getByRole("textbox", { name: "Bio" })).toBeVisible();
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML("beforeend", '<label for="late">Notes</label>'),
+  );
+  await page.locator("#late").evaluate((el) => (el as HTMLElement).focus());
+  await expect(page.getByRole("textbox", { name: "Notes" })).toBeFocused();
 });
 
 test("the text is padded from the start edge under rtl", async ({ page }) => {

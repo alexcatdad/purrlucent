@@ -1,12 +1,13 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { labelText } from "../../behaviors/labels.ts";
 import { textareaStyles } from "./textarea.css.ts";
 
 /**
  * A multi-line text field. A native textarea inside does the editing, so
  * typing, selection, IME and mobile keyboards behave as usual. The slotted
  * text is a visible label; without it, `label` becomes the textarea's
- * accessible name. It takes part in forms like a native textarea: it submits
+ * accessible name, and without both a native `<label for>` names it. It takes part in forms like a native textarea: it submits
  * `name` with its value, a reset returns it to its `value` attribute, a
  * disabled fieldset disables it, and the native validity (`required`,
  * `minlength`, `maxlength`) is the element's validity.
@@ -80,6 +81,8 @@ export class PurrTextarea extends LitElement {
       this.#touched = true;
       this.#sync();
     });
+    // A label added after the field still names it before it is read out.
+    this.addEventListener("focusin", () => this.requestUpdate());
     this.value = "";
     this.name = "";
     this.resize = "vertical";
@@ -221,7 +224,11 @@ export class PurrTextarea extends LitElement {
           part="control"
           .value=${this.value}
           name=${ifDefined(this.name || undefined)}
-          aria-label=${this._labelled ? nothing : ifDefined(this.label)}
+          aria-label=${
+            this._labelled
+              ? nothing
+              : ifDefined(this.label || labelText(this.labels))
+          }
           placeholder=${ifDefined(this.placeholder)}
           rows=${ifDefined(this.rows)}
           ?required=${this.required}
