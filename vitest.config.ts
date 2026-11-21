@@ -29,7 +29,12 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: playwright(),
+            // Reduced motion makes the token durations zero. The accessibility
+            // check reads colors right after a story plays, so no popup may
+            // be caught in the middle of its fade.
+            provider: playwright({
+              contextOptions: { reducedMotion: "reduce" },
+            }),
             // Firefox runs in CI only: Playwright's Firefox cannot launch on the maintainer's macOS 27 machine.
             instances: [
               { browser: "chromium" },
