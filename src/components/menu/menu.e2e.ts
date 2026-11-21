@@ -278,6 +278,8 @@ test.describe("submenu", () => {
     page,
   }) => {
     await gotoStory(page, story("submenu"));
+    // The story's play function opens the submenu; Escape must not beat it.
+    await expect(item(page, "Find Next")).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(menu(page, "Find")).toBeHidden();
     await expect(item(page, "Find")).toBeFocused();

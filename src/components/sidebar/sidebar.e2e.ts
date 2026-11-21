@@ -374,7 +374,7 @@ test("removing the level attribute returns the item to level 1", async ({
 test("a section heading that wraps grows instead of overflowing", async ({
   page,
 }) => {
-  await open(page);
+  await open(page, "sections");
   await expand(page);
   const heading = page.locator("#folders").locator(".heading");
   const before = await heading.evaluate((el) => el.clientHeight);
@@ -491,7 +491,7 @@ test("the selected item gets a stroke under increased contrast", async ({
     page
       .locator(`#${id} a`)
       .evaluate((el) => getComputedStyle(el, "::before").boxShadow);
-  expect(await edge("home")).not.toBe("none");
+  await expect.poll(() => edge("home")).not.toBe("none");
   expect(await edge("settings")).toBe("none");
 });
 

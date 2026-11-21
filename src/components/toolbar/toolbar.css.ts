@@ -126,6 +126,11 @@ export const toolbarTitleStyles = css`
       var(--purr-font-sans);
   }
 
+  /* A block box reports its own width in every engine; an inline one does not. */
+  ::slotted([slot="subtitle"]) {
+    display: block;
+  }
+
   [part="subtitle"][hidden] {
     display: none;
   }
