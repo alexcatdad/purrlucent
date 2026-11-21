@@ -1,6 +1,6 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { nameFromLabels } from "../../behaviors/labels.ts";
+import { labelText } from "../../behaviors/labels.ts";
 import { textareaStyles } from "./textarea.css.ts";
 
 /**
@@ -164,7 +164,6 @@ export class PurrTextarea extends LitElement {
   protected override updated() {
     if (this._labelled) this.#internals.states.add("labelled");
     else this.#internals.states.delete("labelled");
-    nameFromLabels(this.#control, this.labels, this._labelled || !!this.label);
     this.#sync();
   }
 
@@ -225,7 +224,11 @@ export class PurrTextarea extends LitElement {
           part="control"
           .value=${this.value}
           name=${ifDefined(this.name || undefined)}
-          aria-label=${this._labelled ? nothing : ifDefined(this.label)}
+          aria-label=${
+            this._labelled
+              ? nothing
+              : ifDefined(this.label || labelText(this.labels))
+          }
           placeholder=${ifDefined(this.placeholder)}
           rows=${ifDefined(this.rows)}
           ?required=${this.required}

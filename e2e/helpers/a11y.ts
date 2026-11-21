@@ -24,6 +24,15 @@ async function analyzeWhenAxeIsFree(builder: AxeBuilder, page: Page) {
 
 /** Runs axe with WCAG 2.2 AA tags on the locator's subtree and fails on any violation. */
 export async function expectAccessible(locator: Locator): Promise<void> {
+  // Colors read mid-transition are neither the start nor the end state.
+  await locator.page().evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity)
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
   await locator.evaluate((el) => el.setAttribute("data-axe-target", ""));
   try {
     const { violations } = await analyzeWhenAxeIsFree(

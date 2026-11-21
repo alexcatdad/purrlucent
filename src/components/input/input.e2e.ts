@@ -499,6 +499,7 @@ test("an external label names the field, even one added later", async ({
   );
   await page.locator("#late").evaluate((el) => (el as HTMLElement).focus());
   await expect(page.getByRole("textbox", { name: "Country" })).toBeFocused();
+  await expectAccessible(root);
 });
 
 test("a search field mirrors under rtl", async ({ page }) => {

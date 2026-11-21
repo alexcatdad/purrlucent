@@ -1,6 +1,6 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { nameFromLabels } from "../../behaviors/labels.ts";
+import { labelText } from "../../behaviors/labels.ts";
 import { inputStyles } from "./input.css.ts";
 
 const glass = svg`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>`;
@@ -206,7 +206,6 @@ export class PurrInput extends LitElement {
     this.#setState("search", this.type === "search");
     this.#setState("labelled", this._labelled);
     this.#setState("clearable", this.#clearable);
-    nameFromLabels(this.#input, this.labels, this._labelled || !!this.label);
     this.#sync();
   }
 
@@ -298,7 +297,11 @@ export class PurrInput extends LitElement {
           type=${this.type}
           .value=${this.value}
           name=${ifDefined(this.name || undefined)}
-          aria-label=${this._labelled ? nothing : ifDefined(this.label)}
+          aria-label=${
+            this._labelled
+              ? nothing
+              : ifDefined(this.label || labelText(this.labels))
+          }
           placeholder=${ifDefined(this.placeholder)}
           ?required=${this.required}
           ?readonly=${this.readonly}

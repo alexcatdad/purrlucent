@@ -1,6 +1,6 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { nameFromLabels } from "../../behaviors/labels.ts";
+import { labelText } from "../../behaviors/labels.ts";
 import { submitImplicitly } from "../input/input.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
 import {
@@ -218,7 +218,6 @@ export class PurrNumberField extends LitElement {
   protected override updated() {
     if (this._labelled) this.#internals.states.add("labelled");
     else this.#internals.states.delete("labelled");
-    nameFromLabels(this.#input, this.labels, this._labelled || !!this.label);
     this.#sync();
   }
 
@@ -380,7 +379,11 @@ export class PurrNumberField extends LitElement {
             autocomplete="off"
             .value=${this.#text}
             name=${ifDefined(this.name || undefined)}
-            aria-label=${this._labelled ? nothing : ifDefined(this.label)}
+            aria-label=${
+              this._labelled
+                ? nothing
+                : ifDefined(this.label || labelText(this.labels))
+            }
             aria-valuenow=${ifDefined(this.value ?? undefined)}
             aria-valuemin=${ifDefined(this.min ?? undefined)}
             aria-valuemax=${ifDefined(this.max ?? undefined)}
