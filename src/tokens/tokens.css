@@ -172,6 +172,11 @@
       calc(var(--purr-spacing) * 13),
       calc(var(--purr-size-xl) + var(--purr-space-4))
     );
+
+    /* Hit regions (design/decisions.md item 4). A coarse pointer gets 44px,
+       HIG's iOS default control size. A fine pointer gets 24px: above HIG's
+       macOS minimum control size (20pt) and equal to WCAG 2.2 AA's target
+       minimum, which keeps the compact macOS density. */
     --purr-touch-min: 2.75rem;
     --purr-size-hit-min: max(1.5rem, var(--purr-visual-md));
     --purr-radius: 0.375rem;
