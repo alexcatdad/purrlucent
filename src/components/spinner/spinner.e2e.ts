@@ -67,6 +67,32 @@ test("under reduced motion it does not turn and still shows a partial ring", asy
   await expect(page.locator("#spinner").locator(".track")).toBeVisible();
 });
 
+test("a spinner with a value draws a determinate arc and reports it", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await gotoStory(page, story("determinate"));
+  const spinner = page.getByRole("progressbar", { name: "Upload 25%" });
+  await expect(spinner).toHaveAttribute("aria-valuenow", "25");
+  await expect(spinner).toHaveAttribute("aria-valuemin", "0");
+  await expect(spinner).toHaveAttribute("aria-valuemax", "100");
+  const arc = spinner.locator(".arc");
+  await expect(arc).toHaveCSS("animation-name", "none");
+  const length = (name: string) =>
+    page
+      .getByRole("progressbar", { name })
+      .locator(".arc")
+      // The first number: engines serialize the calc() differently.
+      .evaluate((el) =>
+        Number(getComputedStyle(el).strokeDasharray.match(/[\d.]+/)?.[0]),
+      );
+  await expect.poll(() => length("Upload 25%")).toBeCloseTo(25, 0);
+  await expect.poll(() => length("Upload 75%")).toBeCloseTo(75, 0);
+  await expect(
+    page.getByRole("progressbar", { name: "Upload 0%" }).locator(".arc"),
+  ).toHaveCSS("visibility", "hidden");
+});
+
 test("the ring keeps system colors under forced colors", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });

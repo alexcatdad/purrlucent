@@ -632,12 +632,14 @@ import "purrlucent/spinner";
 
 ### `<purr-spinner>`
 
-A spinner: work is going on, with no way to tell how far along. Always give it a `label` so it has an accessible name.
+A spinner. Without a `value` it shows that work is going on, with no way to tell how far along. With a `value` it draws a clockwise arc for how much is done and stops turning. Always give it a `label` so it has an accessible name.
 
-| Attribute | Type                           | Default | Description                                 |
-| --------- | ------------------------------ | ------- | ------------------------------------------- |
-| `label`   | `string`                       | `""`    | The accessible name, for example "Loading". |
-| `size`    | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `sm`, `md` (default), `lg` or `xl`.         |
+| Attribute | Type                           | Default | Description                                                        |
+| --------- | ------------------------------ | ------- | ------------------------------------------------------------------ |
+| `label`   | `string`                       | `""`    | The accessible name, for example "Loading".                        |
+| `size`    | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `sm`, `md` (default), `lg` or `xl`.                                |
+| `value`   | `number \| undefined`          |         | How much is done, from 0 to `max`. Leave it out for indeterminate. |
+| `max`     | `number`                       | `100`   | The value that means done. Defaults to 100.                        |
 
 **Parts**
 
