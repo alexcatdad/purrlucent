@@ -360,8 +360,14 @@ export class PurrMenu extends LitElement {
       event.preventDefault();
       items[(to + items.length) % items.length]?.focus();
     };
+    const ownedSub = items[current]!.submenu;
     if (key === "Tab") this.#root.#close(true);
-    else if (key === "ArrowDown") go(current + 1);
+    else if (key === "Escape" && ownedSub?.open) {
+      // A hover-opened submenu leaves focus on its row; Escape closes only that level.
+      event.preventDefault();
+      event.stopPropagation();
+      ownedSub.#close(false);
+    } else if (key === "ArrowDown") go(current + 1);
     else if (key === "ArrowUp") go(current - 1);
     else if (key === "Home") go(0);
     else if (key === "End") go(-1);
