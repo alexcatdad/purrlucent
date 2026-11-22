@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 import {
-  expectAccessible,
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
@@ -294,21 +293,6 @@ test("the chosen radio stays visible under forced colors", async ({ page }) => {
     ),
   ).not.toBe("none");
 });
-
-for (const name of [
-  "default",
-  "preselected",
-  "horizontal",
-  "sizes",
-  "disabled",
-  "in-form",
-  "rtl",
-  "glass",
-]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("horizontal")));

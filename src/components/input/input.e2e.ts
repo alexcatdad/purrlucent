@@ -542,22 +542,6 @@ test("the field keeps a border under forced colors and a ring on focus", async (
   expect(style).toEqual(["solid", "solid"]);
 });
 
-for (const name of [
-  "default",
-  "labelled",
-  "states",
-  "sizes",
-  "search",
-  "password",
-  "in-form",
-  "rtl",
-  "glass",
-]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("an input without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {

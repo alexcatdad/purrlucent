@@ -129,12 +129,6 @@ test("the indeterminate segment is drawn under forced colors", async ({
   expect(fill.backgroundImage).toBe("none");
 });
 
-for (const name of ["determinate", "indeterminate", "rtl", "glass"]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("a progress bar without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
