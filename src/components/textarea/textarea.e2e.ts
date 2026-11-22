@@ -180,6 +180,28 @@ test("required makes the form invalid and minlength reaches the control", async 
   expect(await valid(page)).toBe(true);
 });
 
+test("an invalid field shows its message after a blur and describes the control with it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const body = page.getByRole("textbox", { name: "Body" });
+  const host = page.locator("#body");
+  const message = host.locator('[part="message"]');
+  await expect(message).toBeHidden();
+  await body.focus();
+  await page.keyboard.press("Tab");
+  const text = await host.evaluate(
+    (el) => (el as HTMLTextAreaElement).validationMessage,
+  );
+  expect(text).not.toBe("");
+  await expect(message).toBeVisible();
+  await expect(message).toHaveText(text);
+  await expect(body).toHaveAccessibleDescription(text);
+  await body.fill("abc");
+  await expect(message).toBeHidden();
+  await expect(body).toHaveAccessibleDescription("");
+});
+
 test("a disabled fieldset disables the fields and submits nothing", async ({
   page,
 }) => {

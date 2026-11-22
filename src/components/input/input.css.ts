@@ -45,6 +45,31 @@ export const fieldStyles = css`
     display: none;
   }
 
+  /* The validation message: the icon and text say what the red edge only shows. */
+  [part="message"] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--purr-gap-icon);
+    color: var(--purr-color-destructive-text);
+    font-size: var(--purr-text-xs);
+    overflow-wrap: anywhere;
+  }
+
+  :host(:not(:state(user-invalid))) [part="message"] {
+    display: none;
+  }
+
+  [part="message"] svg {
+    flex: none;
+    inline-size: var(--purr-icon-md);
+    block-size: var(--purr-icon-md);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   [part="field"] {
     display: flex;
     align-items: center;
