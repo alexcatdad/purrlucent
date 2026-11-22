@@ -40,9 +40,11 @@ export class PurrSwitch extends LitElement {
   declare required: boolean;
   declare disabled: boolean;
 
-  // :disabled also covers a disabled fieldset around the switch.
+  // :disabled also covers a disabled fieldset around the switch. Space toggles
+  // it; Enter does not, as with a native switch.
   readonly pressable = new PressableController(this, {
     disabled: () => this.matches(":disabled"),
+    enter: false,
   });
   readonly #internals = this.pressable.internals;
 

@@ -69,6 +69,17 @@ test("Space selects the focused segment", async ({ page }) => {
   expect(await selectedValue(page)).toBe("week");
 });
 
+test("Enter does not select a segment, as with a native radio", async ({
+  page,
+}) => {
+  await open(page);
+  const before = await selectedValue(page);
+  await page.getByRole("radio", { name: "Week" }).focus();
+  await page.keyboard.press("Enter");
+  expect(before).not.toBe("week");
+  expect(await selectedValue(page)).toBe(before);
+});
+
 test("a click selects one segment and purr-change fires once", async ({
   page,
 }) => {

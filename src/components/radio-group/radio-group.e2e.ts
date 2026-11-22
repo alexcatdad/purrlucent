@@ -33,6 +33,15 @@ test("aria snapshot", async ({ page }) => {
   `);
 });
 
+test("Enter does not choose a radio, as with a native radio", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  await radio(page, "New windows").focus();
+  await page.keyboard.press("Enter");
+  expect(await chosen(page)).toBe("tabs");
+});
+
 test("Tab enters on the chosen radio, arrows move, choose and wrap", async ({
   page,
 }) => {

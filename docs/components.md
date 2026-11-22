@@ -753,7 +753,7 @@ One choice in a `purr-toggle-group`. The slot holds its text label.
 
 ### `<purr-toggle-group>`
 
-A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Enter also selects the focused item. Space, Tab and the arrows follow the APG radio group pattern; Enter, Home and End are extras. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
+A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
 | Attribute  | Type                   | Default | Description                                                                             |
 | ---------- | ---------------------- | ------- | --------------------------------------------------------------------------------------- |
