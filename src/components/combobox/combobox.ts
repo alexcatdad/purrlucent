@@ -366,6 +366,10 @@ export class PurrCombobox extends LitElement {
       ? undefined
       : this.label || labelText(this.#internals.labels);
     const labelledby = this._labelled ? "label" : nothing;
+    // The chevron's name repeats the field's, as "<label>, show options".
+    const field = this._labelled
+      ? this.#labels.map((el) => el.textContent?.trim()).join(" ")
+      : name;
     return html`<label part="label" id="label" for="control"
         ><slot name="label"></slot
       ></label>
@@ -391,11 +395,9 @@ export class PurrCombobox extends LitElement {
         />
         <button
           part="button"
-          id="button"
           type="button"
           tabindex="-1"
-          aria-label=${name ? `${name}, show options` : "Show options"}
-          aria-labelledby=${this._labelled ? "label button" : nothing}
+          aria-label=${field ? `${field}, show options` : "Show options"}
           aria-expanded=${this.open}
           aria-controls="list"
           ?disabled=${disabled}
