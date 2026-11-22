@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, type PropertyValues } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
@@ -11,7 +11,7 @@ import { groupStyles, itemStyles } from "./toggle-group.css.ts";
  *
  * @attr {string} value - The value the group reports when this item is selected.
  * @attr {boolean} selected - Marks the starting selection. After that the group owns it.
- * @attr {boolean} disabled - Set by the group from its own `disabled`.
+ * @attr {boolean} disabled - This item takes no focus and cannot be selected. A disabled group disables all.
  * @slot - The item's text label.
  * @csspart label - The wrapper around the label.
  */
@@ -27,7 +27,7 @@ export class PurrToggleGroupItem extends LitElement {
   declare disabled: boolean;
   // Space selects an item; Enter does not, as with a native radio.
   readonly pressable = new PressableController(this, {
-    disabled: () => this.disabled,
+    disabled: () => this.#off,
     enter: false,
   });
 
@@ -38,15 +38,33 @@ export class PurrToggleGroupItem extends LitElement {
     this.disabled = false;
   }
 
+  /** Disabled on its own or through its group. */
+  get #off(): boolean {
+    const group = this.closest("purr-toggle-group");
+    return (
+      this.disabled ||
+      (group?.disabled ?? false) ||
+      (group?.matches(":disabled") ?? false)
+    );
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     if (!this.hasAttribute("role")) this.setAttribute("role", "radio");
   }
 
-  protected override updated() {
+  protected override updated(changed: PropertyValues<this>) {
+    const off = this.#off;
     this.setAttribute("aria-checked", String(this.selected));
-    if (this.disabled) this.setAttribute("aria-disabled", "true");
+    if (off) this.setAttribute("aria-disabled", "true");
     else this.removeAttribute("aria-disabled");
+    // A disabled item takes no focus, not even from a click.
+    if (off) this.removeAttribute("tabindex");
+    if (off) this.pressable.internals.states.add("disabled");
+    else this.pressable.internals.states.delete("disabled");
+    // The group picks the tab stop among the enabled items.
+    if (changed.has("disabled"))
+      this.closest("purr-toggle-group")?.requestUpdate();
   }
 
   override render() {
@@ -68,7 +86,7 @@ export class PurrToggleGroupItem extends LitElement {
  * @attr {string} name - The name submitted with a form.
  * @attr {string} label - The accessible name of the group.
  * @attr {string} size - `md` (default), `lg` or `xl`.
- * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted.
+ * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `purr-toggle-group-item` elements.
  * @fires purr-change - The selection changed by the user. `detail.selected` is a one-item array.
  */
@@ -92,8 +110,9 @@ export class PurrToggleGroup extends LitElement {
     mode: "single",
     required: true,
   });
+  // The enabled items take part in arrow keys and the tab stop.
   readonly #roving = new RovingFocusController(this, {
-    items: () => this.#items,
+    items: () => this.#enabled,
     orientation: "horizontal",
     wrap: true,
   });
@@ -128,6 +147,10 @@ export class PurrToggleGroup extends LitElement {
   // current before the attribute is reflected.
   get #off() {
     return this.disabled || this.matches(":disabled");
+  }
+
+  get #enabled() {
+    return this.#off ? [] : this.#items.filter((s) => !s.disabled);
   }
 
   /** Sets an attribute the group owns, and removes it only if the group set it. */
@@ -165,15 +188,15 @@ export class PurrToggleGroup extends LitElement {
    */
   #onKeydown = (event: KeyboardEvent) => {
     if (this.#off) return;
+    const enabled = this.#enabled;
     const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
     if (step && !(event.altKey || event.ctrlKey || event.metaKey)) {
-      const from = this.#items.indexOf(event.target as PurrToggleGroupItem);
+      const from = enabled.indexOf(event.target as PurrToggleGroupItem);
       if (from < 0) return;
       event.preventDefault();
-      const count = this.#items.length;
-      this.#items[(from + step + count) % count]!.focus();
+      enabled[(from + step + enabled.length) % enabled.length]!.focus();
     } else if (!event.defaultPrevented) return;
-    const focused = this.#items.find((s) => s.matches(":focus"));
+    const focused = enabled.find((s) => s.matches(":focus"));
     if (focused) this.#selection.select(focused.value);
   };
 
@@ -202,15 +225,21 @@ export class PurrToggleGroup extends LitElement {
     const off = this.#off;
     this.#items.forEach((s, i) => {
       s.selected = s.value === this.value;
-      s.disabled = off;
       s.toggleAttribute(
         "data-after-selected",
         this.#items[i - 1]?.value === this.value,
       );
+      // The item reads the group's state for its own focus and feedback.
+      s.requestUpdate();
     });
-    this.#roving.activate(this.#items.findIndex((s) => s.selected));
-    // A disabled item takes no focus, not even from a click.
-    if (off) this.#items.forEach((s) => s.removeAttribute("tabindex"));
+    // The tab stop is the selected item, or the first enabled one.
+    const enabled = this.#enabled;
+    this.#roving.activate(
+      Math.max(
+        0,
+        enabled.findIndex((s) => s.selected),
+      ),
+    );
     this.#own("aria-disabled", off ? "true" : null);
     this.#own("aria-label", this.label || null);
     this.#internals.setFormValue(off ? null : this.value || null);
