@@ -589,8 +589,18 @@ test("the title stacks its subtitle, and the compact title puts it beside", asyn
   const layout = async (name: string) => {
     await openStory(page, name);
     return page.locator("purr-toolbar-title").evaluate((el) => {
-      const box = (part: string) =>
-        el.shadowRoot!.querySelector(`[part=${part}]`)!.getBoundingClientRect();
+      // The content box: the title's clip padding is taken back by a negative margin.
+      const box = (part: string) => {
+        const node = el.shadowRoot!.querySelector(`[part=${part}]`)!;
+        const r = node.getBoundingClientRect();
+        const s = getComputedStyle(node);
+        return {
+          top: r.top + parseFloat(s.paddingTop),
+          bottom: r.bottom - parseFloat(s.paddingBottom),
+          left: r.left,
+          right: r.right,
+        };
+      };
       return { title: box("title"), subtitle: box("subtitle") };
     });
   };
@@ -702,4 +712,81 @@ test("virtual screen reader speaks the toolbar and every item", async ({
     "Done",
   ])
     expect(spoken).toContain(text);
+});
+
+test("a spacer pushes the following items to the trailing edge and is not a tab stop", async ({
+  page,
+}) => {
+  const root = await openStory(page, "spacers");
+  const spacers = page.locator("purr-toolbar-spacer");
+  await expect(spacers).toHaveCount(2);
+  for (const spacer of await spacers.all()) {
+    await expect(spacer).toHaveAttribute("aria-hidden", "true");
+    await expect(spacer).not.toHaveAttribute("tabindex");
+  }
+  await expect(root).toMatchAriaSnapshot(`
+    - toolbar "Window":
+      - button "Back"
+      - text: Window Title
+      - button "Close"
+      - button "Done"
+  `);
+  const { left, right, items } = await rects(page);
+  const [back, close, done] = [items[0]!, items[1]!, items[2]!];
+  const title = await page
+    .locator("purr-toolbar-title")
+    .evaluate((el) => el.getBoundingClientRect().toJSON());
+  expect(Math.abs(back.left - left)).toBeLessThan(1);
+  expect(Math.abs(right - done.right)).toBeLessThan(1);
+  // No spacer sits between Close and the prominent item, so only the gap does.
+  const gap = parseFloat(
+    await resolve(page, "width", "var(--purr-gap-controls)"),
+  );
+  expect(Math.abs(done.left - close.right - gap)).toBeLessThan(1);
+  // The spacers open room on both sides of the title.
+  expect(title.left - back.right).toBeGreaterThan(8);
+  expect(close.left - title.right).toBeGreaterThan(8);
+  await page.keyboard.press("Tab");
+  const names: (string | undefined)[] = [await focusedName(page)];
+  for (let i = 0; i < 2; i++) {
+    await page.keyboard.press("ArrowRight");
+    names.push(await focusedName(page));
+  }
+  expect(names).toEqual(["Back", "Close", "Done"]);
+  await page.keyboard.press("ArrowRight");
+  expect(await focusedName(page)).toBe("Done");
+});
+
+test("a long title ends in an ellipsis and keeps its accessible name", async ({
+  page,
+}) => {
+  const root = await openStory(page, "long-title");
+  const full = "A document title much too long to fit beside the other items";
+  await expect(root).toMatchAriaSnapshot(`
+    - toolbar "Window":
+      - text: ${full}
+      - button "Done"
+  `);
+  const look = await page.locator("purr-toolbar-title").evaluate((el) => {
+    const title = el.shadowRoot!.querySelector("[part=title]")!;
+    const style = getComputedStyle(title);
+    return {
+      overflow: style.overflow,
+      textOverflow: style.textOverflow,
+      clipped: title.scrollWidth > title.clientWidth,
+      text: el.textContent?.replace(/\s+/g, " ").trim(),
+    };
+  });
+  expect(look).toEqual({
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    clipped: true,
+    text: full,
+  });
+  // The title does not push the Done item to a second row.
+  const { items } = await rects(page);
+  const title = await page
+    .locator("purr-toolbar-title")
+    .evaluate((el) => el.getBoundingClientRect().toJSON());
+  expect(items[0]!.top).toBeLessThan(title.bottom);
 });

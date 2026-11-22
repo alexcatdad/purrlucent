@@ -1,3 +1,4 @@
+export { backGlyph, closeGlyph } from "./behaviors/glyphs.ts";
 export * from "./surfaces/surfaces.css.ts";
 export * from "./components/banner/banner.ts";
 export * from "./components/button/button.ts";

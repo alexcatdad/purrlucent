@@ -4,6 +4,7 @@ import { barSurface } from "../../surfaces/surfaces.css.ts";
 import {
   toolbarGroupStyles,
   toolbarSeparatorStyles,
+  toolbarSpacerStyles,
   toolbarStyles,
   toolbarTitleStyles,
 } from "./toolbar.css.ts";
@@ -26,8 +27,26 @@ export class PurrToolbarSeparator extends LitElement {
 customElements.define("purr-toolbar-separator", PurrToolbarSeparator);
 
 /**
+ * Free space between items. Items before it stay at the leading edge and items
+ * after it move to the trailing edge; two spacers leave a center area. It is not
+ * a tab stop and is hidden from assistive technology.
+ */
+export class PurrToolbarSpacer extends LitElement {
+  static override styles = toolbarSpacerStyles;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setAttribute("aria-hidden", "true");
+  }
+}
+
+customElements.define("purr-toolbar-spacer", PurrToolbarSpacer);
+
+/**
  * The title of the window or document a toolbar belongs to, with an optional
- * subtitle. It is text, not a control, and not a tab stop.
+ * subtitle. It is text, not a control, and not a tab stop. A long title shrinks
+ * to at most half the bar and ends in an ellipsis; its full text is still the
+ * accessible name.
  *
  * @slot - The title.
  * @slot subtitle - Secondary text under the title; beside it in a compact toolbar.
@@ -77,7 +96,11 @@ const keepsKey = (toolbar: HTMLElement, event: KeyboardEvent) => {
 
 const isControl = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement &&
-  !(el instanceof PurrToolbarSeparator || el instanceof PurrToolbarTitle) &&
+  !(
+    el instanceof PurrToolbarSeparator ||
+    el instanceof PurrToolbarSpacer ||
+    el instanceof PurrToolbarTitle
+  ) &&
   el.getAttribute("role") !== "separator";
 
 const isItem = (el: Element): el is HTMLElement =>
@@ -125,7 +148,12 @@ customElements.define("purr-toolbar-group", PurrToolbarGroup);
  * `size` of the toolbar. Inside it the caret keys edit the text, and an arrow
  * at the edge of the text moves on to the next item.
  *
- * @slot - Controls, `purr-toolbar-group`s, `purr-toolbar-separator`s and a `purr-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
+ * For a Back or Close item, import `backGlyph` or `closeGlyph` from
+ * `purrlucent` and slot it into an icon `purr-button` with an `aria-label`.
+ * The Back chevron points left; mirror it with `scaleX(-1)` under
+ * right-to-left.
+ *
+ * @slot - Controls, `purr-toolbar-group`s, `purr-toolbar-separator`s, `purr-toolbar-spacer`s and a `purr-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
  * @csspart items - The row that lays out the slotted controls.
  */
 export class PurrToolbar extends LitElement {
@@ -243,6 +271,7 @@ declare global {
     "purr-toolbar": PurrToolbar;
     "purr-toolbar-group": PurrToolbarGroup;
     "purr-toolbar-separator": PurrToolbarSeparator;
+    "purr-toolbar-spacer": PurrToolbarSpacer;
     "purr-toolbar-title": PurrToolbarTitle;
   }
 }
