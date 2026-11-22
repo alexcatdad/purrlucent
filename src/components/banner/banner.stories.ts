@@ -67,14 +67,19 @@ export const WithActions: Story = {
     ),
 };
 
+/** No slotted icon: each tone draws its own. */
 export const WithoutIcon: Story = {
   render: () =>
-    column(
+    column([
       html`<purr-banner open>
         <strong slot="title">Saved</strong>
         Your changes are saved.
       </purr-banner>`,
-    ),
+      html`<purr-banner open tone="destructive">
+        <strong slot="title">Not saved</strong>
+        Your changes could not be saved.
+      </purr-banner>`,
+    ]),
 };
 
 export const Closed: Story = {

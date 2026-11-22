@@ -2,7 +2,8 @@ import { css } from "lit";
 
 /**
  * The toggle takes the button's size, label and icon styles and only changes
- * the tones: a neutral face when off, an accent tint and accent text when on.
+ * the tones: a neutral face when off, the filled selected face of a segmented
+ * control when on.
  */
 export const toggleStyles = css`
   :host {
@@ -12,19 +13,27 @@ export const toggleStyles = css`
   }
 
   :host([pressed]) {
-    --_face: color-mix(in srgb, var(--purr-color-accent) 6%, transparent);
+    --_face: color-mix(
+      in srgb,
+      var(--purr-color-selected) 97%,
+      var(--purr-color-shade)
+    );
     --_face-pressed: color-mix(
       in srgb,
-      var(--purr-color-accent) 16%,
-      transparent
+      var(--purr-color-selected) 85%,
+      var(--purr-color-shade)
     );
     --_face-disabled: color-mix(
       in srgb,
-      var(--purr-color-accent) 2%,
+      var(--purr-color-selected) 45%,
       transparent
     );
-    --_fg: var(--_tone-text);
-    --_fg-disabled: color-mix(in srgb, var(--_tone-text) 40%, transparent);
+    --_fg: var(--purr-color-selected-foreground);
+    --_fg-disabled: color-mix(
+      in srgb,
+      var(--purr-color-selected-foreground) 50%,
+      transparent
+    );
   }
 
   :host([pressed]) ::slotted(svg) {
