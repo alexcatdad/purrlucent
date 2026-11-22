@@ -531,6 +531,13 @@ test("a slotted label names the trigger and wins over the label attribute", asyn
   await expect(page.getByRole("combobox", { name: "Ignored" })).toHaveCount(0);
 });
 
+test("a click on the slotted label focuses the trigger", async ({ page }) => {
+  await gotoStory(page, story("labelled"));
+  await page.locator("[slot=label]").click();
+  await expect(trigger(page)).toBeFocused();
+  await expect(listbox(page)).toBeHidden();
+});
+
 test("the label attribute names the trigger when nothing is slotted", async ({
   page,
 }) => {
