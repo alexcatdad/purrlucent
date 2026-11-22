@@ -1,5 +1,22 @@
 # purrlucent
 
+## 0.5.0
+
+### Minor Changes
+
+- 8b0c33d: Escape now closes only a hover-opened submenu and keeps focus on its row; a second Escape closes the menu.
+- ed4fe2e: Opening a popover, including with `show()` or the `open` property, now closes any other open popover on the page. A popover nested in another keeps its parent open.
+- 1e27568: Horizontal radio groups now give every radio the width of the longest label, so the spacing between radios is even, and long labels wrap within their column.
+- c990282: Clicking a sidebar row that has no link selects it, moves `aria-current` to it and fires `purr-change`, as a link row already does.
+- 4b7fed8: `purr-slider` accepts `step="any"` for a continuous value. A drag is only clamped to the range, arrow keys move by a hundredth of the range and Page keys by a tenth.
+- 3d7e3ad: `purr-spinner` has a small size (`size="sm"`, 16px) that fits inside a control. `purr-button` has a `busy` attribute that shows a spinner before the label and ignores presses while the button stays focusable.
+- 627d15a: A toggle group segment can hold an svg icon, sized to the medium icon size. An icon-only segment is named with `aria-label`.
+- d9102d9: A switch with a wrapping label keeps its track beside the label's first line. In a combobox, Return with the list closed presses the form's default button, a required field left empty shows its validation message below it, the list is as wide as the field with long options wrapping, and a long value ends in an ellipsis.
+
+### Patch Changes
+
+- 8147124: `purr-dialog` now warns when an alert has more than three buttons, and `purr-toolbar` warns about an item without an accessible name.
+
 ## 0.4.0
 
 ### Minor Changes
