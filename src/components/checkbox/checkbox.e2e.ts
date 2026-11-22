@@ -41,6 +41,39 @@ test("a click and Space turn the box on and off", async ({ page }) => {
   await expect(control).not.toBeChecked();
 });
 
+test("Enter does not toggle the box, as with a native checkbox", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("checkbox", { name: "Recents" });
+  await control.focus();
+  await page.keyboard.press("Enter");
+  await expect(control).not.toBeChecked();
+});
+
+test("with a wrapping label the box stays beside the first line", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const control = page.getByRole("checkbox", { name: "Recents" });
+  const oneLine = (await control.boundingBox())!.height;
+  await control.evaluate((el) => {
+    el.style.inlineSize = "8rem";
+    el.textContent = "Show recent documents in the sidebar and the Dock";
+  });
+  const [box, line] = await control.evaluate((el) => {
+    const part = el.shadowRoot!.querySelector('[part="box"]')!;
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const first = range.getClientRects()[0]!;
+    const b = part.getBoundingClientRect();
+    return [b.top + b.height / 2, first.top + first.height / 2];
+  });
+  expect(Math.abs(box - line)).toBeLessThanOrEqual(1);
+  // The row grows for the extra lines; a one-line row keeps its height.
+  expect((await control.boundingBox())!.height).toBeGreaterThan(oneLine);
+});
+
 test("a click on the label text toggles the box", async ({ page }) => {
   await gotoStory(page, story("default"));
   const control = page.getByRole("checkbox", { name: "Recents" });

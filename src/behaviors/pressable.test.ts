@@ -139,6 +139,23 @@ test("blur cancels a held Space", () => {
   expect(host.states.has("pressed")).toBe(false);
 });
 
+test("with enter: false, Enter fires nothing and Space still does", () => {
+  const other = new FakeHost();
+  let count = 0;
+  new PressableController(
+    other as unknown as ReactiveControllerHost & HTMLElement,
+    { disabled: () => false, enter: false },
+  ).hostConnected();
+  other.addEventListener("purr-press", () => count++);
+  const press = (type: "keydown" | "keyup", value: string) =>
+    other.dispatchEvent(Object.assign(new Event(type), { key: value }));
+  press("keydown", "Enter");
+  expect(count).toBe(0);
+  press("keydown", " ");
+  press("keyup", " ");
+  expect(count).toBe(1);
+});
+
 test("a provided ElementInternals is shared, not re-attached", () => {
   const shared = { states: new Set<string>() } as unknown as ElementInternals;
   let attached = 0;

@@ -42,9 +42,11 @@ export class PurrCheckbox extends LitElement {
   declare required: boolean;
   declare disabled: boolean;
 
-  // :disabled also covers a disabled fieldset around the checkbox.
+  // :disabled also covers a disabled fieldset around the checkbox. Space
+  // toggles it; Enter does not, as with a native checkbox.
   readonly pressable = new PressableController(this, {
     disabled: () => this.matches(":disabled"),
+    enter: false,
   });
   readonly #internals = this.pressable.internals;
 
