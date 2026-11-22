@@ -47,7 +47,7 @@ The three elements work as one unit: `purr-sidebar` owns the toggle, the landmar
 
 - The doc comment says a group "never reaches into the next section" and the code enforces it (`sidebar.ts:79-80`), but an orphaned level 2 item at the top of a section simply shows as a top-level row (test `sidebar.e2e.ts:815-829`). No warning is raised.
 - An invalid `level` in production silently becomes level 2 (`level.ts:25`).
-- The toggle's accessible name is the sidebar `label` plus "sidebar", or the fixed English "Sidebar" (`sidebar.ts:218`), so it cannot be localized.
+- The toggle's accessible name defaults to the sidebar `label` plus "sidebar", or "Sidebar"; `toggle-label` replaces it, per `design/decisions.md` item 6 (`sidebar.ts:9`, `223-228`). Test: `sidebar.e2e.ts` "toggle-label names the toggle button".
 - `design/visual-spec.md` still lists "sidebar icon slot, group titles" as out of scope (line 9) and describes a 28px row, a weight-600 selected label and an accent `selection` face (lines 317, 337, 342). The code has the icon slot and sections, 32px rows and a `muted-3` selected face. The tokens file decides; the spec is out of date.
 
 ## Source of truth
