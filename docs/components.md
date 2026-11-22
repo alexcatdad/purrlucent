@@ -737,11 +737,11 @@ import "purrlucent/toggle-group";
 
 One choice in a `purr-toggle-group`. The slot holds its text label.
 
-| Attribute  | Type      | Default | Description                                                 |
-| ---------- | --------- | ------- | ----------------------------------------------------------- |
-| `value`    | `string`  | `""`    | The value the group reports when this item is selected.     |
-| `selected` | `boolean` | `false` | Marks the starting selection. After that the group owns it. |
-| `disabled` | `boolean` | `false` | Set by the group from its own `disabled`.                   |
+| Attribute  | Type      | Default | Description                                                                     |
+| ---------- | --------- | ------- | ------------------------------------------------------------------------------- |
+| `value`    | `string`  | `""`    | The value the group reports when this item is selected.                         |
+| `selected` | `boolean` | `false` | Marks the starting selection. After that the group owns it.                     |
+| `disabled` | `boolean` | `false` | This item takes no focus and cannot be selected. A disabled group disables all. |
 
 **Slots**
 
@@ -755,13 +755,13 @@ One choice in a `purr-toggle-group`. The slot holds its text label.
 
 A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
-| Attribute  | Type                   | Default | Description                                                                             |
-| ---------- | ---------------------- | ------- | --------------------------------------------------------------------------------------- |
-| `value`    | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first. |
-| `name`     | `string`               | `""`    | The name submitted with a form.                                                         |
-| `label`    | `string`               | `""`    | The accessible name of the group.                                                       |
-| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                           |
-| `disabled` | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted.                     |
+| Attribute  | Type                   | Default | Description                                                                                                                                   |
+| ---------- | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`    | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                       |
+| `name`     | `string`               | `""`    | The name submitted with a form.                                                                                                               |
+| `label`    | `string`               | `""`    | The accessible name of the group.                                                                                                             |
+| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                 |
+| `disabled` | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it. |
 
 **Slots**
 
