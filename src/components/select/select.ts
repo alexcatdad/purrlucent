@@ -326,7 +326,7 @@ export class PurrSelect extends LitElement {
     const chosen = this.#chosen;
     const disabled = this.matches(":disabled");
     // The slotted label's text, not aria-labelledby into the slot: Firefox
-    // crashes computing a name through slotted content.
+    // crashed naming the combobox trigger that way.
     const name = this._labelled
       ? [...this.querySelectorAll(":scope > [slot=label]")]
           .map((el) => el.textContent?.trim())
