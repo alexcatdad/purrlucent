@@ -1,8 +1,8 @@
 name: Update Linux screenshot baselines
 
-# Manual run. Regenerates the *-linux.png screenshot baselines on the same
-# runner image CI uses and uploads them as an artifact. Download the artifact
-# and extract it at the repository root, then commit the files.
+# Manual run. Regenerates the *-linux.png screenshot baselines in the same
+# Playwright container the e2e jobs use and uploads them as an artifact.
+# Download the artifact and extract it at the repository root, then commit the files.
 on:
   workflow_dispatch:
 
@@ -14,14 +14,30 @@ env:
   LEFTHOOK: 0
 
 jobs:
-  update:
+  playwright:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - id: version
+        run: echo "version=$(jq -r '.devDependencies["@playwright/test"]' package.json)" >> "$GITHUB_OUTPUT"
+
+  update:
+    needs: playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright.outputs.version }}-noble
+      options: --user 1001 --ipc=host --init
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - run: bunx playwright install --with-deps chromium firefox webkit
+          from-npm: true
       - run: bun run build-storybook
       # Screenshot tests only: a failing behavior test must not block new baselines.
       - run: bun run test:e2e --grep screenshot --update-snapshots=all

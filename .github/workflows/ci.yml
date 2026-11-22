@@ -63,6 +63,7 @@ jobs:
 
   unit:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup
@@ -77,6 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.changes.outputs.code }}
+      playwright: ${{ steps.playwright.outputs.version }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -86,6 +88,9 @@ jobs:
         uses: ./.github/actions/browser-changes
         with:
           bun-version: ${{ env.BUN_VERSION }}
+      # The e2e container must match the installed Playwright, so its tag comes from package.json.
+      - id: playwright
+        run: echo "version=$(jq -r '.devDependencies["@playwright/test"]' package.json)" >> "$GITHUB_OUTPUT"
 
   e2e-browser:
     name: e2e (${{ matrix.browser }} ${{ matrix.shard }}/${{ matrix.of }})
@@ -93,6 +98,12 @@ jobs:
     # Runs unless the change is known to be inert, so a failed `changes` job runs everything.
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Playwright's image pins the OS, fonts and browsers, so screenshots do not
+    # drift with runner-image updates. The user and flags follow Playwright's docs.
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.changes.outputs.playwright }}-noble
+      options: --user 1001 --ipc=host --init
     strategy:
       fail-fast: false
       # WebKit and Firefox take about three times as long as Chromium.
@@ -107,7 +118,7 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - run: bunx playwright install --with-deps ${{ matrix.browser }}
+          from-npm: true
       - run: bun run build-storybook
       - run: bun run test:e2e --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/${{ matrix.of }}
       - if: ${{ !cancelled() }}
@@ -134,6 +145,7 @@ jobs:
     needs: e2e-browser
     if: ${{ !cancelled() && needs.e2e-browser.result != 'skipped' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup
