@@ -22,8 +22,13 @@ export const popoverStyles = css`
 
   [part="panel"] {
     box-sizing: border-box;
-    inline-size: calc(var(--purr-spacing) * 45);
-    max-inline-size: calc(100vw - var(--purr-space-4));
+    /* As wide as the content, no narrower than the arrow needs between the corners, no wider than the cap or the viewport. */
+    inline-size: fit-content;
+    min-inline-size: calc(var(--_corner) * 2);
+    max-inline-size: min(
+      calc(var(--purr-spacing) * 45),
+      calc(100vw - var(--purr-space-4))
+    );
     inset: auto;
     margin: calc(var(--_arrow-h) + var(--purr-space-1));
     border: 0;
