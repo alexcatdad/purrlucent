@@ -61,11 +61,12 @@ export const spinnerStyles = css`
   }
 
   /*
-   * With a value the arc is --_p (0 to 1) of the ring, clockwise from the top,
-   * and does not turn. At exactly 0 it is hidden so the round cap leaves no dot.
+   * With a value the arc is the share done, clockwise from the top (--_dash,
+   * set by the element on a 100-unit path), and does not turn. At exactly 0 it
+   * is hidden so the round cap leaves no dot.
    */
   :host(:state(determinate)) .arc {
-    stroke-dasharray: calc(var(--_p) * 100) 100;
+    stroke-dasharray: var(--_dash);
     rotate: -0.25turn;
     animation: none;
     transition: stroke-dasharray var(--purr-duration) var(--purr-ease-out);

@@ -82,7 +82,10 @@ test("a spinner with a value draws a determinate arc and reports it", async ({
     page
       .getByRole("progressbar", { name })
       .locator(".arc")
-      .evaluate((el) => parseFloat(getComputedStyle(el).strokeDasharray));
+      // The first number: engines serialize the calc() differently.
+      .evaluate((el) =>
+        Number(getComputedStyle(el).strokeDasharray.match(/[\d.]+/)?.[0]),
+      );
   await expect.poll(() => length("Upload 25%")).toBeCloseTo(25, 0);
   await expect.poll(() => length("Upload 75%")).toBeCloseTo(75, 0);
   await expect(

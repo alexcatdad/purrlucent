@@ -52,14 +52,15 @@ export class PurrSpinner extends LitElement {
       this.setAttribute("aria-valuemin", "0");
       this.setAttribute("aria-valuemax", String(max));
       this.setAttribute("aria-valuenow", String(value));
-      this.style.setProperty("--_p", String(value / max));
+      // The ring's path is 100 units long, so the dash is the percentage done.
+      this.style.setProperty("--_dash", `${(value / max) * 100} 100`);
       states.add("determinate");
       if (value === 0) states.add("empty");
       else states.delete("empty");
     } else {
       for (const name of ["valuemin", "valuemax", "valuenow"])
         this.removeAttribute(`aria-${name}`);
-      this.style.removeProperty("--_p");
+      this.style.removeProperty("--_dash");
       states.delete("determinate");
       states.delete("empty");
     }
