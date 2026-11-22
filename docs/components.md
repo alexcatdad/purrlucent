@@ -755,7 +755,7 @@ import "purrlucent/toggle-group";
 
 ### `<purr-toggle-group-item>`
 
-One choice in a `purr-toggle-group`. The slot holds its text label.
+One choice in a `purr-toggle-group`. The slot holds a text label or an svg icon. An icon-only item needs an `aria-label` to be named; mark the svg `aria-hidden="true"`. Use text or icons in one control, not both.
 
 | Attribute  | Type      | Default | Description                                                                     |
 | ---------- | --------- | ------- | ------------------------------------------------------------------------------- |
@@ -765,7 +765,7 @@ One choice in a `purr-toggle-group`. The slot holds its text label.
 
 **Slots**
 
-- default: The item's text label.
+- default: The item's text label or svg icon.
 
 **Parts**
 
