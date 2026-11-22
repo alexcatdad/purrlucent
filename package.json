@@ -114,6 +114,7 @@
     "prepare": "lefthook install",
     "hig:check": "bun scripts/hig-check.ts check",
     "hig:rubric": "bun scripts/hig-check.ts rubric",
+    "hig:review": "bun scripts/rubric-prompt.ts review origin/main",
     "notices": "bun scripts/third-party-notices.ts",
     "changeset": "changeset",
     "version-packages": "changeset version && bun fmt CHANGELOG.md",
