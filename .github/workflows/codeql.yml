@@ -14,19 +14,38 @@ permissions:
   contents: read
 
 jobs:
-  codeql:
+  # The source and the workflows themselves, each under its own
+  # /language:<name> category, which the code scanning rule matches.
+  analyze:
+    name: codeql (${{ matrix.language }})
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       actions: read
       security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-      # The source and the workflows themselves. Each language uploads under
-      # its own /language:<name> category, so the single `codeql` check covers
-      # both categories the code scanning rule looks for.
+        with:
+          persist-credentials: false
       - uses: github/codeql-action/init@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
-          languages: javascript-typescript, actions
+          languages: ${{ matrix.language }}
           build-mode: none
       - uses: github/codeql-action/analyze@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        with:
+          category: /language:${{ matrix.language }}
+
+  # The required check: both languages analyzed.
+  codeql:
+    needs: analyze
+    if: always()
+    runs-on: ubuntu-latest
+    env:
+      RESULT: ${{ needs.analyze.result }}
+    steps:
+      - run: test "$RESULT" = success
