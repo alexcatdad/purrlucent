@@ -364,11 +364,11 @@ import "purrlucent/popover";
 
 A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger.
 
-| Attribute   | Type                                    | Default    | Description                                                                                             |
-| ----------- | --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------- |
-| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                  |
-| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room. |
-| `open`      | `boolean`                               | `false`    | The panel is showing.                                                                                   |
+| Attribute   | Type                                    | Default    | Description                                                                                                                                     |
+| ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                                                          |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                         |
+| `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it. |
 
 **Slots**
 
