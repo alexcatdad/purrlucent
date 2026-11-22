@@ -1,5 +1,22 @@
 # purrlucent
 
+## 0.6.0
+
+### Minor Changes
+
+- b2368a9: `purr-dialog` takes a `--purr-dialog-width` custom property that sets the width of a sheet. A sheet opened over another sheet now logs a warning; an alert over a sheet does not.
+- 15b2fa2: A popover is now only as wide as its content, from a minimum that keeps the arrow clear of the corners up to the previous fixed width; longer content wraps.
+- 9d61e85: A progress bar at exactly 0 now shows an empty track, and a small value still shows a visible fill. `purr-spinner` takes `value` and `max` to draw a determinate circular indicator that reports its value to assistive technology.
+- cd28951: A `purr-sidebar-item` with child items and an `href` is now a link that selects, with its own disclosure button beside it. Its accessible name defaults to "<item label>, show items" and `toggle-label` on the item replaces it.
+- 84a4e5b: A text field value wider than the field now ends in an ellipsis. The number field reads the locale from the closest `lang` attribute, accepts and shows that locale's decimal separator, and only lets digits, one separator and a leading minus be typed or pasted; the form still gets a plain number.
+- 49f821b: Shift-click on a number field's stepper button moves ten steps, also while the button is held, like Page Up and Page Down.
+- c0f1dc1: Adds `purr-toolbar-spacer` for a leading, center and trailing area in a toolbar, and a toolbar title that ends in an ellipsis instead of wrapping the bar. Exports `backGlyph` and `closeGlyph` for Back and Close buttons.
+
+### Patch Changes
+
+- 2d5198e: The HIG decisions that need no code are recorded in `design/decisions.md` and the component audits.
+- d11024a: A select with a slotted label no longer crashes Firefox; a click on the label focuses the select.
+
 ## 0.5.0
 
 ### Minor Changes
