@@ -53,6 +53,8 @@ const optionalNumber = {
  * @attr {boolean} required - The form is invalid while the field is empty.
  * @attr {boolean} readonly - The value can be selected but not changed.
  * @attr {boolean} disabled - No focus, nothing submitted.
+ * @attr {string} increase-label - The up button's accessible name. Defaults to "Increase".
+ * @attr {string} decrease-label - The down button's accessible name. Defaults to "Decrease".
  * @slot - The visible label.
  * @csspart label - The visible label.
  * @csspart group - The field and the outside stepper.
@@ -84,6 +86,8 @@ export class PurrNumberField extends LitElement {
     required: { type: Boolean, reflect: true },
     readonly: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
+    increaseLabel: { attribute: "increase-label" },
+    decreaseLabel: { attribute: "decrease-label" },
     _labelled: { state: true },
   };
 
@@ -98,6 +102,8 @@ export class PurrNumberField extends LitElement {
   declare required: boolean;
   declare readonly: boolean;
   declare disabled: boolean;
+  declare increaseLabel: string;
+  declare decreaseLabel: string;
   declare _labelled: boolean;
 
   readonly #internals = this.attachInternals();
@@ -126,6 +132,8 @@ export class PurrNumberField extends LitElement {
     this.required = false;
     this.readonly = false;
     this.disabled = false;
+    this.increaseLabel = "Increase";
+    this.decreaseLabel = "Decrease";
     this._labelled = false;
   }
 
@@ -354,7 +362,7 @@ export class PurrNumberField extends LitElement {
       part=${part}
       type="button"
       tabindex="-1"
-      aria-label=${direction === 1 ? "Increase" : "Decrease"}
+      aria-label=${direction === 1 ? this.increaseLabel : this.decreaseLabel}
       ?disabled=${atLimit || this.readonly || this.matches(":disabled")}
       @mousedown=${(event: Event) => event.preventDefault()}
       @pointerdown=${(event: PointerEvent) => {
