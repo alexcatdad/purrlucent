@@ -55,7 +55,8 @@ test("with a wrapping label the box stays beside the first line", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  const control = page.getByRole("checkbox", { name: "Recents" });
+  // By id: the new label text changes the accessible name.
+  const control = page.locator("#box");
   const oneLine = (await control.boundingBox())!.height;
   await control.evaluate((el) => {
     el.style.inlineSize = "8rem";

@@ -71,7 +71,7 @@ export const InForm: Story = {
   `,
 };
 
-/** Click, Space and Enter each toggle once and fire purr-change; a click clears mixed. */
+/** Click and Space each toggle once and fire purr-change; Enter does nothing; a click clears mixed. */
 export const Toggles: Story = {
   render: () =>
     html`<purr-checkbox id="box" indeterminate>Recents</purr-checkbox>`,
@@ -90,7 +90,7 @@ export const Toggles: Story = {
     el.focus();
     await userEvent.keyboard(" ");
     await userEvent.keyboard("{Enter}");
-    expect(changes).toEqual([true, false, true]);
+    expect(changes).toEqual([true, false]);
   },
 };
 
