@@ -3,6 +3,7 @@ dist/
 storybook-static/
 test-results/
 playwright-report/
+e2e-report.json
 hig/.cache/
 .DS_Store
 *.log
