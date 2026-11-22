@@ -5,7 +5,7 @@ import {
   syncFieldMessage,
 } from "../../behaviors/field-message.ts";
 import { labelText } from "../../behaviors/labels.ts";
-import { submitImplicitly } from "../input/input.ts";
+import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
 import {
   parse,

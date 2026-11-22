@@ -37,6 +37,24 @@ export const comboboxStyles = css`
     padding-inline-end: 0;
   }
 
+  /* A value wider than the field shows that it is cut off. */
+  [part="control"] {
+    text-overflow: ellipsis;
+  }
+
+  /* The list is exactly as wide as the field, so no item is wider than it. */
+  [part="listbox"] {
+    inline-size: var(--_min-inline-size);
+  }
+
+  /* A long option wraps; the padding keeps a one-line row the hit height. */
+  ::slotted(purr-option),
+  [part="empty"] {
+    padding-block: max(0px, calc((var(--purr-size-hit-min) - 1lh) / 2));
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
   [part="button"] {
     position: relative;
     flex: none;
@@ -107,7 +125,6 @@ export const comboboxStyles = css`
     min-block-size: var(--purr-size-hit-min);
     padding-inline: var(--_label) var(--purr-pad-item);
     color: var(--purr-color-muted-foreground);
-    white-space: nowrap;
   }
 
   @media (forced-colors: active) {

@@ -5,7 +5,8 @@ import { css } from "lit";
  * else is calculated from them. The thumb is 4/3 as wide as the track is tall.
  * While pressed it grows about its own center, to 0.92 of the track width.
  * The track keeps its drawn size with a coarse pointer; the host, which is the
- * hit region, grows around it.
+ * hit region, grows around it. A label that wraps grows the row downwards: the
+ * track and the label's first line share one row, --_row, centered on each other.
  */
 export const switchStyles = css`
   :host {
@@ -16,11 +17,15 @@ export const switchStyles = css`
     --_kw: calc(var(--_h) * 4 / 3);
     --_grow: calc((var(--_w) * 0.92 - var(--_kw)) / 2);
     --_x: var(--_in);
+    --_hit: max(var(--_h), var(--purr-size-hit-min));
+    --_row: max(var(--_h), 1lh);
 
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--purr-gap-form);
-    min-block-size: max(var(--_h), var(--purr-size-hit-min));
+    box-sizing: border-box;
+    min-block-size: var(--_hit);
+    padding-block: max(0px, calc((var(--_hit) - var(--_row)) / 2));
     color: var(--purr-color-foreground);
     font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
@@ -52,6 +57,7 @@ export const switchStyles = css`
     flex: none;
     inline-size: var(--_w);
     block-size: var(--_h);
+    margin-block-start: calc((var(--_row) - var(--_h)) / 2);
     border-radius: var(--purr-radius-full);
     background-color: var(--purr-color-track);
     box-shadow: var(--purr-boundary);
@@ -77,6 +83,7 @@ export const switchStyles = css`
   }
 
   [part="label"] {
+    padding-block-start: calc((var(--_row) - 1lh) / 2);
     overflow-wrap: anywhere;
   }
 
