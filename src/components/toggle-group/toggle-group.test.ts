@@ -23,6 +23,11 @@ test("a required choice falls back to the first item", () => {
   expect(pickValue(items(), "")).toBe("day");
 });
 
+test("the fallback skips disabled items", () => {
+  const list = items().map((s, i) => ({ ...s, disabled: i === 0 }));
+  expect(pickValue(list, "")).toBe("week");
+});
+
 test("no items means no value", () => {
   expect(pickValue([], "day")).toBeUndefined();
 });
