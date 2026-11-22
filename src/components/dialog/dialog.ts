@@ -26,8 +26,13 @@ const unlockScroll = () => {
  * `description` slot of a sheet, so a sheet's form is not read out as a
  * description.
  *
- * Initial focus goes to the element with `autofocus`, otherwise the first
- * action; focus returns to the element that had it before opening. An element
+ * Initial focus goes to the element with `autofocus`, otherwise the default
+ * action (a `purr-button` with `default`, unless destructive), the cancel
+ * action (`cancel`) or the first action. Return clicks the default action,
+ * except in a multi-line text field or on a focused button; Escape and
+ * Command-Period click the cancel action, and without one Escape closes the
+ * dialog. A destructive default is ignored and warned about. Focus returns
+ * to the element that had it before opening. An element
  * inside with `data-close="value"` closes the dialog with that return value.
  * The page cannot scroll while a dialog is open.
  *
@@ -80,6 +85,7 @@ export class PurrDialog extends LitElement {
     this._scrolls = false;
     this._actions = 0;
     this.addEventListener("click", this.#onActivate);
+    this.addEventListener("keydown", this.#onKeydown);
   }
 
   get returnValue(): string {
@@ -150,9 +156,24 @@ export class PurrDialog extends LitElement {
     this._scrolls = body.scrollHeight - body.clientHeight > 1;
   }
 
+  // The action marked `default` or `cancel`. A destructive default is unsafe
+  // to trigger by habit, so it is not one.
+  #action(role: "default" | "cancel") {
+    const button = this.querySelector<HTMLElement>(
+      `:scope > [slot=actions][${role}]`,
+    );
+    return role === "default" && button?.hasAttribute("destructive")
+      ? null
+      : button;
+  }
+
   async #focusInitial() {
+    if (this.querySelector(":scope > [slot=actions][default][destructive]"))
+      console.warn("purr-dialog: a destructive button cannot be the default.");
     const target =
       this.querySelector<HTMLElement>("[autofocus]") ??
+      this.#action("default") ??
+      this.#action("cancel") ??
       this.shadowRoot!.querySelector<HTMLSlotElement>(
         "slot[name=actions]",
       )!.assignedElements()[0];
@@ -209,6 +230,30 @@ export class PurrDialog extends LitElement {
     const closer = (event.target as Element).closest?.("[data-close]");
     if (closer?.closest("purr-dialog") === this && !closer.matches(":disabled"))
       this.close(closer.getAttribute("data-close") ?? "");
+  };
+
+  // Return clicks the default button, Escape and Command-Period the cancel
+  // button. A focused button, a multi-line field and an IME keep their Enter.
+  #onKeydown = (event: KeyboardEvent) => {
+    if (event.defaultPrevented || event.isComposing) return;
+    let button: HTMLElement | null | undefined;
+    if (event.key === "Enter")
+      button = event
+        .composedPath()
+        .some(
+          (el) =>
+            el instanceof Element &&
+            el.matches(
+              "textarea, [contenteditable]:not([contenteditable=false]), purr-button",
+            ),
+        )
+        ? null
+        : this.#action("default");
+    else if (event.key === "Escape" || (event.metaKey && event.key === "."))
+      button = this.#action("cancel");
+    if (!button) return;
+    event.preventDefault();
+    if (!button.matches(":disabled")) button.click();
   };
 
   override render() {

@@ -67,8 +67,9 @@ export const buttonStyles = css`
     box-shadow: var(--purr-boundary);
   }
 
-  /* The preferred action. */
-  :host([variant="primary"]) {
+  /* The preferred action; a default button without a variant of its own. */
+  :host([variant="primary"]),
+  :host([default][variant="secondary"]) {
     --_face: var(--purr-color-accent);
     --_face-pressed: color-mix(
       in srgb,

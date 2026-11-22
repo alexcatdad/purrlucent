@@ -12,6 +12,13 @@ export type PurrButtonSize = "md" | "lg" | "xl";
  * never takes the filled primary look. With `type="submit"` or `type="reset"`
  * it submits or resets the form it is in; the default `button` does neither.
  *
+ * In a dialog, `default` marks the button Return activates (not from a
+ * multi-line text field) and `cancel` the one Escape or Command-Period
+ * activates. The default button draws as primary unless it has another
+ * variant. A destructive button cannot be the default; the dialog warns.
+ *
+ * @attr {boolean} default - The dialog's default button: Return activates it, it draws as primary and it takes initial focus.
+ * @attr {boolean} cancel - The dialog's cancel button: Escape and Command-Period activate it.
  * @fires purr-press - When the button is activated by pointer, Enter or Space.
  * @slot - The button label, with an optional leading svg icon.
  * @csspart label - The wrapper around the label.
@@ -25,6 +32,8 @@ export class PurrButton extends LitElement {
     size: { reflect: true },
     icon: { type: Boolean, reflect: true },
     destructive: { type: Boolean, reflect: true },
+    default: { type: Boolean, reflect: true },
+    cancel: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
   };
 
@@ -33,6 +42,8 @@ export class PurrButton extends LitElement {
   declare size: PurrButtonSize;
   declare icon: boolean;
   declare destructive: boolean;
+  declare default: boolean;
+  declare cancel: boolean;
   declare disabled: boolean;
 
   // :disabled also covers a disabled fieldset around the button.
@@ -49,6 +60,8 @@ export class PurrButton extends LitElement {
     this.size = "md";
     this.icon = false;
     this.destructive = false;
+    this.default = false;
+    this.cancel = false;
     this.disabled = false;
     // Like a native button: submit or reset the form the button belongs to.
     this.addEventListener("purr-press", () => {
