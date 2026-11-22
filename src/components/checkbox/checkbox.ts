@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { nativeMessage } from "../../behaviors/native-message.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
 
@@ -111,7 +112,7 @@ export class PurrCheckbox extends LitElement {
     this.#internals.setFormValue(this.checked ? this.value : null);
     this.#internals.setValidity(
       { valueMissing: this.required && !this.checked },
-      "Check this box to continue.",
+      nativeMessage("checkbox", "Check this box to continue."),
     );
   }
 

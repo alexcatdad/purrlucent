@@ -6,6 +6,8 @@ import { sidebarStyles } from "./sidebar.css.ts";
 
 export { PurrSidebarItem, PurrSidebarSection };
 
+const TOGGLE_LABEL = "Sidebar";
+
 // design/icons/sidebar.svg
 const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9.5 4v16M13 10l1-2 1.5 1 1.5-1 1 2" /></svg>`;
 
@@ -22,6 +24,7 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * the screen widens; read the first state from `collapsed`, because
  * `purr-collapse` can fire before a listener is attached.
  *
+ * @attr {string} toggle-label - The toggle button's accessible name. Defaults to "Sidebar", which becomes "<label> sidebar" when `label` is set.
  * @slot - `purr-sidebar-item` and `purr-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
@@ -34,6 +37,7 @@ export class PurrSidebar extends LitElement {
     label: { type: String },
     collapsed: { type: Boolean, reflect: true },
     size: { reflect: true },
+    toggleLabel: { attribute: "toggle-label" },
   };
 
   /** Accessible name of the navigation landmark. */
@@ -41,6 +45,7 @@ export class PurrSidebar extends LitElement {
   declare collapsed: boolean;
   /** `md` (default) or `lg`, the larger rows. */
   declare size: "md" | "lg";
+  declare toggleLabel: string;
 
   // An item's group, level or selection changed from outside; reveal only
   // follows a selection, so an app can still close a group holding the page.
@@ -59,6 +64,7 @@ export class PurrSidebar extends LitElement {
     this.label = "";
     this.collapsed = false;
     this.size = "md";
+    this.toggleLabel = TOGGLE_LABEL;
   }
 
   /** The items in document order, loose or inside a section. */
@@ -215,7 +221,11 @@ export class PurrSidebar extends LitElement {
         type="button"
         aria-expanded=${this.collapsed ? "false" : "true"}
         aria-controls="nav"
-        aria-label=${this.label ? `${this.label} sidebar` : "Sidebar"}
+        aria-label=${
+          this.label && this.toggleLabel === TOGGLE_LABEL
+            ? `${this.label} sidebar`
+            : this.toggleLabel
+        }
         @click=${this.#toggleCollapsed}
       >
         ${sidebarIcon}

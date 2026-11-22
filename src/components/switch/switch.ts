@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { nativeMessage } from "../../behaviors/native-message.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { switchStyles } from "./switch.css.ts";
 
@@ -123,7 +124,7 @@ export class PurrSwitch extends LitElement {
     );
     this.#internals.setValidity(
       { valueMissing: this.required && !this.checked },
-      "Turn this on to continue.",
+      nativeMessage("checkbox", "Turn this on to continue."),
     );
   }
 

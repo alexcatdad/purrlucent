@@ -135,6 +135,13 @@ test("Clear empties a search field, keeps focus in it and fires the events", asy
   ).toEqual(["purr-input:", "purr-change:"]);
 });
 
+test("clear-label names the clear button", async ({ page }) => {
+  await gotoStory(page, story("search"));
+  const host = page.locator("purr-input").nth(1);
+  await host.evaluate((el) => el.setAttribute("clear-label", "Effacer"));
+  await expect(host.getByRole("button", { name: "Effacer" })).toBeVisible();
+});
+
 test("Escape clears a search field", async ({ page }) => {
   await gotoStory(page, story("search"));
   const field = page.locator("purr-input").nth(1).getByRole("searchbox");

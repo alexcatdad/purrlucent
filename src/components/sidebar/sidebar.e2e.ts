@@ -55,6 +55,16 @@ test("is a navigation landmark named by its label", async ({ page }) => {
   await expect(root.getByRole("navigation", { name: "Library" })).toBeVisible();
 });
 
+test("toggle-label names the toggle button", async ({ page }) => {
+  await open(page, "default");
+  await page
+    .locator("purr-sidebar")
+    .evaluate((el) => el.setAttribute("toggle-label", "Barre latérale"));
+  await expect(
+    page.getByRole("button", { name: "Barre latérale" }),
+  ).toBeVisible();
+});
+
 test("aria snapshot", async ({ page }) => {
   const root = await open(page, "group-open");
   await expect(root).toMatchAriaSnapshot(`

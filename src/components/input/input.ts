@@ -56,6 +56,7 @@ export function submitImplicitly(form: HTMLFormElement | null) {
  * @attr {string} pattern - A regular expression the value must match.
  * @attr {string} autocomplete - The autofill hint.
  * @attr {string} inputmode - The virtual keyboard hint.
+ * @attr {string} clear-label - The clear button's accessible name. Defaults to "Clear".
  * @slot - The visible label.
  * @csspart label - The visible label.
  * @csspart field - The shell around the input.
@@ -91,6 +92,7 @@ export class PurrInput extends LitElement {
     pattern: {},
     autocomplete: {},
     inputmode: {},
+    clearLabel: { attribute: "clear-label" },
     _labelled: { state: true },
   };
 
@@ -111,6 +113,7 @@ export class PurrInput extends LitElement {
   declare pattern: string | undefined;
   declare autocomplete: string | undefined;
   declare inputmode: string | undefined;
+  declare clearLabel: string;
   declare _labelled: boolean;
 
   readonly #internals = this.attachInternals();
@@ -133,6 +136,7 @@ export class PurrInput extends LitElement {
     this.required = false;
     this.readonly = false;
     this.disabled = false;
+    this.clearLabel = "Clear";
     this._labelled = false;
   }
 
@@ -330,7 +334,7 @@ export class PurrInput extends LitElement {
             ? html`<button
                 part="clear"
                 type="button"
-                aria-label="Clear"
+                aria-label=${this.clearLabel}
                 @mousedown=${(event: Event) => event.preventDefault()}
                 @click=${() => this.#clear()}
               >
