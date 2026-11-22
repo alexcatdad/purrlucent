@@ -65,6 +65,19 @@ export const Disabled: Story = {
   `,
 };
 
+/** One segment is unavailable: it takes no focus and cannot be selected. */
+export const DisabledItem: Story = {
+  render: () => html`
+    <purr-toggle-group id="control" label="Calendar range">
+      <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
+      <purr-toggle-group-item value="week" disabled
+        >Week</purr-toggle-group-item
+      >
+      <purr-toggle-group-item value="month">Month</purr-toggle-group-item>
+    </purr-toggle-group>
+  `,
+};
+
 /** In a form the group submits its value and follows reset and fieldset. */
 export const InForm: Story = {
   render: () => html`
