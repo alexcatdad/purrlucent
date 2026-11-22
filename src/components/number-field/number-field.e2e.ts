@@ -209,6 +209,28 @@ test("the form and its validity follow the typed text before a commit", async ({
   expect(await valid()).toBe(false);
 });
 
+test("an invalid field shows its message after a blur and describes the control with it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const age = page.getByRole("spinbutton", { name: "Age" });
+  const host = page.locator("#age");
+  const message = host.locator('[part="message"]');
+  await expect(message).toBeHidden();
+  await age.focus();
+  await page.keyboard.press("Tab");
+  const text = await host.evaluate(
+    (el) => (el as HTMLInputElement).validationMessage,
+  );
+  expect(text).not.toBe("");
+  await expect(message).toBeVisible();
+  await expect(message).toHaveText(text);
+  await expect(age).toHaveAccessibleDescription(text);
+  await age.fill("7");
+  await expect(message).toBeHidden();
+  await expect(age).toHaveAccessibleDescription("");
+});
+
 test("a script reset replaces typed text that is not a number", async ({
   page,
 }) => {

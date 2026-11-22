@@ -1,6 +1,9 @@
 import { LitElement, html, svg } from "lit";
+import { errorGlyph } from "../../behaviors/glyphs.ts";
 import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import { bannerStyles } from "./banner.css.ts";
+
+const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>`;
 
 const closeGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>`;
 
@@ -13,7 +16,7 @@ const closeGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 
  * @attr {boolean} open - The banner is showing.
  * @attr {string} tone - `info` (default) or `destructive`.
  * @attr {string} close-label - The close button's accessible name. Defaults to "Dismiss".
- * @slot icon - An `svg` shown as a tile.
+ * @slot icon - An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, an error mark for `destructive`.
  * @slot title - The heading.
  * @slot - The message.
  * @slot actions - Buttons below the message.
@@ -60,7 +63,9 @@ export class PurrBanner extends LitElement {
   }
 
   override render() {
-    return html`<slot name="icon"></slot>
+    return html`<slot name="icon"
+        >${this.tone === "destructive" ? errorGlyph : infoGlyph}</slot
+      >
       <div part="text">
         <div part="title"><slot name="title"></slot></div>
         <slot></slot>
