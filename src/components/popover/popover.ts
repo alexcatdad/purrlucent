@@ -11,7 +11,10 @@ import { popoverStyles } from "./popover.css.ts";
  * and `aria-expanded` on it. The panel is a dialog named by `label`: it opens
  * on a press of the trigger, takes focus to its first focusable content (or to
  * itself), and closes on Escape (focus returns to the trigger), on a press
- * outside and when focus leaves it. An arrow points at the trigger.
+ * outside and when focus leaves it. An arrow points at the trigger. The panel
+ * is as wide as its content, from a minimum that keeps the arrow clear of the
+ * corners up to a maximum of `calc(var(--purr-spacing) * 45)`, and never wider
+ * than the viewport; longer content wraps.
  *
  * @attr {string} label - The panel's accessible name. Required.
  * @attr {string} placement - Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.

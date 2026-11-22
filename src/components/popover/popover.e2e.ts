@@ -365,6 +365,49 @@ test("long unbroken content wraps inside the panel", async ({ page }) => {
   expect(fits).toBe(true);
 });
 
+test("a popover is only as wide as its content, up to the cap", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const sizes = await page.locator("#popover").evaluate(async (el) => {
+    const host = el as HTMLElement & {
+      open: boolean;
+      updateComplete: Promise<boolean>;
+    };
+    const panel = host.shadowRoot!.querySelector("[part=panel]")!;
+    const probe = document.createElement("div");
+    probe.style.inlineSize = "calc(var(--purr-spacing) * 45)";
+    host.shadowRoot!.append(probe);
+    const cap = probe.getBoundingClientRect().width;
+    probe.remove();
+    for (const n of [...host.children]) {
+      if (n.slot !== "trigger") n.remove();
+    }
+    const measure = async (text: string) => {
+      host.querySelector("p")?.remove();
+      const p = document.createElement("p");
+      p.style.margin = "0";
+      p.textContent = text;
+      host.append(p);
+      host.open = true;
+      await host.updateComplete;
+      const width = panel.getBoundingClientRect().width;
+      const lines = p.getBoundingClientRect().height;
+      host.open = false;
+      await host.updateComplete;
+      return { width, lines };
+    };
+    return {
+      cap,
+      short: await measure("Hi"),
+      long: await measure("word ".repeat(80)),
+    };
+  });
+  expect(sizes.short.width).toBeLessThan(sizes.cap);
+  expect(sizes.long.width).toBeCloseTo(sizes.cap, 0);
+  expect(sizes.long.lines).toBeGreaterThan(sizes.short.lines * 2);
+});
+
 test("hide() or open=false while focus is inside returns focus to the trigger", async ({
   page,
 }) => {
