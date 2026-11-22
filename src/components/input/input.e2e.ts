@@ -59,6 +59,19 @@ test("focusing the host or clicking the shell focuses the input", async ({
   await expect(field).toBeFocused();
 });
 
+test("a value wider than the field ends in an ellipsis", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const host = page.locator("purr-input");
+  await host.evaluate(
+    (el) => ((el as HTMLElement & { value: string }).value = "x".repeat(200)),
+  );
+  const control = host.locator('[part="control"]');
+  await expect(control).toHaveCSS("text-overflow", "ellipsis");
+  expect(await control.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(
+    true,
+  );
+});
+
 test("typing edits the value and fires purr-input and purr-change", async ({
   page,
 }) => {

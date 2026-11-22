@@ -9,6 +9,9 @@ import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
 import {
   PAGE_STEPS,
+  decimalSeparator,
+  filterTyped,
+  format,
   parse,
   snap,
   stepBy,
@@ -43,6 +46,13 @@ const optionalNumber = {
  * `<label for>` names it. It takes part in forms like a native
  * input: it submits `name` with its value, a reset returns it to its `value`
  * attribute and a disabled fieldset disables it.
+ *
+ * The field reads the locale from the closest `lang` attribute (else the
+ * document's, else the browser's). Its decimal separator is accepted when a
+ * number is typed or pasted and is shown in the committed value, so "1,5" under
+ * `lang="de"` is 1.5. Characters that cannot be part of a number there are
+ * not inserted: only digits, one separator and a leading minus. The form value
+ * and the `value` property stay plain numbers.
  *
  * @attr {number} value - The starting value; empty means no value. The `value` property holds the current number, or null.
  * @attr {number} min - Smallest value.
@@ -260,14 +270,32 @@ export class PurrNumberField extends LitElement {
     );
   }
 
+  get #separator() {
+    // closest() stops at a shadow root, so climb out through each host.
+    let lang = this.closest("[lang]:not([lang=''])")?.getAttribute("lang");
+    for (
+      let host = (this.getRootNode() as ShadowRoot).host;
+      !lang && host;
+      host = (host.getRootNode() as ShadowRoot).host
+    )
+      lang = host.closest("[lang]:not([lang=''])")?.getAttribute("lang");
+    return decimalSeparator(
+      lang || document.documentElement.lang || navigator.language,
+    );
+  }
+
   get #text() {
-    return this.value === null ? "" : String(this.value);
+    return format(this.value, this.#separator);
+  }
+
+  #parse(text: string) {
+    return parse(text, this.#separator);
   }
 
   /** Takes the typed text as the value; text that is not a number is dropped. */
   #commit() {
     const input = this.#input!;
-    const typed = parse(input.value);
+    const typed = this.#parse(input.value);
     const next =
       typed === null
         ? null
@@ -299,7 +327,7 @@ export class PurrNumberField extends LitElement {
   }
 
   get #current() {
-    const typed = parse(this.#input!.value);
+    const typed = this.#parse(this.#input!.value);
     return typed !== null && Number.isFinite(typed) ? typed : this.value;
   }
 
@@ -319,8 +347,49 @@ export class PurrNumberField extends LitElement {
 
   #release = () => clearTimeout(this.#timer);
 
+  // Inserts only what can be part of a number; the rest of a paste is dropped.
+  #onBeforeinput = (event: InputEvent) => {
+    if (
+      event.isComposing ||
+      !event.cancelable ||
+      !event.inputType.startsWith("insert")
+    )
+      return;
+    const data = event.data ?? event.dataTransfer?.getData("text/plain");
+    if (data == null) return;
+    const input = this.#input!;
+    // The selection is not the drop caret: let a clean drop through, ignore the rest.
+    if (event.inputType.startsWith("insertFromDrop")) {
+      const clean =
+        filterTyped(data, "", "", this.#separator) === data &&
+        !data.startsWith("-");
+      if (!clean) event.preventDefault();
+      return;
+    }
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    const kept = filterTyped(
+      data,
+      input.value.slice(0, start),
+      input.value.slice(end),
+      this.#separator,
+    );
+    if (kept === data) return;
+    event.preventDefault();
+    if (kept === "") return;
+    input.setRangeText(kept, start, end, "end");
+    input.dispatchEvent(
+      new InputEvent("input", {
+        bubbles: true,
+        composed: true,
+        inputType: event.inputType,
+        data: kept,
+      }),
+    );
+  };
+
   #onInput = () => {
-    const typed = parse(this.#input!.value);
+    const typed = this.#parse(this.#input!.value);
     if (typed !== null && !Number.isFinite(typed)) return;
     // The form already sees what a commit would make of the typed text.
     this.#sync(typed === null ? null : snap(typed, this.#bounds));
@@ -402,11 +471,15 @@ export class PurrNumberField extends LitElement {
                 : ifDefined(this.label || labelText(this.labels))
             }
             aria-valuenow=${ifDefined(this.value ?? undefined)}
+            aria-valuetext=${ifDefined(
+              this.value === null ? undefined : this.#text,
+            )}
             aria-valuemin=${ifDefined(this.min ?? undefined)}
             aria-valuemax=${ifDefined(this.max ?? undefined)}
             ?required=${this.required}
             ?readonly=${this.readonly}
             ?disabled=${this.matches(":disabled")}
+            @beforeinput=${this.#onBeforeinput}
             @input=${this.#onInput}
             @blur=${() => this.#commit()}
             @keydown=${this.#onKeydown}

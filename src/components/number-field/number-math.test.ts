@@ -1,5 +1,14 @@
 import { expect, test } from "bun:test";
-import { clamp, parse, snap, stepBy, valueAfterKey } from "./number-math.ts";
+import {
+  clamp,
+  decimalSeparator,
+  filterTyped,
+  format,
+  parse,
+  snap,
+  stepBy,
+  valueAfterKey,
+} from "./number-math.ts";
 
 const bounds = { min: 0, max: 100, step: 1 };
 
@@ -34,6 +43,38 @@ test("parse reads a number, an empty field and nonsense", () => {
   expect(parse("-3")).toBe(-3);
   expect(parse("  ")).toBeNull();
   expect(parse("abc")).toBeNaN();
+});
+
+test("the decimal separator follows the locale", () => {
+  expect(decimalSeparator("en")).toBe(".");
+  expect(decimalSeparator("de")).toBe(",");
+  expect(decimalSeparator("not a locale!")).toBe(decimalSeparator());
+});
+
+test("parse and format use the locale's separator", () => {
+  expect(parse("1,5", ",")).toBe(1.5);
+  expect(parse("-0,25", ",")).toBe(-0.25);
+  expect(parse("1.5", ",")).toBeNaN();
+  expect(parse("1,5")).toBeNaN();
+  expect(parse(" ", ",")).toBeNull();
+  expect(format(1.5, ",")).toBe("1,5");
+  expect(format(3, ",")).toBe("3");
+  expect(format(1.5)).toBe("1.5");
+  expect(format(null, ",")).toBe("");
+});
+
+test("filterTyped keeps digits, one separator and a leading minus", () => {
+  expect(filterTyped("a1b2", "", "", ",")).toBe("12");
+  expect(filterTyped("1,5,2", "", "", ",")).toBe("1,52");
+  expect(filterTyped(",", "3", "", ",")).toBe(",");
+  expect(filterTyped(",", "3,", "", ",")).toBe("");
+  expect(filterTyped(",", "3", ",5", ",")).toBe("");
+  expect(filterTyped(".", "", "", ",")).toBe("");
+  expect(filterTyped("-5", "", "", ",")).toBe("-5");
+  expect(filterTyped("-5", "1", "", ",")).toBe("5");
+  expect(filterTyped("-", "", "-2", ",")).toBe("");
+  expect(filterTyped("7", "", "-5", ",")).toBe("");
+  expect(filterTyped("--5-", "", "", ",")).toBe("-5");
 });
 
 test("arrow keys step by one, page keys by ten steps", () => {
