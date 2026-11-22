@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # The release workflow starts it on the version pull request.
+  workflow_dispatch:
 
 permissions:
   contents: read
