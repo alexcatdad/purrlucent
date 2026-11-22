@@ -22,7 +22,7 @@ export const groupStyles = css`
     background-color: var(--purr-color-secondary);
     box-shadow: var(--purr-boundary);
     color: var(--purr-color-foreground);
-    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
   }
 

@@ -25,7 +25,7 @@ export const boxStyles = css`
     padding-block: max(0px, calc((var(--_h) - 1lh) / 2));
     min-inline-size: var(--purr-size-hit-min);
     color: var(--purr-color-foreground);
-    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
     cursor: default;
     user-select: none;
