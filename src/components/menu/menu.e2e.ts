@@ -307,6 +307,21 @@ test.describe("submenu", () => {
     await expect(menu(page, "Find")).toBeHidden();
   });
 
+  test("Escape closes only a hover-opened submenu and keeps the menu open", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("open"));
+    await item(page, "Find").hover();
+    await expect(menu(page, "Find")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(menu(page, "Find")).toBeHidden();
+    await expect(menu(page)).toBeVisible();
+    await expect(item(page, "Find")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(menu(page)).toBeHidden();
+    await expect(trigger(page)).toBeFocused();
+  });
+
   test("choosing a submenu item fires purr-select once and closes every level", async ({
     page,
   }) => {
