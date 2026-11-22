@@ -197,6 +197,30 @@ test("the invalid style and aria-invalid appear only after interaction", async (
   expect(await invalidState()).toBe(false);
 });
 
+test("an invalid field shows its message after a blur and describes the control with it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const email = page.getByRole("textbox", { name: "Email" });
+  const host = page.locator("#email");
+  const message = host.locator('[part="message"]');
+  await expect(message).toBeHidden();
+  await expect(email).not.toHaveAttribute("aria-describedby");
+  await email.focus();
+  await page.keyboard.press("Tab");
+  const text = await host.evaluate(
+    (el) => (el as HTMLInputElement).validationMessage,
+  );
+  expect(text).not.toBe("");
+  await expect(message).toBeVisible();
+  await expect(message).toHaveText(text);
+  await expect(email).toHaveAccessibleDescription(text);
+  await email.fill("a@example.com");
+  await expect(message).toBeHidden();
+  await expect(email).not.toHaveAttribute("aria-describedby");
+  await expect(email).toHaveAccessibleDescription("");
+});
+
 test("the form gets the value, and a reset returns the value attribute", async ({
   page,
 }) => {

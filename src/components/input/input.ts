@@ -1,5 +1,9 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import {
+  fieldMessage,
+  syncFieldMessage,
+} from "../../behaviors/field-message.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { inputStyles } from "./input.css.ts";
 
@@ -59,6 +63,7 @@ export function submitImplicitly(form: HTMLFormElement | null) {
  * @csspart control - The native input.
  * @csspart glyph - The magnifier of a search field.
  * @csspart clear - The clear button of a search field.
+ * @csspart message - The icon and validation message below the field while it is invalid.
  * @fires purr-input - The value changed through editing or the clear button. `detail.value` holds it.
  * @fires purr-change - The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
  */
@@ -228,6 +233,7 @@ export class PurrInput extends LitElement {
     this.#setState("user-invalid", invalid);
     if (invalid) input.setAttribute("aria-invalid", "true");
     else input.removeAttribute("aria-invalid");
+    syncFieldMessage(this.renderRoot as ShadowRoot, input, invalid);
   }
 
   get #clearable() {
@@ -336,7 +342,8 @@ export class PurrInput extends LitElement {
               </button>`
             : nothing
         }
-      </div>`;
+      </div>
+      ${fieldMessage}`;
   }
 }
 
