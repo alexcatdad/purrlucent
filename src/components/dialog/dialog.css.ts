@@ -16,7 +16,7 @@ export const dialogStyles = css`
     --_material: var(--purr-material-sheet);
     --_filter: var(--purr-material-sheet-filter);
     --_elevation: var(--purr-elevation-sheet);
-    --_width: calc(var(--purr-spacing) * 97.5);
+    --_width: var(--purr-dialog-width, calc(var(--purr-spacing) * 97.5));
     --_icon: calc(var(--purr-spacing) * 16);
     --_scrim: light-dark(
       color-mix(
