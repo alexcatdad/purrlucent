@@ -7,12 +7,14 @@ import { pickValue } from "./pick-value.ts";
 import { groupStyles, itemStyles } from "./toggle-group.css.ts";
 
 /**
- * One choice in a `purr-toggle-group`. The slot holds its text label.
+ * One choice in a `purr-toggle-group`. The slot holds a text label or an svg
+ * icon. An icon-only item needs an `aria-label` to be named; mark the svg
+ * `aria-hidden="true"`. Use text or icons in one control, not both.
  *
  * @attr {string} value - The value the group reports when this item is selected.
  * @attr {boolean} selected - Marks the starting selection. After that the group owns it.
  * @attr {boolean} disabled - This item takes no focus and cannot be selected. A disabled group disables all.
- * @slot - The item's text label.
+ * @slot - The item's text label or svg icon.
  * @csspart label - The wrapper around the label.
  */
 export class PurrToggleGroupItem extends LitElement {

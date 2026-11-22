@@ -44,16 +44,17 @@ import "purrlucent/button";
 
 A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
 
-| Attribute     | Type                              | Default       | Description                                                                                       |
-| ------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
-| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus. |
-| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                   |
-| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                   |
-| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                   |
-| `icon`        | `boolean`                         | `false`       |                                                                                                   |
-| `destructive` | `boolean`                         | `false`       |                                                                                                   |
-| `disabled`    | `boolean`                         | `false`       |                                                                                                   |
+| Attribute     | Type                              | Default       | Description                                                                                              |
+| ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
+| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
+| `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
+| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                          |
+| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
+| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                          |
+| `icon`        | `boolean`                         | `false`       |                                                                                                          |
+| `destructive` | `boolean`                         | `false`       |                                                                                                          |
+| `disabled`    | `boolean`                         | `false`       |                                                                                                          |
 
 **Slots**
 
@@ -156,7 +157,7 @@ import "purrlucent/dialog";
 
 ### `<purr-dialog>`
 
-A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `purr-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
+A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `purr-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
 
 | Attribute     | Type                 | Default   | Description                                                            |
 | ------------- | -------------------- | --------- | ---------------------------------------------------------------------- |
@@ -363,11 +364,11 @@ import "purrlucent/popover";
 
 A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger.
 
-| Attribute   | Type                                    | Default    | Description                                                                                             |
-| ----------- | --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------- |
-| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                  |
-| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room. |
-| `open`      | `boolean`                               | `false`    | The panel is showing.                                                                                   |
+| Attribute   | Type                                    | Default    | Description                                                                                                                                     |
+| ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                                                          |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                         |
+| `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it. |
 
 **Slots**
 
@@ -516,7 +517,7 @@ import "purrlucent/sidebar";
 
 ### `<purr-sidebar-item>`
 
-One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. Without an `href` it renders a plain button, so an app can handle the click itself.
+One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. Without an `href` it renders a plain button; clicking it selects it, so an app can also handle the click itself.
 
 | Attribute    | Type                  | Default | Description                                            |
 | ------------ | --------------------- | ------- | ------------------------------------------------------ |
@@ -592,17 +593,17 @@ import "purrlucent/slider";
 
 A slider: one value chosen on a track, following the WAI-ARIA slider pattern. The host is the slider and its hit region. Name it with `label`. It takes part in forms: it submits `name` with its value, a form reset returns it to its `value` attribute (0 without one), and a disabled fieldset disables it.
 
-| Attribute  | Type                   | Default | Description                                                     |
-| ---------- | ---------------------- | ------- | --------------------------------------------------------------- |
-| `value`    | `number`               | `0`     | The starting value. The `value` property holds the current one. |
-| `min`      | `number`               | `0`     | The lowest value. Defaults to 0.                                |
-| `max`      | `number`               | `100`   | The highest value. Defaults to 100.                             |
-| `step`     | `number`               | `1`     | The distance between values. Defaults to 1.                     |
-| `ticks`    | `number`               | `0`     | How many tick marks to draw, spread along the track.            |
-| `label`    | `string`               | `""`    | The accessible name.                                            |
-| `name`     | `string`               | `""`    | The name submitted with a form.                                 |
-| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                   |
-| `disabled` | `boolean`              | `false` | No focus, no input, nothing submitted.                          |
+| Attribute  | Type                   | Default | Description                                                                                                                                                       |
+| ---------- | ---------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`    | `number`               | `0`     | The starting value. The `value` property holds the current one.                                                                                                   |
+| `min`      | `number`               | `0`     | The lowest value. Defaults to 0.                                                                                                                                  |
+| `max`      | `number`               | `100`   | The highest value. Defaults to 100.                                                                                                                               |
+| `step`     | `number \| "any"`      | `1`     | The distance between values. Defaults to 1. `any` allows every value in the range; arrow keys then move by one hundredth of the range and Page keys by one tenth. |
+| `ticks`    | `number`               | `0`     | How many tick marks to draw, spread along the track.                                                                                                              |
+| `label`    | `string`               | `""`    | The accessible name.                                                                                                                                              |
+| `name`     | `string`               | `""`    | The name submitted with a form.                                                                                                                                   |
+| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                                     |
+| `disabled` | `boolean`              | `false` | No focus, no input, nothing submitted.                                                                                                                            |
 
 **Parts**
 
@@ -627,10 +628,10 @@ import "purrlucent/spinner";
 
 A spinner: work is going on, with no way to tell how far along. Always give it a `label` so it has an accessible name.
 
-| Attribute | Type                   | Default | Description                                 |
-| --------- | ---------------------- | ------- | ------------------------------------------- |
-| `label`   | `string`               | `""`    | The accessible name, for example "Loading". |
-| `size`    | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.               |
+| Attribute | Type                           | Default | Description                                 |
+| --------- | ------------------------------ | ------- | ------------------------------------------- |
+| `label`   | `string`                       | `""`    | The accessible name, for example "Loading". |
+| `size`    | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `sm`, `md` (default), `lg` or `xl`.         |
 
 **Parts**
 
@@ -722,17 +723,18 @@ import "purrlucent/toggle";
 
 A button that holds an on or off state, announced as `aria-pressed`. It is a `purr-button`, so size, `icon`, `disabled`, the slotted label and the leading svg icon work the same; an `icon` toggle needs an `aria-label`. The button's `variant`, `type` and `destructive` have no use here.
 
-| Attribute     | Type                              | Default       | Description                                                                                       |
-| ------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
-| `pressed`     | `boolean`                         | `false`       |                                                                                                   |
-| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus. |
-| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                   |
-| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                   |
-| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                   |
-| `icon`        | `boolean`                         | `false`       |                                                                                                   |
-| `destructive` | `boolean`                         | `false`       |                                                                                                   |
-| `disabled`    | `boolean`                         | `false`       |                                                                                                   |
+| Attribute     | Type                              | Default       | Description                                                                                              |
+| ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| `pressed`     | `boolean`                         | `false`       |                                                                                                          |
+| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
+| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
+| `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
+| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                          |
+| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
+| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                          |
+| `icon`        | `boolean`                         | `false`       |                                                                                                          |
+| `destructive` | `boolean`                         | `false`       |                                                                                                          |
+| `disabled`    | `boolean`                         | `false`       |                                                                                                          |
 
 **Slots**
 
@@ -755,7 +757,7 @@ import "purrlucent/toggle-group";
 
 ### `<purr-toggle-group-item>`
 
-One choice in a `purr-toggle-group`. The slot holds its text label.
+One choice in a `purr-toggle-group`. The slot holds a text label or an svg icon. An icon-only item needs an `aria-label` to be named; mark the svg `aria-hidden="true"`. Use text or icons in one control, not both.
 
 | Attribute  | Type      | Default | Description                                                                     |
 | ---------- | --------- | ------- | ------------------------------------------------------------------------------- |
@@ -765,7 +767,7 @@ One choice in a `purr-toggle-group`. The slot holds its text label.
 
 **Slots**
 
-- default: The item's text label.
+- default: The item's text label or svg icon.
 
 **Parts**
 

@@ -13,7 +13,8 @@ const detail = html`<slot name="detail"></slot>`;
 /**
  * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
  * by the sidebar because level 2 items follow it, a disclosure button. Without
- * an `href` it renders a plain button, so an app can handle the click itself.
+ * an `href` it renders a plain button; clicking it selects it, so an app can
+ * also handle the click itself.
  *
  * @slot - The item label.
  * @slot icon - A leading svg icon, tinted with the accent text color.

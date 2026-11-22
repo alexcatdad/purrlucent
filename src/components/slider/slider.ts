@@ -19,7 +19,7 @@ import {
  * @attr {number} value - The starting value. The `value` property holds the current one.
  * @attr {number} min - The lowest value. Defaults to 0.
  * @attr {number} max - The highest value. Defaults to 100.
- * @attr {number} step - The distance between values. Defaults to 1.
+ * @attr {number|"any"} step - The distance between values. Defaults to 1. `any` allows every value in the range; arrow keys then move by one hundredth of the range and Page keys by one tenth.
  * @attr {number} ticks - How many tick marks to draw, spread along the track.
  * @attr {string} label - The accessible name.
  * @attr {string} name - The name submitted with a form.
@@ -39,7 +39,10 @@ export class PurrSlider extends LitElement {
     value: { type: Number },
     min: { type: Number },
     max: { type: Number },
-    step: { type: Number },
+    step: {
+      converter: (value: string | null) =>
+        value === "any" ? "any" : Number(value),
+    },
     ticks: { type: Number },
     label: {},
     name: { reflect: true },
@@ -50,7 +53,7 @@ export class PurrSlider extends LitElement {
   declare value: number;
   declare min: number;
   declare max: number;
-  declare step: number;
+  declare step: number | "any";
   declare ticks: number;
   declare label: string;
   declare name: string;
