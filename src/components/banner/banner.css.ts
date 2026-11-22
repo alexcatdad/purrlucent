@@ -37,7 +37,9 @@ export const bannerStyles = css`
     --_title: var(--purr-color-destructive-text);
   }
 
-  ::slotted([slot="icon"]) {
+  /* A slotted icon, or the tone's own in the slot's fallback. */
+  ::slotted([slot="icon"]),
+  slot[name="icon"] > svg {
     grid-area: icon;
     margin-inline-end: var(--purr-space-3);
     box-sizing: border-box;
