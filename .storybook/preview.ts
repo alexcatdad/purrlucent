@@ -32,7 +32,13 @@ const preview: Preview = {
     contrast: "normal",
     dir: "ltr",
   },
-  parameters: { a11y: { test: "error" } },
+  parameters: {
+    a11y: {
+      test: "error",
+      // Axe ships the WCAG 2.2 AA target-size rule (24px) switched off.
+      options: { rules: { "target-size": { enabled: true } } },
+    },
+  },
   decorators: [
     (story, { globals }) => {
       for (const [global, attribute] of Object.entries(attributes)) {
