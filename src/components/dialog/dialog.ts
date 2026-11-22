@@ -5,6 +5,9 @@ import { dialogStyles } from "./dialog.css.ts";
 let locks = 0;
 let savedOverflow = "";
 
+// A second sheet over an open one is warned about; an alert over a sheet is not.
+const openSheets = new Set<PurrDialog>();
+
 const lockScroll = () => {
   if (locks++ === 0) {
     savedOverflow = document.documentElement.style.overflow;
@@ -31,7 +34,10 @@ const unlockScroll = () => {
  * action (`cancel`) or the first action. Return clicks the default action,
  * except in a multi-line text field or on a focused button; Escape and
  * Command-Period click the cancel action, and without one Escape closes the
- * dialog. A destructive default is ignored and warned about. Focus returns
+ * dialog. A destructive default is ignored and warned about. An alert with
+ * more than three actions is warned about and still shows them all. A sheet
+ * opened while another sheet is open is warned about and still shows; an alert
+ * over a sheet is not. Focus returns
  * to the element that had it before opening. An element
  * inside with `data-close="value"` closes the dialog with that return value.
  * The page cannot scroll while a dialog is open.
@@ -40,6 +46,7 @@ const unlockScroll = () => {
  * @attr {string} variant - `sheet` (default) or `alert`.
  * @attr {string} label - The accessible name when there is no slotted title.
  * @attr {boolean} dismissible - A sheet also closes when the backdrop is pressed. An alert never does.
+ * @cssprop --purr-dialog-width - The width of a sheet. Defaults to 390px (97.5 spacing units) and is capped at the viewport width minus the page margin. An alert ignores it.
  * @slot icon - An `svg` shown as a tile.
  * @slot title - The heading.
  * @slot description - A short explanation under the sheet's title.
@@ -109,6 +116,7 @@ export class PurrDialog extends LitElement {
   close(returnValue = "") {
     this.#dialog?.close(returnValue);
     this.open = false;
+    openSheets.delete(this);
   }
 
   override connectedCallback() {
@@ -128,6 +136,7 @@ export class PurrDialog extends LitElement {
   #unlock() {
     if (this.#locked) unlockScroll();
     this.#locked = false;
+    openSheets.delete(this);
   }
 
   protected override firstUpdated() {
@@ -145,6 +154,7 @@ export class PurrDialog extends LitElement {
       this.#measure();
       void this.#focusInitial();
     } else if (!this.open && dialog.open) {
+      openSheets.delete(this);
       dialog.close();
     }
   }
@@ -170,6 +180,18 @@ export class PurrDialog extends LitElement {
   async #focusInitial() {
     if (this.querySelector(":scope > [slot=actions][default][destructive]"))
       console.warn("purr-dialog: a destructive button cannot be the default.");
+    if (
+      this.variant === "alert" &&
+      this.querySelectorAll(":scope > [slot=actions]").length > 3
+    )
+      console.warn("purr-dialog: an alert takes at most three buttons.");
+    if (this.variant === "sheet") {
+      if (openSheets.size)
+        console.warn(
+          "purr-dialog: show one sheet at a time; close the open sheet first.",
+        );
+      openSheets.add(this);
+    }
     const target =
       this.querySelector<HTMLElement>("[autofocus]") ??
       this.#action("default") ??

@@ -6,7 +6,7 @@ import { spinnerStyles } from "./spinner.css.ts";
  * it a `label` so it has an accessible name.
  *
  * @attr {string} label - The accessible name, for example "Loading".
- * @attr {string} size - `md` (default), `lg` or `xl`.
+ * @attr {string} size - `sm`, `md` (default), `lg` or `xl`.
  * @csspart ring - The drawing.
  */
 export class PurrSpinner extends LitElement {
@@ -17,7 +17,7 @@ export class PurrSpinner extends LitElement {
   };
 
   declare label: string;
-  declare size: "md" | "lg" | "xl";
+  declare size: "sm" | "md" | "lg" | "xl";
 
   constructor() {
     super();

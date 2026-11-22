@@ -49,9 +49,9 @@ export const Default: Story = {
   render: () => stage(popover({})),
 };
 
-/** Opens the panel so the open look is covered by the contrast and spacing checks. */
-export const Open: Story = {
-  render: () => stage(popover({})),
+// Opens the panel so the open look is covered by the contrast and spacing checks.
+const opened = (placement: string): Story => ({
+  render: () => stage(popover({ placement })),
   play: async ({ canvasElement }) => {
     const el = canvasElement.querySelector<PurrPopover>("#popover")!;
     await el.updateComplete;
@@ -59,9 +59,21 @@ export const Open: Story = {
     await el.updateComplete;
     expect(el.open).toBe(true);
   },
-};
+});
 
-/** One panel per side, each open beside its own trigger. */
+/** Opens below the trigger. */
+export const Open = opened("bottom");
+
+/** Opens above the trigger. */
+export const OpenTop = opened("top");
+
+/** Opens at the start side of the trigger. */
+export const OpenStart = opened("start");
+
+/** Opens at the end side of the trigger. */
+export const OpenEnd = opened("end");
+
+/** One popover per side, all closed. Opening one closes the others; the Open stories cover each side open. */
 export const Placements: Story = {
   render: () =>
     stage(
@@ -72,7 +84,6 @@ export const Placements: Story = {
           popover({
             id: placement,
             placement,
-            open: true,
             label: `Sharing, ${placement}`,
           }),
         )}

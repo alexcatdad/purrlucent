@@ -75,13 +75,28 @@ const keepsKey = (toolbar: HTMLElement, event: KeyboardEvent) => {
   return event.key === "Home" || event.key === "End";
 };
 
-const isItem = (el: Element): el is HTMLElement =>
+const isControl = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement &&
   !(el instanceof PurrToolbarSeparator || el instanceof PurrToolbarTitle) &&
-  el.getAttribute("role") !== "separator" &&
+  el.getAttribute("role") !== "separator";
+
+const isItem = (el: Element): el is HTMLElement =>
+  isControl(el) &&
   !el.hidden &&
   !el.hasAttribute("disabled") &&
   el.getAttribute("aria-disabled") !== "true";
+
+const hasValue = (el: Element, name: string) => el.getAttribute(name)?.trim();
+
+/** A name from an attribute, text, or a labelled or described descendant. */
+const isNamed = (item: HTMLElement) =>
+  ["aria-label", "aria-labelledby", "title", "label"].some((name) =>
+    hasValue(item, name),
+  ) ||
+  item.textContent?.trim() ||
+  [...item.querySelectorAll("[aria-label], img[alt]")].some(
+    (el) => hasValue(el, "aria-label") || hasValue(el, "alt"),
+  );
 
 /**
  * Related symbol items, such as icon-only buttons with an `aria-label`, on one shared face.
@@ -151,10 +166,14 @@ export class PurrToolbar extends LitElement {
     ];
   }
 
+  #controls(): Element[] {
+    return this.#slotted().flatMap((el) =>
+      el instanceof PurrToolbarGroup ? [...el.children] : el,
+    );
+  }
+
   #items(): HTMLElement[] {
-    return this.#slotted()
-      .flatMap((el) => (el instanceof PurrToolbarGroup ? [...el.children] : el))
-      .filter(isItem);
+    return this.#controls().filter(isItem);
   }
 
   // The tab stop follows which items are enabled, so an item that is disabled
@@ -184,6 +203,21 @@ export class PurrToolbar extends LitElement {
         this.removeAttribute("aria-label");
         console.warn("purr-toolbar needs a label.");
       }
+    }
+  }
+
+  readonly #unnamed = new WeakSet<HTMLElement>();
+
+  // Items added later are covered too, since the watcher requests an update.
+  // Disabled and hidden items are checked too; `label` names a field such as
+  // `purr-input`.
+  protected override updated() {
+    for (const item of this.#controls().filter(isControl)) {
+      if (this.#unnamed.has(item) || isNamed(item)) continue;
+      this.#unnamed.add(item);
+      console.warn(
+        "purr-toolbar: an item needs an accessible name (aria-label or text).",
+      );
     }
   }
 

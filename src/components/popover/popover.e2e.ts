@@ -149,6 +149,59 @@ test("open, show() and hide() work from script and purr-toggle reports them", as
   await expect(dialog(page)).toBeVisible();
 });
 
+type Popover = HTMLElement & {
+  open: boolean;
+  updateComplete: Promise<boolean>;
+};
+
+test("opening a popover from script closes another open popover", async ({
+  page,
+}) => {
+  await gotoStory(page, story("placements"));
+  const log = await page.evaluate(async () => {
+    const first = document.getElementById("top") as Popover;
+    const second = document.getElementById("bottom") as Popover;
+    const seen: boolean[] = [];
+    first.addEventListener("purr-toggle", (e) =>
+      seen.push((e as CustomEvent<{ open: boolean }>).detail.open),
+    );
+    first.open = true;
+    await first.updateComplete;
+    second.open = true;
+    await second.updateComplete;
+    await first.updateComplete;
+    return { seen, first: first.open, second: second.open };
+  });
+  expect(log).toEqual({ seen: [true, false], first: false, second: true });
+  await expect(dialog(page, "Sharing, top")).toBeHidden();
+  await expect(dialog(page, "Sharing, bottom")).toBeVisible();
+});
+
+test("a nested popover does not close its parent", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const open = await page.evaluate(async () => {
+    const parent = document.getElementById("popover") as Popover;
+    const child = document.createElement("purr-popover") as Popover;
+    child.setAttribute("label", "Nested");
+    child.innerHTML = `<purr-button slot="trigger">More</purr-button><p>Details</p>`;
+    parent.append(child);
+    parent.open = true;
+    await parent.updateComplete;
+    child.open = true;
+    await child.updateComplete;
+    const afterChild = [parent.open, child.open];
+    parent.open = false;
+    await parent.updateComplete;
+    child.open = true;
+    await child.updateComplete;
+    parent.open = true;
+    await parent.updateComplete;
+    return { afterChild, afterParent: [parent.open, child.open] };
+  });
+  expect(open.afterChild).toEqual([true, true]);
+  expect(open.afterParent).toEqual([true, true]);
+});
+
 test("a popover with no label fails axe", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.locator("#popover").evaluate((el) => el.removeAttribute("label"));
@@ -187,6 +240,8 @@ test("the arrow is on the side facing the trigger and points at its middle, on e
 }) => {
   await gotoStory(page, story("placements"));
   for (const side of ["top", "bottom", "start", "end"]) {
+    await trigger(page, `#${side}`).click();
+    await expect(page.locator(`#${side} [part=panel]`)).toBeVisible();
     const panel = await box(page.locator(`#${side} [part=panel]`));
     const arrow = await box(page.locator(`#${side} [part=arrow]`));
     const target = centre(await box(trigger(page, `#${side}`)));
@@ -217,10 +272,14 @@ test("the panel opens beside the trigger on the requested side", async ({
   page,
 }) => {
   await gotoStory(page, story("placements"));
-  const around = async (id: string) => ({
-    panel: await box(page.locator(`#${id} [part=panel]`)),
-    target: await box(trigger(page, `#${id}`)),
-  });
+  const around = async (id: string) => {
+    await trigger(page, `#${id}`).click();
+    await expect(page.locator(`#${id} [part=panel]`)).toBeVisible();
+    return {
+      panel: await box(page.locator(`#${id} [part=panel]`)),
+      target: await box(trigger(page, `#${id}`)),
+    };
+  };
   const top = await around("top");
   expect(top.panel.y + top.panel.height).toBeLessThanOrEqual(top.target.y);
   const bottom = await around("bottom");
@@ -304,6 +363,49 @@ test("long unbroken content wraps inside the panel", async ({ page }) => {
     return panel.scrollWidth <= panel.clientWidth;
   });
   expect(fits).toBe(true);
+});
+
+test("a popover is only as wide as its content, up to the cap", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const sizes = await page.locator("#popover").evaluate(async (el) => {
+    const host = el as HTMLElement & {
+      open: boolean;
+      updateComplete: Promise<boolean>;
+    };
+    const panel = host.shadowRoot!.querySelector("[part=panel]")!;
+    const probe = document.createElement("div");
+    probe.style.inlineSize = "calc(var(--purr-spacing) * 45)";
+    host.shadowRoot!.append(probe);
+    const cap = probe.getBoundingClientRect().width;
+    probe.remove();
+    for (const n of [...host.children]) {
+      if (n.slot !== "trigger") n.remove();
+    }
+    const measure = async (text: string) => {
+      host.querySelector("p")?.remove();
+      const p = document.createElement("p");
+      p.style.margin = "0";
+      p.textContent = text;
+      host.append(p);
+      host.open = true;
+      await host.updateComplete;
+      const width = panel.getBoundingClientRect().width;
+      const lines = p.getBoundingClientRect().height;
+      host.open = false;
+      await host.updateComplete;
+      return { width, lines };
+    };
+    return {
+      cap,
+      short: await measure("Hi"),
+      long: await measure("word ".repeat(80)),
+    };
+  });
+  expect(sizes.short.width).toBeLessThan(sizes.cap);
+  expect(sizes.long.width).toBeCloseTo(sizes.cap, 0);
+  expect(sizes.long.lines).toBeGreaterThan(sizes.short.lines * 2);
 });
 
 test("hide() or open=false while focus is inside returns focus to the trigger", async ({

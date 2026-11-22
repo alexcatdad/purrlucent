@@ -1,15 +1,28 @@
 name: e2e quick
 
-# Manual run while working on a component: the e2e tests matching one path,
-# in Chromium only. Its check name differs from the required `e2e` check, so a
-# quick run never stands in for the full one.
+# Manual run while working on a component: the e2e tests matching one path in
+# one browser, optionally only the tests whose title matches `grep`, repeated
+# to expose a flaky test. Its check name differs from the required `e2e`
+# check, so a quick run never stands in for the full one.
 #   gh workflow run e2e-quick.yml --ref <branch> -f path=src/components/checkbox
+#   gh workflow run e2e-quick.yml --ref <branch> -f path=src/components/select -f browser=firefox -f grep="slotted label" -f repeat=30
 on:
   workflow_dispatch:
     inputs:
       path:
         description: Test file or folder, for example src/components/checkbox
         required: true
+      browser:
+        description: Browser project
+        type: choice
+        options: [chromium, firefox, webkit]
+        default: chromium
+      grep:
+        description: Only tests whose title matches this
+        default: ""
+      repeat:
+        description: Run each test this many times
+        default: "1"
 
 permissions:
   contents: read
@@ -23,13 +36,16 @@ jobs:
     name: e2e quick
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      TEST_PATH: ${{ inputs.path }}
+      BROWSER: ${{ inputs.browser }}
+      GREP: ${{ inputs.grep }}
+      REPEAT: ${{ inputs.repeat }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - run: bunx playwright install --with-deps chromium
+      - run: bunx playwright install --with-deps "$BROWSER"
       - run: bun run build-storybook
-      - run: bun run test:e2e --project=chromium "$TEST_PATH"
-        env:
-          TEST_PATH: ${{ inputs.path }}
+      - run: bun run test:e2e --project="$BROWSER" --repeat-each="$REPEAT" --retries=0 --grep="$GREP" "$TEST_PATH"

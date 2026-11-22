@@ -1,7 +1,7 @@
 export interface Range {
   min: number;
   max: number;
-  step: number;
+  step: number | "any";
 }
 
 export const clamp = (value: number, min: number, max: number) =>
@@ -9,18 +9,23 @@ export const clamp = (value: number, min: number, max: number) =>
 
 const decimals = (n: number) => (String(n).split(".")[1] ?? "").length;
 
-/** The nearest value on the step grid that starts at `min`, kept inside the range. */
+/** The nearest value on the step grid that starts at `min`, kept inside the range. With `step` "any" the value is only clamped, after rounding away floating point noise. */
 export function snap(value: number, { min, max, step }: Range) {
+  if (step === "any") return clamp(Number(value.toPrecision(12)), min, max);
   const places = Math.max(decimals(step), decimals(min));
   const onGrid = min + Math.round((value - min) / step) * step;
   return clamp(Number(onGrid.toFixed(places)), min, max);
 }
 
 /** A usable range from attribute input: a bad bound or step falls back, and max never sits below min. */
-export function toRange(min: number, max: number, step: number): Range {
+export function toRange(min: number, max: number, step: number | "any"): Range {
   const lo = Number.isFinite(min) ? min : 0;
   const hi = Number.isFinite(max) ? max : 100;
-  return { min: lo, max: Math.max(lo, hi), step: step > 0 ? step : 1 };
+  return {
+    min: lo,
+    max: Math.max(lo, hi),
+    step: step === "any" || step > 0 ? step : 1,
+  };
 }
 
 /** The value as shown and submitted: on the step grid and in range, or the minimum when it is not a number. */
@@ -48,13 +53,16 @@ export function valueAfterKey(
   range: Range,
   rtl: boolean,
 ) {
-  const page = Math.max(range.step, (range.max - range.min) / 10);
+  const span = range.max - range.min;
+  const any = range.step === "any";
+  const step = range.step === "any" ? span / 100 : range.step;
+  const page = any ? span / 10 : Math.max(step, span / 10);
   const right = rtl ? -1 : 1;
   const delta: Record<string, number> = {
-    ArrowRight: right * range.step,
-    ArrowLeft: -right * range.step,
-    ArrowUp: range.step,
-    ArrowDown: -range.step,
+    ArrowRight: right * step,
+    ArrowLeft: -right * step,
+    ArrowUp: step,
+    ArrowDown: -step,
     PageUp: page,
     PageDown: -page,
   };

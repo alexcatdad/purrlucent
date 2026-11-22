@@ -14,6 +14,7 @@ type Declaration = Described & {
   attributes?: Attribute[];
   slots?: Described[];
   cssParts?: Described[];
+  cssProperties?: Described[];
   events?: Described[];
 };
 export type Manifest = {
@@ -45,7 +46,7 @@ const element = (d: Declaration) =>
           )
           .join("\n")}\n\n`
       : ""
-  }${list("Slots", d.slots, "default")}${list("Parts", d.cssParts)}${list("Events", d.events)}`;
+  }${list("Slots", d.slots, "default")}${list("Parts", d.cssParts)}${list("CSS properties", d.cssProperties)}${list("Events", d.events)}`;
 
 /** The reference page: one section per component folder, one entry per element. */
 export function componentDocs(manifest: Manifest): string {

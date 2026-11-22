@@ -31,6 +31,16 @@ test("sizes grow from md to xl", async ({ page }) => {
   expect(widths[1]).toBeLessThan(widths[2]!);
 });
 
+test("the sm size is smaller than md and fits inside a medium control", async ({
+  page,
+}) => {
+  await gotoStory(page, story("small"));
+  const height = async (id: string) =>
+    (await page.locator(`#${id}`).boundingBox())!.height;
+  expect(await height("small")).toBeLessThan(await height("medium"));
+  expect(await height("small")).toBeLessThan(await height("control"));
+});
+
 test("it turns with motion allowed", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await gotoStory(page, story("default"));

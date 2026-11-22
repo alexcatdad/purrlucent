@@ -325,14 +325,21 @@ export class PurrSelect extends LitElement {
   override render() {
     const chosen = this.#chosen;
     const disabled = this.matches(":disabled");
+    // The slotted label's text, not aria-labelledby into the slot: Firefox
+    // crashed naming the combobox trigger that way.
     const name = this._labelled
-      ? undefined
+      ? [...this.querySelectorAll(":scope > [slot=label]")]
+          .map((el) => el.textContent?.trim())
+          .join(" ")
       : this.label || labelText(this.#internals.labels);
-    const labelledby = this._labelled ? "label" : nothing;
+    // The trigger is no labelable control, so the label is a plain element and
+    // a click on it focuses the trigger.
     // Not a <button>: WebKit leaves buttons out of the Tab order, a select is in it.
-    return html`<label part="label" id="label"
+    return html`<span
+        part="label"
+        @click=${() => !disabled && this.#trigger.focus()}
         ><slot name="label"></slot
-      ></label>
+      ></span>
       <div
         part="trigger"
         role="combobox"
@@ -341,7 +348,6 @@ export class PurrSelect extends LitElement {
         aria-expanded=${this.open}
         aria-controls="list"
         aria-label=${ifDefined(name)}
-        aria-labelledby=${labelledby}
         aria-required=${this.required ? "true" : nothing}
         aria-disabled=${disabled ? "true" : nothing}
         @click=${() => !disabled && (this.open = !this.open)}
@@ -359,7 +365,6 @@ export class PurrSelect extends LitElement {
         role="listbox"
         popover="manual"
         aria-label=${ifDefined(name)}
-        aria-labelledby=${labelledby}
       >
         <slot @slotchange=${this.#onSlotChange}></slot>
       </div>`;

@@ -95,6 +95,35 @@ export const InForm: Story = {
   `,
 };
 
+const icon = (path: string) =>
+  html`<svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    aria-hidden="true"
+  >
+    <path d=${path} />
+  </svg>`;
+
+/** Icon-only segments: each item has an `aria-label`, and the svg is hidden. */
+export const Icons: Story = {
+  render: () => html`
+    <purr-toggle-group id="control" label="Text alignment">
+      <purr-toggle-group-item value="left" aria-label="Align left"
+        >${icon("M4 6h16M4 12h10M4 18h14")}</purr-toggle-group-item
+      >
+      <purr-toggle-group-item value="center" aria-label="Align center"
+        >${icon("M4 6h16M7 12h10M5 18h14")}</purr-toggle-group-item
+      >
+      <purr-toggle-group-item value="right" aria-label="Align right"
+        >${icon("M4 6h16M10 12h10M6 18h14")}</purr-toggle-group-item
+      >
+    </purr-toggle-group>
+  `,
+};
+
 /** Under right-to-left the group mirrors. */
 export const Rtl: Story = { render, globals: { dir: "rtl" } };
 

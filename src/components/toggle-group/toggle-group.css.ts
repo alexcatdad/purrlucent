@@ -62,6 +62,18 @@ export const itemStyles = css`
     user-select: none;
   }
 
+  [part="label"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--purr-gap-icon);
+  }
+
+  ::slotted(svg) {
+    flex: none;
+    inline-size: var(--purr-icon-md);
+    block-size: var(--purr-icon-md);
+  }
+
   :host(:first-child) {
     border-start-start-radius: var(--purr-radius);
     border-end-start-radius: var(--purr-radius);

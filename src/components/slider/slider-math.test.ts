@@ -75,6 +75,29 @@ test("page keys move by 10% of the range, at least one step", () => {
   expect(valueAfterKey("PageUp", 2, small, false)).toBe(3);
 });
 
+test("step any only clamps a value and keeps it in the range", () => {
+  const any = { min: 0, max: 10, step: "any" as const };
+  expect(toRange(0, 10, "any")).toEqual(any);
+  expect(snap(3.37, any)).toBe(3.37);
+  expect(snap(12, any)).toBe(10);
+  expect(valueAt(0.123, any, false)).toBeCloseTo(1.23);
+});
+
+test("step any moves arrows by a hundredth of the range and pages by a tenth", () => {
+  const any = { min: 0, max: 10, step: "any" as const };
+  expect(valueAfterKey("ArrowRight", 5, any, false)).toBeCloseTo(5.1);
+  expect(valueAfterKey("ArrowDown", 5, any, false)).toBeCloseTo(4.9);
+  expect(valueAfterKey("PageUp", 5, any, false)).toBeCloseTo(6);
+});
+
+test("step any arrow presses add no floating point noise", () => {
+  const any = { min: 0, max: 1, step: "any" as const };
+  let value = 0;
+  for (let i = 0; i < 8; i++)
+    value = valueAfterKey("ArrowRight", value, any, false)!;
+  expect(value).toBe(0.08);
+});
+
 test("keys stop at the ends and other keys do nothing", () => {
   expect(valueAfterKey("ArrowRight", 100, range, false)).toBe(100);
   expect(valueAfterKey("ArrowLeft", 0, range, false)).toBe(0);

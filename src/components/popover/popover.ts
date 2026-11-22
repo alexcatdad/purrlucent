@@ -11,11 +11,14 @@ import { popoverStyles } from "./popover.css.ts";
  * and `aria-expanded` on it. The panel is a dialog named by `label`: it opens
  * on a press of the trigger, takes focus to its first focusable content (or to
  * itself), and closes on Escape (focus returns to the trigger), on a press
- * outside and when focus leaves it. An arrow points at the trigger.
+ * outside and when focus leaves it. An arrow points at the trigger. The panel
+ * is as wide as its content, from a minimum that keeps the arrow clear of the
+ * corners up to a maximum of `calc(var(--purr-spacing) * 45)`, and never wider
+ * than the viewport; longer content wraps.
  *
  * @attr {string} label - The panel's accessible name. Required.
  * @attr {string} placement - Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.
- * @attr {boolean} open - The panel is showing.
+ * @attr {boolean} open - The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it.
  * @slot - The panel's content.
  * @slot trigger - The control that opens the panel.
  * @csspart panel - The floating panel.
@@ -76,6 +79,16 @@ export class PurrPopover extends LitElement {
     if (refocus) this.#trigger?.focus();
   }
 
+  // One popover shows at a time. A popover nested in this one, or holding it, stays as it is.
+  #closeOthers() {
+    const root = this.getRootNode() as Document | ShadowRoot;
+    for (const other of root.querySelectorAll("purr-popover")) {
+      if (other.open && !other.contains(this) && !this.contains(other)) {
+        other.open = false;
+      }
+    }
+  }
+
   // Focus that leaves for nowhere (a click on plain page) is the outside press's to handle.
   #onFocusout = (event: FocusEvent) => {
     const next = event.relatedTarget as Node | null;
@@ -131,6 +144,7 @@ export class PurrPopover extends LitElement {
     // A panel that starts open is part of the page as loaded: it does not take focus or announce itself.
     const started = changed.get("open") === undefined;
     if (this.open) {
+      if (!started) this.#closeOthers();
       this.#anchored.show();
       if (!started) this.#focusInside();
     } else {
