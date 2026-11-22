@@ -13,3 +13,14 @@ Decisions that apply across components, made after the per-component HIG audits 
    - A selected toggle button gets a filled face, like a selected segment.
    - Each banner tone draws its own default icon (info, warning, error) unless one is slotted.
 6. **Built-in strings: native messages plus attributes.** Validation uses the browser's localized message where a native input exists to borrow it from. Every other built-in string gets an attribute (for example `empty-label`, `toggle-label`), as `close-label` already works on the banner. There is no global string table.
+7. **Switch: `md` is the mini size.** Its 24px track equals the height of a `md` control (`--purr-size-md`), which is what HIG's mini switch matches. A hierarchy uses `lg` or `xl` for the primary switch and `md` for the rest.
+8. **Popover: size is not animated.** The panel only fades in; size changes come from app-driven content swaps, and the arrow and position would have to follow every frame.
+9. **Context menu: item order is kept when the menu opens above.** Reversing the items would split the visual order from the DOM and keyboard order, or change nodes the app owns. Apps put the most used items first.
+10. **Menu: no iOS icon-row layout.** It is a single-platform layout; every item is one row.
+11. **Sidebar: no customize mode, no `sm` size, every row a tab stop.** Customizing is an app feature, the system size setting cannot be read on the web, and the sidebar is a navigation landmark of links, not a tree.
+12. **Tab bar: later, as its own component.** Below 600px the sidebar collapses; the app supplies its own navigation until then.
+13. **Slider: no vertical orientation, end icons, tick labels or circular dial for now.** They wait until an app needs them; an app can place icons and labels beside the slider.
+14. **Toolbar: wraps, with no overflow menu for now.** Wrapping keeps every item reachable; an overflow menu waits until an app needs it.
+15. **Banner: always dismissible.** A notice the person must keep belongs on another surface.
+16. **Text field: the clear button stays search-only, with no leading or trailing slots.** This matches macOS text fields; slots wait until an app needs them.
+17. **Not for the web:** spring loading, iOS context-menu previews, visionOS menu effects, the hover tooltip on a slider value (the value is exposed through `aria-valuenow`) and toolbar customization.
