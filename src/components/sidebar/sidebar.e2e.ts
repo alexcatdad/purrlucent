@@ -381,6 +381,71 @@ test("removing the level attribute returns the item to level 1", async ({
   await expect(page.locator("#albums button[aria-expanded]")).toHaveCount(0);
 });
 
+test("a parent row with href is a link that selects, and its chevron button expands it", async ({
+  page,
+}) => {
+  await open(page, "parent-link");
+  const link = page.locator("#albums a");
+  const button = page.getByRole("button", { name: "Albums, show items" });
+  await expect(link).toHaveAttribute("href", "#albums");
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  // Browsers without element reflection have no aria-controls to read.
+  const controls = await button.evaluate((el) =>
+    "ariaControlsElements" in el
+      ? (el.ariaControlsElements as Element[] | null)?.map((c) => c.id)
+      : null,
+  );
+  if (controls) expect(controls).toEqual(["recent", "favorites"]);
+  await expect(page.locator("#recent")).toBeHidden();
+
+  await link.click();
+  await expect(link).toHaveAttribute("aria-current", "page");
+  await expect(page.locator("[aria-current]")).toHaveCount(1);
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#recent")).toBeHidden();
+
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#recent")).toBeVisible();
+  await expect(link).toHaveAttribute("aria-current", "page");
+  await expect(page.locator("[aria-current]")).toHaveCount(1);
+});
+
+test("toggle-label names a parent row's chevron button", async ({ page }) => {
+  await open(page, "parent-link");
+  await page
+    .locator("#albums")
+    .evaluate((el) => el.setAttribute("toggle-label", "Afficher les albums"));
+  await expect(
+    page.getByRole("button", { name: "Afficher les albums" }),
+  ).toBeVisible();
+});
+
+test("a parent row's link and chevron button are both tab stops, and arrows pass over them", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === "webkit", "WebKit on macOS skips links on Tab");
+  await open(page, "parent-link");
+  const part = () =>
+    page
+      .locator("#albums")
+      .evaluate((el) => el.shadowRoot?.activeElement?.className);
+  await page.locator("#home a").focus();
+  await page.keyboard.press("Tab");
+  expect(await focusedId(page)).toBe("albums");
+  expect(await part()).toBe("disclosure");
+  await page.keyboard.press("Tab");
+  expect(await part()).toBe("control");
+  await page.keyboard.press("Tab");
+  expect(await focusedId(page)).toBe("settings");
+  await page.keyboard.press("ArrowUp");
+  expect(await focusedId(page)).toBe("albums");
+  await page.locator("#albums a").focus();
+  await page.keyboard.press("ArrowDown");
+  expect(await focusedId(page)).toBe("settings");
+});
+
 test("a section heading that wraps grows instead of overflowing", async ({
   page,
 }) => {

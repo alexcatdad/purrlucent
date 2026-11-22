@@ -8,6 +8,7 @@ import { sidebarSurface } from "../../surfaces/surfaces.css.ts";
  */
 const face = css`
   .control,
+  .disclosure,
   .toggle {
     position: relative;
     isolation: isolate;
@@ -20,6 +21,7 @@ const face = css`
   }
 
   .control::before,
+  .disclosure::before,
   .toggle::before {
     content: "";
     position: absolute;
@@ -32,22 +34,26 @@ const face = css`
 
   @media (hover: hover) {
     .control:hover::before,
+    .disclosure:hover::before,
     .toggle:hover::before {
       background-color: var(--_face-hover);
     }
   }
 
   .control:active::before,
+  .disclosure:active::before,
   .toggle:active::before {
     background-color: var(--_face-pressed);
   }
 
   .control:focus-visible,
+  .disclosure:focus-visible,
   .toggle:focus-visible {
     outline: none;
   }
 
   .control:focus-visible::before,
+  .disclosure:focus-visible::before,
   .toggle:focus-visible::before {
     outline: var(--purr-ring-width) solid var(--purr-color-ring);
     outline-offset: calc(var(--purr-ring-width) * -1);
@@ -55,11 +61,13 @@ const face = css`
 
   @media (forced-colors: active) {
     .control::before,
+    .disclosure::before,
     .toggle::before {
       transition: none;
     }
 
     .control:focus-visible::before,
+    .disclosure:focus-visible::before,
     .toggle:focus-visible::before {
       outline-color: Highlight;
     }
@@ -162,7 +170,8 @@ export const itemStyles = [
 
     /* Every row reserves the chevron column, so level 1 labels share a leading
        edge; level 2 indents one step. Hover is half the selected fill. */
-    .control {
+    .control,
+    .disclosure {
       --_fill: var(--purr-color-muted-3);
       --_face-hover: color-mix(in srgb, var(--_fill) 50%, transparent);
       --_face-pressed: var(--_fill);
@@ -181,6 +190,24 @@ export const itemStyles = [
 
     :host([expandable]) .control {
       font-weight: 400;
+    }
+
+    /* Beside a link, the disclosure button covers the link's chevron column,
+       so the label keeps the edge it has on a button row. */
+    :host([expandable]) {
+      position: relative;
+    }
+
+    .disclosure {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      inline-size: auto;
+      min-inline-size: var(--purr-size-hit-min);
+      padding-inline: var(--purr-pad-item) var(--purr-space-1);
     }
 
     :host([level="2"]) .control {
@@ -247,7 +274,8 @@ export const itemStyles = [
         transition: none;
       }
 
-      :host([selected]) .control {
+      :host([selected]) .control,
+      :host([selected]) .disclosure {
         --_face: Highlight;
         --_face-hover: Highlight;
         --_face-pressed: Highlight;
@@ -261,7 +289,8 @@ export const itemStyles = [
         color: inherit;
       }
 
-      :host([selected]) .control:focus-visible::before {
+      :host([selected]) .control:focus-visible::before,
+      :host([selected]) .disclosure:focus-visible::before {
         outline-color: HighlightText;
       }
     }

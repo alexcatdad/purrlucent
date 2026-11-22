@@ -12,14 +12,18 @@ const detail = html`<slot name="detail"></slot>`;
 
 /**
  * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
- * by the sidebar because level 2 items follow it, a disclosure button. Without
- * an `href` it renders a plain button; clicking it selects it, so an app can
- * also handle the click itself.
+ * by the sidebar because level 2 items follow it, a disclosure button. An
+ * expandable item with an `href` keeps its link, which selects like any other,
+ * and gets a separate disclosure button before it. Without an `href` an item
+ * renders a plain button; clicking it selects it, so an app can also handle the
+ * click itself.
  *
+ * @attr {string} toggle-label - The disclosure button's accessible name when a link has one beside it. Defaults to "<item label>, show items".
  * @slot - The item label.
  * @slot icon - A leading svg icon, tinted with the accent text color.
  * @slot detail - Trailing muted text, such as a count.
  * @csspart control - The link or disclosure button.
+ * @csspart disclosure - The disclosure button beside a link.
  * @csspart chevron - The disclosure arrow.
  * @fires purr-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
  */
@@ -35,6 +39,7 @@ export class PurrSidebarItem extends LitElement {
     level: { type: Number, reflect: true, noAccessor: true },
     expandable: { type: Boolean, reflect: true },
     expanded: { type: Boolean, reflect: true },
+    toggleLabel: { attribute: "toggle-label" },
   };
 
   declare href: string | undefined;
@@ -42,6 +47,7 @@ export class PurrSidebarItem extends LitElement {
   /** Set by the sidebar when level 2 items follow this one. */
   declare expandable: boolean;
   declare expanded: boolean;
+  declare toggleLabel: string;
 
   #level: SidebarLevel = 1;
 
@@ -50,6 +56,7 @@ export class PurrSidebarItem extends LitElement {
     this.selected = false;
     this.expandable = false;
     this.expanded = false;
+    this.toggleLabel = "";
   }
 
   /** 1 or 2. Any other value throws in development. */
@@ -74,34 +81,88 @@ export class PurrSidebarItem extends LitElement {
     );
   };
 
+  /** The level 2 items that follow this one. */
+  #children() {
+    const children: Element[] = [];
+    for (
+      let next = this.nextElementSibling;
+      next instanceof PurrSidebarItem && next.level === 2;
+      next = next.nextElementSibling
+    )
+      children.push(next);
+    return children;
+  }
+
+  /** The disclosure button's name: `toggle-label`, else "<label>, show items". */
+  #name() {
+    if (this.toggleLabel) return this.toggleLabel;
+    const text = [...this.childNodes]
+      .filter((node) =>
+        node instanceof Element ? !node.slot : node.nodeType === Node.TEXT_NODE,
+      )
+      .map((node) => node.textContent)
+      .join("")
+      .replace(/\s+/g, " ")
+      .trim();
+    return `${text}, show items`;
+  }
+
+  protected override updated() {
+    // The controlled items sit in the light DOM, out of reach of an id reference.
+    const button = this.renderRoot.querySelector<
+      HTMLButtonElement & { ariaControlsElements?: Element[] | null }
+    >(".disclosure");
+    if (button && "ariaControlsElements" in button)
+      button.ariaControlsElements = this.#children();
+  }
+
   override render() {
-    return this.expandable
-      ? html`<button
+    if (this.expandable && this.href)
+      // A destination and a disclosure: two controls, the button first.
+      return html`<button
+          class="disclosure"
+          part="disclosure"
+          type="button"
+          aria-expanded=${this.expanded ? "true" : "false"}
+          aria-label=${this.#name()}
+          @click=${this.#toggle}
+        >
+          ${chevron}</button
+        ><a
+          class="control"
+          part="control"
+          href=${this.href}
+          aria-current=${this.selected ? "page" : nothing}
+          @slotchange=${() => this.requestUpdate()}
+          >${icon}${label}${detail}</a
+        >`;
+    if (this.expandable)
+      return html`<button
+        class="control"
+        part="control"
+        type="button"
+        aria-expanded=${this.expanded ? "true" : "false"}
+        @click=${this.#toggle}
+      >
+        ${chevron}${icon}${label}${detail}
+      </button>`;
+    return this.href
+      ? html`<a
+          class="control"
+          part="control"
+          href=${this.href}
+          aria-current=${this.selected ? "page" : nothing}
+          >${icon}${label}${detail}</a
+        >`
+      : // Without a destination an anchor is not focusable, so use a button.
+        html`<button
           class="control"
           part="control"
           type="button"
-          aria-expanded=${this.expanded ? "true" : "false"}
-          @click=${this.#toggle}
+          aria-current=${this.selected ? "page" : nothing}
         >
-          ${chevron}${icon}${label}${detail}
-        </button>`
-      : this.href
-        ? html`<a
-            class="control"
-            part="control"
-            href=${this.href}
-            aria-current=${this.selected ? "page" : nothing}
-            >${icon}${label}${detail}</a
-          >`
-        : // Without a destination an anchor is not focusable, so use a button.
-          html`<button
-            class="control"
-            part="control"
-            type="button"
-            aria-current=${this.selected ? "page" : nothing}
-          >
-            ${icon}${label}${detail}
-          </button>`;
+          ${icon}${label}${detail}
+        </button>`;
   }
 }
 
