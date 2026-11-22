@@ -27,6 +27,9 @@ export function parse(text: string) {
   return trimmed === "" ? null : Number(trimmed);
 }
 
+/** Steps moved by Page Up, Page Down and a Shift-press on a stepper button. */
+export const PAGE_STEPS = 10;
+
 /** The value after a key, or undefined when the key does nothing. */
 export function valueAfterKey(
   key: string,
@@ -36,8 +39,8 @@ export function valueAfterKey(
   const steps: Record<string, number> = {
     ArrowUp: 1,
     ArrowDown: -1,
-    PageUp: 10,
-    PageDown: -10,
+    PageUp: PAGE_STEPS,
+    PageDown: -PAGE_STEPS,
   };
   if (key === "Home") return bounds.min;
   if (key === "End") return bounds.max;

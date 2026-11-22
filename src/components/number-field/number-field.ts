@@ -8,6 +8,7 @@ import { labelText } from "../../behaviors/labels.ts";
 import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
 import {
+  PAGE_STEPS,
   parse,
   snap,
   stepBy,
@@ -33,7 +34,8 @@ const optionalNumber = {
 /**
  * A numeric field with up and down stepper buttons, following the WAI-ARIA
  * spinbutton pattern. ArrowUp and ArrowDown step, PageUp and PageDown step ten
- * times, Home and End go to `min` and `max` when they are set. A typed number
+ * times, Home and End go to `min` and `max` when they are set. Shift-click on
+ * a stepper button also steps ten times, held or not. A typed number
  * is clamped to the range and snapped to the step grid when it is committed
  * (blur or Enter). The stepper buttons are not tab stops, repeat while held
  * and disable at the limits. The slotted text is a visible label; without it,
@@ -301,15 +303,15 @@ export class PurrNumberField extends LitElement {
     return typed !== null && Number.isFinite(typed) ? typed : this.value;
   }
 
-  #step(direction: 1 | -1) {
-    return this.#moveTo(stepBy(this.#current, direction, this.#bounds));
+  #step(direction: 1 | -1, steps = 1) {
+    return this.#moveTo(stepBy(this.#current, direction * steps, this.#bounds));
   }
 
-  #press(direction: 1 | -1) {
+  #press(direction: 1 | -1, steps: number) {
     this.#release();
-    if (!this.#step(direction)) return;
+    if (!this.#step(direction, steps)) return;
     const repeat = () => {
-      if (this.#step(direction))
+      if (this.#step(direction, steps))
         this.#timer = window.setTimeout(repeat, REPEAT_INTERVAL);
     };
     this.#timer = window.setTimeout(repeat, REPEAT_DELAY);
@@ -366,7 +368,8 @@ export class PurrNumberField extends LitElement {
       ?disabled=${atLimit || this.readonly || this.matches(":disabled")}
       @mousedown=${(event: Event) => event.preventDefault()}
       @pointerdown=${(event: PointerEvent) => {
-        if (event.isPrimary && event.button === 0) this.#press(direction);
+        if (event.isPrimary && event.button === 0)
+          this.#press(direction, event.shiftKey ? PAGE_STEPS : 1);
       }}
       @pointerup=${this.#release}
       @pointercancel=${this.#release}
