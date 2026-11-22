@@ -110,7 +110,7 @@ export const itemStyles = css`
     opacity: 0;
   }
 
-  :host([selected][disabled]) {
+  :host([selected]:state(disabled)) {
     --purr-face: color-mix(
       in srgb,
       var(--purr-color-selected) 45%,
@@ -135,7 +135,7 @@ export const itemStyles = css`
 
   /* System colors replace ours: the selected item paints Highlight. */
   @media (forced-colors: active) {
-    :host([selected]:not([disabled])) {
+    :host([selected]:not(:state(disabled))) {
       --purr-face: Highlight;
       --purr-face-hover: Highlight;
       --purr-face-pressed: Highlight;
@@ -147,7 +147,7 @@ export const itemStyles = css`
     }
 
     /* Disabled, selected: GrayText fill, the reverse of unselected GrayText text. */
-    :host([selected][disabled]) {
+    :host([selected]:state(disabled)) {
       --purr-face: GrayText;
 
       forced-color-adjust: none;
