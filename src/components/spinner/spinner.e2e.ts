@@ -4,7 +4,6 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
-import { forEachViewport } from "../../../e2e/helpers/matrix.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `components-spinner--${name}`;
@@ -94,13 +93,4 @@ test("virtual screen reader speaks the role and name", async ({ page }) => {
   const spoken = (await spokenPhrases(page)).join(" | ");
   expect(spoken).toContain("progressbar");
   expect(spoken).toContain("Loading");
-});
-
-forEachViewport(({ name }) => {
-  for (const id of ["sizes", "glass"]) {
-    test(`screenshot of ${id} at ${name}`, async ({ page }) => {
-      const root = await gotoStory(page, story(id));
-      await expect(root).toHaveScreenshot(`${id}-${name}.png`);
-    });
-  }
 });

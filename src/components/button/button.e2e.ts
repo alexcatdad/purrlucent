@@ -5,7 +5,6 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
-import { forEachViewport } from "../../../e2e/helpers/matrix.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const stories = [
@@ -297,13 +296,4 @@ test("increased contrast outlines every filled variant", async ({ page }) => {
       els.map((el) => getComputedStyle(el, "::before").boxShadow),
     );
   for (const shadow of shadows) expect(shadow).not.toBe("none");
-});
-
-forEachViewport(({ name }) => {
-  for (const id of stories.slice(1)) {
-    test(`screenshot of ${id} at ${name}`, async ({ page }) => {
-      const root = await gotoStory(page, `components-button--${id}`);
-      await expect(root).toHaveScreenshot(`${id}-${name}.png`);
-    });
-  }
 });

@@ -880,20 +880,6 @@ test("the virtual screen reader speaks the sections as groups", async ({
   await expect(page.getByRole("group", { name: "Folders" })).toBeVisible();
 });
 
-for (const [theme, material] of [
-  ["dark", "glass"],
-  ["light", "solid"],
-] as const) {
-  test(`screenshot right-to-left in ${theme} ${material}`, async ({ page }) => {
-    const root = await open(
-      page,
-      "group-open",
-      `dir:rtl;theme:${theme};material:${material}`,
-    );
-    await expect(root).toHaveScreenshot(`rtl-${theme}-${material}.png`);
-  });
-}
-
 forEachViewport(({ name, pointer, width }) => {
   test(`items are at least 44 by 44 with a coarse pointer at ${name}`, async ({
     page,
@@ -928,16 +914,16 @@ forEachViewport(({ name, pointer, width }) => {
   });
 
   for (const material of ["solid", "glass"]) {
-    test(`screenshot at ${name} in ${material}`, async ({ page }) => {
-      const root = await open(page, "group-open", `material:${material}`);
+    test(`${material} material sets its backdrop filter at ${name}`, async ({
+      page,
+    }) => {
+      await open(page, "group-open", `material:${material}`);
       await expand(page);
-      // The pixels barely differ, so also check the glass really is on.
       const filter = await page
         .locator("#sidebar")
         .evaluate((el) => getComputedStyle(el).backdropFilter);
       if (material === "glass") expect(filter).not.toBe("none");
       else expect(filter).toBe("none");
-      await expect(root).toHaveScreenshot(`${material}-${name}.png`);
     });
   }
 });

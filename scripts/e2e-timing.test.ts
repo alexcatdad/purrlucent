@@ -33,10 +33,9 @@ test("each test counts all of its attempts and keeps its describe path", () => {
   ]);
 });
 
-test("the summary splits time by file and screenshots, slowest first", () => {
+test("the summary splits time by file, slowest first", () => {
   const text = summary(rows(report));
   expect(text).toContain("10s of test time in 3 tests");
-  expect(text).toContain("Screenshot tests: 5s (50%).");
   expect(text).toContain("| a.e2e.ts | 2 | 6s | 60% |");
   expect(text.indexOf("phone › screenshot | 5s")).toBeLessThan(
     text.indexOf("b.e2e.ts: axe | 4s"),

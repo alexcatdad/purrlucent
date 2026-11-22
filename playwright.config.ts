@@ -22,9 +22,6 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     trace: "retain-on-failure",
   },
-  expect: {
-    toHaveScreenshot: { animations: "disabled" },
-  },
   // Firefox runs only in CI; locally Chromium and WebKit.
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },

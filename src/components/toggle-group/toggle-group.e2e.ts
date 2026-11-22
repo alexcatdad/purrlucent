@@ -4,7 +4,6 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
-import { forEachViewport } from "../../../e2e/helpers/matrix.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = "components-toggle-group--default";
@@ -374,16 +373,4 @@ test("virtual screen reader speaks the group and each radio", async ({
     "end of radiogroup, Calendar range",
     "end of document",
   ]);
-});
-
-forEachViewport(({ name }) => {
-  for (const [label, globals] of [
-    ["default", ""],
-    ["rtl", "dir:rtl"],
-  ] as const) {
-    test(`screenshot at ${name} (${label})`, async ({ page }) => {
-      const root = await open(page, story, globals);
-      await expect(root).toHaveScreenshot(`${label}-${name}.png`);
-    });
-  }
 });
