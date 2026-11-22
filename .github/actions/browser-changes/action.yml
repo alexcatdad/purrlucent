@@ -17,14 +17,14 @@ runs:
     - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
       with:
         bun-version: ${{ inputs.bun-version }}
-    # A pull request is checked out as its merge commit, whose first parent is
-    # the base. The version pull request is dispatched on its branch. A
-    # scheduled run always runs everything.
+    # A pull request is checked out as its merge commit, and a push to main is
+    # a squash merge; either way the first parent is the base. The version pull
+    # request is dispatched on its branch. A scheduled run always runs everything.
     - id: diff
       shell: bash
       run: |
         case "$GITHUB_EVENT_NAME" in
-          pull_request) bun scripts/ci-changes.ts HEAD^1 HEAD >> "$GITHUB_OUTPUT" ;;
+          pull_request | push) bun scripts/ci-changes.ts HEAD^1 HEAD >> "$GITHUB_OUTPUT" ;;
           workflow_dispatch) bun scripts/ci-changes.ts origin/main...HEAD >> "$GITHUB_OUTPUT" ;;
           *) echo code=true >> "$GITHUB_OUTPUT" ;;
         esac

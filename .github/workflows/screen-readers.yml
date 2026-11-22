@@ -1,7 +1,9 @@
 name: Screen readers
 
-# No run on push to main: see ci.yml.
+# Runs on main after each merge too: see ci.yml.
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   schedule:

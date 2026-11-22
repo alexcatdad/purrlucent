@@ -1,9 +1,10 @@
 name: CI
 
-# No run on push to main: the ruleset requires a branch to be up to date before
-# it merges, so main gets the tree its pull request already tested. A weekly
-# run catches runner-image drift.
+# Pull requests merge without first updating from main, so a run on main after
+# each merge checks the combination. A weekly run catches runner-image drift.
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   schedule:
