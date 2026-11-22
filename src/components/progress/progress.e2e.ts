@@ -34,9 +34,30 @@ test("a value sets aria-valuenow and the fill width", async ({ page }) => {
       ),
     );
   }
-  expect(widths[0]).toBeGreaterThan(0);
+  expect(widths[0]).toBe(0);
   expect(widths[1]).toBeGreaterThan(widths[0]!);
   expect(widths[2]).toBeGreaterThan(widths[1]!);
+});
+
+test("at 0% the bar shows an empty track; a small value still shows", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const bar = page.locator("#progress");
+  const fillWidth = () =>
+    bar.evaluate(
+      (el) =>
+        el.shadowRoot!.querySelector('[part="fill"]')!.getBoundingClientRect()
+          .width,
+    );
+  await bar.evaluate(
+    (el) => ((el as HTMLElement & { value: number }).value = 0),
+  );
+  await expect.poll(fillWidth).toBe(0);
+  await bar.evaluate(
+    (el) => ((el as HTMLElement & { value: number }).value = 1),
+  );
+  await expect.poll(fillWidth).toBeGreaterThan(0);
 });
 
 test("without a value there is no aria-valuenow", async ({ page }) => {

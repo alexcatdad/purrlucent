@@ -2,7 +2,8 @@ import { css } from "lit";
 
 /*
  * A quiet ring with one arc that turns. Without motion the arc rests where it
- * is: a partial ring on a full groove still reads as unfinished work.
+ * is: a partial ring on a full groove still reads as unfinished work. With a
+ * value the arc stops and shows the share done.
  */
 export const spinnerStyles = css`
   :host {
@@ -57,6 +58,21 @@ export const spinnerStyles = css`
     to {
       rotate: 1turn;
     }
+  }
+
+  /*
+   * With a value the arc is --_p (0 to 1) of the ring, clockwise from the top,
+   * and does not turn. At exactly 0 it is hidden so the round cap leaves no dot.
+   */
+  :host(:state(determinate)) .arc {
+    stroke-dasharray: calc(var(--_p) * 100) 100;
+    rotate: -0.25turn;
+    animation: none;
+    transition: stroke-dasharray var(--purr-duration) var(--purr-ease-out);
+  }
+
+  :host(:state(empty)) .arc {
+    visibility: hidden;
   }
 
   @media (forced-colors: active) {

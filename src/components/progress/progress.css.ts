@@ -1,8 +1,9 @@
 import { css } from "lit";
 
 /*
- * Determinate: the fill is `--_p` (0 to 1) of the bar, never narrower than the
- * bar is tall so 0% still shows a dot. Indeterminate: a segment crosses the bar;
+ * Determinate: the fill is `--_p` (0 to 1) of the bar. Above 0 it is never
+ * narrower than the bar is tall, so a small value still shows; at exactly 0 the
+ * track is empty. Indeterminate: a segment crosses the bar;
  * without motion it rests in the middle, still visible.
  */
 export const progressStyles = css`
@@ -32,7 +33,7 @@ export const progressStyles = css`
     display: block;
     block-size: 100%;
     inline-size: calc(var(--_p) * 100%);
-    min-inline-size: var(--_h);
+    min-inline-size: calc(var(--_h) * min(1, var(--_p) * 100));
     border-radius: var(--purr-radius-full);
     background-color: var(--purr-color-selected);
     transition: inline-size var(--purr-duration) var(--purr-ease-out);

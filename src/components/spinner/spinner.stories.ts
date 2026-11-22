@@ -51,6 +51,22 @@ export const Small: Story = {
     </div>`,
 };
 
+/** With a `value` the arc shows how much is done and stops turning. */
+export const Determinate: Story = {
+  render: () =>
+    html`<div
+      style="display:flex;align-items:center;gap:var(--purr-space-4);padding:var(--purr-space-4)"
+    >
+      ${[0, 25, 50, 75, 100].map(
+        (value) =>
+          html`<purr-spinner
+            label="Upload ${value}%"
+            value=${value}
+          ></purr-spinner>`,
+      )}
+    </div>`,
+};
+
 /** The role and name come from the host. */
 export const Semantics: Story = {
   render: () =>
