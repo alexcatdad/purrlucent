@@ -198,6 +198,86 @@ test("an alert with more than three actions warns", async ({ page }) => {
     .toEqual(["purr-dialog: an alert takes at most three buttons."]);
 });
 
+test("--purr-dialog-width sets a sheet's width", async ({ page }) => {
+  await gotoStory(page, story("open-sheet"));
+  const width = () =>
+    dialogEl(page)
+      .locator("dialog")
+      .evaluate((el) => el.getBoundingClientRect().width);
+  const initial = await width();
+  await dialogEl(page).evaluate((el) =>
+    el.setAttribute("style", "--purr-dialog-width: 500px"),
+  );
+  await expect.poll(width).toBe(500);
+  expect(initial).not.toBe(500);
+});
+
+test("a sheet opened over another sheet warns; an alert over a sheet does not", async ({
+  page,
+}) => {
+  const warnings: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "warning") warnings.push(message.text());
+  });
+  const stacked = () =>
+    warnings.filter((text) => text.includes("show one sheet at a time"));
+  await gotoStory(page, story("open-sheet"));
+  await expect(sheet(page)).toBeVisible();
+  const showOver = (variant: string) =>
+    page.evaluate(async (kind) => {
+      const el = document.createElement("purr-dialog") as HTMLElement & {
+        show(): void;
+        updateComplete: Promise<unknown>;
+      };
+      el.setAttribute("variant", kind);
+      el.id = `over-${kind}`;
+      document.body.append(el);
+      el.show();
+      await el.updateComplete;
+    }, variant);
+  await showOver("alert");
+  await expect(page.locator("#over-alert")).toHaveJSProperty("open", true);
+  expect(stacked()).toHaveLength(0);
+  await page.locator("#over-alert").evaluate((el) => el.remove());
+  await showOver("sheet");
+  await expect
+    .poll(stacked)
+    .toEqual([
+      "purr-dialog: show one sheet at a time; close the open sheet first.",
+    ]);
+});
+
+test("closing a sheet and showing another in one tick does not warn", async ({
+  page,
+}) => {
+  const warnings: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "warning") warnings.push(message.text());
+  });
+  await gotoStory(page, story("open-sheet"));
+  await expect(sheet(page)).toBeVisible();
+  await page.evaluate(async () => {
+    const a = document.querySelector("purr-dialog") as HTMLElement & {
+      close(): void;
+    };
+    const b = document.createElement("purr-dialog") as HTMLElement & {
+      show(): void;
+      updateComplete: Promise<unknown>;
+    };
+    b.setAttribute("variant", "sheet");
+    b.id = "next-sheet";
+    document.body.append(b);
+    a.close();
+    b.show();
+    await b.updateComplete;
+  });
+  await expect(page.locator("#next-sheet")).toHaveJSProperty("open", true);
+  await page.waitForTimeout(100);
+  expect(
+    warnings.filter((text) => text.includes("show one sheet at a time")),
+  ).toHaveLength(0);
+});
+
 test("a destructive default is not used and warns", async ({ page }) => {
   const warnings: string[] = [];
   page.on("console", (message) => {

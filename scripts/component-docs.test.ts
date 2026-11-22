@@ -16,6 +16,7 @@ test("one section per component folder, one entry per element", () => {
               { name: "size", type: { text: '"md" | "lg"' }, default: '"md"' },
             ],
             slots: [{ name: "", description: "The items." }],
+            cssProperties: [{ name: "--purr-gap", description: "The gap." }],
             events: [{ name: "purr-change", description: "Changed." }],
           },
           { name: "helper" },
@@ -30,6 +31,7 @@ test("one section per component folder, one entry per element", () => {
   expect(page).toContain("### `<purr-toggle-group>`\n\nA row of items.");
   expect(page).toContain('| `size` | `"md" \\| "lg"` | `"md"` |  |');
   expect(page).toContain("- default: The items.");
+  expect(page).toContain("**CSS properties**\n\n- `--purr-gap`: The gap.");
   expect(page).toContain("- `purr-change`: Changed.");
   expect(page).not.toContain("pressable");
 });
