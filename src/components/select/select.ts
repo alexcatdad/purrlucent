@@ -329,10 +329,15 @@ export class PurrSelect extends LitElement {
       ? undefined
       : this.label || labelText(this.#internals.labels);
     const labelledby = this._labelled ? "label" : nothing;
+    // Not a <label>: the trigger is no labelable control, and Firefox crashes
+    // naming a control-less label. A click on it focuses the trigger instead.
     // Not a <button>: WebKit leaves buttons out of the Tab order, a select is in it.
-    return html`<label part="label" id="label"
+    return html`<span
+        part="label"
+        id="label"
+        @click=${() => !disabled && this.#trigger.focus()}
         ><slot name="label"></slot
-      ></label>
+      ></span>
       <div
         part="trigger"
         role="combobox"
