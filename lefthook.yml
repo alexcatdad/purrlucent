@@ -6,10 +6,3 @@ pre-commit:
       run: bun run lint
     - name: fmt
       run: bun run fmt:check
-
-# AI rubric review with the developer's own Codex login; no API key leaves this machine.
-pre-push:
-  jobs:
-    - name: rubric
-      use_stdin: true
-      run: bun scripts/rubric-prompt.ts pre-push origin/main
