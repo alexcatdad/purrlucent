@@ -138,6 +138,27 @@ export const Disabled: Story = {
   },
 };
 
+/** A busy button shows a spinner, ignores presses and stays focusable. */
+export const Busy: Story = {
+  render: () =>
+    row([
+      html`<purr-button id="busy" variant="primary" busy>Saving</purr-button>`,
+      html`<purr-button id="busy-icon" icon busy aria-label="Add"
+        >${plus}</purr-button
+      >`,
+    ]),
+  play: async () => {
+    const { button, presses } = countPresses("busy");
+    await button.updateComplete;
+    expect(button.getAttribute("aria-busy")).toBe("true");
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard(" ");
+    await waitFor(() => expect(presses.count).toBe(0));
+  },
+};
+
 /** Submit and reset buttons act on the form they are in. */
 export const InForm: Story = {
   render: () => html`

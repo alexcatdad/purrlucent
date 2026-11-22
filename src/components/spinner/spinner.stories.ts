@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect } from "storybook/test";
+import "../button/button.ts";
 import "./spinner.ts";
 import type { PurrSpinner } from "./spinner.ts";
 
@@ -36,6 +37,18 @@ export const Sizes: Story = {
           ></purr-spinner>`,
       ),
     ),
+};
+
+/** The small size suits a line of text or a medium control. */
+export const Small: Story = {
+  render: () =>
+    html`<div
+      style="display:flex;align-items:center;gap:var(--purr-space-4);padding:var(--purr-space-4)"
+    >
+      <purr-spinner id="small" size="sm" label="Loading small"></purr-spinner>
+      <purr-spinner id="medium" label="Loading medium"></purr-spinner>
+      <purr-button id="control">Save</purr-button>
+    </div>`,
 };
 
 /** The role and name come from the host. */
