@@ -158,12 +158,15 @@ test("the required message is the browser's own, localized one", async ({
     const box = document.createElement("input");
     box.type = "checkbox";
     box.required = true;
+    // The checkbox keeps its validity in ElementInternals, reached through
+    // the press behavior that attached them.
+    const el = document.querySelector(
+      "purr-checkbox[required]",
+    ) as HTMLElement & {
+      pressable: { internals: ElementInternals };
+    };
     return {
-      message: (
-        document.querySelector("purr-checkbox[required]") as HTMLElement & {
-          validationMessage: string;
-        }
-      ).validationMessage,
+      message: el.pressable.internals.validationMessage,
       native: box.validationMessage,
     };
   });
