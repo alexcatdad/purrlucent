@@ -199,6 +199,24 @@ test("a disabled group has no tab stop and fires no purr-change", async ({
   );
 });
 
+test("a disabled segment is skipped by arrows and ignores clicks", async ({
+  page,
+}) => {
+  await open(page, "components-toggle-group--disabled-item");
+  const week = page.getByRole("radio", { name: "Week" });
+  await expect(week).toBeDisabled();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("radio", { name: "Day" })).toBeFocused();
+  await page.keyboard.press("ArrowRight"); // skips Week
+  await expect(page.getByRole("radio", { name: "Month" })).toBeFocused();
+  expect(await selectedValue(page)).toBe("month");
+  await page.keyboard.press("ArrowLeft"); // skips Week back to Day
+  expect(await selectedValue(page)).toBe("day");
+  // Last: a click moves where the next Tab starts from.
+  await week.click({ force: true });
+  expect(await selectedValue(page)).toBe("day");
+});
+
 test("a disabled click in the same task as disabled = true selects nothing", async ({
   page,
 }) => {
