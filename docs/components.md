@@ -20,7 +20,7 @@ A notification banner: an icon, a title, a message, optional actions and a close
 
 **Slots**
 
-- `icon`: An `svg` shown as a tile.
+- `icon`: An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, an error mark for `destructive`.
 - `title`: The heading.
 - default: The message.
 - `actions`: Buttons below the message.
@@ -223,6 +223,7 @@ A single-line text field. A native input inside does the editing, so typing, sel
 - `control`: The native input.
 - `glyph`: The magnifier of a search field.
 - `clear`: The clear button of a search field.
+- `message`: The icon and validation message below the field while it is invalid.
 
 **Events**
 
@@ -333,6 +334,7 @@ A numeric field with up and down stepper buttons, following the WAI-ARIA spinbut
 - `stepper`: The two stepper buttons.
 - `increment`: The up button.
 - `decrement`: The down button.
+- `message`: The icon and validation message below the field while it is invalid.
 
 **Events**
 
@@ -687,6 +689,7 @@ A multi-line text field. A native textarea inside does the editing, so typing, s
 - `label`: The visible label.
 - `field`: The shell around the textarea.
 - `control`: The native textarea.
+- `message`: The icon and validation message below the field while it is invalid.
 
 **Events**
 

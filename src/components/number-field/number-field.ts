@@ -1,5 +1,9 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import {
+  fieldMessage,
+  syncFieldMessage,
+} from "../../behaviors/field-message.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { submitImplicitly } from "../input/input.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
@@ -57,6 +61,7 @@ const optionalNumber = {
  * @csspart stepper - The two stepper buttons.
  * @csspart increment - The up button.
  * @csspart decrement - The down button.
+ * @csspart message - The icon and validation message below the field while it is invalid.
  * @fires purr-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
  * @fires purr-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
  */
@@ -232,6 +237,7 @@ export class PurrNumberField extends LitElement {
     else this.#internals.states.delete("user-invalid");
     if (invalid) input.setAttribute("aria-invalid", "true");
     else input.removeAttribute("aria-invalid");
+    syncFieldMessage(this.renderRoot as ShadowRoot, input, invalid);
   }
 
   #emit(name: "purr-input" | "purr-change", value = this.value) {
@@ -398,7 +404,8 @@ export class PurrNumberField extends LitElement {
         <div part="stepper">
           ${this.#button("increment")}${this.#button("decrement")}
         </div>
-      </div>`;
+      </div>
+      ${fieldMessage}`;
   }
 }
 
