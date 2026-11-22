@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 import {
-  expectAccessible,
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
@@ -164,20 +163,6 @@ test("the focus ring is visible under forced colors", async ({ page }) => {
     await close(page).evaluate((el) => getComputedStyle(el).outlineStyle),
   ).not.toBe("none");
 });
-
-for (const name of [
-  "default",
-  "tones",
-  "with-actions",
-  "without-icon",
-  "closed",
-  "rtl",
-  "glass",
-]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(

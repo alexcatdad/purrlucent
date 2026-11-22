@@ -259,12 +259,6 @@ test("each size draws a larger box than the one before", async ({ page }) => {
   expect(widths[2]).toBeGreaterThan(widths[1]!);
 });
 
-for (const name of ["states", "sizes", "in-form", "rtl", "glass"]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("a box without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {

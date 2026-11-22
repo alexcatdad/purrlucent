@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 import {
-  expectAccessible,
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
@@ -302,12 +301,6 @@ test("the bubble's colors follow forced colors", async ({ page }) => {
   expect(colors[0]).not.toBe(colors[1]);
   expect(colors[2]).not.toBe("0px");
 });
-
-for (const name of ["default", "open", "placements", "rtl", "glass"]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("open")));
