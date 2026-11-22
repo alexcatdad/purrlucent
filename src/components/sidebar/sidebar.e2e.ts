@@ -444,6 +444,42 @@ test("an item without href is a focusable control that arrows reach", async ({
   expect(await focusedId(page)).toBe("plain");
 });
 
+test("clicking a row without href selects it and fires purr-change", async ({
+  page,
+}) => {
+  await open(page);
+  await page
+    .locator("#settings")
+    .evaluate((el) =>
+      el.insertAdjacentHTML(
+        "afterend",
+        '<purr-sidebar-item id="plain">Plain</purr-sidebar-item>',
+      ),
+    );
+  await page.evaluate(() => {
+    const w = window as unknown as { changes: string[] };
+    w.changes = [];
+    document
+      .querySelector("#sidebar")
+      ?.addEventListener("purr-change", (e) =>
+        w.changes.push(
+          (e as CustomEvent<{ selected: Element[] }>).detail.selected[0]!.id,
+        ),
+      );
+  });
+  await page.locator("#plain button").click();
+  await expect(page.locator("#plain button")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(page.locator("#home a")).not.toHaveAttribute("aria-current");
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { changes: string[] }).changes,
+    ),
+  ).toEqual(["plain"]);
+});
+
 test("a modified click does not select", async ({ page }) => {
   await open(page);
   const result = await page.evaluate(() => {
