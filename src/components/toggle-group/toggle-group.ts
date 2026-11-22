@@ -25,8 +25,10 @@ export class PurrToggleGroupItem extends LitElement {
   declare value: string;
   declare selected: boolean;
   declare disabled: boolean;
+  // Space selects an item; Enter does not, as with a native radio.
   readonly pressable = new PressableController(this, {
     disabled: () => this.disabled,
+    enter: false,
   });
 
   constructor() {
@@ -55,9 +57,9 @@ export class PurrToggleGroupItem extends LitElement {
 /**
  * A row of equal-width items that offers one required choice, as a radio
  * group. Arrow keys, Home and End move focus and select; they follow the visual
- * direction under `dir="rtl"`. Enter also selects the focused item. Space,
- * Tab and the arrows follow the APG radio group pattern; Enter, Home and End
- * are extras. Always set `label` (or `aria-label`): without either the group
+ * direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio
+ * group pattern; Home and End are extras. Enter does not select, as with a
+ * native radio. Always set `label` (or `aria-label`): without either the group
  * has no accessible name. It takes part in forms like a radio group: it
  * submits `name` with the selected value, a form reset returns it to its
  * starting selection, and a disabled fieldset disables it.
