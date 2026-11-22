@@ -150,6 +150,26 @@ test("a form reset returns each box to its checked attribute", async ({
   ).not.toBeChecked();
 });
 
+test("the required message is the browser's own, localized one", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const { message, native } = await page.evaluate(() => {
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.required = true;
+    return {
+      message: (
+        document.querySelector("purr-checkbox[required]") as HTMLElement & {
+          validationMessage: string;
+        }
+      ).validationMessage,
+      native: box.validationMessage,
+    };
+  });
+  expect(message).toBe(native || "Check this box to continue.");
+});
+
 test("a required box makes the form invalid until it is checked", async ({
   page,
 }) => {

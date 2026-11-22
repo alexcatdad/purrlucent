@@ -1,4 +1,5 @@
 import { LitElement, html, type PropertyValues } from "lit";
+import { nativeMessage } from "../../behaviors/native-message.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { SelectionController } from "../../behaviors/selection.ts";
@@ -258,7 +259,7 @@ export class PurrRadioGroup extends LitElement {
     // The host takes no focus, so a failed submit focuses the first radio.
     this.#internals.setValidity(
       { valueMissing: this.required && !this.value },
-      "Choose one of these options to continue.",
+      nativeMessage("radio", "Choose one of these options to continue."),
       this.#enabled[0],
     );
   }
