@@ -39,10 +39,22 @@ export const buttonStyles = css`
     overflow-wrap: anywhere;
   }
 
-  ::slotted(svg) {
+  ::slotted(svg),
+  purr-spinner {
     flex: none;
     inline-size: var(--purr-icon-md);
     block-size: var(--purr-icon-md);
+  }
+
+  /* The busy spinner follows the label colour on every variant. */
+  purr-spinner {
+    --purr-color-selected: currentColor;
+    --purr-color-track: color-mix(in srgb, currentColor 25%, transparent);
+  }
+
+  /* The spinner takes the icon's place, so an icon button keeps its size. */
+  :host([icon][busy]) ::slotted(svg) {
+    display: none;
   }
 
   :host([size="lg"]) {

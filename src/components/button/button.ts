@@ -1,6 +1,7 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
+import "../spinner/spinner.ts";
 import { buttonStyles } from "./button.css.ts";
 
 export type PurrButtonVariant = "primary" | "secondary" | "tinted" | "ghost";
@@ -19,6 +20,7 @@ export type PurrButtonSize = "md" | "lg" | "xl";
  *
  * @attr {boolean} default - The dialog's default button: Return activates it, it draws as primary and it takes initial focus.
  * @attr {boolean} cancel - The dialog's cancel button: Escape and Command-Period activate it.
+ * @attr {boolean} busy - The action is running: a spinner shows before the label, the button ignores presses and stays focusable.
  * @fires purr-press - When the button is activated by pointer, Enter or Space.
  * @slot - The button label, with an optional leading svg icon.
  * @csspart label - The wrapper around the label.
@@ -35,6 +37,7 @@ export class PurrButton extends LitElement {
     default: { type: Boolean, reflect: true },
     cancel: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
+    busy: { type: Boolean, reflect: true },
   };
 
   declare variant: PurrButtonVariant;
@@ -45,10 +48,11 @@ export class PurrButton extends LitElement {
   declare default: boolean;
   declare cancel: boolean;
   declare disabled: boolean;
+  declare busy: boolean;
 
   // :disabled also covers a disabled fieldset around the button.
   readonly pressable = new PressableController(this, {
-    disabled: () => this.matches(":disabled"),
+    disabled: () => this.busy || this.matches(":disabled"),
   });
   #off = false;
   #tabindex: string | null = null;
@@ -63,6 +67,7 @@ export class PurrButton extends LitElement {
     this.default = false;
     this.cancel = false;
     this.disabled = false;
+    this.busy = false;
     // Like a native button: submit or reset the form the button belongs to.
     this.addEventListener("purr-press", () => {
       const { form } = this.pressable.internals;
@@ -83,6 +88,8 @@ export class PurrButton extends LitElement {
   // After the update, so a changed `disabled` attribute is already reflected.
   // A tabindex set from outside (a roving group) is kept and restored.
   protected override updated() {
+    if (this.busy) this.setAttribute("aria-busy", "true");
+    else this.removeAttribute("aria-busy");
     const off = this.matches(":disabled");
     if (off !== this.#off) {
       this.#off = off;
@@ -100,7 +107,13 @@ export class PurrButton extends LitElement {
   }
 
   override render() {
-    return html`<span part="label"><slot></slot></span>`;
+    return html`<span part="label"
+      >${
+        this.busy
+          ? html`<purr-spinner size="sm" aria-hidden="true"></purr-spinner>`
+          : nothing
+      }<slot></slot
+    ></span>`;
   }
 }
 

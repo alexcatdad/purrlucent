@@ -13,6 +13,7 @@ const stories = [
   "sizes",
   "destructive",
   "disabled",
+  "busy",
   "glass",
 ];
 const labels = ["Duplicate", "Save", "Share", "Cancel"];
@@ -221,6 +222,34 @@ test("Enter and Space fire click, as a native button does", async ({
   await page.keyboard.press("Enter");
   await page.keyboard.press("Space");
   await expect(button).toHaveAttribute("data-clicks", "0xx");
+});
+
+test("a busy button shows a spinner, ignores presses and stays focusable", async ({
+  page,
+}) => {
+  await gotoStory(page, "components-button--busy");
+  const button = page.locator("#busy");
+  await expect(button).toHaveAttribute("aria-busy", "true");
+  await expect(button).not.toHaveAttribute("aria-disabled");
+  await expect(button).toHaveAttribute("tabindex", "0");
+  await expect(button.locator("purr-spinner")).toBeVisible();
+  await button.evaluate((el) => {
+    el.dataset.presses = "0";
+    el.addEventListener("purr-press", () => (el.dataset.presses += "x"));
+  });
+  await button.focus();
+  await expect(button).toBeFocused();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Space");
+  await expect(button).toHaveAttribute("data-presses", "0");
+  const iconButton = page.locator("#busy-icon");
+  const box = (await iconButton.boundingBox())!;
+  expect(box.width).toBe(box.height);
+  await button.evaluate((el) => el.removeAttribute("busy"));
+  await expect(button).not.toHaveAttribute("aria-busy");
+  await expect(button.locator("purr-spinner")).toHaveCount(0);
+  await page.keyboard.press("Enter");
+  await expect(button).toHaveAttribute("data-presses", "0x");
 });
 
 test("a click on a disabled button reaches no listener", async ({ page }) => {

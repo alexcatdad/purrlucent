@@ -44,16 +44,17 @@ import "purrlucent/button";
 
 A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
 
-| Attribute     | Type                              | Default       | Description                                                                                       |
-| ------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
-| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus. |
-| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                   |
-| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                   |
-| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                   |
-| `icon`        | `boolean`                         | `false`       |                                                                                                   |
-| `destructive` | `boolean`                         | `false`       |                                                                                                   |
-| `disabled`    | `boolean`                         | `false`       |                                                                                                   |
+| Attribute     | Type                              | Default       | Description                                                                                              |
+| ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
+| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
+| `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
+| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                          |
+| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
+| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                          |
+| `icon`        | `boolean`                         | `false`       |                                                                                                          |
+| `destructive` | `boolean`                         | `false`       |                                                                                                          |
+| `disabled`    | `boolean`                         | `false`       |                                                                                                          |
 
 **Slots**
 
@@ -627,10 +628,10 @@ import "purrlucent/spinner";
 
 A spinner: work is going on, with no way to tell how far along. Always give it a `label` so it has an accessible name.
 
-| Attribute | Type                   | Default | Description                                 |
-| --------- | ---------------------- | ------- | ------------------------------------------- |
-| `label`   | `string`               | `""`    | The accessible name, for example "Loading". |
-| `size`    | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.               |
+| Attribute | Type                           | Default | Description                                 |
+| --------- | ------------------------------ | ------- | ------------------------------------------- |
+| `label`   | `string`                       | `""`    | The accessible name, for example "Loading". |
+| `size`    | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `sm`, `md` (default), `lg` or `xl`.         |
 
 **Parts**
 
@@ -722,17 +723,18 @@ import "purrlucent/toggle";
 
 A button that holds an on or off state, announced as `aria-pressed`. It is a `purr-button`, so size, `icon`, `disabled`, the slotted label and the leading svg icon work the same; an `icon` toggle needs an `aria-label`. The button's `variant`, `type` and `destructive` have no use here.
 
-| Attribute     | Type                              | Default       | Description                                                                                       |
-| ------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
-| `pressed`     | `boolean`                         | `false`       |                                                                                                   |
-| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus. |
-| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                   |
-| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                   |
-| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                   |
-| `icon`        | `boolean`                         | `false`       |                                                                                                   |
-| `destructive` | `boolean`                         | `false`       |                                                                                                   |
-| `disabled`    | `boolean`                         | `false`       |                                                                                                   |
+| Attribute     | Type                              | Default       | Description                                                                                              |
+| ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| `pressed`     | `boolean`                         | `false`       |                                                                                                          |
+| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
+| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
+| `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
+| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                          |
+| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
+| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                          |
+| `icon`        | `boolean`                         | `false`       |                                                                                                          |
+| `destructive` | `boolean`                         | `false`       |                                                                                                          |
+| `disabled`    | `boolean`                         | `false`       |                                                                                                          |
 
 **Slots**
 

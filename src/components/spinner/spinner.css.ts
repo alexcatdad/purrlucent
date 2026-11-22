@@ -18,6 +18,10 @@ export const spinnerStyles = css`
     display: none;
   }
 
+  :host([size="sm"]) {
+    --_s: calc(var(--purr-spacing) * 4);
+  }
+
   :host([size="lg"]) {
     --_s: calc(var(--purr-spacing) * 10);
   }
