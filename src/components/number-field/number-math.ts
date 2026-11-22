@@ -21,10 +21,60 @@ export function snap(value: number, { min, max, step }: Bounds) {
 export const stepBy = (value: number | null, steps: number, bounds: Bounds) =>
   snap((value ?? 0) + steps * bounds.step, bounds);
 
-/** The typed text as a number: null when empty, NaN when it is not a number. */
-export function parse(text: string) {
+/** The decimal separator of a locale; an unknown locale tag falls back to the browser's. */
+export function decimalSeparator(locale?: string) {
+  let format: Intl.NumberFormat;
+  try {
+    format = new Intl.NumberFormat(locale);
+  } catch {
+    format = new Intl.NumberFormat();
+  }
+  return format.formatToParts(1.1).find((part) => part.type === "decimal")!
+    .value;
+}
+
+/**
+ * The typed text as a number: null when empty, NaN when it is not a number.
+ * Under a separator other than ".", only that separator marks the decimals.
+ */
+export function parse(text: string, separator = ".") {
   const trimmed = text.trim();
-  return trimmed === "" ? null : Number(trimmed);
+  if (trimmed === "") return null;
+  if (separator === ".") return Number(trimmed);
+  return trimmed.includes(".") ? NaN : Number(trimmed.replace(separator, "."));
+}
+
+/** The number as text with the locale's decimal separator; "" for no value. */
+export const format = (value: number | null, separator = ".") =>
+  value === null ? "" : String(value).replace(".", separator);
+
+/**
+ * The part of `data` that may be inserted between `before` and `after`:
+ * digits, one decimal separator and a minus at the very start.
+ */
+export function filterTyped(
+  data: string,
+  before: string,
+  after: string,
+  separator: string,
+) {
+  if (before === "" && after.startsWith("-")) return "";
+  let hasSeparator = (before + after).includes(separator);
+  let kept = "";
+  for (const char of data) {
+    if (/^\d$/.test(char)) kept += char;
+    else if (char === separator && !hasSeparator) {
+      kept += char;
+      hasSeparator = true;
+    } else if (
+      char === "-" &&
+      before === "" &&
+      kept === "" &&
+      !after.startsWith("-")
+    )
+      kept += char;
+  }
+  return kept;
 }
 
 /** Steps moved by Page Up, Page Down and a Shift-press on a stepper button. */

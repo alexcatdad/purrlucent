@@ -132,7 +132,10 @@ test("a typed number is clamped and snapped when committed", async ({
   await field.fill("99");
   await page.keyboard.press("Enter");
   await expect(field).toHaveValue("10");
-  await field.fill("abc");
+  await field.focus();
+  await field.evaluate((el) => {
+    (el as HTMLInputElement).value = "abc";
+  });
   await page.keyboard.press("Tab");
   await expect(field).toHaveValue("10");
   expect(await logged(page)).toEqual([
@@ -141,6 +144,30 @@ test("a typed number is clamped and snapped when committed", async ({
     "purr-input:99",
     "purr-change:10",
   ]);
+});
+
+test('a comma decimal is accepted and shown under lang="de"', async ({
+  page,
+}) => {
+  await gotoStory(page, story("decimals"));
+  const field = page.getByRole("spinbutton", { name: "Weight" });
+  await expect(field).toHaveValue("1,5");
+  await field.fill("2,5");
+  await page.keyboard.press("Tab");
+  await expect(field).toHaveValue("2,5");
+  expect(await submitted(page)).toEqual([["weight", "2.5"]]);
+  await field.focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(field).toHaveValue("2,6");
+  expect(await submitted(page)).toEqual([["weight", "2.6"]]);
+});
+
+test("letters cannot be typed", async ({ page }) => {
+  await gotoStory(page, story("decimals"));
+  const field = page.getByRole("spinbutton", { name: "Weight" });
+  await field.fill("");
+  await field.pressSequentially("-1a2,3,4-.");
+  await expect(field).toHaveValue("-12,34");
 });
 
 test("a custom validity set before the first render is kept", async ({
@@ -248,7 +275,9 @@ test("a script reset replaces typed text that is not a number", async ({
 }) => {
   await gotoStory(page, story("in-form"));
   const field = page.getByRole("spinbutton", { name: "Count" });
-  await field.fill("abc");
+  await field.evaluate((el) => {
+    (el as HTMLInputElement).value = "abc";
+  });
   await page
     .locator("#form")
     .evaluate((form) => (form as HTMLFormElement).reset());

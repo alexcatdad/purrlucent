@@ -194,6 +194,11 @@ export const inputStyles = [
       display: none;
     }
 
+    /* A value wider than the field ends in an ellipsis while it is not being edited. */
+    [part="control"] {
+      text-overflow: ellipsis;
+    }
+
     /* With a web font the dots show as empty boxes until it loads. */
     [part="control"][type="password"] {
       font-family: system-ui, sans-serif;

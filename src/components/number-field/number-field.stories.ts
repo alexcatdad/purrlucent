@@ -147,6 +147,17 @@ export const Keyboard: Story = {
   },
 };
 
+/** Under `lang="de"` the decimal separator is a comma; the form still gets a plain number. */
+export const Decimals: Story = {
+  render: () => html`
+    <form id="form" lang="de" style="padding:var(--purr-space-4)">
+      <purr-number-field name="weight" value="1.5" step="0.1"
+        >Weight</purr-number-field
+      >
+    </form>
+  `,
+};
+
 export const Rtl: Story = {
   render: () =>
     column(
