@@ -8,7 +8,7 @@ on:
     branches: [main]
   schedule:
     - cron: "41 5 * * 1"
-  # The release workflow starts it on the version pull request.
+  # Manual runs.
   workflow_dispatch:
 
 permissions:
