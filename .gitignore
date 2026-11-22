@@ -4,6 +4,8 @@ storybook-static/
 test-results/
 playwright-report/
 e2e-report.json
+blob-report/
+all-blob-reports/
 hig/.cache/
 .DS_Store
 *.log

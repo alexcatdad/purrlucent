@@ -16,14 +16,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  // The JSON report feeds the per-job time summary (scripts/e2e-timing.ts).
-  reporter: process.env.CI
-    ? [
-        ["github"],
-        ["html", { open: "never" }],
-        ["json", { outputFile: "e2e-report.json" }],
-      ]
-    : "list",
+  // Each CI shard writes a blob report; the e2e-report job merges them.
+  reporter: process.env.CI ? [["github"], ["blob"]] : "list",
   use: {
     baseURL: `http://localhost:${port}`,
     trace: "retain-on-failure",
