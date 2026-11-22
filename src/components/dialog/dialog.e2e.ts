@@ -157,6 +157,47 @@ test("Return in a textarea adds a newline and does not activate the default", as
   await expect(sheet(page)).toBeVisible();
 });
 
+test("an alert with more than three actions warns", async ({ page }) => {
+  const warnings: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "warning") warnings.push(message.text());
+  });
+  await gotoStory(page, story("default"));
+  const showWith = (variant: string, count: number) =>
+    dialogEl(page).evaluate(
+      async (el, [kind, total]) => {
+        const dialog = el as never as { show(): void; close(): void };
+        dialog.close();
+        el.setAttribute("variant", kind as string);
+        el.querySelectorAll("[slot=actions]").forEach((a) => a.remove());
+        for (let i = 0; i < (total as number); i++) {
+          const button = document.createElement("purr-button");
+          button.slot = "actions";
+          button.textContent = `Action ${i}`;
+          el.append(button);
+        }
+        dialog.show();
+        await (el as never as { updateComplete: Promise<unknown> })
+          .updateComplete;
+      },
+      [variant, count],
+    );
+  const alertWarnings = () =>
+    warnings.filter((text) => text.includes("at most three buttons"));
+  await showWith("alert", 3);
+  await expect(alert(page)).toBeVisible();
+  expect(alertWarnings()).toHaveLength(0);
+  await showWith("sheet", 4);
+  await expect(sheet(page)).toBeVisible();
+  expect(alertWarnings()).toHaveLength(0);
+  await showWith("alert", 4);
+  await expect(alert(page)).toBeVisible();
+  await expect(page.locator("purr-dialog purr-button")).toHaveCount(4);
+  await expect
+    .poll(alertWarnings)
+    .toEqual(["purr-dialog: an alert takes at most three buttons."]);
+});
+
 test("a destructive default is not used and warns", async ({ page }) => {
   const warnings: string[] = [];
   page.on("console", (message) => {

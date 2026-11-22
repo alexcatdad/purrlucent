@@ -31,7 +31,8 @@ const unlockScroll = () => {
  * action (`cancel`) or the first action. Return clicks the default action,
  * except in a multi-line text field or on a focused button; Escape and
  * Command-Period click the cancel action, and without one Escape closes the
- * dialog. A destructive default is ignored and warned about. Focus returns
+ * dialog. A destructive default is ignored and warned about. An alert with
+ * more than three actions is warned about and still shows them all. Focus returns
  * to the element that had it before opening. An element
  * inside with `data-close="value"` closes the dialog with that return value.
  * The page cannot scroll while a dialog is open.
@@ -170,6 +171,11 @@ export class PurrDialog extends LitElement {
   async #focusInitial() {
     if (this.querySelector(":scope > [slot=actions][default][destructive]"))
       console.warn("purr-dialog: a destructive button cannot be the default.");
+    if (
+      this.variant === "alert" &&
+      this.querySelectorAll(":scope > [slot=actions]").length > 3
+    )
+      console.warn("purr-dialog: an alert takes at most three buttons.");
     const target =
       this.querySelector<HTMLElement>("[autofocus]") ??
       this.#action("default") ??

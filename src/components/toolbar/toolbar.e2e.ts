@@ -326,6 +326,45 @@ test("a toolbar without a label logs a warning and has no aria-label", async ({
   await expect(page.locator("#toolbar")).not.toHaveAttribute("aria-label");
 });
 
+test("warns when an item has no accessible name", async ({ page }) => {
+  const logged = await warnings(page, "default");
+  const unnamed = () =>
+    logged.filter((text) => text.includes("needs an accessible name"));
+  expect(unnamed()).toEqual([]);
+  await page.locator("#toolbar").evaluate((toolbar) => {
+    const add = (name: string | null, text: string) => {
+      const button = document.createElement("purr-button");
+      if (name) button.setAttribute("aria-label", name);
+      button.innerHTML = text;
+      toolbar.append(button);
+    };
+    add("Named", "<svg viewBox='0 0 24 24' aria-hidden='true'></svg>");
+    add(null, "Text");
+    add(null, "<svg viewBox='0 0 24 24' aria-hidden='true'></svg>");
+    const hidden = toolbar.lastElementChild as HTMLElement;
+    hidden.setAttribute("aria-label", "  ");
+    hidden.setAttribute("disabled", "");
+  });
+  await expect
+    .poll(unnamed)
+    .toEqual([
+      "purr-toolbar: an item needs an accessible name (aria-label or text).",
+    ]);
+  // Another update does not repeat the warning for the same element.
+  await page.locator("#toolbar").evaluate((toolbar) => {
+    toolbar.lastElementChild!.setAttribute("data-touched", "");
+    (toolbar as never as { requestUpdate(): void }).requestUpdate();
+  });
+  await page
+    .locator("#toolbar")
+    .evaluate(
+      (toolbar) =>
+        (toolbar as never as { updateComplete: Promise<unknown> })
+          .updateComplete,
+    );
+  expect(unnamed()).toHaveLength(1);
+});
+
 test("a disabled first item is skipped on first entry", async ({ page }) => {
   await openStory(page, "disabled-first-item");
   await page.keyboard.press("Tab");
