@@ -53,6 +53,17 @@ export const Values: Story = {
     ),
 };
 
+export const Continuous: Story = {
+  render: () =>
+    html`<purr-slider
+      label="Continuous"
+      min="0"
+      max="10"
+      step="any"
+      value="5"
+    ></purr-slider>`,
+};
+
 export const Ticks: Story = {
   render: () =>
     column(

@@ -592,17 +592,17 @@ import "purrlucent/slider";
 
 A slider: one value chosen on a track, following the WAI-ARIA slider pattern. The host is the slider and its hit region. Name it with `label`. It takes part in forms: it submits `name` with its value, a form reset returns it to its `value` attribute (0 without one), and a disabled fieldset disables it.
 
-| Attribute  | Type                   | Default | Description                                                     |
-| ---------- | ---------------------- | ------- | --------------------------------------------------------------- |
-| `value`    | `number`               | `0`     | The starting value. The `value` property holds the current one. |
-| `min`      | `number`               | `0`     | The lowest value. Defaults to 0.                                |
-| `max`      | `number`               | `100`   | The highest value. Defaults to 100.                             |
-| `step`     | `number`               | `1`     | The distance between values. Defaults to 1.                     |
-| `ticks`    | `number`               | `0`     | How many tick marks to draw, spread along the track.            |
-| `label`    | `string`               | `""`    | The accessible name.                                            |
-| `name`     | `string`               | `""`    | The name submitted with a form.                                 |
-| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                   |
-| `disabled` | `boolean`              | `false` | No focus, no input, nothing submitted.                          |
+| Attribute  | Type                   | Default | Description                                                                                                                                                       |
+| ---------- | ---------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`    | `number`               | `0`     | The starting value. The `value` property holds the current one.                                                                                                   |
+| `min`      | `number`               | `0`     | The lowest value. Defaults to 0.                                                                                                                                  |
+| `max`      | `number`               | `100`   | The highest value. Defaults to 100.                                                                                                                               |
+| `step`     | `number \| "any"`      | `1`     | The distance between values. Defaults to 1. `any` allows every value in the range; arrow keys then move by one hundredth of the range and Page keys by one tenth. |
+| `ticks`    | `number`               | `0`     | How many tick marks to draw, spread along the track.                                                                                                              |
+| `label`    | `string`               | `""`    | The accessible name.                                                                                                                                              |
+| `name`     | `string`               | `""`    | The name submitted with a form.                                                                                                                                   |
+| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                                     |
+| `disabled` | `boolean`              | `false` | No focus, no input, nothing submitted.                                                                                                                            |
 
 **Parts**
 
