@@ -212,6 +212,16 @@ test("horizontal radios lie in a row", async ({ page }) => {
   expect(b!.x).toBeGreaterThan(a!.x);
 });
 
+test("horizontal radios share one width, the longest label's", async ({
+  page,
+}) => {
+  await gotoStory(page, story("horizontal"));
+  const widths = await page
+    .locator("purr-radio")
+    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+  expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(0.5);
+});
+
 test("the group submits name=value only while a radio is chosen", async ({
   page,
 }) => {
