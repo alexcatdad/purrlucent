@@ -103,11 +103,15 @@
       "types": "./dist/types/components/tooltip/tooltip.d.ts",
       "default": "./dist/tooltip.js"
     },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react.js"
+    },
     "./tokens.css": "./dist/tokens.css",
     "./custom-elements.json": "./dist/custom-elements.json"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json && cem analyze",
+    "build": "vite build && tsc -p tsconfig.build.json && cem analyze && bun scripts/react-types.ts",
     "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\" && bun scripts/style-check.ts",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",

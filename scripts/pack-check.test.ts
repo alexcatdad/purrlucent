@@ -29,8 +29,9 @@ const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
   version: string;
   exports: Record<string, Target>;
 };
+// The React entry is types for React's JSX; this app has no React to check them against.
 const modules = Object.keys(manifest.exports)
-  .filter((key) => !/\.(css|json)$/.test(key))
+  .filter((key) => !/\.(css|json)$/.test(key) && key !== "./react")
   .map((key) => join("purrlucent", key));
 const components = readdirSync("src/components", { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
