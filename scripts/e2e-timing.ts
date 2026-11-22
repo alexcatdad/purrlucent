@@ -1,6 +1,6 @@
 // Writes a Markdown summary of where an e2e run spent its time, from
-// Playwright's JSON report: per file, screenshot tests against the rest, and
-// the slowest tests. CI appends it to the job summary.
+// Playwright's JSON report: per file and the slowest tests. CI appends it to
+// the job summary.
 //
 // Usage: bun scripts/e2e-timing.ts <report.json>
 import type { JSONReport, JSONReportSuite } from "@playwright/test/reporter";
@@ -41,12 +41,9 @@ export function summary(list: Row[]): string {
   const byFile = [...files]
     .map(([file, tests]) => ({ file, count: tests.length, ms: sum(tests) }))
     .sort((a, b) => b.ms - a.ms);
-  const shots = sum(list.filter((row) => /screenshot/i.test(row.title)));
   const slowest = list.toSorted((a, b) => b.ms - a.ms).slice(0, 10);
   return [
     `### E2E time: ${seconds(total)} of test time in ${list.length} tests`,
-    "",
-    `Screenshot tests: ${seconds(shots)} (${share(shots)}).`,
     "",
     "| File | Tests | Time | Share |",
     "| --- | --- | --- | --- |",

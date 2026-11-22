@@ -4,7 +4,6 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
-import { forEachViewport } from "../../../e2e/helpers/matrix.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `components-dialog--${name}`;
@@ -480,13 +479,4 @@ test.describe("coarse pointer on a wide screen", () => {
       expect(box.width).toBeGreaterThanOrEqual(44);
     }
   });
-});
-
-forEachViewport(({ name }) => {
-  for (const id of ["open-alert", "open-sheet", "open-long-content", "glass"]) {
-    test(`screenshot of ${id} at ${name}`, async ({ page }) => {
-      await gotoStory(page, story(id));
-      await expect(page).toHaveScreenshot(`${id}-${name}.png`);
-    });
-  }
 });

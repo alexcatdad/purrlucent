@@ -63,6 +63,7 @@ jobs:
 
   unit:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup
@@ -93,6 +94,7 @@ jobs:
     # Runs unless the change is known to be inert, so a failed `changes` job runs everything.
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       # WebKit and Firefox take about three times as long as Chromium.
@@ -117,23 +119,13 @@ jobs:
           path: blob-report/
           retention-days: 7
           if-no-files-found: ignore
-      # Playwright writes a missing baseline to its expected path. Upload any
-      # Linux baselines the run created so they can be reviewed and committed.
-      - name: Archive new Linux baselines
-        if: failure()
-        run: git ls-files --others --exclude-standard -- 'src/**/*-linux.png' | tar -czf new-linux-baselines.tgz -T -
-      - if: failure()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: new-linux-baselines-${{ matrix.browser }}-${{ matrix.shard }}
-          path: new-linux-baselines.tgz
-          if-no-files-found: ignore
 
   # One HTML report and one time summary for every shard of the run.
   e2e-report:
     needs: e2e-browser
     if: ${{ !cancelled() && needs.e2e-browser.result != 'skipped' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup

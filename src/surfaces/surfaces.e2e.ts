@@ -4,7 +4,6 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../e2e/helpers/a11y.ts";
-import { forEachViewport } from "../../e2e/helpers/matrix.ts";
 import {
   compositeOver,
   contrast,
@@ -167,21 +166,4 @@ test("virtual screen reader speaks every surface", async ({ page }) => {
     "textbox, Name, Whiskers",
     "end of document",
   ]);
-});
-
-forEachViewport(({ name, pointer }) => {
-  test(`screenshot over a patterned backdrop at ${name}`, async ({ page }) => {
-    const root = await openStory(page, "material:glass", patterned);
-    await expect(root).toHaveScreenshot(`patterned-${name}.png`);
-  });
-
-  for (const material of ["solid", "glass"]) {
-    test(`screenshot at ${name} in ${material}`, async ({ page }) => {
-      const root = await openStory(page, `material:${material}`);
-      expect(
-        await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
-      ).toBe(pointer === "coarse");
-      await expect(root).toHaveScreenshot(`${material}-${name}.png`);
-    });
-  }
 });

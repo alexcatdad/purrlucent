@@ -8,10 +8,7 @@ const newest = (dir: string): number =>
   readdirSync(dir).reduce((latest, name) => {
     const path = join(dir, name);
     const stat = statSync(path);
-    if (stat.isDirectory())
-      return name.endsWith("-snapshots")
-        ? latest
-        : Math.max(latest, newest(path));
+    if (stat.isDirectory()) return Math.max(latest, newest(path));
     return /\.(ts|css|mdx?)$/.test(name) && !/\.(e2e|test)\.ts$/.test(name)
       ? Math.max(latest, stat.mtimeMs)
       : latest;

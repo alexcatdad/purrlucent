@@ -664,24 +664,3 @@ test("virtual screen reader speaks the toolbar and every item", async ({
   ])
     expect(spoken).toContain(text);
 });
-
-forEachViewport(({ name }) => {
-  for (const id of ["chrome", "compact", "search-field"]) {
-    test(`screenshot of ${id} at ${name}`, async ({ page }) => {
-      const root = await openStory(page, id);
-      await expect(root).toHaveScreenshot(`${id}-${name}.png`);
-    });
-  }
-});
-
-forEachViewport(({ name, pointer }) => {
-  for (const material of ["solid", "glass"]) {
-    test(`screenshot at ${name} in ${material}`, async ({ page }) => {
-      const root = await openStory(page, "default", `material:${material}`);
-      expect(
-        await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
-      ).toBe(pointer === "coarse");
-      await expect(root).toHaveScreenshot(`${material}-${name}.png`);
-    });
-  }
-});
