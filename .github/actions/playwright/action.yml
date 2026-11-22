@@ -1,0 +1,32 @@
+name: Playwright browsers
+description: Installs Playwright browsers and their system packages on Linux, reusing the downloaded browsers from the cache. Runs after the setup action.
+
+inputs:
+  browsers:
+    description: Space-separated browser names, for example "chromium firefox webkit".
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # The browsers depend on the Playwright version, not on the lockfile.
+    - id: version
+      shell: bash
+      run: echo "version=$(bunx playwright --version)" >> "$GITHUB_OUTPUT"
+    - id: cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.version.outputs.version }}-${{ inputs.browsers }}
+    # The system packages are not cached; on a hit only they are installed.
+    - shell: bash
+      env:
+        BROWSERS: ${{ inputs.browsers }}
+        HIT: ${{ steps.cache.outputs.cache-hit }}
+      run: |
+        # shellcheck disable=SC2086 # one word per browser
+        if [ "$HIT" = true ]; then
+          bunx playwright install-deps $BROWSERS
+        else
+          bunx playwright install --with-deps $BROWSERS
+        fi

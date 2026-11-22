@@ -71,7 +71,9 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
       # Before bun test: the package check renders the packed build in Chromium.
-      - run: bunx playwright install --with-deps chromium firefox webkit
+      - uses: ./.github/actions/playwright
+        with:
+          browsers: chromium firefox webkit
       - run: bun test
       - run: bun run test:unit
 
@@ -110,7 +112,9 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - run: bunx playwright install --with-deps ${{ matrix.browser }}
+      - uses: ./.github/actions/playwright
+        with:
+          browsers: ${{ matrix.browser }}
       - run: bun run build-storybook
       - run: bun run test:e2e --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/${{ matrix.of }}
       - if: ${{ !cancelled() }}
