@@ -1,5 +1,14 @@
 # purrlucent
 
+## 0.4.0
+
+### Minor Changes
+
+- 6cbc20a: `purr-button` takes `default` and `cancel`: in a dialog, Return activates the default button and Escape or Command-Period the cancel button, and the default draws as primary. A destructive button cannot be the default. Enter in a field that submits a form no longer also reaches the dialog.
+- e48d8f6: `purr-select` and `purr-combobox` take a visible label in `slot="label"` that also names the control, like `purr-input`.
+- 68ad4ed: Control labels, field text, menu items, tooltips and secondary text use the regular weight (400) instead of medium (500), as macOS controls do. Headings keep their bold weight.
+- b402600: Built-in strings are translatable: validation messages use the browser's localized text, and the other labels have attributes (`toggle-label`, `empty-label`, `increase-label`, `decrease-label`, `clear-label`).
+
 ## 0.3.0
 
 ### Minor Changes
