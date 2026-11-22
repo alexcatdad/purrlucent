@@ -1,5 +1,17 @@
 # purrlucent
 
+## 0.3.0
+
+### Minor Changes
+
+- bc7d8bc: Invalid text fields show their validation message with an icon, a selected toggle gets a filled face, and each banner tone draws its own icon when none is slotted, so no state is shown by color alone.
+- 786e319: A single segmented-control item can be disabled with its own `disabled` attribute: it takes no focus, arrows and Tab skip it, and it cannot be selected. A disabled group still disables every item, and the default selection skips disabled items.
+
+### Patch Changes
+
+- a27fff1: Enter no longer toggles a checkbox; Space does, as with a native checkbox. When a checkbox or radio label wraps, the box now stays beside the label's first line instead of centering on the whole label.
+- 2f6fa42: Enter no longer toggles a switch or chooses a radio or segmented-control item; Space does, as with native controls.
+
 ## 0.2.1
 
 ### Patch Changes
