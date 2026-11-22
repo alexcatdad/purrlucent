@@ -50,11 +50,7 @@ const draft = (stacked = false) =>
     as a draft to work on later.
     ${
       stacked
-        ? html`<purr-button
-              slot="actions"
-              size="lg"
-              variant="primary"
-              data-close="save"
+        ? html`<purr-button slot="actions" size="lg" default data-close="save"
               >Save</purr-button
             >
             <purr-button
@@ -64,17 +60,13 @@ const draft = (stacked = false) =>
               data-close="discard"
               >Don’t Save</purr-button
             >
-            <purr-button slot="actions" size="lg" data-close="cancel"
+            <purr-button slot="actions" size="lg" cancel data-close="cancel"
               >Cancel</purr-button
             >`
-        : html`<purr-button slot="actions" size="lg" data-close="cancel"
+        : html`<purr-button slot="actions" size="lg" cancel data-close="cancel"
               >Cancel</purr-button
             >
-            <purr-button
-              slot="actions"
-              size="lg"
-              variant="primary"
-              data-close="save"
+            <purr-button slot="actions" size="lg" default data-close="save"
               >Save</purr-button
             >`
     }
@@ -133,10 +125,8 @@ const save = html`<purr-dialog id="dialog" variant="sheet">
   <purr-button slot="actions" destructive data-close="delete"
     >Delete</purr-button
   >
-  <purr-button slot="actions" data-close="cancel">Cancel</purr-button>
-  <purr-button slot="actions" variant="primary" data-close="save"
-    >Save</purr-button
-  >
+  <purr-button slot="actions" cancel data-close="cancel">Cancel</purr-button>
+  <purr-button slot="actions" default data-close="save">Save</purr-button>
 </purr-dialog>`;
 
 const long = html`<purr-dialog id="dialog" variant="sheet" dismissible>
@@ -149,10 +139,8 @@ const long = html`<purr-dialog id="dialog" variant="sheet" dismissible>
         the dialog has to scroll while the title and the actions stay in view.
       </p>`,
   )}
-  <purr-button slot="actions" data-close="decline">Decline</purr-button>
-  <purr-button slot="actions" variant="primary" data-close="accept"
-    >Accept</purr-button
-  >
+  <purr-button slot="actions" cancel data-close="decline">Decline</purr-button>
+  <purr-button slot="actions" default data-close="accept">Accept</purr-button>
 </purr-dialog>`;
 
 /** Opens the dialog with a real click, as a person would. */
@@ -184,7 +172,7 @@ export const OpenAlertWithIcon: Story = {
         <purr-button slot="actions" size="lg" destructive data-close="delete"
           >Delete</purr-button
         >
-        <purr-button slot="actions" size="lg" data-close="cancel"
+        <purr-button slot="actions" size="lg" cancel data-close="cancel"
           >Cancel</purr-button
         >
       </purr-dialog>`,

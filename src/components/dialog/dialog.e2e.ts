@@ -28,6 +28,16 @@ const record = (page: Page) =>
 const recorded = (page: Page) =>
   page.evaluate(() => (window as unknown as { log: unknown[][] }).log);
 
+/** Takes the `default` or `cancel` mark off the actions, to reach the plain behavior. */
+const withoutRole = (page: Page, role: "default" | "cancel") =>
+  dialogEl(page).evaluate(
+    (el, name) =>
+      el
+        .querySelectorAll(`[slot=actions][${name}]`)
+        .forEach((button) => button.removeAttribute(name)),
+    role,
+  );
+
 /** Opens the closed Default story with a click on its trigger. */
 const openDefault = async (page: Page) => {
   await gotoStory(page, story("default"));
@@ -81,9 +91,96 @@ test("without a title the label names the dialog", async ({ page }) => {
   await expect(alert(page)).toHaveAccessibleName("Unsaved message");
 });
 
-test("an alert opens with its first action focused", async ({ page }) => {
+test("an alert opens with its default action focused", async ({ page }) => {
   await gotoStory(page, story("open-alert"));
+  await expect(page.getByRole("button", { name: "Save" })).toBeFocused();
+});
+
+test("without a default action the cancel action is focused first", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await withoutRole(page, "default");
+  await dialogEl(page).evaluate((el) =>
+    (el as never as { show(): void }).show(),
+  );
   await expect(page.getByRole("button", { name: "Cancel" })).toBeFocused();
+});
+
+test("Return in the body activates the default action", async ({ page }) => {
+  await gotoStory(page, story("open-sheet"));
+  await record(page);
+  await expect(page.getByRole("textbox", { name: "Save as" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(sheet(page)).toBeHidden();
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([["purr-close", { returnValue: "save" }]]);
+});
+
+test("Escape activates the cancel action", async ({ page }) => {
+  await gotoStory(page, story("open-sheet"));
+  await record(page);
+  await page.keyboard.press("Escape");
+  await expect(sheet(page)).toBeHidden();
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([["purr-close", { returnValue: "cancel" }]]);
+});
+
+test("Command-Period activates the cancel action", async ({ page }) => {
+  await gotoStory(page, story("open-sheet"));
+  await record(page);
+  await page.keyboard.press("Meta+.");
+  await expect(sheet(page)).toBeHidden();
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([["purr-close", { returnValue: "cancel" }]]);
+});
+
+test("Return in a textarea adds a newline and does not activate the default", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"));
+  const area = await dialogEl(page).evaluateHandle((el) => {
+    const textarea = document.createElement("textarea");
+    el.append(textarea);
+    textarea.focus();
+    return textarea;
+  });
+  await page.keyboard.type("a");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("b");
+  expect(await area.evaluate((el) => (el as HTMLTextAreaElement).value)).toBe(
+    "a\nb",
+  );
+  await expect(sheet(page)).toBeVisible();
+});
+
+test("a destructive default is not used and warns", async ({ page }) => {
+  const warnings: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "warning") warnings.push(message.text());
+  });
+  await gotoStory(page, story("default"));
+  await dialogEl(page).evaluate((el) => {
+    el.querySelector("[default]")!.setAttribute("destructive", "");
+    (el as never as { show(): void }).show();
+  });
+  await expect(page.getByRole("button", { name: "Cancel" })).toBeFocused();
+  expect(warnings.join()).toContain("destructive button cannot be the default");
+  await dialogEl(page)
+    .locator("[part=body]")
+    .evaluate((el) =>
+      el.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Enter",
+          bubbles: true,
+          composed: true,
+        }),
+      ),
+    );
+  await expect(alert(page)).toBeVisible();
 });
 
 test("an autofocus field wins initial focus", async ({ page }) => {
@@ -129,6 +226,7 @@ test("Escape asks to cancel, closes, and returns focus to the opener", async ({
   page,
 }) => {
   await openDefault(page);
+  await withoutRole(page, "cancel");
   await page.keyboard.press("Escape");
   await expect(alert(page)).toBeHidden();
   // The native close event is queued after the dialog hides.
@@ -143,6 +241,7 @@ test("Escape asks to cancel, closes, and returns focus to the opener", async ({
 
 test("a cancel handler can keep the dialog open", async ({ page }) => {
   await openDefault(page);
+  await withoutRole(page, "cancel");
   await dialogEl(page).evaluate((el) =>
     el.addEventListener("purr-cancel", (event) => event.preventDefault(), {
       once: true,
@@ -221,11 +320,15 @@ test("the keyboard closes with a value, and a later Escape reports none", async 
   page,
 }) => {
   await openDefault(page);
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Save" })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.getByRole("button", { name: "Cancel" })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(alert(page)).toBeHidden();
+  await expect
+    .poll(async () => (await recorded(page)).at(-1))
+    .toEqual(["purr-close", { returnValue: "cancel" }]);
   await page.locator("#trigger").click();
+  await withoutRole(page, "cancel");
   await page.keyboard.press("Escape");
   await expect(alert(page)).toBeHidden();
   await expect
@@ -424,6 +527,7 @@ test("the focus ring and the edge stay visible under forced colors", async ({
     return getComputedStyle(dialog).borderTopStyle;
   });
   expect(style).toBe("solid");
+  await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Tab");
   expect(
     await page

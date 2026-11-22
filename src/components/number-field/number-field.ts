@@ -329,7 +329,7 @@ export class PurrNumberField extends LitElement {
     if (event.isComposing || event.defaultPrevented) return;
     if (event.key === "Enter") {
       this.#commit();
-      submitImplicitly(this.#internals.form);
+      submitImplicitly(this.#internals.form, event);
       return;
     }
     // Text-editing shortcuts and a read-only field keep their native keys.

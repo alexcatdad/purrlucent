@@ -42,16 +42,18 @@ import "purrlucent/button";
 
 ### `<purr-button>`
 
-A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither.
+A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
 
-| Attribute     | Type                              | Default       | Description |
-| ------------- | --------------------------------- | ------------- | ----------- |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |             |
-| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |             |
-| `size`        | `PurrButtonSize`                  | `"md"`        |             |
-| `icon`        | `boolean`                         | `false`       |             |
-| `destructive` | `boolean`                         | `false`       |             |
-| `disabled`    | `boolean`                         | `false`       |             |
+| Attribute     | Type                              | Default       | Description                                                                                       |
+| ------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
+| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus. |
+| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                |
+| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                   |
+| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                   |
+| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                   |
+| `icon`        | `boolean`                         | `false`       |                                                                                                   |
+| `destructive` | `boolean`                         | `false`       |                                                                                                   |
+| `disabled`    | `boolean`                         | `false`       |                                                                                                   |
 
 **Slots**
 
@@ -150,7 +152,7 @@ import "purrlucent/dialog";
 
 ### `<purr-dialog>`
 
-A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the first action; focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
+A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `purr-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
 
 | Attribute     | Type                 | Default   | Description                                                            |
 | ------------- | -------------------- | --------- | ---------------------------------------------------------------------- |
@@ -713,15 +715,17 @@ import "purrlucent/toggle";
 
 A button that holds an on or off state, announced as `aria-pressed`. It is a `purr-button`, so size, `icon`, `disabled`, the slotted label and the leading svg icon work the same; an `icon` toggle needs an `aria-label`. The button's `variant`, `type` and `destructive` have no use here.
 
-| Attribute     | Type                              | Default       | Description |
-| ------------- | --------------------------------- | ------------- | ----------- |
-| `pressed`     | `boolean`                         | `false`       |             |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |             |
-| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |             |
-| `size`        | `PurrButtonSize`                  | `"md"`        |             |
-| `icon`        | `boolean`                         | `false`       |             |
-| `destructive` | `boolean`                         | `false`       |             |
-| `disabled`    | `boolean`                         | `false`       |             |
+| Attribute     | Type                              | Default       | Description                                                                                       |
+| ------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
+| `pressed`     | `boolean`                         | `false`       |                                                                                                   |
+| `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus. |
+| `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                |
+| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                   |
+| `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                   |
+| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                   |
+| `icon`        | `boolean`                         | `false`       |                                                                                                   |
+| `destructive` | `boolean`                         | `false`       |                                                                                                   |
+| `disabled`    | `boolean`                         | `false`       |                                                                                                   |
 
 **Slots**
 

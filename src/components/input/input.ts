@@ -16,10 +16,12 @@ const textFields =
 
 /**
  * Native implicit submission: press the form's default button, or submit
- * when the field that was entered is the only one that could.
+ * when the field that was entered is the only one that could. The Enter that
+ * submitted is consumed, so a dialog around the form does not act on it too.
  */
-export function submitImplicitly(form: HTMLFormElement | null) {
+export function submitImplicitly(form: HTMLFormElement | null, event: Event) {
   if (!form) return;
+  event.preventDefault();
   const button = [...form.elements].find(
     (el) => (el as HTMLButtonElement).type === "submit",
   ) as HTMLElement | undefined;
@@ -284,7 +286,7 @@ export class PurrInput extends LitElement {
 
   #onKeydown = (event: KeyboardEvent) => {
     if (event.isComposing || event.defaultPrevented) return;
-    if (event.key === "Enter") submitImplicitly(this.#internals.form);
+    if (event.key === "Enter") submitImplicitly(this.#internals.form, event);
     else if (event.key === "Escape" && this.#clearable) {
       event.preventDefault();
       this.#clear();
