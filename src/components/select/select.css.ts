@@ -60,7 +60,7 @@ export const selectStyles = css`
     background: var(--_face);
     box-shadow: var(--purr-boundary);
     color: var(--purr-color-foreground);
-    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
     text-align: start;
     cursor: default;
@@ -168,7 +168,7 @@ export const listboxStyles = css`
     backdrop-filter: var(--purr-material-panel-filter);
     box-shadow: var(--purr-material-edge), var(--purr-elevation-panel);
     color: var(--purr-color-foreground);
-    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
     transition: opacity var(--purr-duration) var(--purr-ease-out);
   }

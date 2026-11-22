@@ -50,7 +50,7 @@ export const tooltipStyles = css`
       inset 0 0 0 1px var(--purr-color-edge),
       var(--purr-elevation-panel);
     color: var(--purr-color-foreground);
-    font: 500 var(--purr-text-xs) / var(--purr-leading-tight)
+    font: 400 var(--purr-text-xs) / var(--purr-leading-tight)
       var(--purr-font-sans);
   }
 

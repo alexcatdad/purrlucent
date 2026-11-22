@@ -180,7 +180,7 @@ export const itemStyles = [
     }
 
     :host([expandable]) .control {
-      font-weight: 500;
+      font-weight: 400;
     }
 
     :host([level="2"]) .control {
@@ -204,7 +204,7 @@ export const itemStyles = [
     ::slotted([slot="detail"]) {
       grid-column: 4;
       margin-inline-start: var(--purr-space-2);
-      font-weight: 500;
+      font-weight: 400;
       color: var(--purr-color-muted-foreground);
     }
 

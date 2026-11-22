@@ -24,7 +24,7 @@ export const buttonStyles = css`
     padding: var(--purr-space-1) var(--purr-pad-control);
     border-radius: var(--purr-radius);
     color: var(--_fg);
-    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
     text-align: center;
     cursor: default;

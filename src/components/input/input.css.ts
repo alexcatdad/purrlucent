@@ -16,7 +16,7 @@ export const fieldStyles = css`
     gap: var(--purr-gap-form);
     inline-size: calc(var(--purr-spacing) * 30);
     color: var(--purr-color-foreground);
-    font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
       var(--purr-font-sans);
   }
 
