@@ -19,8 +19,11 @@ export const groupStyles = css`
   }
 
   :host([orientation="horizontal"]) {
-    flex-flow: row wrap;
-    align-items: center;
+    display: inline-grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    align-items: start;
     column-gap: var(--purr-gap-form);
+    max-inline-size: 100%;
   }
 `;
