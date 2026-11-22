@@ -4,7 +4,8 @@ import type { ReactiveController, ReactiveControllerHost } from "lit";
  * Press behavior for a custom control: fires `purr-press` on a click (a pointer
  * click, a label, `click()` or assistive technology). Enter and Space click the
  * host, so `click` listeners run for the keyboard too (Space on key release, as
- * a native button does).
+ * a native button does). `enter: false` leaves Enter alone, as a native
+ * checkbox does.
  * While the pointer or Space is down the custom state `:state(pressed)` is set.
  * Key events from a descendant of the host are ignored.
  * The controller uses `opts.internals` when given, otherwise it calls
@@ -13,14 +14,18 @@ import type { ReactiveController, ReactiveControllerHost } from "lit";
  */
 export class PressableController implements ReactiveController {
   readonly #host: ReactiveControllerHost & HTMLElement;
-  readonly #opts: { disabled: () => boolean };
+  readonly #opts: { disabled: () => boolean; enter?: boolean };
   readonly #internals: ElementInternals;
   #pressed = false;
   #spaceDown = false;
 
   constructor(
     host: ReactiveControllerHost & HTMLElement,
-    opts: { disabled: () => boolean; internals?: ElementInternals },
+    opts: {
+      disabled: () => boolean;
+      enter?: boolean;
+      internals?: ElementInternals;
+    },
   ) {
     this.#host = host;
     this.#opts = opts;
@@ -98,7 +103,8 @@ export class PressableController implements ReactiveController {
       event.preventDefault(); // keeps the page from scrolling
       this.#spaceDown = true;
       this.#set(true);
-    } else if (key === "Enter" && !repeat) this.#host.click();
+    } else if (key === "Enter" && !repeat && this.#opts.enter !== false)
+      this.#host.click();
   };
 
   #keyup = (event: Event) => {

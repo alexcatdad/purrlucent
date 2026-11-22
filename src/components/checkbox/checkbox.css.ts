@@ -15,10 +15,14 @@ export const boxStyles = css`
     --_off: var(--purr-color-muted-1);
     --_tint: transparent;
 
+    /* A label that wraps grows the row downwards: the box stays beside its first
+       line, and the padding keeps a one-line row exactly the control height. */
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--_gap);
+    box-sizing: border-box;
     min-block-size: var(--_h);
+    padding-block: max(0px, calc((var(--_h) - 1lh) / 2));
     min-inline-size: var(--purr-size-hit-min);
     color: var(--purr-color-foreground);
     font: 500 var(--purr-text-sm) / var(--purr-leading-normal)
@@ -49,6 +53,8 @@ export const boxStyles = css`
     box-sizing: border-box;
     inline-size: var(--_box);
     block-size: var(--_box);
+    /* Centered on the first line of the label. */
+    margin-block-start: calc((1lh - var(--_box)) / 2);
     border-radius: var(--_r);
     background-color: var(--_off);
     box-shadow: var(--purr-boundary);
