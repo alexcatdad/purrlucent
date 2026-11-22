@@ -97,6 +97,23 @@ test("values snap to the step", async ({ page }) => {
   expect(Number(await now(control)) % 25).toBe(0);
 });
 
+test('step="any" gives a continuous value', async ({ page }) => {
+  await gotoStory(page, story("continuous"));
+  const control = page.getByRole("slider", { name: "Continuous" });
+  const point = await at(control, 0.37);
+  await page.mouse.click(point.x, point.y);
+  const dragged = Number(await now(control));
+  expect(dragged).toBeGreaterThan(0);
+  expect(dragged).toBeLessThan(10);
+  expect(Number.isInteger(dragged)).toBe(false);
+  await control.evaluate((el) => {
+    (el as HTMLElement & { value: number }).value = 5;
+  });
+  await expect(control).toHaveAttribute("aria-valuenow", "5");
+  await page.keyboard.press("ArrowRight");
+  expect(Number(await now(control))).toBeCloseTo(5.1);
+});
+
 test("purr-input fires while dragging and purr-change once on release", async ({
   page,
 }) => {
