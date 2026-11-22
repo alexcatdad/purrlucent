@@ -1,5 +1,7 @@
 import { LitElement, html, nothing } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { labelText } from "../../behaviors/labels.ts";
 import { matchIndex } from "./match.ts";
 import { PopupController } from "./popup.ts";
 import { listboxStyles, optionStyles, selectStyles } from "./select.css.ts";
@@ -71,17 +73,22 @@ export class PurrOption extends LitElement {
  * the options are real light-DOM children, so focus moves to the options
  * while the list is open and returns to the trigger on close. It takes part
  * in forms: it submits `name` with the chosen value, a form reset returns it
- * to the option marked `selected`, and a disabled fieldset disables it.
+ * to the option marked `selected`, and a disabled fieldset disables it. A
+ * `slot="label"` element is a visible label that names the trigger; without
+ * it, `label` becomes the accessible name, and without both a native
+ * `<label for>` names it.
  *
  * @attr {string} value - The chosen option's value. Empty when nothing is chosen.
  * @attr {string} name - The name submitted with a form.
- * @attr {string} label - The accessible name. Required.
+ * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} placeholder - Shown while nothing is chosen.
  * @attr {boolean} required - The form is invalid while nothing is chosen.
  * @attr {boolean} disabled - No focus, no list, nothing submitted.
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} open - The list is showing.
  * @slot - The `purr-option` children.
+ * @slot label - The visible label.
+ * @csspart label - The visible label.
  * @csspart trigger - The combobox that shows the choice.
  * @csspart value - The chosen label or the placeholder.
  * @csspart glyph - The up-down arrows.
@@ -104,6 +111,7 @@ export class PurrSelect extends LitElement {
     disabled: { type: Boolean, reflect: true },
     size: { reflect: true },
     open: { type: Boolean, reflect: true },
+    _labelled: { state: true },
   };
 
   declare value: string;
@@ -114,13 +122,17 @@ export class PurrSelect extends LitElement {
   declare disabled: boolean;
   declare size: "md" | "lg" | "xl";
   declare open: boolean;
+  declare _labelled: boolean;
 
   readonly #internals = this.attachInternals();
   #query = "";
   #timer: ReturnType<typeof setTimeout> | undefined;
   #focusOnOpen: PurrOption | undefined;
   #start: string | undefined;
-  readonly #watch = new MutationObserver(() => this.requestUpdate());
+  readonly #watch = new MutationObserver(() => {
+    this.#syncLabelled();
+    this.requestUpdate();
+  });
   readonly #popup = new PopupController(
     this,
     () => this.#trigger,
@@ -137,12 +149,15 @@ export class PurrSelect extends LitElement {
     this.disabled = false;
     this.size = "md";
     this.open = false;
+    this._labelled = false;
     new DismissController(this, {
       enabled: () => this.open,
       onDismiss: (reason) => this.#close(reason === "escape"),
     });
     this.addEventListener("keydown", this.#onKeydown);
     this.addEventListener("click", this.#onClick);
+    // A label added after the select still names it before it is read out.
+    this.addEventListener("focusin", () => this.requestUpdate());
   }
 
   get #options(): PurrOption[] {
@@ -266,6 +281,7 @@ export class PurrSelect extends LitElement {
       characterData: true,
       childList: true,
     });
+    this.#syncLabelled();
   }
 
   override disconnectedCallback() {
@@ -277,7 +293,16 @@ export class PurrSelect extends LitElement {
     if (this.open && this.matches(":disabled")) this.open = false;
   }
 
+  // Watches the light DOM: editing a slotted label's text fires no slotchange.
+  #syncLabelled() {
+    this._labelled = !!this.querySelector(
+      ":scope > [slot=label]",
+    )?.textContent?.trim();
+  }
+
   protected override updated() {
+    if (this._labelled) this.#internals.states.add("labelled");
+    else this.#internals.states.delete("labelled");
     const chosen = this.#chosen;
     for (const option of this.#options) option.chosen = option === chosen;
     this.#internals.setFormValue(chosen ? this.value : null);
@@ -299,15 +324,23 @@ export class PurrSelect extends LitElement {
   override render() {
     const chosen = this.#chosen;
     const disabled = this.matches(":disabled");
+    const name = this._labelled
+      ? undefined
+      : this.label || labelText(this.#internals.labels);
+    const labelledby = this._labelled ? "label" : nothing;
     // Not a <button>: WebKit leaves buttons out of the Tab order, a select is in it.
-    return html`<div
+    return html`<label part="label" id="label"
+        ><slot name="label"></slot
+      ></label>
+      <div
         part="trigger"
         role="combobox"
         tabindex=${disabled ? -1 : 0}
         aria-haspopup="listbox"
         aria-expanded=${this.open}
         aria-controls="list"
-        aria-label=${this.label || nothing}
+        aria-label=${ifDefined(name)}
+        aria-labelledby=${labelledby}
         aria-required=${this.required ? "true" : nothing}
         aria-disabled=${disabled ? "true" : nothing}
         @click=${() => !disabled && (this.open = !this.open)}
@@ -324,7 +357,8 @@ export class PurrSelect extends LitElement {
         id="list"
         role="listbox"
         popover="manual"
-        aria-label=${this.label || nothing}
+        aria-label=${ifDefined(name)}
+        aria-labelledby=${labelledby}
       >
         <slot @slotchange=${this.#onSlotChange}></slot>
       </div>`;
