@@ -20,7 +20,7 @@ const chevron = (page: Page, name = "Apple variety") =>
 const listed = (page: Page) =>
   page.locator("purr-combobox").evaluate((el) =>
     el
-      .shadowRoot!.querySelector("slot")!
+      .shadowRoot!.querySelector<HTMLSlotElement>("slot:not([name])")!
       .assignedElements()
       .map((o) => o.textContent!.trim()),
   );
@@ -619,6 +619,7 @@ test("in dark mode the field stands out from the page", async ({ page }) => {
 
 for (const name of [
   "default",
+  "labelled",
   "preselected",
   "placeholder",
   "sizes",
@@ -638,6 +639,51 @@ for (const name of [
     await expectAccessible(root);
   });
 }
+
+test("a slotted label names the field and wins over the label attribute", async ({
+  page,
+}) => {
+  await gotoStory(page, story("labelled"));
+  await expect(combo(page)).toBeVisible();
+  await expect(chevron(page)).toBeVisible();
+  await expect(page.locator("[slot=label]")).toBeVisible();
+  await mount(
+    page,
+    `<purr-combobox label="Ignored"><span slot="label">Shown</span>${abc}</purr-combobox>`,
+  );
+  await expect(combo(page, "Shown")).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Ignored" })).toHaveCount(0);
+});
+
+test("the label attribute names the field when nothing is slotted", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await expect(combo(page)).toBeVisible();
+  await expect(page.locator("purr-combobox [slot=label]")).toHaveCount(0);
+  await expect(
+    page.locator("purr-combobox").locator("[part=label]"),
+  ).toBeHidden();
+});
+
+test("an external label names the field, even one added later", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<label for="ext">City</label><purr-combobox id="ext">${abc}</purr-combobox><purr-combobox id="late">${abc}</purr-combobox>`,
+  );
+  await expect(combo(page, "City")).toBeVisible();
+  await page.evaluate(() =>
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<label for="late">Country</label>',
+    ),
+  );
+  await page.locator("#late").evaluate((el) => (el as HTMLElement).focus());
+  await expect(combo(page, "Country")).toBeFocused();
+});
 
 test("a combobox without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));

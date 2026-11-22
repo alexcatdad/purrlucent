@@ -63,6 +63,15 @@ export const Placeholder: Story = {
     ),
 };
 
+export const Labelled: Story = {
+  render: () =>
+    column(
+      html`<purr-combobox value="Fuji"
+        ><span slot="label">Apple variety</span>${apples}</purr-combobox
+      >`,
+    ),
+};
+
 export const Sizes: Story = {
   render: () =>
     column(

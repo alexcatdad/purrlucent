@@ -57,6 +57,15 @@ export const Placeholder: Story = {
     ),
 };
 
+export const Labelled: Story = {
+  render: () =>
+    column(
+      html`<purr-select value="Fuji"
+        ><span slot="label">Apple variety</span>${apples}</purr-select
+      >`,
+    ),
+};
+
 export const Sizes: Story = {
   render: () =>
     column(

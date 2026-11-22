@@ -3,7 +3,8 @@ import { css } from "lit";
 /*
  * Composed with the input and listbox styles: the shell and the editing input
  * are the input's, the popup is the select's. This adds the chevron button at
- * the end of the shell and the "no results" row. The button is the full shell
+ * the end of the shell and the "no results" row. The host stays the input's
+ * grid, so a label sits above the field. The button is the full shell
  * height and at least the hit size wide; its fill is drawn inset by ::before.
  */
 export const comboboxStyles = css`
@@ -18,7 +19,6 @@ export const comboboxStyles = css`
       var(--purr-pad-item) + var(--purr-icon-sm) + var(--purr-gap-icon)
     );
 
-    display: inline-block;
     vertical-align: middle;
   }
 

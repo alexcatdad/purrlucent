@@ -1,6 +1,8 @@
 import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { labelText } from "../../behaviors/labels.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
@@ -28,7 +30,9 @@ type ActiveDescendantHost = HTMLInputElement & {
  * the ones whose label matches the typed text (starting with it first, then
  * containing it). It takes part in forms like `purr-input`: it submits `name`
  * with `value`, a form reset returns it to the option marked `selected`, and a
- * disabled fieldset disables it.
+ * disabled fieldset disables it. A `slot="label"` element is a visible label
+ * that names the field; without it, `label` becomes the accessible name, and
+ * without both a native `<label for>` names it.
  *
  * Leaving the field with text that matches no option restores the last chosen
  * option's label, or keeps the text as the value when `allow-custom` is set.
@@ -37,16 +41,18 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {string} value - The chosen option's value, or the custom text.
  * @attr {string} text - The visible text of the field.
  * @attr {string} name - The name submitted with a form.
- * @attr {string} label - The accessible name. Required.
+ * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} placeholder - Hint shown while the field is empty.
  * @attr {boolean} required - The form is invalid while there is no value.
  * @attr {boolean} disabled - No focus, no list, nothing submitted.
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} allow-custom - Text that matches no option becomes the value.
  * @attr {boolean} open - The list is showing.
- * @attr {string} toggle-label - The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when `label` is set.
+ * @attr {string} toggle-label - The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when the field has a label.
  * @attr {string} empty-label - The text shown when no option matches. Defaults to "No results".
  * @slot - The `purr-option` children.
+ * @slot label - The visible label.
+ * @csspart label - The visible label.
  * @csspart field - The shell around the input and the button.
  * @csspart control - The native input.
  * @csspart button - The chevron button that toggles the list.
@@ -60,7 +66,8 @@ export class PurrCombobox extends LitElement {
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
-    // Only the matching options are assigned, in their ranked order.
+    // Only the matching options are assigned, in their ranked order; the
+    // label slot is assigned by hand too.
     slotAssignment: "manual" as const,
   };
   static override styles = [inputStyles, listboxStyles, comboboxStyles];
@@ -78,6 +85,7 @@ export class PurrCombobox extends LitElement {
     toggleLabel: { attribute: "toggle-label" },
     emptyLabel: { attribute: "empty-label" },
     _active: { state: true },
+    _labelled: { state: true },
   };
 
   declare value: string;
@@ -93,6 +101,7 @@ export class PurrCombobox extends LitElement {
   declare toggleLabel: string;
   declare emptyLabel: string;
   declare _active: PurrOption | null;
+  declare _labelled: boolean;
 
   readonly #internals = this.attachInternals();
   readonly #popup = new PopupController(
@@ -121,6 +130,7 @@ export class PurrCombobox extends LitElement {
     this.toggleLabel = TOGGLE_LABEL;
     this.emptyLabel = "No results";
     this._active = null;
+    this._labelled = false;
     new DismissController(this, {
       enabled: () => this.open,
       onDismiss: (reason) => {
@@ -128,6 +138,12 @@ export class PurrCombobox extends LitElement {
       },
     });
     this.addEventListener("click", this.#onClick);
+    // A label added after the field still names it before it is read out.
+    this.addEventListener("focusin", () => this.requestUpdate());
+  }
+
+  get #labels(): Element[] {
+    return [...this.querySelectorAll(":scope > [slot=label]")];
   }
 
   get #options(): PurrOption[] {
@@ -283,7 +299,13 @@ export class PurrCombobox extends LitElement {
     }
   };
 
+  // The observer also watches the slotted label: editing its text fires no slotchange.
+  #syncLabelled() {
+    this._labelled = this.#labels.some((el) => !!el.textContent?.trim());
+  }
+
   #onOptions = () => {
+    this.#syncLabelled();
     if (this.#start === undefined && this.#options.length) {
       this.#start =
         this.value || this.#options.find((o) => o.selected)?.optionValue || "";
@@ -300,6 +322,7 @@ export class PurrCombobox extends LitElement {
       subtree: true,
       characterData: true,
     });
+    this.#syncLabelled();
   }
 
   override disconnectedCallback() {
@@ -327,7 +350,13 @@ export class PurrCombobox extends LitElement {
       option.chosen = option === chosen;
       option.toggleAttribute("data-active", option === this._active);
     }
-    this.shadowRoot!.querySelector("slot")!.assign(...listed);
+    const root = this.shadowRoot!;
+    root.querySelector<HTMLSlotElement>("slot:not([name])")!.assign(...listed);
+    root
+      .querySelector<HTMLSlotElement>("slot[name=label]")!
+      .assign(...this.#labels);
+    if (this._labelled) this.#internals.states.add("labelled");
+    else this.#internals.states.delete("labelled");
     input.ariaActiveDescendantElement = this.open ? this._active : null;
     this.#internals.setFormValue(this.value);
     this.#internals.setValidity(
@@ -344,7 +373,18 @@ export class PurrCombobox extends LitElement {
   override render() {
     const disabled = this.matches(":disabled");
     const empty = this.open && this.#filtering && !this.#listed.length;
-    return html`<div part="field">
+    const name = this._labelled
+      ? undefined
+      : this.label || labelText(this.#internals.labels);
+    const labelledby = this._labelled ? "label" : nothing;
+    // The chevron's name repeats the field's, as "<label>, show options".
+    const field = this._labelled
+      ? this.#labels.map((el) => el.textContent?.trim()).join(" ")
+      : name;
+    return html`<label part="label" id="label" for="control"
+        ><slot name="label"></slot
+      ></label>
+      <div part="field">
         <input
           id="control"
           part="control"
@@ -355,7 +395,7 @@ export class PurrCombobox extends LitElement {
           aria-expanded=${this.open}
           aria-controls="list"
           aria-autocomplete="list"
-          aria-label=${this.label || nothing}
+          aria-label=${ifDefined(name)}
           placeholder=${this.placeholder || nothing}
           .value=${this.text}
           ?required=${this.required}
@@ -369,8 +409,8 @@ export class PurrCombobox extends LitElement {
           type="button"
           tabindex="-1"
           aria-label=${
-            this.label && this.toggleLabel === TOGGLE_LABEL
-              ? `${this.label}, show options`
+            field && this.toggleLabel === TOGGLE_LABEL
+              ? `${field}, show options`
               : this.toggleLabel
           }
           aria-expanded=${this.open}
@@ -387,7 +427,8 @@ export class PurrCombobox extends LitElement {
         id="list"
         role="listbox"
         popover="manual"
-        aria-label=${this.label || nothing}
+        aria-label=${ifDefined(name)}
+        aria-labelledby=${labelledby}
         @mousedown=${(event: Event) => event.preventDefault()}
         @pointerover=${this.#onPointerover}
       >

@@ -108,30 +108,33 @@ import "purrlucent/combobox";
 
 ### `<purr-combobox>`
 
-A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `purr-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `purr-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value.
+A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `purr-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `purr-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value.
 
-| Attribute      | Type                   | Default        | Description                                                                                                                  |
-| -------------- | ---------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `value`        | `string`               | `""`           | The chosen option's value, or the custom text.                                                                               |
-| `text`         | `string`               | `""`           | The visible text of the field.                                                                                               |
-| `name`         | `string`               | `""`           | The name submitted with a form.                                                                                              |
-| `label`        | `string`               | `""`           | The accessible name. Required.                                                                                               |
-| `placeholder`  | `string`               | `""`           | Hint shown while the field is empty.                                                                                         |
-| `required`     | `boolean`              | `false`        | The form is invalid while there is no value.                                                                                 |
-| `disabled`     | `boolean`              | `false`        | No focus, no list, nothing submitted.                                                                                        |
-| `size`         | `"md" \| "lg" \| "xl"` | `"md"`         | `md` (default), `lg` or `xl`.                                                                                                |
-| `allow-custom` | `boolean`              | `false`        | Text that matches no option becomes the value.                                                                               |
-| `open`         | `boolean`              | `false`        | The list is showing.                                                                                                         |
-| `toggle-label` | `string`               | `TOGGLE_LABEL` | The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when `label` is set. |
-| `empty-label`  | `string`               | `"No results"` | The text shown when no option matches. Defaults to "No results".                                                             |
-| `_active`      | `PurrOption \| null`   | `null`         |                                                                                                                              |
+| Attribute      | Type                   | Default        | Description                                                                                                                         |
+| -------------- | ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `value`        | `string`               | `""`           | The chosen option's value, or the custom text.                                                                                      |
+| `text`         | `string`               | `""`           | The visible text of the field.                                                                                                      |
+| `name`         | `string`               | `""`           | The name submitted with a form.                                                                                                     |
+| `label`        | `string`               | `""`           | The accessible name when there is no slotted label.                                                                                 |
+| `placeholder`  | `string`               | `""`           | Hint shown while the field is empty.                                                                                                |
+| `required`     | `boolean`              | `false`        | The form is invalid while there is no value.                                                                                        |
+| `disabled`     | `boolean`              | `false`        | No focus, no list, nothing submitted.                                                                                               |
+| `size`         | `"md" \| "lg" \| "xl"` | `"md"`         | `md` (default), `lg` or `xl`.                                                                                                       |
+| `allow-custom` | `boolean`              | `false`        | Text that matches no option becomes the value.                                                                                      |
+| `open`         | `boolean`              | `false`        | The list is showing.                                                                                                                |
+| `toggle-label` | `string`               | `TOGGLE_LABEL` | The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when the field has a label. |
+| `empty-label`  | `string`               | `"No results"` | The text shown when no option matches. Defaults to "No results".                                                                    |
+| `_active`      | `PurrOption \| null`   | `null`         |                                                                                                                                     |
+| `_labelled`    | `boolean`              | `false`        |                                                                                                                                     |
 
 **Slots**
 
 - default: The `purr-option` children.
+- `label`: The visible label.
 
 **Parts**
 
+- `label`: The visible label.
 - `field`: The shell around the input and the button.
 - `control`: The native input.
 - `button`: The chevron button that toggles the list.
@@ -473,25 +476,28 @@ One choice in a `purr-select`. Its text is the label. The select marks the chose
 
 ### `<purr-select>`
 
-A pop-up button: shows the chosen option and opens a list to choose another. It follows the select-only combobox pattern: the trigger is a combobox and the options are real light-DOM children, so focus moves to the options while the list is open and returns to the trigger on close. It takes part in forms: it submits `name` with the chosen value, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it.
+A pop-up button: shows the chosen option and opens a list to choose another. It follows the select-only combobox pattern: the trigger is a combobox and the options are real light-DOM children, so focus moves to the options while the list is open and returns to the trigger on close. It takes part in forms: it submits `name` with the chosen value, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the trigger; without it, `label` becomes the accessible name, and without both a native `<label for>` names it.
 
 | Attribute     | Type                   | Default | Description                                              |
 | ------------- | ---------------------- | ------- | -------------------------------------------------------- |
 | `value`       | `string`               | `""`    | The chosen option's value. Empty when nothing is chosen. |
 | `name`        | `string`               | `""`    | The name submitted with a form.                          |
-| `label`       | `string`               | `""`    | The accessible name. Required.                           |
+| `label`       | `string`               | `""`    | The accessible name when there is no slotted label.      |
 | `placeholder` | `string`               | `""`    | Shown while nothing is chosen.                           |
 | `required`    | `boolean`              | `false` | The form is invalid while nothing is chosen.             |
 | `disabled`    | `boolean`              | `false` | No focus, no list, nothing submitted.                    |
 | `size`        | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                            |
 | `open`        | `boolean`              | `false` | The list is showing.                                     |
+| `_labelled`   | `boolean`              | `false` |                                                          |
 
 **Slots**
 
 - default: The `purr-option` children.
+- `label`: The visible label.
 
 **Parts**
 
+- `label`: The visible label.
 - `trigger`: The combobox that shows the choice.
 - `value`: The chosen label or the placeholder.
 - `glyph`: The up-down arrows.

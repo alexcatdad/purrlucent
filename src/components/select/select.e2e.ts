@@ -517,6 +517,50 @@ test("the trigger changes its border when open under forced colors", async ({
   expect(await border()).not.toBe(closed);
 });
 
+test("a slotted label names the trigger and wins over the label attribute", async ({
+  page,
+}) => {
+  await gotoStory(page, story("labelled"));
+  await expect(trigger(page)).toBeVisible();
+  await expect(page.locator("[slot=label]")).toBeVisible();
+  await mount(
+    page,
+    `<purr-select label="Ignored"><span slot="label">Shown</span>${abc}</purr-select>`,
+  );
+  await expect(trigger(page, "Shown")).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Ignored" })).toHaveCount(0);
+});
+
+test("the label attribute names the trigger when nothing is slotted", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await expect(trigger(page)).toBeVisible();
+  await expect(page.locator("purr-select [slot=label]")).toHaveCount(0);
+  await expect(
+    page.locator("purr-select").locator("[part=label]"),
+  ).toBeHidden();
+});
+
+test("an external label names the trigger, even one added later", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<label for="ext">City</label><purr-select id="ext">${abc}</purr-select><purr-select id="late">${abc}</purr-select>`,
+  );
+  await expect(trigger(page, "City")).toBeVisible();
+  await page.evaluate(() =>
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<label for="late">Country</label>',
+    ),
+  );
+  await page.locator("#late").evaluate((el) => (el as HTMLElement).focus());
+  await expect(trigger(page, "Country")).toBeFocused();
+});
+
 test("a select without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {

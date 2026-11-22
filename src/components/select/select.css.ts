@@ -14,9 +14,14 @@ export const selectStyles = css`
     --_face-pressed: var(--purr-color-secondary-pressed);
     --_face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
 
-    display: inline-block;
+    display: inline-grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--purr-gap-form);
     inline-size: calc(var(--purr-spacing) * 30);
     vertical-align: middle;
+    color: var(--purr-color-foreground);
+    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
+      var(--purr-font-sans);
   }
 
   :host([hidden]) {
@@ -30,6 +35,14 @@ export const selectStyles = css`
   :host([size="xl"]) {
     --_size: var(--purr-size-xl);
     --_pad: var(--purr-pad-control-xl);
+  }
+
+  [part="label"] {
+    overflow-wrap: anywhere;
+  }
+
+  :host(:not(:state(labelled))) [part="label"] {
+    display: none;
   }
 
   [part="trigger"] {
