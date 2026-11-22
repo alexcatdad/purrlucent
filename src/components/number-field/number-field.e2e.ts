@@ -278,6 +278,24 @@ test("the buttons step, stop at the limits and are disabled there", async ({
   await expect(host.getByRole("button", { name: "Decrease" })).toBeDisabled();
 });
 
+test("shift-click on a stepper button moves ten steps", async ({ page }) => {
+  await gotoStory(page, story("labelled"));
+  const host = page.locator("purr-number-field");
+  const field = page.getByRole("spinbutton");
+  await host
+    .getByRole("button", { name: "Increase" })
+    .click({ modifiers: ["Shift"] });
+  await expect(field).toHaveValue("13");
+  await page.waitForTimeout(600);
+  await expect(field).toHaveValue("13");
+  await host
+    .getByRole("button", { name: "Decrease" })
+    .click({ modifiers: ["Shift"] });
+  await expect(field).toHaveValue("3");
+  await host.getByRole("button", { name: "Increase" }).click();
+  await expect(field).toHaveValue("4");
+});
+
 test("a pressed button keeps focus in the field and repeats while held", async ({
   page,
 }) => {
