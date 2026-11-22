@@ -101,26 +101,50 @@ export const toolbarSeparatorStyles = css`
   }
 `;
 
+/* Takes the free space, so the items after it sit at the trailing edge. */
+export const toolbarSpacerStyles = css`
+  :host {
+    flex: 1;
+  }
+`;
+
+/* The title shrinks, up to half the bar, and ends in an ellipsis. */
 export const toolbarTitleStyles = css`
   :host {
-    flex: none;
+    flex: 0 1 auto;
+    min-inline-size: 0;
+    max-inline-size: 50%;
     white-space: nowrap;
   }
 
   [part="stack"] {
     display: flex;
+    min-inline-size: 0;
     flex-direction: var(--_stack);
     align-items: var(--_stack-align);
     gap: var(--_stack-gap);
   }
 
+  /* The padding keeps descenders inside the clip box; the margin takes it back. */
   [part="title"] {
+    --_clip: calc(var(--purr-text-lg) / 4);
+
+    flex-shrink: 0;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    padding-block: var(--_clip);
+    margin-block: calc(var(--_clip) * -1);
+    overflow: hidden;
+    text-overflow: ellipsis;
     font: 700 var(--purr-text-lg) / var(--purr-text-lg) var(--purr-font-sans);
   }
 
   /* Primary label color: the subtitle sits over scrolling content, where the
      muted tone cannot hold 4.5:1. Size and weight carry the hierarchy. */
   [part="subtitle"] {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    overflow: hidden;
     color: var(--purr-color-foreground);
     font: 400 var(--purr-text-xs) / var(--purr-leading-tight)
       var(--purr-font-sans);
@@ -129,6 +153,8 @@ export const toolbarTitleStyles = css`
   /* A block box reports its own width in every engine; an inline one does not. */
   ::slotted([slot="subtitle"]) {
     display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   [part="subtitle"][hidden] {

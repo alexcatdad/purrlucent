@@ -803,9 +803,13 @@ import "purrlucent/toolbar";
 
 A thin rule between related controls. It is not a tab stop.
 
+### `<purr-toolbar-spacer>`
+
+Free space between items. Items before it stay at the leading edge and items after it move to the trailing edge; two spacers leave a center area. It is not a tab stop and is hidden from assistive technology.
+
 ### `<purr-toolbar-title>`
 
-The title of the window or document a toolbar belongs to, with an optional subtitle. It is text, not a control, and not a tab stop.
+The title of the window or document a toolbar belongs to, with an optional subtitle. It is text, not a control, and not a tab stop. A long title shrinks to at most half the bar and ends in an ellipsis; its full text is still the accessible name.
 
 | Attribute    | Type      | Default | Description |
 | ------------ | --------- | ------- | ----------- |
@@ -826,7 +830,7 @@ Related symbol items, such as icon-only buttons with an `aria-label`, on one sha
 
 ### `<purr-toolbar>`
 
-A bar of controls with one tab stop and arrow-key navigation. A `<purr-input type="search">` takes the toolbar's material; give it the `size` of the toolbar. Inside it the caret keys edit the text, and an arrow at the edge of the text moves on to the next item.
+A bar of controls with one tab stop and arrow-key navigation. A `<purr-input type="search">` takes the toolbar's material; give it the `size` of the toolbar. Inside it the caret keys edit the text, and an arrow at the edge of the text moves on to the next item. For a Back or Close item, import `backGlyph` or `closeGlyph` from `purrlucent` and slot it into an icon `purr-button` with an `aria-label`. The Back chevron points left; mirror it with `scaleX(-1)` under right-to-left.
 
 | Attribute  | Type           | Default | Description                                                            |
 | ---------- | -------------- | ------- | ---------------------------------------------------------------------- |
@@ -836,7 +840,7 @@ A bar of controls with one tab stop and arrow-key navigation. A `<purr-input typ
 
 **Slots**
 
-- default: Controls, `purr-toolbar-group`s, `purr-toolbar-separator`s and a `purr-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
+- default: Controls, `purr-toolbar-group`s, `purr-toolbar-separator`s, `purr-toolbar-spacer`s and a `purr-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
 
 **Parts**
 

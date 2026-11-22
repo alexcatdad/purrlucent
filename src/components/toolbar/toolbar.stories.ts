@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html, svg, type SVGTemplateResult } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { backGlyph, closeGlyph } from "../../behaviors/glyphs.ts";
 import "../button/button.ts";
 import "../input/input.ts";
 import "./toolbar.ts";
@@ -119,7 +120,6 @@ export const GlassLight = matrix({ material: "glass" });
 export const GlassLightRtl = matrix({ material: "glass", dir: "rtl" });
 export const GlassDark = matrix({ material: "glass", theme: "dark" });
 
-const back = svg`<path d="m14.5 5.5-6 6.5 6 6.5" />`;
 const forward = svg`<path d="m9.5 5.5 6 6.5-6 6.5" />`;
 
 const iconButton = (label: string, paths: SVGTemplateResult) =>
@@ -133,10 +133,17 @@ const chrome = (size: "md" | "xl") =>
       purr-toolbar svg {
         display: block;
       }
+      /* Back points toward the start of the line and Forward toward the end. */
+      purr-toolbar:dir(rtl) [aria-label="Back"] svg,
+      purr-toolbar:dir(rtl) [aria-label="Forward"] svg {
+        transform: scaleX(-1);
+      }
     </style>
     <purr-toolbar id="toolbar" label="Window" size=${size}>
       <purr-toolbar-group>
-        ${iconButton("Back", back)}${iconButton("Forward", forward)}
+        <purr-button aria-label="Back" variant="ghost" icon
+          >${backGlyph}</purr-button
+        >${iconButton("Forward", forward)}
       </purr-toolbar-group>
       <purr-toolbar-title
         >Window Title<span slot="subtitle"
@@ -163,6 +170,45 @@ export const Chrome: Story = { render: () => chrome("xl") };
 
 /** The compact bar: md controls, the subtitle beside the title. */
 export const Compact: Story = { render: () => chrome("md") };
+
+/** A spacer gives a leading, a center and a trailing area; the Close item and the prominent item share the trailing one. */
+export const Spacers: Story = {
+  render: () =>
+    html`<style>
+        purr-toolbar svg {
+          display: block;
+        }
+        purr-toolbar:dir(rtl) [aria-label="Back"] svg {
+          transform: scaleX(-1);
+        }
+      </style>
+      <purr-toolbar id="toolbar" label="Window">
+        <purr-button aria-label="Back" variant="ghost" icon
+          >${backGlyph}</purr-button
+        >
+        <purr-toolbar-spacer></purr-toolbar-spacer>
+        <purr-toolbar-title>Window Title</purr-toolbar-title>
+        <purr-toolbar-spacer></purr-toolbar-spacer>
+        <purr-button aria-label="Close" variant="ghost" icon
+          >${closeGlyph}</purr-button
+        >
+        <purr-button variant="primary" size="xl">Done</purr-button>
+      </purr-toolbar>`,
+};
+
+/** A title too long for the bar ends in an ellipsis and keeps its full text as its name. */
+export const LongTitle: Story = {
+  render: () =>
+    html`<div style="inline-size: 20rem">
+      <purr-toolbar id="toolbar" label="Window">
+        <purr-toolbar-title
+          >A document title much too long to fit beside the other
+          items</purr-toolbar-title
+        >
+        <purr-button variant="primary" size="xl">Done</purr-button>
+      </purr-toolbar>
+    </div>`,
+};
 
 export const ChromeGlassDarkRtl: Story = {
   render: () => chrome("xl"),
