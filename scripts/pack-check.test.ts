@@ -115,6 +115,56 @@ button.variant = "primary";
   expect(result.exitCode).toBe(0);
 }, 60_000);
 
+// React's types come from this repository's node_modules, above the app.
+test("a React 19 app type-checks against purrlucent/react", async () => {
+  const dir = join(app, "react-app");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(
+    join(dir, "app.tsx"),
+    `import type {} from "purrlucent/react";
+import type { PurrDialog } from "purrlucent/dialog";
+import { useRef } from "react";
+
+export function App() {
+  const dialog = useRef<PurrDialog>(null);
+  return (
+    <>
+      <purr-button variant="primary" disabled={false} onpurr-press={() => dialog.current?.show()}>
+        Save
+      </purr-button>
+      <purr-select value="a" onpurr-change={(e) => String(e.detail.value)}>
+        <span slot="label">Fruit</span>
+        <purr-option value="a">A</purr-option>
+      </purr-select>
+      <purr-dialog ref={dialog} variant="alert" className="x" />
+      {/* @ts-expect-error not a prop of purr-button */}
+      <purr-button notAProp />
+    </>
+  );
+}
+`,
+  );
+  writeFileSync(
+    join(dir, "tsconfig.json"),
+    JSON.stringify({
+      compilerOptions: {
+        target: "ES2022",
+        lib: ["ES2023", "DOM", "DOM.Iterable"],
+        module: "ESNext",
+        moduleResolution: "bundler",
+        jsx: "react-jsx",
+        strict: true,
+        noEmit: true,
+        types: [],
+      },
+      files: ["app.tsx"],
+    }),
+  );
+  const result = await $`bunx tsc -p ${dir}`.nothrow().quiet();
+  expect(result.stdout.toString()).toBe("");
+  expect(result.exitCode).toBe(0);
+}, 60_000);
+
 // Launches a browser, so it runs in CI only.
 test.skipIf(!process.env.CI)(
   "every element upgrades in a browser from the packed files",
