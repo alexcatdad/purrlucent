@@ -34,8 +34,10 @@ export class PurrRadio extends LitElement {
   declare size: "md" | "lg" | "xl";
   declare disabled: boolean;
 
+  // Space chooses a radio; Enter does not, as with a native radio.
   readonly pressable = new PressableController(this, {
     disabled: () => this.#off,
+    enter: false,
   });
   readonly #internals = this.pressable.internals;
 

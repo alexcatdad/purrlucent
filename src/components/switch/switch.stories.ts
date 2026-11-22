@@ -65,7 +65,7 @@ export const InForm: Story = {
   `,
 };
 
-/** Click, Space and Enter each toggle once and fire purr-change. */
+/** Click and Space each toggle once and fire purr-change; Enter does nothing. */
 export const Toggles: Story = {
   render: () => html`<purr-switch id="switch">Wi-Fi</purr-switch>`,
   play: async ({ canvasElement }) => {
@@ -80,9 +80,9 @@ export const Toggles: Story = {
     el.focus();
     await userEvent.keyboard(" ");
     await userEvent.keyboard("{Enter}");
-    expect(changes).toEqual([true, false, true]);
+    expect(changes).toEqual([true, false]);
     await el.updateComplete;
-    expect(el.getAttribute("aria-checked")).toBe("true");
+    expect(el.getAttribute("aria-checked")).toBe("false");
   },
 };
 
