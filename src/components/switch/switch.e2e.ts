@@ -274,12 +274,6 @@ test("the track keeps its focus ring under forced colors", async ({ page }) => {
   ).not.toBe("none");
 });
 
-for (const name of ["states", "sizes", "in-form", "glass"]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("a switch without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {

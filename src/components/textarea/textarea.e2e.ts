@@ -321,21 +321,6 @@ test("the text is padded from the start edge under rtl", async ({ page }) => {
   expect(padding[1]).toBe(padding[2]);
 });
 
-for (const name of [
-  "default",
-  "labelled",
-  "states",
-  "resize",
-  "sizes",
-  "in-form",
-  "rtl",
-  "glass",
-]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("a text area without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {

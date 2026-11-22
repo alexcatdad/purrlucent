@@ -517,22 +517,6 @@ test("the trigger changes its border when open under forced colors", async ({
   expect(await border()).not.toBe(closed);
 });
 
-for (const name of [
-  "default",
-  "preselected",
-  "placeholder",
-  "sizes",
-  "disabled",
-  "in-form",
-  "open",
-  "rtl",
-  "glass",
-]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("a select without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {

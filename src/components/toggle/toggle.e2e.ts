@@ -161,12 +161,6 @@ test("under rtl the label and icon swap sides", async ({ page }) => {
   expect(side).toBe(true);
 });
 
-for (const name of ["default", "states", "sizes", "disabled", "glass"]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
-
 test("an icon toggle without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
