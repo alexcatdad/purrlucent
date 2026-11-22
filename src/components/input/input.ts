@@ -4,33 +4,16 @@ import {
   fieldMessage,
   syncFieldMessage,
 } from "../../behaviors/field-message.ts";
+import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { inputStyles } from "./input.css.ts";
+
+// Kept as a public export of this module.
+export { submitImplicitly };
 
 const glass = svg`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>`;
 
 const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-6.489 5.8a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z" /></svg>`;
-
-const textFields =
-  "purr-input, purr-number-field, input:is(:not([type]), [type=text], [type=search], [type=email], [type=url], [type=tel], [type=password], [type=number])";
-
-/**
- * Native implicit submission: press the form's default button, or submit
- * when the field that was entered is the only one that could. The Enter that
- * submitted is consumed, so a dialog around the form does not act on it too.
- */
-export function submitImplicitly(form: HTMLFormElement | null, event: Event) {
-  if (!form) return;
-  event.preventDefault();
-  const button = [...form.elements].find(
-    (el) => (el as HTMLButtonElement).type === "submit",
-  ) as HTMLElement | undefined;
-  if (button) {
-    if (!button.matches(":disabled")) button.click();
-  } else if (form.querySelectorAll(textFields).length <= 1) {
-    form.requestSubmit();
-  }
-}
 
 /**
  * A single-line text field. A native input inside does the editing, so typing,

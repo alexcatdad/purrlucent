@@ -47,6 +47,30 @@ test("a click on the label text toggles the switch", async ({ page }) => {
   await expect(control).toBeChecked();
 });
 
+test("with a wrapping label the track stays beside the first line", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  // By id: the new label text changes the accessible name.
+  const control = page.locator("#switch");
+  const oneLine = (await control.boundingBox())!.height;
+  await control.evaluate((el) => {
+    el.style.inlineSize = "10rem";
+    el.textContent = "Ask to join networks that are not known yet";
+  });
+  const [track, line] = await control.evaluate((el) => {
+    const part = el.shadowRoot!.querySelector('[part="track"]')!;
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const first = range.getClientRects()[0]!;
+    const t = part.getBoundingClientRect();
+    return [t.top + t.height / 2, first.top + first.height / 2];
+  });
+  expect(Math.abs(track - line)).toBeLessThanOrEqual(1);
+  // The row grows for the extra lines; a one-line row keeps its height.
+  expect((await control.boundingBox())!.height).toBeGreaterThan(oneLine);
+});
+
 test("a disabled switch takes no focus and does not change", async ({
   page,
 }) => {

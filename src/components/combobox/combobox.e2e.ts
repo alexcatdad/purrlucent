@@ -409,6 +409,76 @@ test("a required combobox makes the form invalid until one is chosen", async ({
   expect(await valid()).toBe(true);
 });
 
+test("an empty required combobox shows its message after a blur and describes the field with it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  const field = combo(page, "Required pick");
+  const message = page.locator('#pick [part="message"]');
+  await expect(message).toBeHidden();
+  await field.focus();
+  await page.keyboard.press("Tab");
+  await expect(message).toBeVisible();
+  const text = (await message.textContent())!.trim();
+  expect(text).not.toBe("");
+  await expect(field).toHaveAccessibleDescription(text);
+  await expect(field).toHaveAttribute("aria-invalid", "true");
+  // A reset clears it, as it does for a text field.
+  await page
+    .locator("#form")
+    .evaluate((form) => (form as HTMLFormElement).reset());
+  await expect(message).toBeHidden();
+  await field.fill("Alpha");
+  await page.keyboard.press("Tab");
+  await expect(message).toBeHidden();
+  await expect(field).not.toHaveAttribute("aria-describedby");
+  await expect(field).not.toHaveAttribute("aria-invalid");
+});
+
+/** Adds a default button to the form and records each submit's submitter. */
+const trackSubmits = (page: Page) =>
+  page.locator("#form").evaluate((form) => {
+    form.insertAdjacentHTML(
+      "beforeend",
+      '<button type="submit" name="intent" value="save">Save</button>',
+    );
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.setAttribute(
+        "data-submitted",
+        (event as SubmitEvent).submitter?.getAttribute("name") ?? "none",
+      );
+    });
+  });
+
+test("Enter with the list closed commits the text and presses the form's default button", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await trackSubmits(page);
+  await combo(page, "Required pick").fill("Alpha");
+  await page.keyboard.press("Escape");
+  await expect(listbox(page)).toBeHidden();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#form")).toHaveAttribute(
+    "data-submitted",
+    "intent",
+  );
+  expect(await submitted(page)).toContainEqual(["pick", "a"]);
+});
+
+test("Enter with the list open chooses the option and does not submit", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-form"));
+  await trackSubmits(page);
+  await combo(page, "Required pick").fill("Al");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(combo(page, "Required pick")).toHaveValue("Alpha");
+  await expect(page.locator("#form")).not.toHaveAttribute("data-submitted");
+});
+
 test("a disabled fieldset disables the combobox and submits nothing", async ({
   page,
 }) => {
@@ -448,12 +518,34 @@ test.describe("near the bottom edge", () => {
   });
 });
 
-test("the popup is at least as wide as the field", async ({ page }) => {
-  await gotoStory(page, story("sizes"));
-  await chevron(page, "Apple variety, xl").click();
+test("the popup is as wide as the field and a long option wraps", async ({
+  page,
+}) => {
+  const long = "Cox's Orange Pippin from the old orchard by the river";
+  await gotoStory(page, story("default"));
+  const host = page.locator("#combo");
+  await host.evaluate((el, label) => {
+    const option = document.createElement("purr-option");
+    option.textContent = label;
+    el.append(option);
+  }, long);
+  await chevron(page).click();
+  const field = await host.evaluate(
+    (el) =>
+      el.shadowRoot!.querySelector("[part=field]")!.getBoundingClientRect()
+        .width,
+  );
   const list = (await listbox(page).boundingBox())!;
-  const box = (await combo(page, "Apple variety, xl").boundingBox())!;
-  expect(list.width).toBeGreaterThanOrEqual(box.width);
+  expect(Math.abs(list.width - field)).toBeLessThanOrEqual(1);
+  const wrapped = (await option(page, long).boundingBox())!;
+  const single = (await option(page, "Fuji").boundingBox())!;
+  expect(wrapped.width).toBeLessThanOrEqual(list.width);
+  expect(wrapped.height).toBeGreaterThan(single.height);
+});
+
+test("a value wider than the field ends in an ellipsis", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await expect(combo(page)).toHaveCSS("text-overflow", "ellipsis");
 });
 
 test("under rtl the popup aligns to the field's start edge", async ({

@@ -2,6 +2,11 @@ import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import {
+  fieldMessage,
+  syncFieldMessage,
+} from "../../behaviors/field-message.ts";
+import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { inputStyles } from "../input/input.css.ts";
@@ -36,7 +41,10 @@ type ActiveDescendantHost = HTMLInputElement & {
  *
  * Leaving the field with text that matches no option restores the last chosen
  * option's label, or keeps the text as the value when `allow-custom` is set.
- * Empty text means no value.
+ * Empty text means no value. Return with the list closed presses the form's
+ * default button, as in a text field. Once the field has been left, a required
+ * field with no value shows the validation message below it. The list is as
+ * wide as the field: a long option wraps, and a long value ends in an ellipsis.
  *
  * @attr {string} value - The chosen option's value, or the custom text.
  * @attr {string} text - The visible text of the field.
@@ -58,6 +66,7 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart button - The chevron button that toggles the list.
  * @csspart listbox - The popup.
  * @csspart empty - The "no results" row.
+ * @csspart message - The validation message below the field.
  * @fires purr-input - The text changed through typing or Escape. `detail.text` holds it.
  * @fires purr-change - The value changed. `detail.value` holds it.
  */
@@ -114,9 +123,15 @@ export class PurrCombobox extends LitElement {
   // opens on the chosen label.
   #filtering = false;
   #start: string | undefined;
+  #touched = false;
 
   constructor() {
     super();
+    // A blocked submit or reportValidity() is an interaction too.
+    this.addEventListener("invalid", () => {
+      this.#touched = true;
+      this.#syncForm();
+    });
     this.value = "";
     this.text = "";
     this.name = "";
@@ -177,9 +192,36 @@ export class PurrCombobox extends LitElement {
   }
 
   formResetCallback() {
+    this.#touched = false;
     this.value = this.#start ?? "";
     this.#filtering = false;
     this.#syncText();
+    // An unchanged value schedules no update, but the touched state must clear.
+    this.#syncForm();
+  }
+
+  /** The form value, validity and the shown message, kept in step with `value`. */
+  #syncForm() {
+    // Not rendered yet: the first update syncs.
+    const input = this.shadowRoot?.querySelector<HTMLInputElement>("input");
+    if (!input) return;
+    this.#internals.setFormValue(this.value);
+    this.#internals.setValidity(
+      { valueMissing: this.required && !this.value },
+      nativeMessage("select", "Choose an option to continue."),
+      input,
+    );
+    const invalid = this.#touched && !this.#internals.validity.valid;
+    if (invalid) this.#internals.states.add("user-invalid");
+    else this.#internals.states.delete("user-invalid");
+    if (invalid) input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
+    syncFieldMessage(
+      this.shadowRoot!,
+      input,
+      invalid,
+      this.#internals.validationMessage,
+    );
   }
 
   formDisabledCallback() {
@@ -255,6 +297,12 @@ export class PurrCombobox extends LitElement {
     if (option && !option.disabled) this._active = option;
   };
 
+  #onBlur = () => {
+    this.#touched = true;
+    this.#close();
+    this.#syncForm();
+  };
+
   #onInput = (event: Event) => {
     this.text = (event.target as HTMLInputElement).value;
     this.#filtering = true;
@@ -282,10 +330,17 @@ export class PurrCombobox extends LitElement {
           at < 0 ? (down ? 0 : enabled.length - 1) : at + (down ? 1 : -1);
         this._active = enabled[next] ?? this._active;
       }
-    } else if (key === "Enter" && this.open) {
-      event.preventDefault();
-      if (this._active) this.#choose(this._active);
-      else this.#close();
+    } else if (key === "Enter") {
+      if (this.open) {
+        event.preventDefault();
+        if (this._active) this.#choose(this._active);
+        else this.#close();
+      } else {
+        // The typed text becomes the value before the form reads it.
+        this.#commit();
+        this.#syncForm();
+        submitImplicitly(this.#internals.form, event);
+      }
     } else if (key === "Escape") {
       if (this.open) {
         event.preventDefault();
@@ -358,12 +413,7 @@ export class PurrCombobox extends LitElement {
     if (this._labelled) this.#internals.states.add("labelled");
     else this.#internals.states.delete("labelled");
     input.ariaActiveDescendantElement = this.open ? this._active : null;
-    this.#internals.setFormValue(this.value);
-    this.#internals.setValidity(
-      { valueMissing: this.required && !this.value },
-      nativeMessage("select", "Choose an option to continue."),
-      input,
-    );
+    this.#syncForm();
     this.#popup.sync(this.open);
     if (this.open) this.#popup.reposition();
     // After the popover shows: a hidden list cannot scroll.
@@ -402,7 +452,7 @@ export class PurrCombobox extends LitElement {
           ?disabled=${disabled}
           @input=${this.#onInput}
           @keydown=${this.#onKeydown}
-          @blur=${() => this.#close()}
+          @blur=${this.#onBlur}
         />
         <button
           part="button"
@@ -422,6 +472,7 @@ export class PurrCombobox extends LitElement {
           ${chevron}
         </button>
       </div>
+      ${fieldMessage}
       <div
         part="listbox"
         id="list"

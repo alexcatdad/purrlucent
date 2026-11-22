@@ -108,7 +108,7 @@ import "purrlucent/combobox";
 
 ### `<purr-combobox>`
 
-A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `purr-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `purr-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value.
+A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `purr-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `purr-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis.
 
 | Attribute      | Type                   | Default        | Description                                                                                                                         |
 | -------------- | ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -140,6 +140,7 @@ A text field with a list of suggestions. It follows the editable combobox patter
 - `button`: The chevron button that toggles the list.
 - `listbox`: The popup.
 - `empty`: The "no results" row.
+- `message`: The validation message below the field.
 
 **Events**
 

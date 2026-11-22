@@ -23,7 +23,7 @@
   layer: components
 - id: combo-boxes/5
   source: https://developer.apple.com/design/human-interface-guidelines/combo-boxes
-  rule: The list is at least as wide as the field, so no choice is clipped by it.
+  rule: List items are not wider than the field; the list is as wide as the field and a long item wraps.
   check: automated
-  test: src/components/combobox/combobox.e2e.ts > the popup is at least as wide as the field
+  test: src/components/combobox/combobox.e2e.ts > the popup is as wide as the field and a long option wraps
   layer: components
