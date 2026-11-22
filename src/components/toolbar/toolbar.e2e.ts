@@ -589,8 +589,18 @@ test("the title stacks its subtitle, and the compact title puts it beside", asyn
   const layout = async (name: string) => {
     await openStory(page, name);
     return page.locator("purr-toolbar-title").evaluate((el) => {
-      const box = (part: string) =>
-        el.shadowRoot!.querySelector(`[part=${part}]`)!.getBoundingClientRect();
+      // The content box: the title's clip padding is taken back by a negative margin.
+      const box = (part: string) => {
+        const node = el.shadowRoot!.querySelector(`[part=${part}]`)!;
+        const r = node.getBoundingClientRect();
+        const s = getComputedStyle(node);
+        return {
+          top: r.top + parseFloat(s.paddingTop),
+          bottom: r.bottom - parseFloat(s.paddingBottom),
+          left: r.left,
+          right: r.right,
+        };
+      };
       return { title: box("title"), subtitle: box("subtitle") };
     });
   };

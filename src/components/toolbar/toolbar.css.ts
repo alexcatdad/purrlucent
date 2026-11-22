@@ -127,7 +127,7 @@ export const toolbarTitleStyles = css`
 
   /* The padding keeps descenders inside the clip box; the margin takes it back. */
   [part="title"] {
-    --_clip: calc(var(--purr-text-lg) / 4);
+    --_clip: var(--purr-space-1);
 
     flex-shrink: 0;
     min-inline-size: 0;
