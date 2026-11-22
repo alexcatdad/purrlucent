@@ -358,6 +358,39 @@ test("a one-character segment keeps the per-size minimum width", async ({
   for (const w of items) expect(w).toBeGreaterThanOrEqual(min - 0.5);
 });
 
+test("an icon-only segment is named by aria-label and fills its column", async ({
+  page,
+}) => {
+  const root = await open(page, "components-toggle-group--icons");
+  await expect(root).toMatchAriaSnapshot(`
+    - radiogroup "Text alignment":
+      - radio "Align left" [checked]
+      - radio "Align center"
+      - radio "Align right"
+  `);
+  await expectAccessible(root);
+  const side = await root.evaluate((el) => {
+    const probe = document.body.appendChild(document.createElement("div"));
+    probe.style.inlineSize = "var(--purr-icon-md)";
+    const size = probe.getBoundingClientRect().width;
+    probe.remove();
+    const box = el.querySelector("svg")!.getBoundingClientRect();
+    const widths = [...el.querySelectorAll("purr-toggle-group-item")].map(
+      (i) => i.getBoundingClientRect().width,
+    );
+    return [size, box.width, box.height, ...widths];
+  });
+  expect(side[1]).toBeCloseTo(side[0]!, 1);
+  expect(side[2]).toBeCloseTo(side[0]!, 1);
+  const [first, ...rest] = side.slice(3) as [number, ...number[]];
+  for (const w of rest) expect(Math.abs(w - first)).toBeLessThanOrEqual(0.5);
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("radio", { name: "Align left" })).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("radio", { name: "Align center" })).toBeFocused();
+  expect(await selectedValue(page)).toBe("center");
+});
+
 // Review Focus 5: a tablet in landscape is wide but still touch.
 test.describe("coarse pointer on a wide screen", () => {
   test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
