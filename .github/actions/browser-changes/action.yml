@@ -18,8 +18,8 @@ runs:
       with:
         bun-version: ${{ inputs.bun-version }}
     # A pull request is checked out as its merge commit, and a push to main is
-    # a squash merge; either way the first parent is the base. The version pull
-    # request is dispatched on its branch. A scheduled run always runs everything.
+    # a squash merge; either way the first parent is the base. A manual run
+    # compares its branch with main. A scheduled run always runs everything.
     - id: diff
       shell: bash
       run: |
