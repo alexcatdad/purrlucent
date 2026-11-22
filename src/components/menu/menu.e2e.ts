@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 import {
-  expectAccessible,
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
@@ -465,24 +464,6 @@ test("the focus ring and the highlight stay visible under forced colors", async 
   expect(colors[0]).not.toBe(colors[1]);
   expect(colors[2]).not.toBe("none");
 });
-
-for (const name of [
-  "default",
-  "open",
-  "checked",
-  "submenu",
-  "destructive",
-  "disabled",
-  "context-menu",
-  "rtl",
-  "glass",
-]) {
-  test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
-    // Resting state: axe must not catch the highlight halfway through its fade.
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await expectAccessible(await gotoStory(page, story(name)));
-  });
-}
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("open")));

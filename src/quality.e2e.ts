@@ -26,9 +26,15 @@ for (const id of stories)
       expect(await lowContrastText(page)).toEqual([]);
     });
 
-for (const id of stories)
-  test(`components in ${id} follow the spacing base`, async ({ page }) => {
-    await gotoStory(page, id);
-    await page.evaluate(() => document.fonts.ready);
-    expect(await ignoresSpacing(page)).toEqual([]);
-  });
+test.describe("spacing base", () => {
+  // It checks how the CSS derives sizes from the spacing token, which does not
+  // depend on the engine, so one browser is enough.
+  test.skip(({ browserName }) => browserName !== "chromium", "Chromium only");
+
+  for (const id of stories)
+    test(`components in ${id} follow the spacing base`, async ({ page }) => {
+      await gotoStory(page, id);
+      await page.evaluate(() => document.fonts.ready);
+      expect(await ignoresSpacing(page)).toEqual([]);
+    });
+});
