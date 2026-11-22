@@ -73,17 +73,22 @@ jobs:
       - run: bun test
       - run: bun run test:unit
 
-  e2e:
+  e2e-browser:
+    name: e2e (${{ matrix.browser }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit, firefox]
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: ${{ env.BUN_VERSION }}
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium firefox webkit
+      - run: bunx playwright install --with-deps ${{ matrix.browser }}
       - run: bun run build-storybook
-      - run: bun run test:e2e
+      - run: bun run test:e2e --project=${{ matrix.browser }}
       # Playwright writes a missing baseline to its expected path. Upload any
       # Linux baselines the run created so they can be reviewed and committed.
       - name: Archive new Linux baselines
@@ -92,9 +97,17 @@ jobs:
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: new-linux-baselines
+          name: new-linux-baselines-${{ matrix.browser }}
           path: new-linux-baselines.tgz
           if-no-files-found: ignore
+
+  # The required check: passes only when every browser passed.
+  e2e:
+    needs: e2e-browser
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.e2e-browser.result }}" = success
 
   audit:
     runs-on: ubuntu-latest
