@@ -116,6 +116,7 @@
     "hig:rubric": "bun scripts/hig-check.ts rubric",
     "notices": "bun scripts/third-party-notices.ts",
     "changeset": "changeset",
+    "version-packages": "changeset version && bun fmt CHANGELOG.md",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:unit": "vitest run",
