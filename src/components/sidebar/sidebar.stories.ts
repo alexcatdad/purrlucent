@@ -51,6 +51,34 @@ export const ChildSelected: Story = {
   },
 };
 
+/** A parent row with an href is a link that selects, with its own disclosure button. */
+export const ParentLink: Story = {
+  render: () => html`
+    <purr-sidebar id="sidebar" label="Library">
+      <purr-sidebar-item id="home" href="#home" selected
+        >Home</purr-sidebar-item
+      >
+      <purr-sidebar-item id="albums" href="#albums">Albums</purr-sidebar-item>
+      <purr-sidebar-item id="recent" level="2" href="#recent"
+        >Recently added</purr-sidebar-item
+      >
+      <purr-sidebar-item id="favorites" level="2" href="#favorites"
+        >Favorites</purr-sidebar-item
+      >
+      <purr-sidebar-item id="settings" href="#settings"
+        >Settings</purr-sidebar-item
+      >
+    </purr-sidebar>
+  `,
+  play: async ({ canvasElement }) => {
+    const albums = canvasElement.querySelector("#albums");
+    await expect(albums?.shadowRoot?.querySelector("a")).not.toBeNull();
+    await expect(
+      albums?.shadowRoot?.querySelector(".disclosure")?.ariaExpanded,
+    ).toBe("false");
+  },
+};
+
 /** The sidebar hidden, leaving only its toggle. */
 export const Collapsed: Story = { render: () => render({ collapsed: true }) };
 

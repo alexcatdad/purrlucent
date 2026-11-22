@@ -15,7 +15,8 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children,
  * loose or grouped under `purr-sidebar-section` headings (at most two levels,
  * and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a
- * disclosure button that shows and hides them. Every button and visible link is
+ * disclosure button that shows and hides them; with an `href` it stays a link
+ * that selects, and the disclosure button sits before it. Every button and visible link is
  * a tab stop. As an extra, Up and Down arrows, Home and End move among all
  * visible items (Left and Right are not used). Space or Enter on a link selects
  * it; Escape on a group button or inside its group closes it and focuses the
@@ -90,6 +91,8 @@ export class PurrSidebar extends LitElement {
         item.expandable =
           next?.level === 2 && next.parentElement === item.parentElement;
         item.hidden = false;
+        // Its button names the items that follow, which may have changed.
+        if (item.expandable) item.requestUpdate();
       } else {
         if (reveal && item.selected && parent) parent.expanded = true;
         item.hidden = parent ? !parent.expanded : false;
@@ -102,9 +105,13 @@ export class PurrSidebar extends LitElement {
 
   #onClick = (event: MouseEvent) => {
     const item = event.target;
+    // A parent link selects; its disclosure button, like any group button, does not.
+    const origin = event.composedPath()[0];
     if (
       !(item instanceof PurrSidebarItem) ||
-      item.expandable ||
+      (item.expandable &&
+        (!item.href ||
+          (origin instanceof Element && origin.closest("button")))) ||
       item.selected ||
       // A modified click opens the link elsewhere; this page stays current.
       (item.href &&
@@ -128,10 +135,11 @@ export class PurrSidebar extends LitElement {
   #onKeydown = (event: KeyboardEvent) => {
     const item = event.target;
     if (!(item instanceof PurrSidebarItem)) return;
-    if (event.key === " " && !item.expandable && item.href) {
+    const origin = event.composedPath()[0];
+    if (event.key === " " && origin instanceof HTMLAnchorElement) {
       // Native links ignore Space; APG selects and activates the link.
       event.preventDefault();
-      item.renderRoot.querySelector("a")?.click();
+      origin.click();
       return;
     }
     if (event.key !== "Escape") return;

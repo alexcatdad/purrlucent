@@ -521,15 +521,16 @@ import "purrlucent/sidebar";
 
 ### `<purr-sidebar-item>`
 
-One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. Without an `href` it renders a plain button; clicking it selects it, so an app can also handle the click itself.
+One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. An expandable item with an `href` keeps its link, which selects like any other, and gets a separate disclosure button before it. Without an `href` an item renders a plain button; clicking it selects it, so an app can also handle the click itself.
 
-| Attribute    | Type                  | Default | Description                                            |
-| ------------ | --------------------- | ------- | ------------------------------------------------------ |
-| `href`       | `string \| undefined` |         |                                                        |
-| `selected`   | `boolean`             | `false` |                                                        |
-| `level`      | `SidebarLevel`        |         | 1 or 2. Any other value throws in development.         |
-| `expandable` | `boolean`             | `false` | Set by the sidebar when level 2 items follow this one. |
-| `expanded`   | `boolean`             | `false` |                                                        |
+| Attribute      | Type                  | Default | Description                                                                                                    |
+| -------------- | --------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `toggle-label` | `string`              | `""`    | The disclosure button's accessible name when a link has one beside it. Defaults to "<item label>, show items". |
+| `href`         | `string \| undefined` |         |                                                                                                                |
+| `selected`     | `boolean`             | `false` |                                                                                                                |
+| `level`        | `SidebarLevel`        |         | 1 or 2. Any other value throws in development.                                                                 |
+| `expandable`   | `boolean`             | `false` | Set by the sidebar when level 2 items follow this one.                                                         |
+| `expanded`     | `boolean`             | `false` |                                                                                                                |
 
 **Slots**
 
@@ -540,6 +541,7 @@ One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set b
 **Parts**
 
 - `control`: The link or disclosure button.
+- `disclosure`: The disclosure button beside a link.
 - `chevron`: The disclosure arrow.
 
 **Events**
@@ -564,7 +566,7 @@ A titled group of `purr-sidebar-item` children inside a `purr-sidebar`. The grou
 
 ### `<purr-sidebar>`
 
-A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children, loose or grouped under `purr-sidebar-section` headings (at most two levels, and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a disclosure button that shows and hides them. Every button and visible link is a tab stop. As an extra, Up and Down arrows, Home and End move among all visible items (Left and Right are not used). Space or Enter on a link selects it; Escape on a group button or inside its group closes it and focuses the button. On a narrow screen (600px or less) the sidebar collapses on its own; shown again, it fills the width. A collapse it made itself is undone when the screen widens; read the first state from `collapsed`, because `purr-collapse` can fire before a listener is attached.
+A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children, loose or grouped under `purr-sidebar-section` headings (at most two levels, and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a disclosure button that shows and hides them; with an `href` it stays a link that selects, and the disclosure button sits before it. Every button and visible link is a tab stop. As an extra, Up and Down arrows, Home and End move among all visible items (Left and Right are not used). Space or Enter on a link selects it; Escape on a group button or inside its group closes it and focuses the button. On a narrow screen (600px or less) the sidebar collapses on its own; shown again, it fills the width. A collapse it made itself is undone when the screen widens; read the first state from `collapsed`, because `purr-collapse` can fire before a listener is attached.
 
 | Attribute      | Type           | Default        | Description                                                                                                      |
 | -------------- | -------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- |
