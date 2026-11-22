@@ -1,5 +1,7 @@
 # Purrlucent visual spec (final)
 
+> **Superseded for values.** `src/tokens/tokens.css` is the source of truth for sizes, radii, spacing and colors. Where this spec differs (for example 28px controls with radius 8, against 24px and 6px in the tokens), the tokens win. The rationale below still explains the design.
+
 Self-contained. Scope: the look of button, segmented control, toolbar bar and sidebar, plus the tokens they use. Dimensions are CSS pixels at default text size; express type, line heights and spacing in rem.
 
 Marks: **HIG** = Apple Human Interface Guidelines fact. **TASTE** = project decision. All colors, dimensions, shadows and timings are TASTE unless marked.
