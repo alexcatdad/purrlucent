@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
 import { labelText } from "../../behaviors/labels.ts";
+import { nativeMessage } from "../../behaviors/native-message.ts";
 import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
 import { PopupController } from "../select/popup.ts";
@@ -14,6 +15,8 @@ import { comboboxStyles } from "./combobox.css.ts";
 const chevron = html`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 9l6 6l6 -6" />
 </svg>`;
+
+const TOGGLE_LABEL = "Show options";
 
 /** `ariaActiveDescendantElement` is missing from the DOM typings. */
 type ActiveDescendantHost = HTMLInputElement & {
@@ -45,6 +48,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} allow-custom - Text that matches no option becomes the value.
  * @attr {boolean} open - The list is showing.
+ * @attr {string} toggle-label - The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when the field has a label.
+ * @attr {string} empty-label - The text shown when no option matches. Defaults to "No results".
  * @slot - The `purr-option` children.
  * @slot label - The visible label.
  * @csspart label - The visible label.
@@ -77,6 +82,8 @@ export class PurrCombobox extends LitElement {
     size: { reflect: true },
     allowCustom: { type: Boolean, reflect: true, attribute: "allow-custom" },
     open: { type: Boolean, reflect: true },
+    toggleLabel: { attribute: "toggle-label" },
+    emptyLabel: { attribute: "empty-label" },
     _active: { state: true },
     _labelled: { state: true },
   };
@@ -91,6 +98,8 @@ export class PurrCombobox extends LitElement {
   declare size: "md" | "lg" | "xl";
   declare allowCustom: boolean;
   declare open: boolean;
+  declare toggleLabel: string;
+  declare emptyLabel: string;
   declare _active: PurrOption | null;
   declare _labelled: boolean;
 
@@ -118,6 +127,8 @@ export class PurrCombobox extends LitElement {
     this.size = "md";
     this.allowCustom = false;
     this.open = false;
+    this.toggleLabel = TOGGLE_LABEL;
+    this.emptyLabel = "No results";
     this._active = null;
     this._labelled = false;
     new DismissController(this, {
@@ -350,7 +361,7 @@ export class PurrCombobox extends LitElement {
     this.#internals.setFormValue(this.value);
     this.#internals.setValidity(
       { valueMissing: this.required && !this.value },
-      "Choose an option to continue.",
+      nativeMessage("select", "Choose an option to continue."),
       input,
     );
     this.#popup.sync(this.open);
@@ -397,7 +408,11 @@ export class PurrCombobox extends LitElement {
           part="button"
           type="button"
           tabindex="-1"
-          aria-label=${field ? `${field}, show options` : "Show options"}
+          aria-label=${
+            field && this.toggleLabel === TOGGLE_LABEL
+              ? `${field}, show options`
+              : this.toggleLabel
+          }
           aria-expanded=${this.open}
           aria-controls="list"
           ?disabled=${disabled}
@@ -426,7 +441,7 @@ export class PurrCombobox extends LitElement {
                 aria-disabled="true"
                 aria-selected="false"
               >
-                No results
+                ${this.emptyLabel}
               </div>`
             : nothing
         }

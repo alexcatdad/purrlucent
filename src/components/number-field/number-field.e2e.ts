@@ -55,6 +55,18 @@ test("a slotted label names the field and a click on it focuses the input", asyn
   await expect(field).toBeFocused();
 });
 
+test("increase-label and decrease-label name the stepper buttons", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await page.locator("purr-number-field").evaluate((el) => {
+    el.setAttribute("increase-label", "Augmenter");
+    el.setAttribute("decrease-label", "Diminuer");
+  });
+  await expect(page.getByRole("button", { name: "Augmenter" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Diminuer" })).toBeVisible();
+});
+
 test("focusing the host focuses the input", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.locator("purr-number-field").focus();

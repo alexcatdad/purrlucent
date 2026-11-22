@@ -93,6 +93,20 @@ test("aria snapshot, filtered: starts-with matches come first", async ({
   `);
 });
 
+test("toggle-label and empty-label replace the built-in strings", async ({
+  page,
+}) => {
+  await gotoStory(page, story("no-results"));
+  await page.locator("purr-combobox").evaluate((el) => {
+    el.setAttribute("toggle-label", "Afficher");
+    el.setAttribute("empty-label", "Aucun résultat");
+  });
+  await expect(page.getByRole("button", { name: "Afficher" })).toBeVisible();
+  await expect(
+    page.getByRole("option", { name: "Aucun résultat" }),
+  ).toBeVisible();
+});
+
 test("aria snapshot, no results", async ({ page }) => {
   const root = await gotoStory(page, story("no-results"));
   await expect(root).toMatchAriaSnapshot(`

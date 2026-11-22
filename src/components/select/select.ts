@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
 import { labelText } from "../../behaviors/labels.ts";
+import { nativeMessage } from "../../behaviors/native-message.ts";
 import { matchIndex } from "./match.ts";
 import { PopupController } from "./popup.ts";
 import { listboxStyles, optionStyles, selectStyles } from "./select.css.ts";
@@ -308,7 +309,7 @@ export class PurrSelect extends LitElement {
     this.#internals.setFormValue(chosen ? this.value : null);
     this.#internals.setValidity(
       { valueMissing: this.required && !chosen },
-      "Choose an option to continue.",
+      nativeMessage("select", "Choose an option to continue."),
       this.#trigger,
     );
     if (this.#popup.sync(this.open)) {
