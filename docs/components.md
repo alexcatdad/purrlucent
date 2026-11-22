@@ -516,7 +516,7 @@ import "purrlucent/sidebar";
 
 ### `<purr-sidebar-item>`
 
-One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. Without an `href` it renders a plain button, so an app can handle the click itself.
+One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. Without an `href` it renders a plain button; clicking it selects it, so an app can also handle the click itself.
 
 | Attribute    | Type                  | Default | Description                                            |
 | ------------ | --------------------- | ------- | ------------------------------------------------------ |

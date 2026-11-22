@@ -105,14 +105,14 @@ export class PurrSidebar extends LitElement {
     if (
       !(item instanceof PurrSidebarItem) ||
       item.expandable ||
-      !item.href ||
       item.selected ||
       // A modified click opens the link elsewhere; this page stays current.
-      event.button !== 0 ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey
+      (item.href &&
+        (event.button !== 0 ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey))
     )
       return;
     for (const other of this.#items()) other.selected = other === item;
