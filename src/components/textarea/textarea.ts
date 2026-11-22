@@ -1,5 +1,9 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import {
+  fieldMessage,
+  syncFieldMessage,
+} from "../../behaviors/field-message.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { textareaStyles } from "./textarea.css.ts";
 
@@ -28,6 +32,7 @@ import { textareaStyles } from "./textarea.css.ts";
  * @csspart label - The visible label.
  * @csspart field - The shell around the textarea.
  * @csspart control - The native textarea.
+ * @csspart message - The icon and validation message below the field while it is invalid.
  * @fires purr-input - The value changed through editing. `detail.value` holds it.
  * @fires purr-change - The value was committed (blur after an edit). `detail.value` holds it.
  */
@@ -182,6 +187,7 @@ export class PurrTextarea extends LitElement {
     else this.#internals.states.delete("user-invalid");
     if (invalid) control.setAttribute("aria-invalid", "true");
     else control.removeAttribute("aria-invalid");
+    syncFieldMessage(this.renderRoot as ShadowRoot, control, invalid);
   }
 
   #emit(name: "purr-input" | "purr-change") {
@@ -240,7 +246,8 @@ export class PurrTextarea extends LitElement {
           @change=${this.#onChange}
           @blur=${this.#onBlur}
         ></textarea>
-      </div>`;
+      </div>
+      ${fieldMessage}`;
   }
 }
 

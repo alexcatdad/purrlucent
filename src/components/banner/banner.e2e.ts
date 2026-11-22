@@ -91,22 +91,35 @@ test("an author-set role is kept", async ({ page }) => {
   await expect(page.getByRole("note")).toHaveCount(1);
 });
 
-test("without an icon the text starts at the padding edge", async ({
-  page,
-}) => {
-  await gotoStory(page, story("without-icon"));
-  const { offset, padding } = await page
+/** The tone's own icon, drawn in the icon slot's fallback. */
+const toneIcon = (page: Page, i: number) =>
+  page
     .locator("purr-banner")
+    .nth(i)
     .evaluate((el) => {
-      const title = el.querySelector("[slot=title]")!.getBoundingClientRect();
-      const rtl = getComputedStyle(el).direction === "rtl";
-      const box = el.getBoundingClientRect();
+      const icon = el.shadowRoot!.querySelector("slot[name=icon] > svg")!;
       return {
-        offset: rtl ? box.right - title.right : title.left - box.left,
-        padding: parseFloat(getComputedStyle(el).paddingInlineStart),
+        paths: icon.innerHTML,
+        width: icon.getBoundingClientRect().width,
+        hidden: icon.getAttribute("aria-hidden"),
       };
     });
-  expect(offset).toBeCloseTo(padding, 0);
+
+test("without a slotted icon each tone draws its own", async ({ page }) => {
+  await gotoStory(page, story("without-icon"));
+  const [info, destructive] = [
+    await toneIcon(page, 0),
+    await toneIcon(page, 1),
+  ];
+  expect(info.width).toBeGreaterThan(0);
+  expect(destructive.width).toBeGreaterThan(0);
+  expect(destructive.paths).not.toBe(info.paths);
+  expect([info.hidden, destructive.hidden]).toEqual(["true", "true"]);
+});
+
+test("a slotted icon replaces the tone's own", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  expect((await toneIcon(page, 0)).width).toBe(0);
 });
 
 test("a banner that appears does not take focus", async ({ page }) => {
