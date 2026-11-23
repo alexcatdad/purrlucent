@@ -68,7 +68,7 @@ export const WithActions: Story = {
 };
 
 /** No slotted icon: each tone draws its own. */
-export const WithoutIcon: Story = {
+export const ToneIcons: Story = {
   render: () =>
     column([
       html`<pl-banner open>
@@ -76,6 +76,21 @@ export const WithoutIcon: Story = {
         Your changes are saved.
       </pl-banner>`,
       html`<pl-banner open tone="destructive">
+        <strong slot="title">Not saved</strong>
+        Your changes could not be saved.
+      </pl-banner>`,
+    ]),
+};
+
+/** `no-icon` hides the icon, the tone's own included. */
+export const WithoutIcon: Story = {
+  render: () =>
+    column([
+      html`<pl-banner open no-icon>
+        <strong slot="title">Saved</strong>
+        Your changes are saved.
+      </pl-banner>`,
+      html`<pl-banner open no-icon tone="destructive">
         <strong slot="title">Not saved</strong>
         Your changes could not be saved.
       </pl-banner>`,

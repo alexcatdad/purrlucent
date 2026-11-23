@@ -14,6 +14,7 @@ const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill
  * time, handle `pl-toggle` in the app.
  *
  * @attr {boolean} open - The content is showing. It reflects, so it also follows the user's presses.
+ * @attr {boolean} disabled - The trigger takes no focus and the content cannot be toggled.
  * @slot - The content the trigger shows and hides.
  * @slot trigger - The trigger's label: short text, optionally with an svg. Required: without it the button has no name.
  * @csspart trigger - The button.
@@ -23,13 +24,18 @@ const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill
  */
 export class PlCollapsible extends LitElement {
   static override styles = collapsibleStyles;
-  static override properties = { open: { type: Boolean, reflect: true } };
+  static override properties = {
+    open: { type: Boolean, reflect: true },
+    disabled: { type: Boolean, reflect: true },
+  };
 
   declare open: boolean;
+  declare disabled: boolean;
 
   constructor() {
     super();
     this.open = false;
+    this.disabled = false;
   }
 
   protected override updated(changed: PropertyValues<this>) {
@@ -51,6 +57,7 @@ export class PlCollapsible extends LitElement {
         type="button"
         aria-expanded=${this.open ? "true" : "false"}
         aria-controls="content"
+        ?disabled=${this.disabled}
         @click=${() => (this.open = !this.open)}
       >
         ${chevron}<slot name="trigger"></slot>

@@ -18,6 +18,7 @@ import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} required - The form is invalid while the box is unchecked.
  * @attr {boolean} disabled - No focus, no feedback, nothing submitted.
+ * @attr {boolean} readonly - The state shows and submits but a press does not change it.
  * @slot - The label.
  * @csspart box - The drawn box.
  * @csspart label - The wrapper around the label.
@@ -36,6 +37,7 @@ export class PlCheckbox extends LitElement {
     size: { reflect: true },
     required: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
+    readonly: { type: Boolean, reflect: true },
   };
 
   declare checked: boolean;
@@ -45,6 +47,7 @@ export class PlCheckbox extends LitElement {
   declare size: "md" | "lg" | "xl";
   declare required: boolean;
   declare disabled: boolean;
+  declare readonly: boolean;
   /** Always `checkbox`, as on a native checkbox, so form libraries read `checked`. */
   readonly type = "checkbox";
 
@@ -65,7 +68,9 @@ export class PlCheckbox extends LitElement {
     this.size = "md";
     this.required = false;
     this.disabled = false;
+    this.readonly = false;
     this.addEventListener("pl-press", () => {
+      if (this.readonly) return;
       this.checked = !this.checked;
       this.indeterminate = false;
       this.dispatchEvent(
@@ -112,6 +117,8 @@ export class PlCheckbox extends LitElement {
     else this.removeAttribute("aria-disabled");
     if (this.required) this.setAttribute("aria-required", "true");
     else this.removeAttribute("aria-required");
+    if (this.readonly) this.setAttribute("aria-readonly", "true");
+    else this.removeAttribute("aria-readonly");
     this.#state("checked", this.checked);
     this.#state("indeterminate", this.indeterminate);
     this.#state("disabled", disabled);

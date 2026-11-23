@@ -232,6 +232,18 @@ test("the field grows with its text, stops at a maximum, scrolls, and shrinks ag
     .toBeLessThan(2);
 });
 
+test("multiline: the field holds four lines and is taller than one", async ({
+  page,
+}) => {
+  const empty = await gotoStory(page, story("default"));
+  const one = (await field(empty).boundingBox())!.height;
+  const root = await gotoStory(page, story("multiline"));
+  await expect(field(root)).toHaveValue(/^.+\n.+\n.+\n.+$/);
+  await expect
+    .poll(async () => (await field(root).boundingBox())!.height)
+    .toBeGreaterThan(one * 2);
+});
+
 test("the group's shell grows with the field", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   const shell = (host: Locator) =>

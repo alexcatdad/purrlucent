@@ -373,6 +373,24 @@ test("required and a short code make the form invalid until the code is complete
   expect(await valid(page)).toBe(true);
 });
 
+test("states: the invalid row shows its message and is marked invalid", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const invalid = page.getByRole("textbox", { name: "Invalid", exact: true });
+  await expect(invalid).toHaveAttribute("aria-invalid", "true");
+  await expect(page.locator("#invalid").locator('[part="message"]')).toHaveText(
+    "Enter all 6 characters.",
+  );
+});
+
+test("labelled: the label is visible", async ({ page }) => {
+  await gotoStory(page, story("labelled"));
+  await expect(
+    page.getByText("Verification code", { exact: true }),
+  ).toBeVisible();
+});
+
 test("an incomplete code shows its message after a blur and describes the input with it", async ({
   page,
 }) => {

@@ -162,19 +162,26 @@ test("opening a popover from script closes another open popover", async ({
     const first = document.getElementById("top") as Popover;
     const second = document.getElementById("bottom") as Popover;
     const seen: boolean[] = [];
-    first.addEventListener("pl-toggle", (e) =>
+    second.addEventListener("pl-toggle", (e) =>
       seen.push((e as CustomEvent<{ open: boolean }>).detail.open),
     );
+    first.open = false;
+    await first.updateComplete;
     first.open = true;
     await first.updateComplete;
-    second.open = true;
     await second.updateComplete;
-    await first.updateComplete;
     return { seen, first: first.open, second: second.open };
   });
-  expect(log).toEqual({ seen: [true, false], first: false, second: true });
-  await expect(dialog(page, "Sharing, top")).toBeHidden();
-  await expect(dialog(page, "Sharing, bottom")).toBeVisible();
+  expect(log).toEqual({ seen: [false], first: true, second: false });
+  await expect(dialog(page, "Sharing, top")).toBeVisible();
+  await expect(dialog(page, "Sharing, bottom")).toBeHidden();
+});
+
+test("placements: four popovers are visible", async ({ page }) => {
+  await gotoStory(page, story("placements"));
+  for (const side of ["top", "bottom", "start", "end"]) {
+    await expect(dialog(page, `Sharing, ${side}`)).toBeVisible();
+  }
 });
 
 test("a nested popover does not close its parent", async ({ page }) => {
@@ -240,7 +247,6 @@ test("the arrow is on the side facing the trigger and points at its middle, on e
 }) => {
   await gotoStory(page, story("placements"));
   for (const side of ["top", "bottom", "start", "end"]) {
-    await trigger(page, `#${side}`).click();
     await expect(page.locator(`#${side} [part=panel]`)).toBeVisible();
     const panel = await box(page.locator(`#${side} [part=panel]`));
     const arrow = await box(page.locator(`#${side} [part=arrow]`));
@@ -273,7 +279,6 @@ test("the panel opens beside the trigger on the requested side", async ({
 }) => {
   await gotoStory(page, story("placements"));
   const around = async (id: string) => {
-    await trigger(page, `#${id}`).click();
     await expect(page.locator(`#${id} [part=panel]`)).toBeVisible();
     return {
       panel: await box(page.locator(`#${id} [part=panel]`)),

@@ -55,6 +55,17 @@ export const Tools: Story = {
     ),
 };
 
+/** The field grows with its text, up to about eight lines. Shift+Enter adds a line. */
+export const Multiline: Story = {
+  render: () =>
+    column(
+      html`<pl-prompt-input
+        id="prompt"
+        value=${"Summarize the release notes:\n- Fixes\n- Features\n- Breaking changes"}
+      ></pl-prompt-input>`,
+    ),
+};
+
 /** While a reply streams, Send becomes Stop and Enter sends nothing. */
 export const Busy: Story = {
   render: () =>

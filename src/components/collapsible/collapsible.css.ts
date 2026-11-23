@@ -36,13 +36,18 @@ export const collapsibleStyles = css`
   }
 
   @media (hover: hover) {
-    .trigger:hover {
+    .trigger:hover:not(:disabled) {
       background-color: var(--pl-color-muted-3);
     }
   }
 
-  .trigger:active {
+  .trigger:active:not(:disabled) {
     background-color: var(--pl-color-muted-pressed);
+  }
+
+  .trigger:disabled,
+  .trigger:disabled .chevron {
+    color: var(--pl-color-disabled-foreground);
   }
 
   .trigger:focus-visible {
@@ -116,6 +121,11 @@ export const collapsibleStyles = css`
 
     .chevron {
       color: ButtonText;
+    }
+
+    .trigger:disabled,
+    .trigger:disabled .chevron {
+      color: GrayText;
     }
 
     .trigger:focus-visible {
