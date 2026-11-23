@@ -43,6 +43,7 @@ export * from "./components/switch/switch.ts";
 export * from "./components/table/table.ts";
 export * from "./components/tabs/tabs.ts";
 export * from "./components/textarea/textarea.ts";
+export * from "./components/toast/toast.ts";
 export * from "./components/toggle/toggle.ts";
 export * from "./components/toggle-group/toggle-group.ts";
 export * from "./components/toolbar/toolbar.ts";
