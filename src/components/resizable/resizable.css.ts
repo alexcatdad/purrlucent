@@ -42,24 +42,27 @@ export const panelStyles = css`
 `;
 
 /*
- * The divider is a thin line (HIG's preferred divider). Its hit region is a
- * larger strip centered on the line, drawn by ::before over the panels beside
- * it, at least as large as the other controls' hit region.
+ * The divider is a thin line (HIG's preferred divider), drawn by ::before. The
+ * host is the hit region: at least as large as the other controls' hit region,
+ * centered on the line, with negative margins so that it takes only the line's
+ * width in the layout. The region lies over the panels beside it and, being
+ * the box itself, adds nothing to the scrollable overflow.
  */
 export const handleStyles = css`
   :host {
     --_line: 1px;
+    --_color: var(--pl-color-border);
 
     position: relative;
     z-index: 1;
     flex: none;
     align-self: stretch;
-    inline-size: var(--_line);
-    background-color: var(--pl-color-border);
+    box-sizing: border-box;
+    inline-size: var(--pl-size-hit-min);
+    margin-inline: calc((var(--_line) - var(--pl-size-hit-min)) / 2);
     cursor: col-resize;
     touch-action: none;
     user-select: none;
-    transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   :host([hidden]) {
@@ -69,7 +72,9 @@ export const handleStyles = css`
   :host([orientation="vertical"]) {
     align-self: auto;
     inline-size: auto;
-    block-size: var(--_line);
+    block-size: var(--pl-size-hit-min);
+    margin-inline: 0;
+    margin-block: calc((var(--_line) - var(--pl-size-hit-min)) / 2);
     cursor: row-resize;
   }
 
@@ -77,55 +82,65 @@ export const handleStyles = css`
     content: "";
     position: absolute;
     inset-block: 0;
-    inset-inline: calc(var(--pl-size-hit-min) / -2);
+    inset-inline: calc(50% - var(--_line) / 2);
+    background-color: var(--_color);
+    transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   :host([orientation="vertical"])::before {
-    inset-block: calc(var(--pl-size-hit-min) / -2);
+    inset-block: calc(50% - var(--_line) / 2);
     inset-inline: 0;
   }
 
   :host(:hover) {
-    background-color: var(--pl-color-input-border);
+    --_color: var(--pl-color-input-border);
   }
 
   :host(:state(dragging)) {
-    background-color: var(--pl-color-selected);
+    --_color: var(--pl-color-selected);
   }
 
   :host([disabled]) {
-    background-color: var(--pl-color-foreground-faint);
+    --_color: var(--pl-color-foreground-faint);
+
     cursor: default;
   }
 
   :host(:focus-visible) {
+    outline: none;
+  }
+
+  :host(:focus-visible)::before {
     outline: var(--pl-ring-width) solid var(--pl-color-ring);
     outline-offset: var(--pl-ring-offset);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :host {
+    :host::before {
       transition: none;
     }
   }
 
   @media (forced-colors: active) {
     :host {
-      background: ButtonText;
+      --_color: ButtonText;
+    }
+
+    :host::before {
       forced-color-adjust: none;
       transition: none;
     }
 
     :host(:state(dragging)),
     :host(:focus-visible) {
-      background: Highlight;
+      --_color: Highlight;
     }
 
     :host([disabled]) {
-      background: GrayText;
+      --_color: GrayText;
     }
 
-    :host(:focus-visible) {
+    :host(:focus-visible)::before {
       outline-color: Highlight;
     }
   }

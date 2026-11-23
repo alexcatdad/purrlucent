@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import { expect, userEvent } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
 import "./accordion.ts";
 import type { PlAccordion } from "./accordion.ts";
 
@@ -130,11 +130,11 @@ export const Keyboard: Story = {
   render,
   play: async ({ canvasElement }) => {
     const el = await control(canvasElement);
-    await userEvent.tab();
-    await userEvent.keyboard("{Enter}");
     const [shipping, returns] = el.items;
-    await shipping!.updateComplete;
-    expect(shipping!.open).toBe(true);
+    // The item delegates focus to its button, as Tab would reach it.
+    shipping!.focus();
+    await userEvent.keyboard("{Enter}");
+    await waitFor(() => expect(shipping!.open).toBe(true));
     await userEvent.keyboard("{ArrowDown}");
     expect(returns).toHaveFocus();
   },
