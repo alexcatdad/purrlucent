@@ -380,9 +380,9 @@ export class PlMessageScroller extends LitElement {
       this.#placed = true;
       this.#place();
     } else {
-      // Rows added before the old first row push everything down. Engines with
-      // scroll anchoring have moved the offset by now (not at the very top);
-      // this makes up what is left, so the visible rows stay where they are.
+      // Rows added before the old first row push everything down. This makes
+      // up the shift, less any the offset already moved, so the visible rows
+      // stay where they are (the browser's scroll anchoring is off).
       const at = this.#head ? rows.indexOf(this.#head) : -1;
       if (at > 0) {
         const shift =
@@ -417,9 +417,8 @@ export class PlMessageScroller extends LitElement {
         : this.#max();
     };
     this.scrollTo({ top: top(), behavior: "instant" });
-    // Rows skipped by content-visibility get their real size once seen, and
-    // scroll anchoring may move the offset meanwhile; an end or an anchor is
-    // corrected until it settles. The start never moves.
+    // Rows skipped by content-visibility get their real size once seen; an end
+    // or an anchor is corrected until it settles. The start never moves.
     if (this.defaultScrollPosition === "start") return;
     this.#settle(top, () => {
       this.#measure();
