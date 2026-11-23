@@ -77,32 +77,57 @@ test("the article uses every listed element", async ({ page }) => {
     ).toBeAttached();
 });
 
+// cite and s are left out: the .pl-prose rules for them repeat the browser
+// default (italic, line-through), so no computed property can tell them apart.
+const compared = elements.filter(
+  (selector) => !["cite", "s"].includes(selector),
+);
+
 test("every prose element is styled", async ({ page }) => {
   await gotoStory(page, story("default"));
   const same = await page.locator("#prose").evaluate((prose, selectors) => {
     const props = [
+      "display",
       "font-size",
       "font-style",
       "font-weight",
+      "line-height",
       "color",
       "background-color",
       "text-decoration-line",
+      "text-decoration-style",
+      "text-underline-offset",
+      "cursor",
       "margin-block-start",
+      "padding-block-start",
+      "padding-inline-start",
+      "border-top-width",
     ];
+    // The clone sits outside .pl-prose, inside a wrapper that passes on the
+    // text settings .pl-prose sets, so only the element's own prose rule can
+    // make the two differ.
+    const container = getComputedStyle(prose);
+    const wrapper = document.createElement("div");
+    wrapper.style.color = container.color;
+    wrapper.style.fontFamily = container.fontFamily;
+    wrapper.style.fontSize = container.fontSize;
+    wrapper.style.fontWeight = container.fontWeight;
+    wrapper.style.lineHeight = container.lineHeight;
+    document.body.append(wrapper);
     const unstyled: string[] = [];
     for (const selector of selectors) {
       const el = prose.querySelector(selector)!;
-      const reference = document.createElement("div");
-      reference.textContent = el.textContent;
-      el.parentElement!.append(reference);
+      const clone = el.cloneNode(true) as Element;
+      wrapper.append(clone);
       const a = getComputedStyle(el);
-      const b = getComputedStyle(reference);
+      const b = getComputedStyle(clone);
       if (props.every((p) => a.getPropertyValue(p) === b.getPropertyValue(p)))
         unstyled.push(selector);
-      reference.remove();
+      clone.remove();
     }
+    wrapper.remove();
     return unstyled;
-  }, elements);
+  }, compared);
   expect(same).toEqual([]);
 });
 
