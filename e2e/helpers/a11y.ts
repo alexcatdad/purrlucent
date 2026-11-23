@@ -64,9 +64,10 @@ export async function expectNoOverflowAtTextZoom(
     const walk = (node: Element) => {
       // Inline boxes cannot scroll; Firefox still reports a scrollWidth for them.
       // Text fields scroll a value longer than their box by design.
+      // Shapes and text inside an <svg> are not CSS boxes and cannot scroll.
       if (
         getComputedStyle(node).display !== "inline" &&
-        !node.matches("input, textarea") &&
+        !node.matches("input, textarea, svg *") &&
         node.scrollWidth > node.clientWidth
       )
         found.push(node.localName);
