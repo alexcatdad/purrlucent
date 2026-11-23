@@ -484,6 +484,26 @@ A single-line text field. A native input inside does the editing, so typing, sel
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change, as a native input fires it.
 
+## Input group
+
+```ts
+import "purrlucent/input-group";
+```
+
+### `<pl-input-group>`
+
+One field border and focus ring around a `pl-input` or `pl-textarea` and the addons beside it: text, an svg icon or a `pl-button`. The field keeps its own label, accessible name, value, validation and events; the group only draws the shared edge. Slot an addon as `slot="start"` or `slot="end"`; they follow the text direction. Text and icons are not focusable; a button is a tab stop before or after the field. Mark an svg icon `aria-hidden="true"`. To describe the field with addon text, give the addon an `id` and list it in the field's `aria-describedby`; the group passes that text on to the control.
+
+**Slots**
+
+- default: The `pl-input` or `pl-textarea`.
+- `start`: An addon before the field.
+- `end`: An addon after the field.
+
+**Parts**
+
+- `shell`: The box behind the field and addons that draws the edge, fill and ring.
+
 ## Item
 
 ```ts

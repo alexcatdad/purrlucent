@@ -94,6 +94,10 @@
       "types": "./dist/types/components/input/input.d.ts",
       "default": "./dist/input.js"
     },
+    "./input-group": {
+      "types": "./dist/types/components/input-group/input-group.d.ts",
+      "default": "./dist/input-group.js"
+    },
     "./item": {
       "types": "./dist/types/components/item/item.d.ts",
       "default": "./dist/item.js"
