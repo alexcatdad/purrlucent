@@ -17,7 +17,7 @@ type Story = StoryObj;
 // The toaster is fixed to the viewport edge, so the page around it is only content.
 const page = (content: unknown) =>
   html`<div style="padding:var(--pl-space-4)">
-    <button id="before" type="button">Before the toasts</button>
+    <pl-button id="before">Before the toasts</pl-button>
     <p style="margin:0">Page content.</p>
     ${content}
   </div>`;
