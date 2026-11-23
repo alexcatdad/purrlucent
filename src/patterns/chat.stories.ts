@@ -89,12 +89,12 @@ const conversation: Row[] = [
           >I attached the draft and the checklist.</pl-bubble
         >
         <pl-attachment-group label="Attachments">
-          <pl-attachment state="uploading">
+          <pl-attachment size="sm" state="uploading">
             ${doc}
             <span slot="title">Checklist.md</span>
             <span slot="description">Uploading, 40%</span>
           </pl-attachment>
-          <pl-attachment state="done">
+          <pl-attachment size="sm" state="done">
             ${doc}
             <span slot="title">Release notes.md</span>
             <span slot="description">Markdown, 3 KB</span>
