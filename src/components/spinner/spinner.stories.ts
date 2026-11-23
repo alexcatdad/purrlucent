@@ -4,6 +4,7 @@ import { expect } from "storybook/test";
 import "../button/button.ts";
 import "./spinner.ts";
 import type { PlSpinner } from "./spinner.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Feedback/Spinner",
@@ -76,6 +77,6 @@ export const Semantics: Story = {
 };
 
 export const Glass: Story = {
-  render: () => html`<pl-spinner label="Loading"></pl-spinner>`,
+  render: () => underGlass(html`<pl-spinner label="Loading"></pl-spinner>`),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

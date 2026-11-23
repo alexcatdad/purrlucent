@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "./aspect-ratio.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Containers/Aspect Ratio",
@@ -68,10 +69,12 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    column(
-      html`<pl-aspect-ratio ratio="16/9"
-        >${picture("Cat on a sofa")}</pl-aspect-ratio
-      >`,
+    underGlass(
+      column(
+        html`<pl-aspect-ratio ratio="16/9"
+          >${picture("Cat on a sofa")}</pl-aspect-ratio
+        >`,
+      ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

@@ -4,6 +4,7 @@ import { expect } from "storybook/test";
 import "./scroll-area.ts";
 import type { PlScrollArea } from "./scroll-area.ts";
 import "../button/button.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Containers/Scroll Area",
@@ -92,8 +93,10 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    html`<pl-scroll-area id="area" label="Release notes" style=${frame}
-      >${lines(30)}</pl-scroll-area
-    >`,
+    underGlass(
+      html`<pl-scroll-area id="area" label="Release notes" style=${frame}
+        >${lines(30)}</pl-scroll-area
+      >`,
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

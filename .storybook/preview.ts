@@ -1,5 +1,13 @@
 import type { Preview } from "@storybook/web-components-vite";
 import "../src/tokens/tokens.css";
+import { backdrop } from "./backdrop.css.ts";
+
+if (backdrop.styleSheet)
+  document.adoptedStyleSheets = [
+    ...document.adoptedStyleSheets,
+    backdrop.styleSheet,
+  ];
+
 const toolbar = (description: string, items: string[]) => ({
   description,
   toolbar: { items, dynamicTitle: true },
@@ -67,8 +75,13 @@ const preview: Preview = {
       document.documentElement.style.colorScheme =
         globals.theme === "system" ? "" : globals.theme;
       // Control fills are translucent and tint whatever is behind them, so the
-      // page paints the background token, as an app does.
-      document.body.style.background = "var(--pl-color-background)";
+      // page paints the background token, as an app does. Glass paints the
+      // backdrop scene instead (backdrop.css.ts), so the inline paint steps aside.
+      const glass = globals.material === "glass";
+      document.body.toggleAttribute("data-backdrop", glass);
+      document.body.style.background = glass
+        ? ""
+        : "var(--pl-color-background)";
       // Story text outside components renders in the library's type, not the
       // browser's default serif.
       document.body.style.font =

@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
 import "./collapsible.ts";
 import type { PlCollapsible } from "./collapsible.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = { title: "Containers/Collapsible" } satisfies Meta;
 
@@ -36,7 +37,7 @@ export const Open: Story = {
 };
 
 export const Glass: Story = {
-  render,
+  render: () => underGlass(render()),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
 };
 

@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "../avatar/avatar.ts";
 import "./skeleton.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Feedback/Skeleton",
@@ -96,11 +97,13 @@ export const Loaded: Story = {
 
 export const Glass: Story = {
   render: () =>
-    column(
-      html`<pl-skeleton
-        shimmer
-        style="inline-size:calc(var(--pl-spacing) * 50)"
-      ></pl-skeleton>`,
+    underGlass(
+      column(
+        html`<pl-skeleton
+          shimmer
+          style="inline-size:calc(var(--pl-spacing) * 50)"
+        ></pl-skeleton>`,
+      ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

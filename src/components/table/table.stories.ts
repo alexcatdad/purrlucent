@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect, waitFor } from "storybook/test";
 import "./table.ts";
 import type { PlTable } from "./table.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = { title: "Data/Table" } satisfies Meta;
 
@@ -60,7 +61,7 @@ const control = async (canvasElement: HTMLElement) => {
 export const Default: Story = { render };
 
 export const Glass: Story = {
-  render,
+  render: () => underGlass(render()),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
 };
 
