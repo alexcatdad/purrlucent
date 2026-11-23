@@ -59,7 +59,7 @@ const settled = (canvasElement: HTMLElement) =>
     ].map((animation) => animation.finished),
   );
 
-/** Right-clicks the region a little in from its start, as a person would, so the menu is measured open. */
+/** Right-clicks the region's lower edge, a little in from its start, so the menu is measured open. */
 const openMenu = async (canvasElement: HTMLElement) => {
   const menu = canvasElement.querySelector<PlMenu>(
     "pl-context-menu > pl-menu",
@@ -73,7 +73,8 @@ const openMenu = async (canvasElement: HTMLElement) => {
       composed: true,
       cancelable: true,
       clientX: box.left + box.width / 4,
-      clientY: box.top + box.height / 2,
+      // At the region's lower edge, so the menu opens below the text, not over it.
+      clientY: box.bottom - 1,
     }),
   );
   await waitFor(() => expect(menu.open).toBe(true));
