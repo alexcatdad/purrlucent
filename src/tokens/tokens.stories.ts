@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 
-const meta = { title: "Tokens" } satisfies Meta;
+const meta = { title: "Foundations/Tokens" } satisfies Meta;
 
 export default meta;
 

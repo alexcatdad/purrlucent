@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-combobox--${name}`;
+const story = (name: string) => `forms-combobox--${name}`;
 
 const combo = (page: Page, name = "Apple variety") =>
   page.getByRole("combobox", { name });

@@ -5,7 +5,7 @@ import "./resizable.ts";
 import type { PlResizable } from "./resizable.ts";
 
 const meta = {
-  title: "Components/Resizable",
+  title: "Containers/Resizable",
   component: "pl-resizable",
 } satisfies Meta;
 

@@ -5,7 +5,7 @@ import "../button/button.ts";
 import "./message.ts";
 
 const meta = {
-  title: "Components/Message",
+  title: "AI & Chat/Message",
   component: "pl-message",
 } satisfies Meta;
 

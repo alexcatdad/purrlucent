@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { expectAccessible } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-carousel--default";
+const story = "containers-carousel--default";
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
@@ -132,13 +132,13 @@ test("when Next becomes disabled the focus moves to Previous", async ({
 test("focusing a control inside a slide brings the slide into view", async ({
   page,
 }) => {
-  await open(page, "components-carousel--with-buttons");
+  await open(page, "containers-carousel--with-buttons");
   await page.getByRole("button", { name: "Read more" }).nth(2).focus();
   await expect(dot(page, 3)).toHaveAttribute("aria-current", "true");
 });
 
 test("a single slide shows no controls", async ({ page }) => {
-  await open(page, "components-carousel--single-slide");
+  await open(page, "containers-carousel--single-slide");
   await expect(page.locator("#control [part=controls]")).toBeHidden();
 });
 
@@ -158,7 +158,7 @@ test("reduced motion jumps to the page instead of gliding", async ({
 test("under rtl the first slide is at the right edge and the arrow keys mirror", async ({
   page,
 }) => {
-  await open(page, "components-carousel--rtl");
+  await open(page, "containers-carousel--rtl");
   const slides = page.locator("#control pl-carousel-item");
   const [first, second] = await Promise.all(
     [0, 1].map((i) => slides.nth(i).boundingBox()),

@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-dialog--${name}`;
+const story = (name: string) => `dialogs-dialog--${name}`;
 
 const alert = (page: Page) => page.getByRole("alertdialog");
 const sheet = (page: Page) => page.getByRole("dialog");

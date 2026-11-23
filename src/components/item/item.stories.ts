@@ -4,7 +4,7 @@ import "../button/button.ts";
 import "./item.ts";
 
 const meta = {
-  title: "Components/Item",
+  title: "Cards & Lists/Item",
   component: "pl-item",
 } satisfies Meta;
 

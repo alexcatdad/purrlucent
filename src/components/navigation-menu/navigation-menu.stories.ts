@@ -4,7 +4,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import "./navigation-menu.ts";
 
 const meta = {
-  title: "Components/Navigation Menu",
+  title: "Navigation/Navigation Menu",
   component: "pl-navigation-menu",
 } satisfies Meta;
 
@@ -73,7 +73,7 @@ const matrix = (globals: Record<string, string>): Story => ({
 
 export const SolidDark = matrix({ theme: "dark" });
 export const SolidDarkRtl = matrix({ theme: "dark", dir: "rtl" });
-export const GlassLight = matrix({ material: "glass" });
+export const GlassLight = matrix({ material: "glass", theme: "light" });
 export const GlassDarkRtl = matrix({
   material: "glass",
   theme: "dark",

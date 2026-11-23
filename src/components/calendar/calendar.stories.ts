@@ -5,7 +5,7 @@ import "./calendar.ts";
 import type { PlCalendar } from "./calendar.ts";
 
 const meta = {
-  title: "Components/Calendar",
+  title: "Forms/Calendar",
   component: "pl-calendar",
 } satisfies Meta;
 

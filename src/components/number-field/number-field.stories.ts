@@ -5,7 +5,7 @@ import "./number-field.ts";
 import type { PlNumberField } from "./number-field.ts";
 
 const meta = {
-  title: "Components/Number field",
+  title: "Forms/Number Field",
   component: "pl-number-field",
 } satisfies Meta;
 

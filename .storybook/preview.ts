@@ -1,6 +1,5 @@
 import type { Preview } from "@storybook/web-components-vite";
 import "../src/tokens/tokens.css";
-
 const toolbar = (description: string, items: string[]) => ({
   description,
   toolbar: { items, dynamicTitle: true },
@@ -33,6 +32,27 @@ const preview: Preview = {
     dir: "ltr",
   },
   parameters: {
+    // Storybook reads storySort statically, so the order is a literal here;
+    // scripts/story-titles.test.ts keeps it equal to STORY_GROUPS.
+    options: {
+      storySort: {
+        order: [
+          "Foundations",
+          "Actions",
+          "Forms",
+          "Text",
+          "Navigation",
+          "Menus",
+          "Dialogs",
+          "Feedback",
+          "Cards & Lists",
+          "Containers",
+          "Data",
+          "AI & Chat",
+          "Patterns",
+        ],
+      },
+    },
     a11y: {
       test: "error",
       // Axe ships the WCAG 2.2 AA target-size rule (24px) switched off.
@@ -49,6 +69,11 @@ const preview: Preview = {
       // Control fills are translucent and tint whatever is behind them, so the
       // page paints the background token, as an app does.
       document.body.style.background = "var(--pl-color-background)";
+      // Story text outside components renders in the library's type, not the
+      // browser's default serif.
+      document.body.style.font =
+        "var(--pl-text-base) / var(--pl-leading-normal) var(--pl-font-sans)";
+      document.body.style.color = "var(--pl-color-foreground)";
       return story();
     },
   ],

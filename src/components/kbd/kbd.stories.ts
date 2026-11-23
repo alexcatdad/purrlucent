@@ -3,7 +3,7 @@ import { html } from "lit";
 import "./kbd.ts";
 
 const meta = {
-  title: "Components/Kbd",
+  title: "Text/Kbd",
   component: "pl-kbd",
 } satisfies Meta;
 

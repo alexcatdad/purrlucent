@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-resizable--${name}`;
+const story = (name: string) => `containers-resizable--${name}`;
 
 const now = (handle: Locator) => handle.getAttribute("aria-valuenow");
 

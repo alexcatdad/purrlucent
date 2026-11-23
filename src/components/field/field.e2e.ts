@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-field--${name}`;
+const story = (name: string) => `forms-field--${name}`;
 
 const box = async (locator: Locator) => (await locator.boundingBox())!;
 

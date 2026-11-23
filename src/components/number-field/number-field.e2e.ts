@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-number-field--${name}`;
+const story = (name: string) => `forms-number-field--${name}`;
 
 const submitted = (page: Page) =>
   page

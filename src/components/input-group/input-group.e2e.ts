@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-input-group--${name}`;
+const story = (name: string) => `forms-input-group--${name}`;
 
 /** The box of the group's shell, of the input's own field row, and of one addon. */
 const boxes = (group: Locator, addon: string) =>

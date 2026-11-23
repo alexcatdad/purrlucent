@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-data-table--default";
+const story = "data-data-table--default";
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
@@ -104,7 +104,7 @@ test("numbers sort by value, not by text", async ({ page }) => {
 });
 
 test("a sorted attribute starts the table in that order", async ({ page }) => {
-  await open(page, "components-data-table--sorted");
+  await open(page, "data-data-table--sorted");
   await expect(page.getByRole("columnheader", { name: "Age" })).toHaveAttribute(
     "aria-sort",
     "descending",
@@ -143,7 +143,7 @@ test("Tab reaches a heading and Enter and Space sort it", async ({ page }) => {
   ).toHaveAttribute("aria-sort", "descending");
 });
 
-const selectable = "components-data-table--selectable";
+const selectable = "data-data-table--selectable";
 
 test("a row checkbox selects the row and pl-selection-change reports the keys", async ({
   page,
@@ -217,7 +217,7 @@ test("a selected row is marked by its checkbox and a fill", async ({
 });
 
 test("the empty slot shows when there are no rows", async ({ page }) => {
-  await open(page, "components-data-table--empty");
+  await open(page, "data-data-table--empty");
   await expect(page.getByText("Nobody matches this filter.")).toBeVisible();
   await expect(
     page.getByRole("checkbox", { name: "Select all" }),
@@ -228,7 +228,7 @@ test("the empty slot shows when there are no rows", async ({ page }) => {
 test("the sticky header stays at the top while the rows scroll", async ({
   page,
 }) => {
-  await open(page, "components-data-table--sticky-header");
+  await open(page, "data-data-table--sticky-header");
   const scroller = page.locator("pl-data-table pl-table >> [part=scroller]");
   await scroller.evaluate((el) => (el.scrollTop = 60));
   const [head, area] = await Promise.all([
@@ -239,7 +239,7 @@ test("the sticky header stays at the top while the rows scroll", async ({
 });
 
 test("under rtl the first column is on the right", async ({ page }) => {
-  await open(page, "components-data-table--rtl");
+  await open(page, "data-data-table--rtl");
   const [name, role] = await Promise.all(
     ["Name", "Role"].map((n) =>
       page.getByRole("columnheader", { name: n }).boundingBox(),
@@ -286,7 +286,7 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
 }
 
 test("axe finds no violations in a sorted table", async ({ page }) => {
-  await expectAccessible(await open(page, "components-data-table--sorted"));
+  await expectAccessible(await open(page, "data-data-table--sorted"));
 });
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {

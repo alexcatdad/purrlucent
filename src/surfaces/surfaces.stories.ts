@@ -34,7 +34,7 @@ defineDemo("pl-sheet-demo", sheetSurface);
 defineDemo("pl-list-row-demo", listRowSurface);
 defineDemo("pl-field-demo", fieldShell);
 
-const meta = { title: "Surfaces" } satisfies Meta;
+const meta = { title: "Foundations/Surfaces" } satisfies Meta;
 
 export default meta;
 

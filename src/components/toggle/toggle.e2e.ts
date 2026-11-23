@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-toggle--${name}`;
+const story = (name: string) => `actions-toggle--${name}`;
 
 /** Counts the pl-change events of `#toggle`, with the states they carry. */
 const listen = (page: Page) =>

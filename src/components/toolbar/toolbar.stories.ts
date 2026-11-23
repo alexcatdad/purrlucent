@@ -7,7 +7,7 @@ import "../input/input.ts";
 import "./toolbar.ts";
 
 const meta = {
-  title: "Components/Toolbar",
+  title: "Navigation/Toolbar",
   component: "pl-toolbar",
 } satisfies Meta;
 
@@ -114,8 +114,12 @@ const matrix = (globals: Record<string, string>): Story => ({
 export const SolidDark = matrix({ theme: "dark" });
 export const SolidDarkRtl = matrix({ theme: "dark", dir: "rtl" });
 export const SolidRtlDisabled = matrix({ dir: "rtl" });
-export const GlassLight = matrix({ material: "glass" });
-export const GlassLightRtl = matrix({ material: "glass", dir: "rtl" });
+export const GlassLight = matrix({ material: "glass", theme: "light" });
+export const GlassLightRtl = matrix({
+  material: "glass",
+  theme: "light",
+  dir: "rtl",
+});
 export const GlassDark = matrix({ material: "glass", theme: "dark" });
 
 const forward = svg`<path d="m9.5 5.5 6 6.5-6 6.5" />`;

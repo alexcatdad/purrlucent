@@ -5,7 +5,7 @@ import "./radio-group.ts";
 import type { PlRadioGroup } from "./radio-group.ts";
 
 const meta = {
-  title: "Components/Radio group",
+  title: "Forms/Radio Group",
   component: "pl-radio-group",
 } satisfies Meta;
 

@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-chart--${name}`;
+const story = (name: string) => `data-chart--${name}`;
 
 const label = "Monthly active users by plan, January to June, in users";
 

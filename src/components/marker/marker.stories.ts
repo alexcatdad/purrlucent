@@ -4,7 +4,7 @@ import "../spinner/spinner.ts";
 import "./marker.ts";
 
 const meta = {
-  title: "Components/Marker",
+  title: "Text/Marker",
   component: "pl-marker",
 } satisfies Meta;
 

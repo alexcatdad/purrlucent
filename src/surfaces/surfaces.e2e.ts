@@ -11,7 +11,7 @@ import {
 } from "../../e2e/helpers/color.ts";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
-const story = "surfaces--default";
+const story = "foundations-surfaces--default";
 
 // The machine's own settings leak into the browser, so pin both to no preference.
 // Chromium only: Playwright's emulateMedia has no reduced-transparency option.
@@ -28,7 +28,7 @@ const openStory = async (page: Page, globals = "", id = story) => {
   return gotoStory(page, id, globals);
 };
 
-const patterned = "surfaces--patterned-backdrop";
+const patterned = "foundations-surfaces--patterned-backdrop";
 
 const backdropFilter = (page: Page, id: string) =>
   page.locator(`#${id}`).evaluate((el) => getComputedStyle(el).backdropFilter);

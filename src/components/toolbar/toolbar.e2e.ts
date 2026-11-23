@@ -7,7 +7,7 @@ import {
 import { forEachViewport } from "../../../e2e/helpers/matrix.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-toolbar--${name}`;
+const story = (name: string) => `navigation-toolbar--${name}`;
 
 // The machine's own settings leak into the browser, so pin both to no preference.
 // Chromium only: Playwright's emulateMedia has no reduced-transparency option.

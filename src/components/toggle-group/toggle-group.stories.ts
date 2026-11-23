@@ -4,7 +4,7 @@ import { expect, userEvent } from "storybook/test";
 import "./toggle-group.ts";
 import type { PlToggleGroup } from "./toggle-group.ts";
 
-const meta = { title: "Components/Toggle group" } satisfies Meta;
+const meta = { title: "Actions/Toggle Group" } satisfies Meta;
 
 export default meta;
 

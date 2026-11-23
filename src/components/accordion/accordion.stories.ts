@@ -4,7 +4,7 @@ import { expect, userEvent, waitFor } from "storybook/test";
 import "./accordion.ts";
 import type { PlAccordion } from "./accordion.ts";
 
-const meta = { title: "Components/Accordion" } satisfies Meta;
+const meta = { title: "Containers/Accordion" } satisfies Meta;
 
 export default meta;
 

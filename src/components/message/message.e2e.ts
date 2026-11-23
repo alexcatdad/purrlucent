@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-message--${name}`;
+const story = (name: string) => `ai-chat-message--${name}`;
 
 const box = async (locator: Locator) => (await locator.boundingBox())!;
 

@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { expectNoOverflowAtTextZoom } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-menubar--${name}`;
+const story = (name: string) => `menus-menubar--${name}`;
 
 const top = (page: Page, name: string) =>
   page.getByRole("menuitem", { name, exact: true });

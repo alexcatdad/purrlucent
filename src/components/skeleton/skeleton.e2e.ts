@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-skeleton--${name}`;
+const story = (name: string) => `feedback-skeleton--${name}`;
 
 test("aria snapshot of the loading region has no placeholders", async ({
   page,

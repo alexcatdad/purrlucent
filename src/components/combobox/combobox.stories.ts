@@ -5,7 +5,7 @@ import "./combobox.ts";
 import type { PlCombobox } from "./combobox.ts";
 
 const meta = {
-  title: "Components/Combobox",
+  title: "Forms/Combobox",
   component: "pl-combobox",
 } satisfies Meta;
 

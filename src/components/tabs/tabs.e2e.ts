@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-tabs--default";
+const story = "navigation-tabs--default";
 
 const selectedValue = (page: Page) =>
   page.locator("#control").evaluate((el) => (el as HTMLInputElement).value);
@@ -33,7 +33,7 @@ test("aria snapshot", async ({ page }) => {
 test("Tab enters on the selected tab, arrows move and select, and wrap", async ({
   page,
 }) => {
-  await open(page, "components-tabs--preselected");
+  await open(page, "navigation-tabs--preselected");
   await page.keyboard.press("Tab");
   await expect(tab(page, "Billing")).toBeFocused();
   await page.keyboard.press("ArrowRight"); // wraps to the first
@@ -132,7 +132,7 @@ test("a value no tab has selects the first tab", async ({ page }) => {
 test("a disabled tab is skipped by arrows and ignores clicks", async ({
   page,
 }) => {
-  await open(page, "components-tabs--disabled-tab");
+  await open(page, "navigation-tabs--disabled-tab");
   await expect(tab(page, "Security")).toBeDisabled();
   await page.keyboard.press("Tab");
   await expect(tab(page, "Profile")).toBeFocused();
@@ -147,7 +147,7 @@ test("a disabled tab is skipped by arrows and ignores clicks", async ({
 test("vertical tabs move with Up and Down, not Left and Right", async ({
   page,
 }) => {
-  await open(page, "components-tabs--vertical");
+  await open(page, "navigation-tabs--vertical");
   await expect(page.getByRole("tablist")).toHaveAttribute(
     "aria-orientation",
     "vertical",
@@ -168,7 +168,7 @@ test("vertical tabs move with Up and Down, not Left and Right", async ({
 test("under rtl, ArrowLeft selects the next tab and ArrowRight the previous", async ({
   page,
 }) => {
-  await open(page, "components-tabs--rtl");
+  await open(page, "navigation-tabs--rtl");
   await page.keyboard.press("Tab");
   await page.keyboard.press("ArrowLeft");
   expect(await selectedValue(page)).toBe("security");

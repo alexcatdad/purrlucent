@@ -5,7 +5,7 @@ import "./checkbox.ts";
 import type { PlCheckbox } from "./checkbox.ts";
 
 const meta = {
-  title: "Components/Checkbox",
+  title: "Forms/Checkbox",
   component: "pl-checkbox",
 } satisfies Meta;
 

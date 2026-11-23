@@ -6,7 +6,7 @@ import {
 } from "../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
-const story = (name: string) => `typography--${name}`;
+const story = (name: string) => `foundations-typography--${name}`;
 
 const style = (page: import("@playwright/test").Page, selector: string) =>
   page

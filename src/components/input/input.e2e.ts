@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-input--${name}`;
+const story = (name: string) => `forms-input--${name}`;
 
 /** What the form would submit, as [name, value] pairs. */
 const submitted = (page: Page) =>

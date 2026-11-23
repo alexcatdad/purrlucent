@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-calendar--${name}`;
+const story = (name: string) => `forms-calendar--${name}`;
 
 const day = (page: Page, iso: string, scope = "") =>
   page.locator(`${scope} [data-date="${iso}"]`.trim());

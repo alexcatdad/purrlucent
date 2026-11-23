@@ -5,7 +5,7 @@ import "./date-picker.ts";
 import type { PlDatePicker } from "./date-picker.ts";
 
 const meta = {
-  title: "Components/Date Picker",
+  title: "Forms/Date Picker",
   component: "pl-date-picker",
 } satisfies Meta;
 

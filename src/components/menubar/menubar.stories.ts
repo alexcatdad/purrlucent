@@ -7,7 +7,7 @@ import type { PlMenu } from "../menu/menu.ts";
 import "./menubar.ts";
 
 const meta = {
-  title: "Components/Menubar",
+  title: "Menus/Menubar",
   component: "pl-menubar",
 } satisfies Meta;
 

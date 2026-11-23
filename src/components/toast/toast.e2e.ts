@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-toast--${name}`;
+const story = (name: string) => `feedback-toast--${name}`;
 
 const toasts = (page: Page) => page.locator("pl-toast");
 const close = (page: Page) =>

@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-date-picker--${name}`;
+const story = (name: string) => `forms-date-picker--${name}`;
 
 const field = (page: Page, scope = "#picker") => page.locator(`${scope} input`);
 const button = (page: Page, scope = "#picker") =>

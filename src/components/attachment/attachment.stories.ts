@@ -4,7 +4,7 @@ import "../button/button.ts";
 import "./attachment.ts";
 
 const meta = {
-  title: "Components/Attachment",
+  title: "Cards & Lists/Attachment",
   component: "pl-attachment",
 } satisfies Meta;
 

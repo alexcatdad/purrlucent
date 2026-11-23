@@ -8,7 +8,7 @@ import "./dialog.ts";
 import type { PlDialog } from "./dialog.ts";
 
 const meta = {
-  title: "Components/Dialog",
+  title: "Dialogs/Dialog",
   component: "pl-dialog",
 } satisfies Meta;
 

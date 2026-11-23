@@ -6,7 +6,7 @@ import "./tooltip.ts";
 import type { PlTooltip } from "./tooltip.ts";
 
 const meta = {
-  title: "Components/Tooltip",
+  title: "Dialogs/Tooltip",
   component: "pl-tooltip",
 } satisfies Meta;
 

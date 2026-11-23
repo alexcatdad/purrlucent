@@ -11,7 +11,7 @@ test("screen reader speaks the text on each surface", async ({
   page,
   screenReader,
 }) => {
-  await gotoStory(page, "surfaces--text-only");
+  await gotoStory(page, "foundations-surfaces--text-only");
   await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);

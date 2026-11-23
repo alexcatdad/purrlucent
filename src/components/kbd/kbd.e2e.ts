@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-kbd--${name}`;
+const story = (name: string) => `text-kbd--${name}`;
 
 test("aria snapshot: the key text is plain text", async ({ page }) => {
   const root = await gotoStory(page, story("shortcut"));

@@ -7,7 +7,7 @@ import "./context-menu.ts";
 import type { PlMenu } from "../menu/menu.ts";
 
 const meta = {
-  title: "Components/Context Menu",
+  title: "Menus/Context Menu",
   component: "pl-context-menu",
 } satisfies Meta;
 

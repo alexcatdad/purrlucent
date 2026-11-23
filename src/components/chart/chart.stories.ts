@@ -8,7 +8,7 @@ import "./chart.ts";
 import type { PlChart } from "./chart.ts";
 
 const meta = {
-  title: "Components/Chart",
+  title: "Data/Chart",
   component: "pl-chart",
 } satisfies Meta;
 

@@ -9,7 +9,7 @@ import "../textarea/textarea.ts";
 import "./field.ts";
 
 const meta = {
-  title: "Components/Field",
+  title: "Forms/Field",
   component: "pl-field",
 } satisfies Meta;
 

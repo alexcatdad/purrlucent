@@ -5,7 +5,7 @@ import "./slider.ts";
 import type { PlSlider } from "./slider.ts";
 
 const meta = {
-  title: "Components/Slider",
+  title: "Forms/Slider",
   component: "pl-slider",
 } satisfies Meta;
 
