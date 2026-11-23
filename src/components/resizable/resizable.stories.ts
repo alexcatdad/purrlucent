@@ -16,7 +16,7 @@ type Story = StoryObj;
 // A group needs a definite size along its axis.
 const frame = (content: unknown) =>
   html`<div
-    style="padding:var(--pl-space-4);inline-size:min(100%,calc(var(--pl-spacing) * 150))"
+    style="box-sizing:border-box;padding:var(--pl-space-4);inline-size:min(100%,calc(var(--pl-spacing) * 150))"
   >
     ${content}
   </div>`;
