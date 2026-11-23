@@ -1,5 +1,24 @@
 # purrlucent
 
+## 0.7.0
+
+### Minor Changes
+
+- 0bb465d: Form controls fire the native `input` and `change` events after their own `pl-input` and `pl-change`, so React's `onInput` and `onChange` and form libraries such as react-hook-form work with them. `pl-checkbox` and `pl-switch` have a `type` of `checkbox`, so form libraries read `checked`.
+- 5a40099: Breaking: the prefix is now `pl-` instead of `purr-`. Rename in your code:
+
+  - Elements: `<purr-button>` is `<pl-button>`, and so on for every element.
+  - Events: `purr-change` is `pl-change`; in React, `onpurr-change` is `onpl-change`.
+  - Tokens: `--purr-color-accent` is `--pl-color-accent`, and so on for every token.
+  - The glass attribute: `purr-material="glass"` is `pl-material="glass"`.
+  - The cascade layer: `purr.tokens` is `pl.tokens`.
+  - Classes and types: `PurrButton` is `PlButton`, and so on.
+
+  The package name and its import paths stay `purrlucent`.
+
+- a4cd223: `purrlucent/react` adds every element to React 19's JSX types, generated from the components on each release, and a new guide covers using purrlucent in a React app.
+- e4df323: Event details are typed. The element manifest gives each `pl-*` event its `CustomEvent<…>` type, and in React the `on<event-name>` props receive it, so `e.detail.value` of a `pl-select` is a `string`.
+
 ## 0.6.0
 
 ### Minor Changes
