@@ -936,6 +936,36 @@ A key or a shortcut, shown in a keycap style. It is presentational: it takes no 
 
 - `key`: The `kbd` element.
 
+## Marker
+
+```ts
+import "purrlucent/marker";
+```
+
+### `<pl-marker>`
+
+A row in a conversation that is not a message: a status such as "Thinking…" or "Explored 4 files", a system note, or a labelled separator such as "Today". It has no role of its own. Set `role="status"` on a row that reports live progress so assistive technology announces it. Do not set `role="separator"` on the separator variant: that role would hide the label from screen readers. The icon is decorative and hidden from them. With an `href` the row is a link; with `interactive` it is a button. Listen for `click` on the element. The icon and the label are then one control.
+
+| Attribute     | Type              | Default     | Description                                                                                                                                                                  |
+| ------------- | ----------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`     | `PlMarkerVariant` | `"default"` | `default`, `border` (a rule under the row) or `separator` (the label centered between two rules).                                                                            |
+| `shimmer`     | `boolean`         | `false`     | A dimmer band sweeps across the text, in reading direction. It is plain text under reduced motion and forced colors, and where the browser cannot clip a background to text. |
+| `href`        | `string \| null`  | `null`      | Makes the row a link to this address.                                                                                                                                        |
+| `target`      | `string \| null`  | `null`      | Where the link opens, as on `a`.                                                                                                                                             |
+| `rel`         | `string \| null`  | `null`      | The link's relationship, as on `a`.                                                                                                                                          |
+| `interactive` | `boolean`         | `false`     | Makes the row a button. Ignored when there is an `href`.                                                                                                                     |
+
+**Slots**
+
+- `icon`: A decorative icon. A `pl-spinner` marks work in progress.
+- default: The text.
+
+**Parts**
+
+- `icon`: The wrapper around the icon.
+- `label`: The wrapper around the text.
+- `control`: The link or button, when the row is one.
+
 ## Menu
 
 ```ts

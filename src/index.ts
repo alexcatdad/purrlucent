@@ -26,6 +26,7 @@ export * from "./components/input-group/input-group.ts";
 export * from "./components/input-otp/input-otp.ts";
 export * from "./components/item/item.ts";
 export * from "./components/kbd/kbd.ts";
+export * from "./components/marker/marker.ts";
 export * from "./components/menu/menu.ts";
 export * from "./components/menubar/menubar.ts";
 export * from "./components/navigation-menu/navigation-menu.ts";

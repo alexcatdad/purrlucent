@@ -142,6 +142,10 @@
       "types": "./dist/types/components/kbd/kbd.d.ts",
       "default": "./dist/kbd.js"
     },
+    "./marker": {
+      "types": "./dist/types/components/marker/marker.d.ts",
+      "default": "./dist/marker.js"
+    },
     "./menu": {
       "types": "./dist/types/components/menu/menu.d.ts",
       "default": "./dist/menu.js"

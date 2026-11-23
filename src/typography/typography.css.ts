@@ -149,3 +149,66 @@ export const proseStyles = css`
     }
   }
 `;
+
+/**
+ * A text shimmer for progress that has no number, such as "Thinking…". Add it
+ * to the page like `proseStyles`, then give the text's element the class
+ * `pl-shimmer`. A dimmer band, derived from the text color, sweeps across the
+ * text in reading direction. It is plain text where background clipping or
+ * `color-mix()` is unsupported, under reduced motion and under forced colors.
+ * The element needs no other color: it reads `currentColor`.
+ */
+export const shimmerStyles = css`
+  @supports ((background-clip: text) or (-webkit-background-clip: text)) and
+    (color: color-mix(in srgb, red, blue)) {
+    .pl-shimmer {
+      background-image: linear-gradient(
+        to right,
+        currentColor 35%,
+        color-mix(in srgb, currentColor 40%, transparent) 50%,
+        currentColor 65%
+      );
+      background-repeat: no-repeat;
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      /* The fill, not the color, is clear, so currentColor stays readable. */
+      -webkit-text-fill-color: transparent;
+      animation: pl-shimmer-sweep calc(var(--pl-duration-slow) * 5) linear
+        infinite;
+    }
+
+    .pl-shimmer:dir(rtl) {
+      animation-direction: reverse;
+    }
+  }
+
+  @keyframes pl-shimmer-sweep {
+    from {
+      background-position: 100% 0;
+    }
+
+    to {
+      background-position: 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pl-shimmer,
+    .pl-shimmer:dir(rtl) {
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .pl-shimmer,
+    .pl-shimmer:dir(rtl) {
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
+      animation: none;
+    }
+  }
+`;
