@@ -303,7 +303,7 @@ export class PlCommand extends LitElement {
 
   protected override willUpdate(changed: PropertyValues<this>) {
     const items = this.#items;
-    const needle = this.query.trim();
+    const needle = (this.query ?? "").trim();
     const hits = new Set(
       filterIndexes(
         items.map((item) => item.label),
