@@ -33,3 +33,31 @@
   check: automated
   test: src/components/item/item.e2e.ts > long text wraps without horizontal overflow at 200% text zoom
   layer: components
+- id: lists-and-tables/7
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Text is presented in a list or table, whose rows are easy to scan.
+  check: rubric
+  layer: components
+- id: lists-and-tables/8
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Selecting an item gives appropriate feedback.
+  check: automated
+  test: src/components/data-table/data-table.e2e.ts > a selected row is marked by its checkbox and a fill
+  layer: components
+- id: lists-and-tables/9
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Table text is kept readable where it may wrap or be clipped.
+  check: automated
+  test: src/components/data-table/data-table.e2e.ts > no horizontal overflow at 200% text zoom
+  layer: components
+- id: lists-and-tables/10
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: A multicolumn table has descriptive column headings, as nouns or short noun phrases in title-style capitalization with no ending punctuation.
+  check: rubric
+  layer: components
+- id: lists-and-tables/11
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Clicking a column heading sorts by that column, and clicking the sorted heading reverses the direction.
+  check: automated
+  test: src/components/data-table/data-table.e2e.ts > a click sorts ascending, a second click reverses, and pl-sort reports it
+  layer: components
