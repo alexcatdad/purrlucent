@@ -8,9 +8,6 @@ import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `components-avatar--${name}`;
 
-const shadow = (selector: string) => (el: Element) =>
-  el.shadowRoot!.querySelector(selector) !== null;
-
 test("aria snapshot", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await expect(root).toMatchAriaSnapshot(`
@@ -25,7 +22,11 @@ test("an image shows and the initials are removed once it loads", async ({
   const avatar = page.locator("#avatar");
   await expect(avatar.locator("img")).toBeVisible();
   await expect
-    .poll(() => avatar.evaluate(shadow("[part=initials]")))
+    .poll(() =>
+      avatar.evaluate(
+        (el) => el.shadowRoot!.querySelector("[part=initials]") !== null,
+      ),
+    )
     .toBe(false);
 });
 

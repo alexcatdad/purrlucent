@@ -49,7 +49,8 @@ export class PlAvatar extends LitElement {
 
   protected override willUpdate(changed: PropertyValues<this>) {
     if (changed.has("src")) this._status = "loading";
-    const name = this.name.trim();
+    // Removing the attribute sets the property to null.
+    const name = (this.name ?? "").trim();
     if (!name) {
       if (this.getAttribute("role") === "img") {
         this.removeAttribute("role");
