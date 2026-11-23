@@ -42,6 +42,10 @@
       "types": "./dist/types/components/button/button.d.ts",
       "default": "./dist/button.js"
     },
+    "./card": {
+      "types": "./dist/types/components/card/card.d.ts",
+      "default": "./dist/card.js"
+    },
     "./checkbox": {
       "types": "./dist/types/components/checkbox/checkbox.d.ts",
       "default": "./dist/checkbox.js"
@@ -54,9 +58,17 @@
       "types": "./dist/types/components/dialog/dialog.d.ts",
       "default": "./dist/dialog.js"
     },
+    "./empty": {
+      "types": "./dist/types/components/empty/empty.d.ts",
+      "default": "./dist/empty.js"
+    },
     "./input": {
       "types": "./dist/types/components/input/input.d.ts",
       "default": "./dist/input.js"
+    },
+    "./item": {
+      "types": "./dist/types/components/item/item.d.ts",
+      "default": "./dist/item.js"
     },
     "./menu": {
       "types": "./dist/types/components/menu/menu.d.ts",
