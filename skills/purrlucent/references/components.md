@@ -849,6 +849,54 @@ A set of radios that offers one choice, as a native radio group does. Tab enters
 - `input`: After pl-change, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
+## Resizable
+
+```ts
+import "purrlucent/resizable";
+```
+
+### `<pl-resizable-handle>`
+
+The divider between two panels of a `pl-resizable` group, following the WAI-ARIA window splitter pattern: a focusable `separator` whose value is the size of the panel before it. The group sets its `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-controls` and `aria-orientation`, and handles the pointer and the keys.
+
+| Attribute     | Type                         | Default        | Description                                                        |
+| ------------- | ---------------------------- | -------------- | ------------------------------------------------------------------ |
+| `label`       | `string`                     | `""`           | The accessible name. Defaults to "Resize".                         |
+| `disabled`    | `boolean`                    | `false`        | The divider cannot be moved, collapses nothing and takes no focus. |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |                                                                    |
+
+### `<pl-resizable-panel>`
+
+One pane of a `pl-resizable` group. Sizes are percentages of the group.
+
+| Attribute     | Type                  | Default | Description                                                                                                                                                         |
+| ------------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `size`        | `number \| undefined` |         | The starting size in percent. Panels without one share what the others leave. The `size` property then follows the layout, 0 while collapsed.                       |
+| `min`         | `number`              | `10`    | The smallest size in percent. Defaults to 10.                                                                                                                       |
+| `max`         | `number`              | `100`   | The largest size in percent. Defaults to 100.                                                                                                                       |
+| `collapsible` | `boolean`             | `false` | The divider's Enter key collapses and restores the panel.                                                                                                           |
+| `collapsed`   | `boolean`             | `false` | The panel is hidden and the others fill its space. Set it to collapse or restore the panel from your own button or shortcut. The last open panel does not collapse. |
+
+**Slots**
+
+- default: The panel's content.
+
+### `<pl-resizable>`
+
+Panels that people resize by dragging the dividers between them: a split view. Put `pl-resizable-panel` children in the group with a `pl-resizable-handle` between each two. Sizes are percentages that add up to 100, each held within its panel's `min` and `max`. Each divider is a window splitter (WAI-ARIA): arrow keys along the group's axis move it by one percent, Home and End move it to the smallest and largest size the panel before it may take, and Enter collapses a `collapsible` panel next to it or restores a collapsed one. A divider next to a collapsed panel moves nothing until that panel is restored. Give the group a definite size along its axis; it has none of its own.
+
+| Attribute     | Type                         | Default        | Description                                                                  |
+| ------------- | ---------------------------- | -------------- | ---------------------------------------------------------------------------- |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) puts the panels side by side, `vertical` stacks them. |
+
+**Slots**
+
+- default: `pl-resizable-panel` and `pl-resizable-handle` children.
+
+**Events**
+
+- `pl-resize`: A person moved a divider, or collapsed or restored a panel. `detail.sizes` holds every panel's new size in percent, in order, 0 for a collapsed panel. Setting `sizes`, `collapsed` or a panel's attributes from script fires nothing.
+
 ## Scroll area
 
 ```ts

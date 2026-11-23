@@ -134,6 +134,10 @@
       "types": "./dist/types/components/radio-group/radio-group.d.ts",
       "default": "./dist/radio-group.js"
     },
+    "./resizable": {
+      "types": "./dist/types/components/resizable/resizable.d.ts",
+      "default": "./dist/resizable.js"
+    },
     "./scroll-area": {
       "types": "./dist/types/components/scroll-area/scroll-area.d.ts",
       "default": "./dist/scroll-area.js"
