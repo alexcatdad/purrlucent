@@ -315,9 +315,24 @@ for (const theme of ["light", "dark"] as const)
 
 test("glass controls cast a shadow", async ({ page }) => {
   await openMaterials(page, "glass", "light");
-  const elevation = await rootToken(page, "--pl-elevation-control");
-  expect(elevation).not.toBe("none");
-  expect(elevation).toContain("color-mix");
+  // The build folds color-mix() into a hex color, so the computed shadow is measured, not the token text.
+  const shadow = await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.boxShadow = "var(--pl-elevation-control)";
+    document.body.append(probe);
+    const value = getComputedStyle(probe).boxShadow;
+    probe.remove();
+    return value;
+  });
+  expect(shadow).not.toBe("none");
+  // rgba(r, g, b, a) puts alpha last after a comma; color(srgb r g b / a) after a slash.
+  const color = shadow.match(/(?:rgba?|color)\([^)]*\)/)![0];
+  const alpha = color.includes("/")
+    ? Number.parseFloat(color.split("/")[1]!)
+    : color.startsWith("rgba")
+      ? Number.parseFloat(color.split(",")[3]!)
+      : 1;
+  expect(alpha).toBeGreaterThan(0);
 });
 
 // Under a fallback the control keeps its solid-mode look, so it is compared
