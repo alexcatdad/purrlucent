@@ -339,7 +339,8 @@
 
 /* Surface materials. Solid is the default. Glass is opt-in with
    pl-material="glass" on any ancestor, for the controls and navigation layer:
-   controls, bars, sidebars, panels and sheets. Content stays solid. */
+   controls, bars, capsules (a bar with no fill of its own), sidebars, panels
+   and sheets. Content stays solid. */
 @layer pl.tokens {
   :root {
     --pl-color-surface: color-mix(
@@ -348,6 +349,7 @@
       var(--pl-color-foreground) 5%
     );
     --pl-material-bar: var(--pl-color-surface);
+    --pl-material-capsule: transparent;
     --pl-material-sidebar: var(--pl-color-surface);
     --pl-material-panel: var(--pl-color-surface);
     --pl-material-sheet: var(--pl-color-surface);
@@ -385,6 +387,7 @@
   @supports (backdrop-filter: blur(1px)) {
     [pl-material="glass"] {
       --pl-material-bar: var(--pl-color-overlay);
+      --pl-material-capsule: var(--pl-color-overlay);
       --pl-material-sidebar: var(--pl-color-overlay);
       --pl-material-panel: var(--pl-color-overlay);
       --pl-material-sheet: var(--pl-color-overlay);
@@ -436,6 +439,7 @@
     (forced-colors: active) {
     [pl-material="glass"] {
       --pl-material-bar: var(--pl-color-surface);
+      --pl-material-capsule: transparent;
       --pl-material-sidebar: var(--pl-color-surface);
       --pl-material-panel: var(--pl-color-surface);
       --pl-material-sheet: var(--pl-color-surface);
