@@ -1,5 +1,6 @@
 export { backGlyph, closeGlyph } from "./behaviors/glyphs.ts";
 export * from "./surfaces/surfaces.css.ts";
+export * from "./components/avatar/avatar.ts";
 export * from "./components/banner/banner.ts";
 export * from "./components/button/button.ts";
 export * from "./components/checkbox/checkbox.ts";
@@ -13,6 +14,7 @@ export * from "./components/progress/progress.ts";
 export * from "./components/radio-group/radio-group.ts";
 export * from "./components/select/select.ts";
 export * from "./components/sidebar/sidebar.ts";
+export * from "./components/skeleton/skeleton.ts";
 export * from "./components/slider/slider.ts";
 export * from "./components/spinner/spinner.ts";
 export * from "./components/switch/switch.ts";

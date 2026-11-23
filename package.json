@@ -34,6 +34,10 @@
       "types": "./dist/types/surfaces/surfaces.css.d.ts",
       "default": "./dist/surfaces.js"
     },
+    "./avatar": {
+      "types": "./dist/types/components/avatar/avatar.d.ts",
+      "default": "./dist/avatar.js"
+    },
     "./banner": {
       "types": "./dist/types/components/banner/banner.d.ts",
       "default": "./dist/banner.js"
@@ -85,6 +89,10 @@
     "./sidebar": {
       "types": "./dist/types/components/sidebar/sidebar.d.ts",
       "default": "./dist/sidebar.js"
+    },
+    "./skeleton": {
+      "types": "./dist/types/components/skeleton/skeleton.d.ts",
+      "default": "./dist/skeleton.js"
     },
     "./slider": {
       "types": "./dist/types/components/slider/slider.d.ts",

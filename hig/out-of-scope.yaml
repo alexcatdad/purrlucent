@@ -10,5 +10,7 @@
   reason: Apple fonts and Apple design resources must not be shipped. The library defines its own palette and uses system font stacks.
 - section: Standard system icon sets
   reason: Apple's icon set cannot be shipped. The library has its own original icons.
+- section: Images (resolution, formats, layered and spatial images) as a source for the avatar
+  reason: The page covers how to prepare bitmap assets. The HIG has no avatar page, and nothing on the images page applies to a round picture with an initials fallback.
 - section: App Store, widgets, app icons, launch screens, notifications and other native app surfaces
   reason: These are native-app features that do not exist in a web component library.
