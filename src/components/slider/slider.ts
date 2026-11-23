@@ -29,8 +29,8 @@ import {
  * @csspart fill - The part of the groove up to the thumb.
  * @csspart ticks - The tick marks.
  * @csspart thumb - The knob.
- * @fires purr-input - The value changed while dragging or on a key. `detail.value` holds it.
- * @fires purr-change - The user committed a changed value, on release or on a key. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: number }>} purr-input - The value changed while dragging or on a key. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: number }>} purr-change - The user committed a changed value, on release or on a key. `detail.value` holds it.
  */
 export class PurrSlider extends LitElement {
   static formAssociated = true;

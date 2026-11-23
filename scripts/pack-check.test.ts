@@ -132,13 +132,15 @@ export function App() {
       <purr-button variant="primary" disabled={false} onpurr-press={() => dialog.current?.show()}>
         Save
       </purr-button>
-      <purr-select value="a" onpurr-change={(e) => String(e.detail.value)}>
+      <purr-select value="a" onpurr-change={(e) => e.detail.value satisfies string}>
         <span slot="label">Fruit</span>
         <purr-option value="a">A</purr-option>
       </purr-select>
       <purr-dialog ref={dialog} variant="alert" className="x" />
       {/* @ts-expect-error not a prop of purr-button */}
       <purr-button notAProp />
+      {/* @ts-expect-error the detail of a select's purr-change has no text */}
+      <purr-select onpurr-change={(e) => e.detail.text} />
     </>
   );
 }

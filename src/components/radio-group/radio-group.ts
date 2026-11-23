@@ -118,7 +118,7 @@ export class PurrRadio extends LitElement {
  * @attr {boolean} required - The form is invalid while no radio is chosen.
  * @attr {boolean} disabled - Disables every radio: no focus, no feedback, nothing submitted.
  * @slot - `purr-radio` elements.
- * @fires purr-change - The user chose a radio. `detail.selected` is a one-item array of its value.
+ * @fires {CustomEvent<{ selected: string[] }>} purr-change - The user chose a radio. `detail.selected` is a one-item array of its value.
  */
 export class PurrRadioGroup extends LitElement {
   static formAssociated = true;

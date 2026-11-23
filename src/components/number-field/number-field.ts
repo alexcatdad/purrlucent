@@ -76,8 +76,8 @@ const optionalNumber = {
  * @csspart increment - The up button.
  * @csspart decrement - The down button.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires purr-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
- * @fires purr-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
+ * @fires {CustomEvent<{ value: number | null }>} purr-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
+ * @fires {CustomEvent<{ value: number | null }>} purr-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
  */
 export class PurrNumberField extends LitElement {
   static formAssociated = true;

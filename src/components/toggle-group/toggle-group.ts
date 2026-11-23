@@ -90,7 +90,7 @@ export class PurrToggleGroupItem extends LitElement {
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `purr-toggle-group-item` elements.
- * @fires purr-change - The selection changed by the user. `detail.selected` is a one-item array.
+ * @fires {CustomEvent<{ selected: string[] }>} purr-change - The selection changed by the user. `detail.selected` is a one-item array.
  */
 export class PurrToggleGroup extends LitElement {
   static formAssociated = true;

@@ -20,7 +20,7 @@ import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
  * @slot - The label.
  * @csspart box - The drawn box.
  * @csspart label - The wrapper around the label.
- * @fires purr-change - The user changed the box. `detail.checked` holds the new state.
+ * @fires {CustomEvent<{ checked: boolean }>} purr-change - The user changed the box. `detail.checked` holds the new state.
  */
 export class PurrCheckbox extends LitElement {
   static formAssociated = true;

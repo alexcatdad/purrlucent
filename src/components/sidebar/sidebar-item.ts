@@ -25,7 +25,7 @@ const detail = html`<slot name="detail"></slot>`;
  * @csspart control - The link or disclosure button.
  * @csspart disclosure - The disclosure button beside a link.
  * @csspart chevron - The disclosure arrow.
- * @fires purr-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
+ * @fires {CustomEvent<{ expanded: boolean }>} purr-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
  */
 export class PurrSidebarItem extends LitElement {
   static override shadowRootOptions = {

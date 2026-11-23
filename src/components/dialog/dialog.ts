@@ -58,7 +58,7 @@ const unlockScroll = () => {
  * @csspart body - The scrolling content.
  * @csspart actions - The row or column of actions.
  * @fires purr-cancel - Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
- * @fires purr-close - The dialog closed. `detail.returnValue` holds the value it closed with.
+ * @fires {CustomEvent<{ returnValue: string }>} purr-close - The dialog closed. `detail.returnValue` holds the value it closed with.
  */
 export class PurrDialog extends LitElement {
   static override styles = dialogStyles;

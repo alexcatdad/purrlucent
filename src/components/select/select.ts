@@ -94,7 +94,7 @@ export class PurrOption extends LitElement {
  * @csspart value - The chosen label or the placeholder.
  * @csspart glyph - The up-down arrows.
  * @csspart listbox - The popup.
- * @fires purr-change - The user chose another option. `detail.value` holds its value.
+ * @fires {CustomEvent<{ value: string }>} purr-change - The user chose another option. `detail.value` holds its value.
  */
 export class PurrSelect extends LitElement {
   static formAssociated = true;

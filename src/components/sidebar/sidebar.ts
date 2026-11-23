@@ -29,8 +29,8 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * @slot - `purr-sidebar-item` and `purr-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
- * @fires purr-change - The selected item changed. `detail.selected` is an array holding the new item.
- * @fires purr-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
+ * @fires {CustomEvent<{ selected: PurrSidebarItem[] }>} purr-change - The selected item changed. `detail.selected` is an array holding the new item.
+ * @fires {CustomEvent<{ collapsed: boolean }>} purr-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
  */
 export class PurrSidebar extends LitElement {
   static override styles = sidebarStyles;
