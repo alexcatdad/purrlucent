@@ -38,6 +38,9 @@ export interface PlMessageScrollerMessageOptions extends PlMessageScrollerScroll
 /** Within this many pixels of an edge counts as at the edge; layout rounds fractions. */
 const EDGE = 1;
 
+/** How long after a scroll the reader started, or its last movement, rows are not held in place. */
+const GESTURE_MS = 500;
+
 const reducedMotion = () =>
   matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -131,8 +134,10 @@ export class PlMessageScroller extends LitElement {
     // Rows above the view that change size (a skipped row getting its real
     // size, say) would move what the reader sees; keep it in place, unless the
     // view follows the end or holds an anchor, which place it themselves.
+    // Not during a scroll the reader started either: setting the offset would
+    // stop a smooth scroll (the End key's, say) partway.
     const following = !this.#released && this.autoScroll && this.#atEnd;
-    if (!this.#hold && !following) this.#keep();
+    if (!this.#hold && !following && !this.#scrolling()) this.#keep();
     this.#follow();
     this.#sync();
     this.#remember();
@@ -140,6 +145,8 @@ export class PlMessageScroller extends LitElement {
   // The first row in view and its distance from the top of the view.
   #anchorRow: Element | null = null;
   #anchorTop = 0;
+  // When the reader last started a scroll, or its scroll last moved.
+  #gesture = -Infinity;
   #rows = new Set<Element>();
   #head: Element | null = null;
   #headOffset = 0;
@@ -174,6 +181,8 @@ export class PlMessageScroller extends LitElement {
       // A scroll while the pointer is down on the host itself is a drag of the
       // scrollbar; overlay scrollbars take no layout width to tell it by.
       if (this.#pressed) this.#release();
+      // A scroll the reader started, or a smooth scroll to the end, is still moving.
+      if (this.#scrolling() || this.#seeking) this.#gesture = performance.now();
       this.#top = this.scrollTop;
       this.#measure();
       this.#sync();
@@ -297,6 +306,7 @@ export class PlMessageScroller extends LitElement {
    * is still at its end.
    */
   #release() {
+    this.#gesture = performance.now();
     this.#released = true;
     this.#seeking = false;
     this.#hold = null;
@@ -316,6 +326,11 @@ export class PlMessageScroller extends LitElement {
       (this.contains(selection.anchorNode) ||
         this.contains(selection.focusNode))
     );
+  }
+
+  /** A scroll the reader started is under way, or ended a moment ago. */
+  #scrolling() {
+    return performance.now() - this.#gesture < GESTURE_MS;
   }
 
   /** The top of the view, in viewport coordinates. */
