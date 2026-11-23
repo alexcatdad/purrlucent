@@ -6,6 +6,7 @@ import {
 } from "../../behaviors/field-message.ts";
 import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { inputStyles } from "./input.css.ts";
 
 // Kept as a public export of this module.
@@ -51,6 +52,8 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * @csspart message - The icon and validation message below the field while it is invalid.
  * @fires purr-input - The value changed through editing or the clear button. `detail.value` holds it.
  * @fires purr-change - The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
+ * @fires input - After each purr-input, as a native input fires it.
+ * @fires change - After each purr-change, as a native input fires it.
  */
 export class PurrInput extends LitElement {
   static formAssociated = true;
@@ -250,6 +253,8 @@ export class PurrInput extends LitElement {
     this.#touched = true;
     this.#sync();
     this.#emit("purr-change");
+    // The inner input's change event stays in the shadow root.
+    fireNative(this, "change");
   };
 
   #onBlur = () => {
@@ -264,7 +269,9 @@ export class PurrInput extends LitElement {
     input.focus();
     this.#sync();
     this.#emit("purr-input");
+    fireNative(this, "input");
     this.#emit("purr-change");
+    fireNative(this, "change");
   }
 
   #onKeydown = (event: KeyboardEvent) => {
