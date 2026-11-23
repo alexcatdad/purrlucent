@@ -1,6 +1,7 @@
 export { backGlyph, closeGlyph } from "./behaviors/glyphs.ts";
 export * from "./surfaces/surfaces.css.ts";
 export * from "./typography/typography.css.ts";
+export * from "./components/accordion/accordion.ts";
 export * from "./components/aspect-ratio/aspect-ratio.ts";
 export * from "./components/avatar/avatar.ts";
 export * from "./components/badge/badge.ts";
