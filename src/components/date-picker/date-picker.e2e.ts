@@ -76,7 +76,7 @@ test("a slotted label names the entry and a click on it focuses the field", asyn
   await page.locator("#picker").focus();
   await expect(field(page)).toBeFocused();
   await field(page).blur();
-  await page.locator('#picker [part="label"]').click();
+  await page.locator('#picker label[part="label"]').click();
   await expect(field(page)).toBeFocused();
 });
 
@@ -287,7 +287,7 @@ test("the calendar in the popover holds min, max and the disabled days", async (
     "true",
   );
   await record(page);
-  await day(page, "2026-11-08").click();
+  await day(page, "2026-11-08").click({ force: true });
   await expect(dialog(page)).toBeVisible();
   expect(await recorded(page)).toEqual([]);
 });
@@ -418,7 +418,9 @@ test("the field keeps a border under forced colors", async ({ page }) => {
 
 test("the picker passes axe, open and closed", async ({ page }) => {
   await expectAccessible(await gotoStory(page, story("default")));
-  await expectAccessible(await gotoStory(page, story("open")));
+  const open = await gotoStory(page, story("open"));
+  await expect(dialog(page)).toBeVisible();
+  await expectAccessible(open);
 });
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {

@@ -229,18 +229,19 @@ test("min and max grey out the days outside and stop the month buttons", async (
   await expect(nav(page, "prev")).toHaveAttribute("aria-disabled", "true");
   await expect(nav(page, "next")).not.toHaveAttribute("aria-disabled");
   await record(page);
-  await day(page, "2026-11-08").click();
+  // aria-disabled controls fail Playwright's enabled check; force the click
+  await day(page, "2026-11-08").click({ force: true });
   await expect(day(page, "2026-11-18")).toHaveAttribute(
     "aria-selected",
     "true",
   );
   expect(await recorded(page)).toEqual([]);
-  await nav(page, "prev").click();
+  await nav(page, "prev").click({ force: true });
   await expect(title(page)).toHaveText("November 2026");
   await nav(page, "next").click();
   await expect(title(page)).toHaveText("December 2026");
   await expect(nav(page, "next")).toHaveAttribute("aria-disabled", "true");
-  await nav(page, "next").click();
+  await nav(page, "next").click({ force: true });
   await expect(title(page)).toHaveText("December 2026");
 });
 
@@ -264,7 +265,7 @@ test("disabled-dates takes a list of ISO days and they cannot be selected", asyn
     await expect(day(page, iso)).toHaveAttribute("aria-disabled", "true");
   await expect(day(page, "2026-11-04")).not.toHaveAttribute("aria-disabled");
   await record(page);
-  await day(page, "2026-11-11").click();
+  await day(page, "2026-11-11").click({ force: true });
   await focusDay(page, "2026-11-11");
   await page.keyboard.press("Enter");
   expect(await recorded(page)).toEqual([]);
@@ -426,10 +427,17 @@ test("the selected day keeps its fill under forced colors", async ({
 }) => {
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });
-  await expect(day(page, "2026-11-18")).toHaveCSS(
-    "forced-color-adjust",
-    "none",
-  );
+  const background = (iso: string) =>
+    day(page, iso).evaluate((el) => getComputedStyle(el).backgroundColor);
+  const highlight = await page.evaluate(() => {
+    const probe = document.body.appendChild(document.createElement("div"));
+    probe.style.cssText = "background: Highlight; forced-color-adjust: none";
+    const color = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return color;
+  });
+  await expect.poll(() => background("2026-11-18")).toBe(highlight);
+  expect(await background("2026-11-19")).not.toBe(highlight);
   await focusDay(page, "2026-11-18");
   await page.keyboard.press("ArrowRight");
   await expect(day(page, "2026-11-19")).toHaveCSS("outline-style", "solid");

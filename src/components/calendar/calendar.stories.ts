@@ -67,6 +67,13 @@ export const DisabledByFunction: Story = {
 
 /** The first weekday and the names follow the locale. */
 export const Locales: Story = {
+  parameters: {
+    // Axe splits names at spaces, so the Japanese "1日" is never found inside
+    // "2026年11月1日日曜日", which holds it, as WCAG 2.5.3 asks.
+    a11y: {
+      options: { rules: { "label-content-name-mismatch": { enabled: false } } },
+    },
+  },
   render: () =>
     row(
       ["en-US", "de", "fr", "ja"].map(
