@@ -49,14 +49,15 @@ export class PlAvatar extends LitElement {
 
   protected override willUpdate(changed: PropertyValues<this>) {
     if (changed.has("src")) this._status = "loading";
-    if (!this.name) {
+    const name = this.name.trim();
+    if (!name) {
       if (this.getAttribute("role") === "img") {
         this.removeAttribute("role");
         this.removeAttribute("aria-label");
       }
     } else {
       this.setAttribute("role", "img");
-      this.setAttribute("aria-label", this.name);
+      this.setAttribute("aria-label", name);
     }
   }
 
