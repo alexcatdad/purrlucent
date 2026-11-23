@@ -522,6 +522,13 @@ class DashboardDemo extends LitElement {
       gap: var(--pl-gap-controls);
     }
 
+    /* Room for the longest range name, in rem so it grows with the text;
+       a select cut to its content's width truncates by a rounded pixel. */
+    .tools pl-select {
+      inline-size: calc(var(--pl-spacing) * 48);
+      max-inline-size: 100%;
+    }
+
     .note {
       color: var(--pl-color-muted-foreground);
     }
