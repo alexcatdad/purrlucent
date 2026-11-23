@@ -100,7 +100,15 @@ export const attachmentStyles = css`
     block-size: var(--_icon);
   }
 
+  /* Positioned, so the image fills a tile sized by aspect-ratio in every
+     engine; a percentage height does not resolve against it in Firefox. */
+  :host([media="image"]) [part="media"] {
+    position: relative;
+  }
+
   :host([media="image"]) ::slotted([slot="media"]) {
+    position: absolute;
+    inset: 0;
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
@@ -185,10 +193,11 @@ export const attachmentStyles = css`
     }
   }
 
+  /* Within the padding box: past it, Firefox counts the area as overflow. */
   [part="trigger"]::after {
     content: "";
     position: absolute;
-    inset: -1px;
+    inset: 0;
     border-radius: inherit;
   }
 
