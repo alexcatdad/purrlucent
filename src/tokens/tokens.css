@@ -360,7 +360,10 @@
     --pl-material-highlight: transparent;
     --pl-material-edge: 0 0 transparent;
     --pl-material-control: var(--pl-color-secondary);
+    --pl-material-control-pressed: var(--pl-color-secondary-pressed);
     --pl-material-control-filter: none;
+    --pl-material-field: var(--pl-color-input);
+    --pl-material-float: var(--pl-color-background);
 
     /* The neutral control face. Glass makes it stronger. */
     --pl-color-secondary: var(--pl-color-muted-2);
@@ -403,7 +406,18 @@
         inset 0 1px 0 0 var(--pl-material-highlight),
         inset 0 0 0 1px var(--pl-color-overlay-border);
       --pl-material-control: var(--pl-color-overlay);
+      --pl-material-control-pressed: color-mix(
+        in srgb,
+        var(--pl-color-overlay),
+        var(--pl-color-foreground) 12%
+      );
       --pl-material-control-filter: blur(var(--pl-blur-md)) saturate(125%);
+      --pl-material-field: color-mix(
+        in srgb,
+        var(--pl-color-input) 70%,
+        transparent
+      );
+      --pl-material-float: var(--pl-color-overlay);
       --pl-elevation-control: 0 calc(var(--pl-spacing) / 4)
         calc(var(--pl-spacing) * 2) color-mix(in srgb, #000 18%, transparent);
       --pl-color-edge: var(--pl-color-overlay-border);
@@ -450,7 +464,10 @@
       --pl-material-highlight: transparent;
       --pl-material-edge: 0 0 transparent;
       --pl-material-control: var(--pl-color-secondary);
+      --pl-material-control-pressed: var(--pl-color-secondary-pressed);
       --pl-material-control-filter: none;
+      --pl-material-field: var(--pl-color-input);
+      --pl-material-float: var(--pl-color-background);
       --pl-elevation-control: none;
       --pl-color-edge: transparent;
       --pl-color-secondary: var(--pl-color-muted-2);

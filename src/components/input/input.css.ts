@@ -77,7 +77,7 @@ export const fieldStyles = css`
     block-size: var(--_h);
     padding-inline: var(--_pad);
     border-radius: var(--pl-radius);
-    background: var(--pl-color-input);
+    background: var(--pl-material-field);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow:
       var(--pl-material-edge),

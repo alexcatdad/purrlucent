@@ -56,7 +56,7 @@ export const inputGroupStyles = css`
     inset-inline: 0;
     block-size: var(--_h);
     border-radius: var(--pl-radius);
-    background: var(--pl-color-input);
+    background: var(--pl-material-field);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow:
       var(--pl-material-edge),

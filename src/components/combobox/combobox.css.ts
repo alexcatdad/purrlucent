@@ -12,7 +12,7 @@ export const comboboxStyles = css`
     --_glyph: var(--pl-icon-sm);
     --_button: var(--pl-visual-md);
     --_inset: var(--pl-space-0-5);
-    --_face: var(--pl-material-control);
+    --_face: var(--pl-color-secondary);
     --_face-pressed: var(--pl-color-secondary-pressed);
     --_face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
     --_label: calc(var(--pl-pad-item) + var(--pl-icon-sm) + var(--pl-gap-icon));

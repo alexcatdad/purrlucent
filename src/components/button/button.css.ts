@@ -11,7 +11,7 @@ export const buttonStyles = css`
     --_tone: var(--pl-color-accent);
     --_tone-text: var(--pl-color-accent-text);
     --_face: var(--pl-material-control);
-    --_face-pressed: var(--pl-color-secondary-pressed);
+    --_face-pressed: var(--pl-material-control-pressed);
     --_face-disabled: var(--pl-color-secondary-disabled);
     --_fg: var(--pl-color-foreground);
     --_fg-disabled: var(--pl-color-disabled-foreground);
@@ -78,6 +78,19 @@ export const buttonStyles = css`
      keep their fill. Increased contrast outlines the face instead. */
   :host(:not([variant="ghost"])) {
     backdrop-filter: var(--pl-material-control-filter);
+  }
+
+  /* Only the neutral face is lifted; filled and tinted faces add no shadow. */
+  :host(
+    :not(
+      [variant="ghost"],
+      [variant="primary"],
+      [variant="tinted"],
+      [destructive],
+      [default],
+      [pressed]
+    )
+  ) {
     box-shadow: var(--pl-elevation-control);
   }
 

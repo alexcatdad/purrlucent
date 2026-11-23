@@ -158,7 +158,7 @@ export const messageScrollerButtonStyles = css`
   }
 
   pl-button {
-    background-color: var(--pl-color-background);
+    background-color: var(--pl-material-float);
     box-shadow: var(--pl-elevation-panel);
   }
 
