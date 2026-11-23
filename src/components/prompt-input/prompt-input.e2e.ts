@@ -59,8 +59,12 @@ test("a native label names the field", async ({ page }) => {
     label.textContent = "Ask";
     el.append(label);
   });
-  await root.locator("pl-prompt-input").focus();
-  await expect(root.getByRole("textbox", { name: "Ask" })).toBeVisible();
+  // The component's focus(), as in the input and textarea tests: Playwright's
+  // own focus does not reach the field inside in every engine.
+  await root
+    .locator("pl-prompt-input")
+    .evaluate((el) => (el as HTMLElement).focus());
+  await expect(root.getByRole("textbox", { name: "Ask" })).toBeFocused();
 });
 
 test("focus() focuses the field", async ({ page }) => {

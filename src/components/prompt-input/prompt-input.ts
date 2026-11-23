@@ -174,7 +174,9 @@ export class PlPromptInput extends LitElement {
   #grow() {
     const control = this.#field?.shadowRoot?.querySelector("textarea");
     if (!control) return;
-    control.style.blockSize = "auto";
+    // Collapsed first, so scrollHeight is the text's own height, whatever an
+    // auto-sized field would be stretched to by its surroundings.
+    control.style.blockSize = "0px";
     control.style.blockSize = `${control.scrollHeight}px`;
   }
 
