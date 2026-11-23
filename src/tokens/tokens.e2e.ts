@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import {
   compositeOver,
   contrast,
@@ -48,9 +48,9 @@ const openMaterials = async (
   );
 };
 
-/** The computed backdrop-filter and the alpha of the computed bar background. */
-const bar = (page: Page) =>
-  page.locator("#bar").evaluate((el) => {
+/** The computed backdrop-filter and the alpha of the computed background. */
+const measure = (target: Locator) =>
+  target.evaluate((el) => {
     const style = getComputedStyle(el);
     const color = style.backgroundColor;
     // rgba(r, g, b, a) puts alpha last after a comma; rgb(r g b / a), oklch() and color() put it after a slash.
@@ -64,6 +64,19 @@ const bar = (page: Page) =>
     };
   });
 
+const bar = (page: Page) => measure(page.locator("#bar"));
+
+/** A bare element wearing the control material and the edge, appended after the story renders. */
+const addControl = async (page: Page) => {
+  await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.id = "control";
+    probe.style.cssText =
+      "background: var(--pl-material-control); backdrop-filter: var(--pl-material-control-filter); box-shadow: var(--pl-material-edge)";
+    document.body.append(probe);
+  });
+  return page.locator("#control");
+};
 test("solid mode computes the material filter to none", async ({ page }) => {
   await openMaterials(page, "solid", "light");
   expect((await bar(page)).filter).toBe("none");
@@ -271,3 +284,87 @@ test("the Storybook theme global switches token colors while the OS stays light"
   };
   expect(await barBackground("dark")).not.toBe(await barBackground("light"));
 });
+
+test("glass controls get a material", async ({ page }) => {
+  await openMaterials(page, "glass", "light");
+  const { filter, alpha } = await measure(await addControl(page));
+  expect(filter).toContain("blur");
+  expect(alpha).toBeLessThan(1);
+});
+
+test("glass edge carries a highlight", async ({ page }) => {
+  await openMaterials(page, "glass", "light");
+  const edge = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue(
+      "--pl-material-edge",
+    ),
+  );
+  // The token holds two inset shadows: the top highlight and the hairline.
+  expect(edge.match(/inset/g)).toHaveLength(2);
+  const shadow = await (
+    await addControl(page)
+  ).evaluate((el) => getComputedStyle(el).boxShadow);
+  expect(shadow.match(/inset/g)).toHaveLength(2);
+});
+
+// Under a fallback the control keeps its solid-mode look, so it is compared
+// with the same probe once the material is switched to solid. The solid face
+// is the neutral secondary tint, which is translucent by design.
+const expectSolidControl = async (page: Page) => {
+  const control = await addControl(page);
+  const fallback = await measure(control);
+  const shadow = await control.evaluate((el) => getComputedStyle(el).boxShadow);
+  await page.evaluate(() =>
+    document.documentElement.setAttribute("pl-material", "solid"),
+  );
+  expect(fallback.filter).toBe("none");
+  expect(fallback).toEqual(await measure(control));
+  expect(shadow).toBe(
+    await control.evaluate((el) => getComputedStyle(el).boxShadow),
+  );
+};
+
+test("reduced transparency makes controls solid", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== "chromium",
+    "emulated through the Chromium protocol",
+  );
+  await openMaterials(page, "glass", "light");
+  await emulateTransparency(page, "reduce");
+  await expectSolidControl(page);
+});
+
+test("more contrast makes controls solid", async ({ page, browserName }) => {
+  test.skip(browserName === "firefox", FIREFOX_CONTRAST_BUG);
+  await openMaterials(page, "glass", "light");
+  await page.emulateMedia({ contrast: "more" });
+  await expectSolidControl(page);
+});
+
+// The contrast helper only knows flat colors, so the translucent control face is
+// composited over black, mid grey and white, the extremes of any backdrop, and
+// every text role is measured against each result.
+for (const theme of ["light", "dark"] as const)
+  test(`text on glass controls meets contrast over the backdrop in ${theme}`, async ({
+    page,
+  }) => {
+    await openMaterials(page, "glass", theme);
+    const control = await addControl(page);
+    const face = await control.evaluate(
+      (el) => getComputedStyle(el).backgroundColor,
+    );
+    const colors = await resolveColors(
+      page,
+      Object.fromEntries(text.map((role) => [role, `var(--pl-color-${role})`])),
+    );
+    const shown = await compositeOver(page, face, backdrops);
+    for (const over of shown)
+      for (const role of text)
+        expect(
+          contrast(colors[role]!, over),
+          `${role} on the control face over ${over.join(",")} in ${theme}`,
+        ).toBeGreaterThanOrEqual(4.5);
+  });
