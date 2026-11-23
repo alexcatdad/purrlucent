@@ -1,0 +1,115 @@
+import type { Meta, StoryObj } from "@storybook/web-components-vite";
+import { html } from "lit";
+import { expect, userEvent } from "storybook/test";
+import "./tabs.ts";
+import type { PlTabs } from "./tabs.ts";
+
+const meta = { title: "Components/Tabs" } satisfies Meta;
+
+export default meta;
+
+type Story = StoryObj;
+
+const render = () => html`
+  <pl-tabs id="control" label="Account">
+    <pl-tab value="profile">Profile</pl-tab>
+    <pl-tab value="security">Security</pl-tab>
+    <pl-tab value="billing">Billing</pl-tab>
+    <pl-tab-panel value="profile">Your name and photo.</pl-tab-panel>
+    <pl-tab-panel value="security">Password and sign-in.</pl-tab-panel>
+    <pl-tab-panel value="billing">Plan and invoices.</pl-tab-panel>
+  </pl-tabs>
+`;
+
+const control = async (canvasElement: HTMLElement) => {
+  const el = canvasElement.querySelector<PlTabs>("#control")!;
+  await el.updateComplete;
+  return el;
+};
+
+// Stories that other tests open as they are have no play function: a play
+// function would change the selection before the test starts.
+export const Default: Story = { render };
+
+/** `value` selects the tab and shows its panel. */
+export const Preselected: Story = {
+  render: () => html`
+    <pl-tabs id="control" label="Account" value="billing">
+      <pl-tab value="profile">Profile</pl-tab>
+      <pl-tab value="security">Security</pl-tab>
+      <pl-tab value="billing">Billing</pl-tab>
+      <pl-tab-panel value="profile">Your name and photo.</pl-tab-panel>
+      <pl-tab-panel value="security">Password and sign-in.</pl-tab-panel>
+      <pl-tab-panel value="billing">Plan and invoices.</pl-tab-panel>
+    </pl-tabs>
+  `,
+};
+
+/** Vertical tabs use Up and Down. */
+export const Vertical: Story = {
+  render: () => html`
+    <pl-tabs id="control" label="Account" orientation="vertical">
+      <pl-tab value="profile">Profile</pl-tab>
+      <pl-tab value="security">Security</pl-tab>
+      <pl-tab value="billing">Billing</pl-tab>
+      <pl-tab-panel value="profile">Your name and photo.</pl-tab-panel>
+      <pl-tab-panel value="security">Password and sign-in.</pl-tab-panel>
+      <pl-tab-panel value="billing">Plan and invoices.</pl-tab-panel>
+    </pl-tabs>
+  `,
+};
+
+/** An unavailable tab takes no focus and cannot be selected. */
+export const DisabledTab: Story = {
+  render: () => html`
+    <pl-tabs id="control" label="Account">
+      <pl-tab value="profile">Profile</pl-tab>
+      <pl-tab value="security" disabled>Security</pl-tab>
+      <pl-tab value="billing">Billing</pl-tab>
+      <pl-tab-panel value="profile">Your name and photo.</pl-tab-panel>
+      <pl-tab-panel value="security">Password and sign-in.</pl-tab-panel>
+      <pl-tab-panel value="billing">Plan and invoices.</pl-tab-panel>
+    </pl-tabs>
+  `,
+};
+
+export const Glass: Story = {
+  render,
+  globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
+};
+
+export const Light: Story = { render, globals: { theme: "light" } };
+
+export const Dark: Story = { render, globals: { theme: "dark" } };
+
+export const MoreContrast: Story = { render, globals: { contrast: "more" } };
+
+/** Under right-to-left the tabs mirror. */
+export const Rtl: Story = { render, globals: { dir: "rtl" } };
+
+/** Tab enters on the selected tab, and ArrowRight selects the next. */
+export const Keyboard: Story = {
+  render,
+  play: async ({ canvasElement }) => {
+    const el = await control(canvasElement);
+    expect(el.value).toBe("profile");
+    await userEvent.tab();
+    await userEvent.keyboard("{ArrowRight}");
+    await el.updateComplete;
+    expect(el.value).toBe("security");
+    expect(el.querySelector("[value=security]")).toHaveFocus();
+  },
+};
+
+/** Under right-to-left, the arrow keys follow the visual direction. */
+export const KeyboardRtl: Story = {
+  render,
+  globals: { dir: "rtl" },
+  play: async ({ canvasElement }) => {
+    const el = await control(canvasElement);
+    await userEvent.tab();
+    await userEvent.keyboard("{ArrowLeft}");
+    await el.updateComplete;
+    expect(el.value).toBe("security");
+  },
+};
