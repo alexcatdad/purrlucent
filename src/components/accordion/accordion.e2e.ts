@@ -168,11 +168,12 @@ test("each header is a button that names its panel, and a closed panel is hidden
       button.getAttribute("aria-controls"),
       panel.id,
       panel.getAttribute("role"),
-      panel.getAttribute("aria-labelledby"),
-      button.id,
+      panel.getAttribute("aria-label"),
     ];
   });
-  expect(ids).toEqual(["panel", "panel", "region", "trigger", "trigger"]);
+  // The region takes the heading text as aria-label: Firefox crashes naming it
+  // through aria-labelledby into a button that holds a slot.
+  expect(ids).toEqual(["panel", "panel", "region", "Returns"]);
   await expect(page.getByRole("region", { name: "Returns" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Shipping" })).toHaveCount(0);
 });
