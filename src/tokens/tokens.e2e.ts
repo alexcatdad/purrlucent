@@ -5,6 +5,7 @@ import {
   contrast,
   resolveColors,
 } from "../../e2e/helpers/color.ts";
+import { lowContrastText } from "../../e2e/helpers/rendered.ts";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
 const colorSchemes = [
@@ -292,19 +293,31 @@ test("glass controls get a material", async ({ page }) => {
   expect(alpha).toBeLessThan(1);
 });
 
-test("glass edge carries a highlight", async ({ page }) => {
-  await openMaterials(page, "glass", "light");
-  const edge = await page.evaluate(() =>
-    getComputedStyle(document.documentElement).getPropertyValue(
-      "--pl-material-edge",
-    ),
+const rootToken = (page: Page, name: string) =>
+  page.evaluate(
+    (token) =>
+      getComputedStyle(document.documentElement).getPropertyValue(token).trim(),
+    name,
   );
-  // The token holds two inset shadows: the top highlight and the hairline.
-  expect(edge.match(/inset/g)).toHaveLength(2);
-  const shadow = await (
-    await addControl(page)
-  ).evaluate((el) => getComputedStyle(el).boxShadow);
-  expect(shadow.match(/inset/g)).toHaveLength(2);
+
+for (const theme of ["light", "dark"] as const)
+  test(`glass edge carries a highlight in ${theme}`, async ({ page }) => {
+    await openMaterials(page, "glass", theme);
+    // The token holds two inset shadows: the top highlight and the hairline.
+    expect(
+      (await rootToken(page, "--pl-material-edge")).match(/inset/g),
+    ).toHaveLength(2);
+    const shadow = await (
+      await addControl(page)
+    ).evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(shadow.match(/inset/g)).toHaveLength(2);
+  });
+
+test("glass controls cast a shadow", async ({ page }) => {
+  await openMaterials(page, "glass", "light");
+  const elevation = await rootToken(page, "--pl-elevation-control");
+  expect(elevation).not.toBe("none");
+  expect(elevation).toContain("color-mix");
 });
 
 // Under a fallback the control keeps its solid-mode look, so it is compared
@@ -314,10 +327,12 @@ const expectSolidControl = async (page: Page) => {
   const control = await addControl(page);
   const fallback = await measure(control);
   const shadow = await control.evaluate((el) => getComputedStyle(el).boxShadow);
+  const elevation = await rootToken(page, "--pl-elevation-control");
   await page.evaluate(() =>
     document.documentElement.setAttribute("pl-material", "solid"),
   );
   expect(fallback.filter).toBe("none");
+  expect(elevation).toBe("none");
   expect(fallback).toEqual(await measure(control));
   expect(shadow).toBe(
     await control.evaluate((el) => getComputedStyle(el).boxShadow),
@@ -344,27 +359,22 @@ test("more contrast makes controls solid", async ({ page, browserName }) => {
   await expectSolidControl(page);
 });
 
-// The contrast helper only knows flat colors, so the translucent control face is
-// composited over black, mid grey and white, the extremes of any backdrop, and
-// every text role is measured against each result.
+// Measured from rendered pixels, so the story's backdrop, the glass tint and the blur all count.
 for (const theme of ["light", "dark"] as const)
-  test(`text on glass controls meets contrast over the backdrop in ${theme}`, async ({
+  test(`text on glass meets contrast over the backdrop in ${theme}`, async ({
     page,
+    browserName,
   }) => {
-    await openMaterials(page, "glass", theme);
-    const control = await addControl(page);
-    const face = await control.evaluate(
-      (el) => getComputedStyle(el).backgroundColor,
-    );
-    const colors = await resolveColors(
+    // The machine's own settings leak into the browser, so pin them to no preference.
+    await page.emulateMedia({ colorScheme: theme, contrast: "no-preference" });
+    if (browserName === "chromium")
+      await emulateTransparency(page, "no-preference");
+    await gotoStory(
       page,
-      Object.fromEntries(text.map((role) => [role, `var(--pl-color-${role})`])),
+      "foundations-surfaces--glass",
+      `material:glass;theme:${theme}`,
     );
-    const shown = await compositeOver(page, face, backdrops);
-    for (const over of shown)
-      for (const role of text)
-        expect(
-          contrast(colors[role]!, over),
-          `${role} on the control face over ${over.join(",")} in ${theme}`,
-        ).toBeGreaterThanOrEqual(4.5);
+    await page.locator("#bar").waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    expect(await lowContrastText(page)).toEqual([]);
   });
