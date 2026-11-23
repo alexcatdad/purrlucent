@@ -126,6 +126,10 @@
       "types": "./dist/types/components/dialog/dialog.d.ts",
       "default": "./dist/dialog.js"
     },
+    "./drawer": {
+      "types": "./dist/types/components/drawer/drawer.d.ts",
+      "default": "./dist/drawer.js"
+    },
     "./empty": {
       "types": "./dist/types/components/empty/empty.d.ts",
       "default": "./dist/empty.js"
