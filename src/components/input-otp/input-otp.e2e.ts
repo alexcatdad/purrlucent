@@ -61,7 +61,12 @@ test("the input asks the system for a one-time code with a numeric keyboard", as
       .nth(n)
       .evaluate((el) => {
         const input = el.shadowRoot!.querySelector("input")!;
-        return [input.type, input.autocomplete, input.inputMode];
+        // Firefox reports "" from the property for a token it does not use.
+        return [
+          input.type,
+          input.getAttribute("autocomplete"),
+          input.inputMode,
+        ];
       });
   expect(await attrs(0)).toEqual(["text", "one-time-code", "numeric"]);
   expect(await attrs(1)).toEqual(["text", "one-time-code", "numeric"]);
@@ -475,6 +480,8 @@ test("Enter presses the form's default button, like a native input", async ({
     page,
     '<button type="submit" name="intent" value="verify">Verify</button>',
   );
+  // The story's PIN starts incomplete, which would block the submit.
+  await page.getByRole("textbox", { name: "PIN" }).fill("1234");
   await page.getByRole("textbox", { name: "Code" }).fill("123456");
   await page.keyboard.press("Enter");
   await expect(page.locator("#form")).toHaveAttribute(
