@@ -21,7 +21,7 @@ export type PlMarkerVariant = "default" | "border" | "separator";
  * @attr {string} target - Where the link opens, as on `a`.
  * @attr {string} rel - The link's relationship, as on `a`.
  * @attr {boolean} interactive - Makes the row a button. Ignored when there is an `href`.
- * @slot icon - A decorative icon. A `pl-spinner` marks work in progress.
+ * @slot icon - A decorative icon; it is given `aria-hidden="true"`. A `pl-spinner` marks work in progress.
  * @slot - The text.
  * @csspart icon - The wrapper around the icon.
  * @csspart label - The wrapper around the text.
@@ -55,9 +55,17 @@ export class PlMarker extends LitElement {
     this.interactive = false;
   }
 
+  // aria-hidden on the shadow wrapper does not reach slotted elements in every
+  // engine, so a pl-spinner icon would still be read as a progress bar.
+  #onIcon = (event: Event) => {
+    hideWhenEmpty(event);
+    for (const icon of (event.target as HTMLSlotElement).assignedElements())
+      icon.setAttribute("aria-hidden", "true");
+  };
+
   override render() {
     const content = html`<span part="icon" aria-hidden="true" hidden
-        ><slot name="icon" @slotchange=${hideWhenEmpty}></slot></span
+        ><slot name="icon" @slotchange=${this.#onIcon}></slot></span
       ><span part="label" class=${this.shimmer ? "pl-shimmer" : nothing}
         ><slot></slot
       ></span>`;
