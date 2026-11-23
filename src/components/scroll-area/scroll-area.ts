@@ -42,7 +42,11 @@ export class PlScrollArea extends LitElement {
     this.#resize.observe(this);
     const content = this.renderRoot.querySelector("[part=content]");
     if (content) this.#resize.observe(content);
-    this.#mutation.observe(this, { childList: true, subtree: true });
+    this.#mutation.observe(this, {
+      childList: true,
+      subtree: true,
+      attributeFilter: ["tabindex", "disabled", "hidden"],
+    });
   }
 
   override disconnectedCallback() {
@@ -68,9 +72,11 @@ export class PlScrollArea extends LitElement {
 
   /** The region is a tab stop only while it overflows and holds nothing focusable. */
   #syncFocus() {
+    // Only the axes that scroll count; the other is clipped.
     const overflows =
-      this.scrollHeight > this.clientHeight ||
-      this.scrollWidth > this.clientWidth;
+      (this.orientation !== "horizontal" &&
+        this.scrollHeight > this.clientHeight) ||
+      (this.orientation !== "vertical" && this.scrollWidth > this.clientWidth);
     const needsStop =
       overflows &&
       ![...this.querySelectorAll<HTMLElement>("*")].some(focusable);

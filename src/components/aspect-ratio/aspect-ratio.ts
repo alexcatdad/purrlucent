@@ -25,7 +25,9 @@ export class PlAspectRatio extends LitElement {
 
   protected override updated(changed: PropertyValues<this>) {
     if (!changed.has("ratio")) return;
-    const valid = RATIO.test(this.ratio) && Number.parseFloat(this.ratio) > 0;
+    const valid =
+      RATIO.test(this.ratio) &&
+      this.ratio.split("/").every((part) => Number.parseFloat(part) > 0);
     this.style.setProperty("--_ratio", valid ? this.ratio.trim() : "1");
   }
 
