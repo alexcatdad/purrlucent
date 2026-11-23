@@ -1,0 +1,28 @@
+- id: disclosure-controls/1
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A disclosure control hides details until they are relevant; the most-used controls stay visible and advanced options start hidden.
+  check: rubric
+  layer: components
+- id: disclosure-controls/2
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A disclosure control has a descriptive label that says what it shows or hides.
+  check: automated
+  test: src/components/accordion/accordion.e2e.ts > aria snapshot
+  layer: components
+- id: disclosure-controls/3
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A disclosure button sits near the content it shows and hides, and a view has at most one disclosure button.
+  check: rubric
+  layer: components
+- id: disclosure-controls/4
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A disclosure triangle points inward when collapsed and down when expanded.
+  check: automated
+  test: src/components/accordion/accordion.e2e.ts > the arrow points to the end when closed and down when open, mirrored under rtl
+  layer: components
+- id: disclosure-controls/5
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A click on a disclosure control toggles it, and the view grows or shrinks to fit the content.
+  check: automated
+  test: src/components/accordion/accordion.e2e.ts > a click opens a section and the next click closes it; pl-toggle carries value and open
+  layer: components
