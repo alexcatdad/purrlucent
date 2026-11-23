@@ -1,0 +1,17 @@
+- id: path-controls/1
+  source: https://developer.apple.com/design/human-interface-guidelines/path-controls
+  rule: The standard path control is a linear list from the root to the selected item.
+  check: automated
+  test: src/components/breadcrumb/breadcrumb.e2e.ts > aria snapshot
+  layer: components
+- id: path-controls/2
+  source: https://developer.apple.com/design/human-interface-guidelines/path-controls
+  rule: When the list is too long to fit, names shrink and the full text stays available.
+  check: automated
+  test: src/components/breadcrumb/breadcrumb.e2e.ts > a long name is truncated and offers its full text
+  layer: components
+- id: path-controls/3
+  source: https://developer.apple.com/design/human-interface-guidelines/path-controls
+  rule: A path control sits in the window body, not in the window frame, a toolbar or a status bar.
+  check: rubric
+  layer: components
