@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.9.1
+
+### Patch Changes
+
+- 9227bdd: `pl-message-scroller` no longer pulls the view back to its `default-scroll-position` when a script or the reader scrolls while it is still settling after the first render.
+
 ## 0.9.0
 
 ### Minor Changes
