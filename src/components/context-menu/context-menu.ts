@@ -164,12 +164,12 @@ export class PlContextMenu extends LitElement {
     const open = this.#menu?.hasAttribute("open") ?? false;
     if (open === this.#open) return;
     this.#open = open;
+    // Two literal names, so the element manifest lists both events.
+    const init = { bubbles: true, composed: true };
     this.dispatchEvent(
-      new CustomEvent(open ? "pl-open" : "pl-close", {
-        detail: open ? { ...this.#point } : {},
-        bubbles: true,
-        composed: true,
-      }),
+      open
+        ? new CustomEvent("pl-open", { ...init, detail: { ...this.#point } })
+        : new CustomEvent("pl-close", { ...init, detail: {} }),
     );
   }
 
