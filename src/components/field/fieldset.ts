@@ -1,5 +1,4 @@
 import { LitElement, html } from "lit";
-import { idOf } from "../../behaviors/ids.ts";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { fieldsetStyles } from "./fieldset.css.ts";
 
@@ -8,7 +7,8 @@ const owned = new WeakSet<Element>();
 
 /**
  * A group of fields with a legend and a description. The host is a
- * `role="group"` named by the legend and described by the description. A native
+ * `role="group"` named by the legend's text and described by the description's
+ * text, set as `aria-label` and `aria-description`. A native
  * `<fieldset>` in the shadow root would not disable the slotted fields, which
  * are not its descendants, so `disabled` turns off every control inside, as a
  * native disabled fieldset does, including ones added later.
@@ -29,7 +29,10 @@ export class PlFieldset extends LitElement {
 
   declare disabled: boolean;
 
-  readonly #watch = new MutationObserver(() => this.#sync());
+  readonly #watch = new MutationObserver(() => {
+    this.#sync();
+    this.#name();
+  });
 
   constructor() {
     super();
@@ -39,7 +42,11 @@ export class PlFieldset extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     if (!this.hasAttribute("role")) this.setAttribute("role", "group");
-    this.#watch.observe(this, { childList: true, subtree: true });
+    this.#watch.observe(this, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
     if (this.hasUpdated) this.#sync();
   }
 
@@ -105,12 +112,14 @@ export class PlFieldset extends LitElement {
       this.renderRoot
         .querySelector<HTMLSlotElement>(`slot[name=${name}]`)
         ?.assignedElements({ flatten: true })[0];
+    // Text, not an id reference into the slots: Firefox crashed on those.
     const set = (attr: string, el: Element | undefined) => {
-      if (el) this.setAttribute(attr, idOf(el, `pl-fieldset-${attr.slice(5)}`));
+      const text = el?.textContent?.replace(/\s+/g, " ").trim();
+      if (text) this.setAttribute(attr, text);
       else this.removeAttribute(attr);
     };
-    set("aria-labelledby", slot("legend"));
-    set("aria-describedby", slot("description"));
+    set("aria-label", slot("legend"));
+    set("aria-description", slot("description"));
   }
 
   #onSlot = (event: Event) => {

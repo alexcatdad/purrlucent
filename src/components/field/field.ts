@@ -38,8 +38,10 @@ type Control = HTMLElement & {
  * `id` when they have none and points the control at them.
  *
  * - A control with its own role (a native input, `pl-checkbox`, `pl-switch`,
- *   `pl-slider`, `pl-radio-group`) gets `aria-labelledby`, `aria-describedby`,
- *   and, while `invalid`, `aria-invalid` and `aria-errormessage`.
+ *   `pl-slider`, `pl-radio-group`) gets the label's text as `aria-label`, the
+ *   description (and the error while `invalid`) as `aria-description`, and,
+ *   while `invalid`, `aria-invalid` and `aria-errormessage`. Text, not id
+ *   references into the slots, which crash Firefox.
  * - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox`
  *   or `pl-date-picker` keeps its edit control in a shadow root that an id
  *   reference cannot reach. A slotted `<label>` gets `for` pointing at the host,
@@ -81,6 +83,8 @@ export class PlField extends LitElement {
   readonly #watch = new MutationObserver(() => this.#wire());
   /** What this field wrote, so it can merge with the author's values and take its own back. */
   readonly #wrote = new Map<string, string[]>();
+  /** The `aria-label` and `aria-description` text this field wrote. */
+  readonly #text = new Map<string, string>();
   #control: Control | undefined;
   #inner: Element | undefined;
   #innerWatch: MutationObserver | undefined;
@@ -141,6 +145,20 @@ export class PlField extends LitElement {
     this.#wrote.set(name, ids);
   }
 
+  /** Sets an attribute to text, unless the author wrote its own; empty takes this field's back. */
+  #set(el: Element, name: string, value: string | undefined) {
+    const mine = this.#text.get(name);
+    const now = el.getAttribute(name);
+    if (value) {
+      if (now !== null && now !== mine) return;
+      el.setAttribute(name, value);
+      this.#text.set(name, value);
+    } else if (now !== null && now === mine) {
+      el.removeAttribute(name);
+      this.#text.delete(name);
+    }
+  }
+
   #wire() {
     const root = this.renderRoot as ShadowRoot;
     const [label] = slotted(root, "label");
@@ -151,6 +169,7 @@ export class PlField extends LitElement {
 
     if (control !== this.#control) {
       this.#wrote.clear();
+      this.#text.clear();
       this.#wroteInner.clear();
       this.#innerWatch?.disconnect();
       this.#inner = undefined;
@@ -159,8 +178,6 @@ export class PlField extends LitElement {
     this.#toggle("control-first", !!control?.matches(TOGGLES));
     if (!control) return;
 
-    const labelId = label && idOf(label, "pl-field-label");
-    const descId = description && idOf(description, "pl-field-description");
     const errorIds = errors.map((el) => idOf(el, "pl-field-error"));
     const name = control.localName;
     if (name.includes("-") && !customElements.get(name)) {
@@ -190,30 +207,23 @@ export class PlField extends LitElement {
       }
     }
 
+    // Text, not id references into the slots: Firefox crashed on those.
+    const message = [
+      description ? text(description) : "",
+      showError ? errors.map(text).join(" ") : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     if (delegated) {
       // A text control cannot be reached by an id from here: name it by
       // `<label for>` or `label`, and describe its inner control by text.
-      for (const attr of [
-        "aria-labelledby",
-        "aria-describedby",
-        "aria-errormessage",
-      ])
-        this.#tokens(control, attr, []);
       if (label && label.localName !== "label" && "label" in control)
         control.label = text(label);
-      const message = [
-        description ? text(description) : "",
-        showError ? errors.map(text).join(" ") : "",
-      ]
-        .filter(Boolean)
-        .join(" ");
       void this.#decorate(control, message, this.invalid);
     } else {
-      if (labelId) this.#tokens(control, "aria-labelledby", [labelId]);
-      this.#tokens(control, "aria-describedby", [
-        ...(descId ? [descId] : []),
-        ...(showError ? errorIds : []),
-      ]);
+      this.#set(control, "aria-label", label && text(label));
+      this.#set(control, "aria-description", message);
       this.#tokens(control, "aria-errormessage", showError ? errorIds : []);
       if (this.invalid) control.setAttribute("aria-invalid", "true");
       else if (
