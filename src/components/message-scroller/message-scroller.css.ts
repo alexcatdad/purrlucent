@@ -4,11 +4,10 @@ import { css } from "lit";
  * The host is the native scroller, as in pl-scroll-area: wheel, touch, keys,
  * momentum and scroll chaining are the browser's own.
  *
- * Edge fades are a mask on the host. Where scroll-driven animations exist, two
- * registered lengths follow the scroll offset (see CSS.registerProperty in
- * message-scroller.ts), so a fade grows over the first and last --_fade of
- * scrolling. Elsewhere, and under reduced motion, the data-scrollable
- * attribute sets the same two lengths at once.
+ * Edge fades are a mask on the host. The data-scrollable attribute sets each
+ * fade's length when there is more to see at that edge. They are not driven by
+ * the scroll offset: a scroll-timeline animation never finishes, and Firefox
+ * draws it differently.
  */
 export const messageScrollerStyles = css`
   :host {
@@ -50,40 +49,6 @@ export const messageScrollerStyles = css`
 
   :host([data-scrollable~="end"]) {
     --_ms-fade-end: var(--_fade);
-  }
-
-  @supports (animation-timeline: scroll()) {
-    @media (prefers-reduced-motion: no-preference) {
-      :host {
-        animation-name: fade-start, fade-end;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: scroll(self block), scroll(self block);
-        animation-range:
-          0% var(--_fade),
-          calc(100% - var(--_fade)) 100%;
-      }
-    }
-  }
-
-  @keyframes fade-start {
-    from {
-      --_ms-fade-start: 0px;
-    }
-
-    to {
-      --_ms-fade-start: var(--_fade);
-    }
-  }
-
-  @keyframes fade-end {
-    from {
-      --_ms-fade-end: var(--_fade);
-    }
-
-    to {
-      --_ms-fade-end: 0px;
-    }
   }
 
   /*
