@@ -28,15 +28,20 @@ const box = async (locator: Locator) => (await locator.boundingBox())!;
 
 /** The width of the story's own grid container. */
 // The story column's content width: its box minus the padding on both sides.
+// The content width of the story column the bubbles sit in.
 const containerWidth = async (page: Page) =>
-  page.locator("#storybook-root > div").evaluate((el) => {
-    const style = getComputedStyle(el);
-    return (
-      el.getBoundingClientRect().width -
-      Number.parseFloat(style.paddingLeft) -
-      Number.parseFloat(style.paddingRight)
-    );
-  });
+  page
+    .locator("pl-bubble")
+    .first()
+    .evaluate((bubble) => {
+      const el = bubble.parentElement!;
+      const style = getComputedStyle(el);
+      return (
+        el.getBoundingClientRect().width -
+        Number.parseFloat(style.paddingLeft) -
+        Number.parseFloat(style.paddingRight)
+      );
+    });
 
 for (const id of stories) {
   test(`axe finds no WCAG 2.2 AA violations in ${id}`, async ({ page }) => {
