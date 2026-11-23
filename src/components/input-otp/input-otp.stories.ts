@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
 import "./input-otp.ts";
 import type { PlInputOtp } from "./input-otp.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
   title: "Forms/Input OTP",
@@ -48,6 +49,15 @@ export const Lengths: Story = {
         value="A1B2C3D4"
       ></pl-input-otp>`,
     ]),
+};
+
+/** The width is the host's `inline-size`; the boxes shrink to fit it. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-input-otp style=${style} label=${label}></pl-input-otp>`,
+    ),
 };
 
 export const Sizes: Story = {

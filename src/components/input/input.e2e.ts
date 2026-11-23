@@ -5,6 +5,7 @@ import {
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
 const story = (name: string) => `forms-input--${name}`;
 
@@ -34,6 +35,11 @@ test("aria snapshot", async ({ page }) => {
     - textbox "Read only": Value
     - textbox "Invalid" [invalid]: nope
   `);
+});
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-input");
 });
 
 test("a slotted label names the input and a click on it focuses the field", async ({
