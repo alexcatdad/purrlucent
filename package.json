@@ -94,6 +94,10 @@
       "types": "./dist/types/components/command/command.d.ts",
       "default": "./dist/command.js"
     },
+    "./data-table": {
+      "types": "./dist/types/components/data-table/data-table.d.ts",
+      "default": "./dist/data-table.js"
+    },
     "./date-picker": {
       "types": "./dist/types/components/date-picker/date-picker.d.ts",
       "default": "./dist/date-picker.js"
@@ -189,6 +193,10 @@
     "./switch": {
       "types": "./dist/types/components/switch/switch.d.ts",
       "default": "./dist/switch.js"
+    },
+    "./table": {
+      "types": "./dist/types/components/table/table.d.ts",
+      "default": "./dist/table.js"
     },
     "./tabs": {
       "types": "./dist/types/components/tabs/tabs.d.ts",

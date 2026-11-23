@@ -496,6 +496,39 @@ A command palette: a search field above a list of commands that is always showin
 - `pl-select`: An item was activated. `detail.value` holds its value.
 - `input`: After each pl-input, as a native input fires it.
 
+## Data table
+
+```ts
+import "purrlucent/data-table";
+```
+
+### `<pl-data-table>`
+
+A native table drawn from `columns` and `rows`, with sortable headings and optional row selection. A sortable heading is a button inside its `<th>`, and the sorted column carries `aria-sort`. A click sorts ascending; a click on the sorted column reverses it. The rows are sorted here unless `manual-sort` is set, which leaves the order to the app (which then answers `pl-sort`). With `selectable`, each row has a checkbox and the header has a select-all checkbox that shows mixed when some rows are selected. Every row is rendered; there is no virtualization. With no rows, the `empty` slot (or `empty-label`) shows in place of the body.
+
+| Attribute          | Type                  | Default        | Description                                                                                                                                    |
+| ------------------ | --------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `caption`          | `string \| undefined` |                | A visible caption that also names the table.                                                                                                   |
+| `sticky-header`    | `boolean`             | `false`        | The headings stay at the top while the rows scroll; give the element a `max-block-size`.                                                       |
+| `selectable`       | `boolean`             | `false`        | Adds a checkbox column.                                                                                                                        |
+| `row-key`          | `string`              | `"id"`         | The row property that identifies a row in `selected` and `pl-selection-change`. Defaults to `id`; a row without it is identified by its index. |
+| `sort-column`      | `string \| undefined` |                | The `key` of the sorted column.                                                                                                                |
+| `sort-direction`   | `PlSortDirection`     | `"ascending"`  | `ascending` (default) or `descending`.                                                                                                         |
+| `manual-sort`      | `boolean`             | `false`        | Do not reorder the rows; the app does it on `pl-sort`.                                                                                         |
+| `empty-label`      | `string`              | `"No results"` | The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".                                                |
+| `select-all-label` | `string`              | `"Select all"` | The select-all checkbox's accessible name. Defaults to "Select all".                                                                           |
+| `select-row-label` | `string`              | `"Select"`     | Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".                                         |
+
+**Slots**
+
+- `empty`: Content shown instead of the rows when there are none.
+
+**Events**
+
+- `name`:
+- `pl-sort`: A heading was activated. `detail.column` is the column key and `detail.direction` the new direction.
+- `pl-selection-change`: The selection changed through a checkbox. `detail.keys` holds the selected row keys, in row order.
+
 ## Date picker
 
 ```ts
@@ -1383,6 +1416,31 @@ A switch: an on/off setting that takes effect at once. The slotted text is its l
 - `pl-change`: The user turned the switch on or off. `detail.checked` holds the new state.
 - `input`: After pl-change, as a native switch fires it.
 - `change`: After input, as a native switch fires it.
+
+## Table
+
+```ts
+import "purrlucent/table";
+```
+
+### `<pl-table>`
+
+Styles a native table. Slot one `<table>` (with `<caption>`, `<thead>`, `<tbody>`, `<th scope>`) and it keeps its table semantics: a custom element cannot sit inside `<table>`, so this one wraps it instead of replacing it. The rules are adopted as a stylesheet into the root the element is in. The wrapper scrolls when the table is wider or taller than the space it gets, and then takes a tab stop so the keyboard can scroll it. It is named by `label`, or else by the table's caption; without either, the scroll area has no accessible name. Set a `max-block-size` on the element to make `sticky-header` useful. A static table is not a grid: do not add `role=grid`.
+
+| Attribute       | Type                  | Default | Description                                                              |
+| --------------- | --------------------- | ------- | ------------------------------------------------------------------------ |
+| `label`         | `string \| undefined` |         | The accessible name of the scroll area. Defaults to the table's caption. |
+| `sticky-header` | `boolean`             | `false` | The header cells stay at the top while the rows scroll.                  |
+| `_scrollable`   | `boolean`             | `false` |                                                                          |
+| `_caption`      | `string`              | `""`    |                                                                          |
+
+**Slots**
+
+- default: A native `<table>`.
+
+**Parts**
+
+- `scroller`: The scroll container.
 
 ## Tabs
 
