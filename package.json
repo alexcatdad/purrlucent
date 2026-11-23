@@ -38,6 +38,10 @@
       "types": "./dist/types/typography/typography.css.d.ts",
       "default": "./dist/typography.js"
     },
+    "./accordion": {
+      "types": "./dist/types/components/accordion/accordion.d.ts",
+      "default": "./dist/accordion.js"
+    },
     "./aspect-ratio": {
       "types": "./dist/types/components/aspect-ratio/aspect-ratio.d.ts",
       "default": "./dist/aspect-ratio.js"

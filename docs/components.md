@@ -2,6 +2,58 @@
 
 This page is generated from the code by `bun scripts/component-docs.ts`. Each component has its own import path; `import "purrlucent"` loads all of them. Examples for every component are in Storybook.
 
+## Accordion
+
+```ts
+import "purrlucent/accordion";
+```
+
+### `<pl-accordion-item>`
+
+One section of a `pl-accordion`: a heading that holds a disclosure button, and a panel the button shows and hides. The default slot is the panel content. Give every item a `heading` (or a `heading` slot) and a `value`. A closed panel is hidden from sight and from assistive technology.
+
+| Attribute  | Type      | Default | Description                                                                                    |
+| ---------- | --------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `heading`  | `string`  | `""`    | The text of the disclosure button. For richer content use the `heading` slot.                  |
+| `value`    | `string`  | `""`    | Identifies the item in `pl-toggle`.                                                            |
+| `open`     | `boolean` | `false` | The panel is shown. The person's click changes it; set it to open or close the item from code. |
+| `disabled` | `boolean` | `false` | The button takes no focus and the panel cannot be toggled. Arrow keys skip it.                 |
+
+**Slots**
+
+- default: The panel content.
+- `heading`: Rich content for the disclosure button, instead of `heading`.
+
+**Parts**
+
+- `heading`: The heading element that wraps the button.
+- `trigger`: The disclosure button.
+- `chevron`: The disclosure arrow.
+- `label`: The wrapper around the button text.
+- `panel`: The region that holds the content.
+- `content`: The padded content box inside the panel.
+
+**Events**
+
+- `pl-toggle`: The person opened or closed this item. `detail.value` is the item's value and `detail.open` the new state. It bubbles, so the accordion can listen for it.
+
+### `<pl-accordion>`
+
+A stack of disclosure sections: each `pl-accordion-item` is a heading with a button that shows and hides its panel. By default opening one closes the others; `multiple` lets several stay open. Enter and Space toggle the focused button. Every button is a tab stop, and, as the APG's optional extras, Up and Down move among the buttons (wrapping), Home and End go to the first and last. `level` sets the heading level of every item so the page outline stays correct.
+
+| Attribute  | Type      | Default | Description                                                        |
+| ---------- | --------- | ------- | ------------------------------------------------------------------ |
+| `multiple` | `boolean` | `false` | Several items may be open at once.                                 |
+| `level`    | `number`  | `3`     | The heading level, 1 to 6, of every item's heading. Defaults to 3. |
+
+**Slots**
+
+- default: `pl-accordion-item` elements.
+
+**Events**
+
+- `pl-toggle`: The person opened or closed an item. It bubbles from the item; `detail.value` is the item's value and `detail.open` the new state. In single mode the items it closes fire nothing.
+
 ## Aspect ratio
 
 ```ts
