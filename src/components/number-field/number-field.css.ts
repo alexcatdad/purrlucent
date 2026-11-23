@@ -14,7 +14,7 @@ export const numberFieldStyles = [
       --_sw: calc(var(--pl-spacing) * 5);
       --_stw: max(var(--_sw), var(--pl-size-hit-min));
       --_gap: calc(var(--_stw) - var(--_sw));
-      --_btn: var(--pl-material-control);
+      --_btn: var(--pl-color-secondary);
 
       inline-size: auto;
       justify-items: start;

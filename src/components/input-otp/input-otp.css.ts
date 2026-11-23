@@ -99,7 +99,7 @@ export const inputOtpStyles = css`
     place-items: center;
     block-size: var(--_h);
     border-radius: var(--pl-radius);
-    background: var(--pl-color-input);
+    background: var(--pl-material-field);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow:
       var(--pl-material-edge),
@@ -118,7 +118,7 @@ export const inputOtpStyles = css`
     background: color-mix(
       in srgb,
       var(--pl-color-accent) 24%,
-      var(--pl-color-input)
+      var(--pl-material-field)
     );
   }
 
