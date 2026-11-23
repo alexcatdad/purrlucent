@@ -25,6 +25,7 @@ export * from "./components/pagination/pagination.ts";
 export * from "./components/popover/popover.ts";
 export * from "./components/progress/progress.ts";
 export * from "./components/radio-group/radio-group.ts";
+export * from "./components/resizable/resizable.ts";
 export * from "./components/scroll-area/scroll-area.ts";
 export * from "./components/select/select.ts";
 export * from "./components/separator/separator.ts";

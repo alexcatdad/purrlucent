@@ -1,0 +1,44 @@
+- id: split-views/1
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: Panes can sit side by side or stacked, and people drag the dividers between them to resize.
+  check: automated
+  test: src/components/resizable/resizable.e2e.ts > dragging the divider moves it and fires pl-resize with the sizes
+  layer: components
+- id: split-views/2
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: Each pane has a sensible minimum and maximum size so the divider never becomes hard to find or use.
+  check: automated
+  test: src/components/resizable/resizable.e2e.ts > a drag stops at the limits of both panels
+  layer: components
+- id: split-views/3
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: People can hide a pane when that helps them focus.
+  check: automated
+  test: src/components/resizable/resizable.e2e.ts > Enter collapses a collapsible panel and restores it
+  layer: components
+- id: split-views/4
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: A hidden pane can be restored in more than one way, such as a toolbar button, a menu command or a keyboard shortcut.
+  check: rubric
+  layer: components
+- id: split-views/5
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: Dividers are thin to leave the most room for content; a thicker style is used only when a thin one is hard to tell apart.
+  check: automated
+  test: src/components/resizable/resizable.e2e.ts > the divider is a thin line with a larger hit region
+  layer: components
+- id: split-views/6
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: The current selection stays highlighted in each pane that leads to a detail view.
+  check: rubric
+  layer: components
+- id: split-views/7
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: Where it helps, people can drag and drop content between panes.
+  check: rubric
+  layer: components
+- id: split-views/8
+  source: https://developer.apple.com/design/human-interface-guidelines/split-views
+  rule: Split views are used in a regular horizontal environment, not a compact one, and are tested at narrow, compact and intermediate widths.
+  check: rubric
+  layer: components
