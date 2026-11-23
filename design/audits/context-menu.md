@@ -1,0 +1,53 @@
+# HIG audit: context menu
+
+Source: [HIG Context menus](https://developer.apple.com/design/human-interface-guidelines/context-menus), read 2026-11-22 (change log: December 5, 2023), and the audit of the menu it reuses, `design/audits/menu.md`. Code: `src/components/context-menu/`, `src/components/menu/menu.ts` (`showAt`, `hide`), `src/behaviors/dismiss.ts`, `src/behaviors/position.ts`, `hig/rules/context-menus.yaml`. Nothing was run for this audit: the e2e tests cited were read, not executed.
+
+Each guideline is either **library** (the component decides it) or **usage** (the app author decides it, so it belongs in the docs). Verdicts: **met**, **gap**, **deviation** (deliberate, with a reason), or **needs eyes** (a visual judgement for the maintainer). Rows marked "not stated on the HIG page" are platform behavior the page implies; they are checked against the web platform and the WAI-ARIA menu pattern, not against Apple's text.
+
+## What it is
+
+The HIG has a context menu, not a wrapper element. `pl-context-menu` is the nearest form: a region (default slot) plus a `pl-menu` in the `menu` slot. The menu, its items, separators, labels, submenus and `pl-select` are `pl-menu`'s and are audited in `menu.md`; this element adds only what opens it. `pl-menu` already opens at a point (`showAt`) and closes (`hide`), so it was not edited. One gap in that API is listed under Findings.
+
+## Library guidelines
+
+| Guideline (HIG wording, shortened)                                                | Verdict   | Evidence                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A context menu opens at the pointer.                                              | met       | `contextmenu` calls `showAt(clientX, clientY)` (`context-menu.ts`, `#onContextmenu`, `#show`); the popup's corner sits on the point. Test: "a right-click opens the menu at the pointer with the first item focused".                                                                                                                                                  |
+| Open it by right-click or Control-click.                                          | met       | The browser reports both as `contextmenu`. Control-click was not run on a Mac (unverified).                                                                                                                                                                                                                                                                            |
+| (Not stated on the HIG page) A long press opens it on touch.                      | met       | A touch `pointerdown` held 500ms without drifting 10px sends a `contextmenu` to the pressed element; lifting, cancelling or moving cancels it. Tests under "long press". Where a browser also fires its own `contextmenu` the second one finds the menu open and does nothing. iOS Safari was not run: whether it cancels the pointer before 500ms is unverified.      |
+| (Not stated on the HIG page) The keyboard opens it.                               | met       | Shift+F10 and the Context Menu key, while the region or something in it has focus, open it below the focused element at its start edge (the visible top of one taller than half the viewport). Tests: "Shift+F10 opens the menu below the focused element", the same for ContextMenu, and the right-to-left test. Neither key exists on a Mac keyboard (see Findings). |
+| (Not stated on the HIG page) The native menu is suppressed only while it handles. | met       | `preventDefault()` runs only when not `disabled`, a `pl-menu` is slotted and no inner handler already prevented it. Tests: "the browser's own menu is suppressed while the region handles it", "a disabled region leaves the browser's menu alone", "a contextmenu event something inside already handled is left to it".                                              |
+| (Not stated on the HIG page) Escape and an outside press close it; focus returns. | met       | `pl-menu`'s dismissal; focus returns to the element focused before it opened (nothing, for a pointer open on non-focusable content, as `body` cannot take focus). Tests: "Escape closes the menu and focus returns to where it came from", "a press outside closes the menu".                                                                                          |
+| (Not stated on the HIG page) A press outside, then a new right-click, moves it.   | met       | The press closes the menu, then `#show` waits for it to finish before `showAt`, since `showAt` does not reposition a menu that was closed in the same turn. Test: "a second right-click moves the menu to the new point".                                                                                                                                              |
+| (Not stated on the HIG page) It stays inside the viewport.                        | met       | `position()` flips and keeps an 8px inset. Test: "the menu stays inside the viewport". See `menu.md` for the item-order deviation when it flips (context-menus/7).                                                                                                                                                                                                     |
+| (Not stated on the HIG page) A disabled region has no menu.                       | met       | `disabled` leaves the browser's menu alone, ignores keys and long presses, and closes an open menu. Tests: "setting disabled while the menu is open closes it" and the disabled tests above.                                                                                                                                                                           |
+| (Not stated on the HIG page) The page can tell when it opens and closes.          | met       | `pl-open` (`detail.x`, `detail.y`) and `pl-close`, from the menu's `open` attribute, so Escape, outside presses, choices, `disabled` and script all report. Test: "pl-open and pl-close report each open and close, however it happens".                                                                                                                               |
+| (Not stated on the HIG page) Rows and the region's controls meet the hit size.    | met       | `pl-menu` rows and `pl-button` are 44px on a coarse pointer. Test: "the region's control and every item are at least 44 by 44".                                                                                                                                                                                                                                        |
+| (Not stated on the HIG page) Reduced motion, forced colors, 200% text zoom, RTL.  | met       | Reduced motion zeroes the menu's fade; forced colors draw its edge; no overflow at 200%; the right-to-left story hangs the menu from the end edge. Tests of the same names; axe runs on all five stories.                                                                                                                                                              |
+| An iOS preview beside the commands; visionOS effects.                             | deviation | Not built, as for `pl-menu` (`menu.md`). Decided 2026-11-22.                                                                                                                                                                                                                                                                                                           |
+
+## Usage guidelines (for `docs/components.md`, not the component)
+
+- Hold only the commands most relevant to the item, in a small number (context-menus/2).
+- Every command in a context menu must also be reachable elsewhere in the interface: a context menu is a shortcut, never the only way. A keyboard or touch user who does not know the gesture cannot find a hidden-only command (context-menus/3).
+- Leave out items that do not apply instead of using `disabled` (context-menus/4).
+- No keyboard shortcuts in the items (context-menus/5).
+- About three groups at most, divided by `pl-menu-separator` (context-menus/6).
+- Put the most used items first; the order is not reversed when the menu opens above the point (context-menus/7).
+- List destructive items last and mark them `destructive` (context-menus/8).
+- Give the menu a title, a `pl-menu-label` first, only when it clarifies the effect, such as a count of selected items (context-menus/9).
+- Give the `pl-menu` a `label`; it names the menu for assistive technology.
+- Make the thing a person acts on focusable, so the keyboard can open its menu. A region with no focusable content has no keyboard route.
+- Do not wrap the whole page; wrap the item or area the commands act on.
+
+## Findings outside HIG
+
+- A Mac keyboard has neither Shift+F10 nor a Context Menu key, and Control-Return is not handled. VoiceOver users reach the menu through the browser's `contextmenu` event, which is handled. Not verified.
+- `pl-menu.showAt` does not reposition or refocus a menu that was closed and reopened in the same turn (the property is already false, so it skips the open path). `pl-context-menu` waits a microtask to avoid it; the fix belongs in `pl-menu` (`menu.ts`, `showAt`).
+- `showAt` takes `document.activeElement` as the element to return focus to. A pointer open on non-focusable content has none, so Escape leaves focus on `body`.
+- The point is read from a `position: fixed` element inside `pl-menu`, so a transformed ancestor of the region shifts the menu. Shared with `pl-menu`.
+- `-webkit-touch-callout: none` on the host removes the system callout for links and images inside the region. Not checked on iOS.
+
+## Source of truth
+
+`src/tokens/tokens.css` is the source of truth for sizes, radii, spacing and colors (decided 2026-11-22). The element sets no design value itself; the long-press time and drift are behavior, not design.
