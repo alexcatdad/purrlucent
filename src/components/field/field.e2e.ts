@@ -19,18 +19,14 @@ test("a pl-input is named by the label and described by the description", async 
   );
 });
 
-test("the label, description and error get ids and the label points at the control", async ({
-  page,
-}) => {
+test("the control gets an id and the label points at it", async ({ page }) => {
   await gotoStory(page, story("textarea"));
+  // The label and description name and describe the control as text (see
+  // field.ts), so only the control needs an id, for the label's `for`.
   const ids = await page.locator("#field").evaluate((el) => ({
-    label: el.querySelector('[slot="label"]')!.id,
-    description: el.querySelector('[slot="description"]')!.id,
     forAttr: el.querySelector('[slot="label"]')!.getAttribute("for"),
     control: el.querySelector("pl-textarea")!.id,
   }));
-  expect(ids.label).not.toBe("");
-  expect(ids.description).not.toBe("");
   expect(ids.control).not.toBe("");
   expect(ids.forAttr).toBe(ids.control);
 });
