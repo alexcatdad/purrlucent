@@ -482,12 +482,21 @@ export class PlMessageScroller extends LitElement {
     };
     this.scrollTo({ top: top(), behavior: "instant" });
     // Rows skipped by content-visibility get their real size once seen; an end
-    // or an anchor is corrected until it settles. The start never moves.
+    // or an anchor is corrected until it settles. The start never moves. A
+    // scroll made meanwhile by anything else, a script or the reader, wins.
     if (this.defaultScrollPosition === "start") return;
-    this.#settle(top, () => {
-      this.#measure();
-      this.#sync();
-    });
+    let placed = this.scrollTop;
+    this.#settle(
+      () => {
+        if (Math.abs(this.scrollTop - placed) > EDGE) return this.scrollTop;
+        placed = Math.min(Math.max(0, top()), this.#max());
+        return placed;
+      },
+      () => {
+        this.#measure();
+        this.#sync();
+      },
+    );
   }
 
   /**
