@@ -36,3 +36,9 @@
   check: automated
   test: src/tokens/tokens.e2e.ts > glass falls back to solid under reduced transparency
   layer: surfaces
+- id: materials/8
+  source: https://developer.apple.com/design/human-interface-guidelines/materials
+  rule: A surface that holds content, such as a card, stays solid and is never given a material.
+  check: automated
+  test: src/components/card/card.e2e.ts > the card stays solid under glass
+  layer: components

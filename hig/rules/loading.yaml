@@ -1,0 +1,29 @@
+- id: loading/1
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: An empty state is told apart from work in progress, names what is missing and does not look like a loader.
+  check: rubric
+  layer: components
+- id: loading/2
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: An empty state does not announce itself as an alert or a status; it is plain content.
+  check: automated
+  test: src/components/empty/empty.e2e.ts > it is not a live region
+  layer: components
+- id: loading/3
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: An empty state offers one clear next step when there is one, and reserves no space when there is none.
+  check: automated
+  test: src/components/empty/empty.e2e.ts > without an icon or action nothing is reserved for them
+  layer: components
+- id: loading/4
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: An empty state is centered in the space it fills.
+  check: automated
+  test: src/components/empty/empty.e2e.ts > the content is centered
+  layer: components
+- id: loading/5
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: An empty state keeps its order of icon, text and action.
+  check: automated
+  test: src/components/empty/empty.e2e.ts > the icon sits above the title and the action below the text
+  layer: components

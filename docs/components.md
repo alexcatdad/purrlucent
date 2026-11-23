@@ -108,6 +108,30 @@ A button. The label is the slotted text and is required for an accessible name; 
 
 - `pl-press`: When the button is activated by pointer, Enter or Space.
 
+## Card
+
+```ts
+import "purrlucent/card";
+```
+
+### `<pl-card>`
+
+A card: a grouped content surface with an optional header, content and footer. It is solid, never glass, and not interactive itself. Put controls in the `actions` or `footer` slots. A section with nothing in it is hidden.
+
+**Slots**
+
+- `title`: The heading of the header.
+- `description`: Secondary text under the title.
+- `actions`: Controls at the trailing edge of the header.
+- default: The content.
+- `footer`: Controls or notes below the content.
+
+**Parts**
+
+- `header`: The header section.
+- `content`: The content section.
+- `footer`: The footer section.
+
 ## Checkbox
 
 ```ts
@@ -238,6 +262,29 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 - `pl-cancel`: Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
 - `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with.
 
+## Empty
+
+```ts
+import "purrlucent/empty";
+```
+
+### `<pl-empty>`
+
+An empty state: an optional icon, a title, a description and an action. Say what is missing and offer one clear next step. It is plain content, not a live region. For work in progress use `pl-spinner`, not this.
+
+**Slots**
+
+- `icon`: An `svg` shown above the title. Mark it `aria-hidden="true"`.
+- `title`: What is missing, for example "No projects".
+- `description`: Why, or what the person can do about it.
+- `action`: A button or link for the next step.
+
+**Parts**
+
+- `icon`: The icon tile.
+- `text`: The title and description.
+- `action`: The action row.
+
 ## Input
 
 ```ts
@@ -290,6 +337,34 @@ A single-line text field. A native input inside does the editing, so typing, sel
 - `pl-change`: The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change, as a native input fires it.
+
+## Item
+
+```ts
+import "purrlucent/item";
+```
+
+### `<pl-item>`
+
+A list row: leading media, a title with a description, and trailing actions. With an `href` the whole row is one link and the title is its name. The row is a single tab stop; buttons in the `actions` slot stay reachable and separate.
+
+| Attribute | Type             | Default | Description                           |
+| --------- | ---------------- | ------- | ------------------------------------- |
+| `href`    | `string \| null` | `null`  | Makes the row a link to this address. |
+| `target`  | `string \| null` | `null`  | Where the link opens, as on `a`.      |
+| `rel`     | `string \| null` | `null`  | The link's relationship, as on `a`.   |
+
+**Slots**
+
+- `media`: A leading icon or image. Give an image `alt=""` when the title says the same.
+- `title`: The row's name. It names the link when there is an `href`.
+- `description`: Secondary text under the title.
+- `actions`: Trailing controls. They stay separate from the link.
+
+**Parts**
+
+- `link`: The link, when there is an `href`.
+- `text`: The title and description.
 
 ## Kbd
 
