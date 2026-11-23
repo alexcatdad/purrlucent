@@ -63,8 +63,10 @@ export async function expectNoOverflowAtTextZoom(
     const found: string[] = [];
     const walk = (node: Element) => {
       // Inline boxes cannot scroll; Firefox still reports a scrollWidth for them.
+      // Text fields scroll a value longer than their box by design.
       if (
         getComputedStyle(node).display !== "inline" &&
+        !node.matches("input, textarea") &&
         node.scrollWidth > node.clientWidth
       )
         found.push(node.localName);
