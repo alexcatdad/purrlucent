@@ -250,11 +250,11 @@ test("the divider is a thin line with a larger hit region", async ({
 }) => {
   await gotoStory(page, story("default"));
   const handle = page.getByRole("separator", { name: "Resize library" });
-  expect((await handle.boundingBox())!.width).toBeLessThanOrEqual(2);
-  const hit = await handle.evaluate((el) =>
+  const line = await handle.evaluate((el) =>
     parseFloat(getComputedStyle(el, "::before").width),
   );
-  expect(hit).toBeGreaterThanOrEqual(24);
+  expect(line).toBeLessThanOrEqual(2);
+  expect((await handle.boundingBox())!.width).toBeGreaterThanOrEqual(24);
 });
 
 test("the divider shows a focus ring, also under forced colors", async ({
@@ -266,7 +266,9 @@ test("the divider shows a focus ring, also under forced colors", async ({
   await page.keyboard.press("Tab");
   await expect(handle).toBeFocused();
   expect(
-    await handle.evaluate((el) => getComputedStyle(el).outlineStyle),
+    await handle.evaluate(
+      (el) => getComputedStyle(el, "::before").outlineStyle,
+    ),
   ).not.toBe("none");
 });
 
@@ -277,7 +279,9 @@ test("under reduced motion the divider changes color without a transition", asyn
   await gotoStory(page, story("default"));
   const handle = page.getByRole("separator", { name: "Resize library" });
   expect(
-    await handle.evaluate((el) => getComputedStyle(el).transitionDuration),
+    await handle.evaluate(
+      (el) => getComputedStyle(el, "::before").transitionDuration,
+    ),
   ).toBe("0s");
 });
 
@@ -305,7 +309,7 @@ test.describe("coarse pointer on a wide screen", () => {
     await gotoStory(page, story("default"));
     const hit = await page
       .getByRole("separator", { name: "Resize library" })
-      .evaluate((el) => parseFloat(getComputedStyle(el, "::before").width));
+      .evaluate((el) => el.getBoundingClientRect().width);
     expect(hit).toBeGreaterThanOrEqual(44);
   });
 });

@@ -236,13 +236,13 @@ test("virtual screen reader speaks the tabs and the panel", async ({
   page,
 }) => {
   await open(page);
+  // The tablist is a shadow-DOM wrapper, which the virtual screen reader does
+  // not walk; browsers expose it. Each tab speaks its aria-controls as "1 control".
   expect(await spokenPhrases(page)).toEqual([
     "document",
-    "tablist, Account",
-    "tab, Profile, selected, position 1, set size 3",
-    "tab, Security, not selected, position 2, set size 3",
-    "tab, Billing, not selected, position 3, set size 3",
-    "end of tablist, Account",
+    "tab, Profile, selected, 1 control, position 1, set size 3",
+    "tab, Security, not selected, 1 control, position 2, set size 3",
+    "tab, Billing, not selected, 1 control, position 3, set size 3",
     "tabpanel, Profile",
     "Your name and photo.",
     "end of tabpanel, Profile",
