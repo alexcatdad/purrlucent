@@ -1585,6 +1585,49 @@ A multi-line text field. A native textarea inside does the editing, so typing, s
 - `input`: After each pl-input, as a native textarea fires it.
 - `change`: After each pl-change, as a native textarea fires it.
 
+## Toast
+
+```ts
+import "purrlucent/toast";
+```
+
+### `<pl-toast>`
+
+A non-blocking status message: a title, an optional description, an optional action and a close button. It never takes focus when it appears. Inside a `pl-toaster` the toaster's live region announces it, and a destructive toast is a `role="alert"` of its own; outside one it is a `status` (or `alert`) itself. A toast without an action dismisses itself after `duration` milliseconds. The countdown pauses while the pointer is over the toast or focus is inside it, and resumes with what is left. It does not depend on any animation, so reduced motion changes nothing about it. A toast with an action stays until it is closed, because the action may be the only way to act on it. Escape closes the toast that has focus and returns focus to where it was. A closed toast stays closed; show a new one.
+
+| Attribute     | Type             | Default     | Description                                                                                             |
+| ------------- | ---------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `variant`     | `PlToastVariant` | `"neutral"` | `neutral` (default) or `destructive`.                                                                   |
+| `duration`    | `number`         | `6000`      | Milliseconds before it dismisses itself. Defaults to 6000. 0 keeps it. Ignored when there is an action. |
+| `close-label` | `string`         | `"Dismiss"` | The close button's accessible name. Defaults to "Dismiss".                                              |
+
+**Slots**
+
+- `title`: The heading.
+- default: The description.
+- `action`: A `pl-button`. Pressing it closes the toast, unless its click is prevented.
+
+**Parts**
+
+- `text`: The title and description.
+- `close`: The close button.
+
+**Events**
+
+- `pl-close`: The toast closed: the close button, Escape, its time ran out, or its action was pressed.
+
+### `<pl-toaster>`
+
+The region toasts appear in: a stack at the inline-end bottom edge of the viewport (the left under right-to-left), in the top layer, newest last. Place one per page, early, and leave it in the document: a live region announces what is added to it, so it must exist before the first toast. It is a polite `status` that announces each addition on its own. Show a toast from script. `toaster.show()` adds one to that toaster; `PlToaster.show()` uses the page's first `pl-toaster`, and makes one when there is none (that first toast then waits a moment so it is announced). Both return the `pl-toast`, which is removed when it closes. `js PlToaster.show({ title: "Message deleted", description: "It is gone from every device.", action: { label: "Undo", onClick: () => restore() }, }); PlToaster.show({ title: "Not saved", variant: "destructive" }); ` Or write `pl-toast` elements inside it.
+
+**Slots**
+
+- default: The toasts.
+
+**Events**
+
+- `pl-close`: A toast in it closed. Bubbles from the toast.
+
 ## Toggle
 
 ```ts

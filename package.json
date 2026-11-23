@@ -210,6 +210,10 @@
       "types": "./dist/types/components/textarea/textarea.d.ts",
       "default": "./dist/textarea.js"
     },
+    "./toast": {
+      "types": "./dist/types/components/toast/toast.d.ts",
+      "default": "./dist/toast.js"
+    },
     "./toggle": {
       "types": "./dist/types/components/toggle/toggle.d.ts",
       "default": "./dist/toggle.js"

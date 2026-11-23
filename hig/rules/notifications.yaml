@@ -1,0 +1,25 @@
+- id: notifications/1
+  source: https://developer.apple.com/design/human-interface-guidelines/notifications
+  rule: Notification content is concise and informative, with a short title that gives context.
+  check: rubric
+  layer: components
+- id: notifications/2
+  source: https://developer.apple.com/design/human-interface-guidelines/notifications
+  rule: An alert, not a notification, displays an error.
+  check: rubric
+  layer: components
+- id: notifications/3
+  source: https://developer.apple.com/design/human-interface-guidelines/notifications
+  rule: A notification has at most four actions, with short title-case verbs, and prefers nondestructive actions.
+  check: rubric
+  layer: components
+- id: notifications/4
+  source: https://developer.apple.com/design/human-interface-guidelines/notifications
+  rule: One thing produces one notification; avoid multiple notifications for the same thing.
+  check: rubric
+  layer: components
+- id: notifications/5
+  source: https://developer.apple.com/design/human-interface-guidelines/notifications
+  rule: A notification holds no sensitive or private information.
+  check: rubric
+  layer: components
