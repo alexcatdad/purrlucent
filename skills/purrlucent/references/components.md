@@ -651,7 +651,7 @@ One entry of a `pl-navigation-menu`. With an `href` it is a link. With children 
 
 ### `<pl-navigation-menu>`
 
-Site navigation: a `nav` landmark holding `pl-navigation-item` children in a row. Each item is a link or a disclosure button that opens a panel of links (the APG disclosure navigation pattern, not a menu). Every link and button is a tab stop. One panel is open at a time: opening one closes the others.
+Site navigation: the host is the `navigation` landmark, holding `pl-navigation-item` children in a row. Each item is a link or a disclosure button that opens a panel of links (the APG disclosure navigation pattern, not a menu). Every link and button is a tab stop. One panel is open at a time: opening one closes the others.
 
 | Attribute | Type     | Default | Description                                               |
 | --------- | -------- | ------- | --------------------------------------------------------- |
@@ -663,7 +663,6 @@ Site navigation: a `nav` landmark holding `pl-navigation-item` children in a row
 
 **Parts**
 
-- `nav`: The navigation landmark.
 - `list`: The row that lays out the items.
 
 ## Number field
