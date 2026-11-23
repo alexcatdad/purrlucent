@@ -26,7 +26,7 @@ const events = (page: Page) =>
 
 const firstColumn = (page: Page) =>
   page
-    .locator("tbody tr")
+    .locator("#control tbody tr")
     .evaluateAll((trs) =>
       trs.map((tr) =>
         (tr.querySelector("td:not(.select)") as HTMLElement).innerText.trim(),

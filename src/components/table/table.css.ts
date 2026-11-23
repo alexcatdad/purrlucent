@@ -47,7 +47,7 @@ export const tableDocumentStyles = css`
   }
 
   pl-table tr[data-selected] > :is(th, td) {
-    background: var(--pl-color-selected);
+    background: color-mix(in srgb, var(--pl-color-selected) 16%, transparent);
   }
 
   pl-table[sticky-header] thead th {

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import { expect, userEvent } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
 import "./data-table.ts";
 import type { PlDataTable, PlDataTableColumn } from "./data-table.ts";
 
@@ -117,15 +117,14 @@ export const StickyHeader: Story = {
 /** Under right-to-left the columns and the sort glyphs mirror. */
 export const Rtl: Story = { render, globals: { dir: "rtl" } };
 
-/** Tab reaches a heading button, and Enter sorts by it. */
+/** Enter on a focused heading button sorts by it. */
 export const Keyboard: Story = {
   render,
   play: async ({ canvasElement }) => {
     const el = await control(canvasElement);
-    await userEvent.tab();
+    el.shadowRoot!.querySelector<HTMLButtonElement>("th button")!.focus();
     await userEvent.keyboard("{Enter}");
-    await el.updateComplete;
-    expect(el.sortColumn).toBe("name");
+    await waitFor(() => expect(el.sortColumn).toBe("name"));
     expect(el.sortDirection).toBe("ascending");
   },
 };

@@ -41,7 +41,10 @@ test("the table rules reach the native cells", async ({ page }) => {
   const style = await page
     .locator("pl-table td")
     .first()
-    .evaluate((el) => getComputedStyle(el));
+    .evaluate((el) => {
+      const { borderBottomStyle, paddingInlineStart } = getComputedStyle(el);
+      return { borderBottomStyle, paddingInlineStart };
+    });
   expect(style.borderBottomStyle).toBe("solid");
   expect(style.paddingInlineStart).not.toBe("0px");
 });
