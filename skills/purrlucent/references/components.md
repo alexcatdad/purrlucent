@@ -983,6 +983,67 @@ A switch: an on/off setting that takes effect at once. The slotted text is its l
 - `input`: After pl-change, as a native switch fires it.
 - `change`: After input, as a native switch fires it.
 
+## Tabs
+
+```ts
+import "purrlucent/tabs";
+```
+
+### `<pl-tab>`
+
+One tab in a `pl-tabs`. The slot holds a short text label, optionally with an svg icon. The tab sets `slot="tab"` on itself, so it joins the tab list without the attribute. Its `value` names the `pl-tab-panel` it shows.
+
+| Attribute  | Type      | Default | Description                                                                                     |
+| ---------- | --------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `value`    | `string`  | `""`    | The value the tabs report when this tab is selected. Matches the `value` of one `pl-tab-panel`. |
+| `disabled` | `boolean` | `false` | This tab takes no focus and cannot be selected; arrows and Tab skip it.                         |
+| `selected` | `boolean` | `false` | Set by the tabs: the user chooses a tab, they do not set this.                                  |
+
+**Slots**
+
+- default: The tab's text label, optionally with an svg icon.
+
+**Parts**
+
+- `label`: The wrapper around the label.
+
+### `<pl-tab-panel>`
+
+The content one tab shows. It is visible only while the tab with the same `value` is selected. It is a tab stop, so a keyboard user can move from the tab into the content.
+
+| Attribute | Type     | Default | Description                                      |
+| --------- | -------- | ------- | ------------------------------------------------ |
+| `value`   | `string` | `""`    | The value of the `pl-tab` that shows this panel. |
+
+**Slots**
+
+- default: The panel's content.
+
+### `<pl-tabs>`
+
+Tabs switch between panels of content in one place, as the APG tabs pattern with automatic activation: moving focus to a tab shows its panel. Tab enters on the selected tab, and the arrow keys, Home and End move between tabs and wrap. Horizontal tabs use Left and Right (mirrored under `dir="rtl"`); vertical tabs use Up and Down. Always set `label` (or `aria-label`): without either the tab list has no accessible name. Use tabs to switch between panels of one view; to pick a value, use a toggle group, and for the sections of an app use a sidebar.
+
+| Attribute     | Type                         | Default        | Description                                                                                             |
+| ------------- | ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
+| `value`       | `string`                     | `""`           | The value of the selected tab. Defaults to the first enabled tab; a value no tab has selects the first. |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`.                                                                   |
+| `label`       | `string`                     | `""`           | The accessible name of the tab list.                                                                    |
+
+**Slots**
+
+- default: `pl-tab-panel` elements. `pl-tab` elements go in the tab list on their own.
+
+**Parts**
+
+- `list`: The tab list.
+- `panels`: The wrapper around the panels.
+
+**Events**
+
+- `pl-change`: The user selected a tab. `detail.value` is the new value. A change to `value` from code does not fire it.
+- `input`: After pl-change, as a native control fires it.
+- `change`: After input, as a native control fires it.
+
 ## Textarea
 
 ```ts

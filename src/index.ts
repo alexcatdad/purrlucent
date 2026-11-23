@@ -29,6 +29,7 @@ export * from "./components/skeleton/skeleton.ts";
 export * from "./components/slider/slider.ts";
 export * from "./components/spinner/spinner.ts";
 export * from "./components/switch/switch.ts";
+export * from "./components/tabs/tabs.ts";
 export * from "./components/textarea/textarea.ts";
 export * from "./components/toggle/toggle.ts";
 export * from "./components/toggle-group/toggle-group.ts";
