@@ -3,6 +3,7 @@ import { html } from "lit";
 import { userEvent } from "storybook/test";
 import "./date-picker.ts";
 import type { PlDatePicker } from "./date-picker.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
   title: "Forms/Date Picker",
@@ -38,6 +39,17 @@ export const Empty: Story = {
       html`<pl-date-picker id="picker" locale="en-US" placeholder="mm/dd/yyyy"
         >Date</pl-date-picker
       >`,
+    ),
+};
+
+/** The width is the host's `inline-size`: small, medium, large and full. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-date-picker style=${style} locale="en-US" value="2026-11-18"
+          >${label}</pl-date-picker
+        >`,
     ),
 };
 

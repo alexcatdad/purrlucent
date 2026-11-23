@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./select.ts";
 import type { PlSelect } from "./select.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
   title: "Forms/Select",
@@ -52,6 +53,20 @@ export const Placeholder: Story = {
       html`<pl-select label="Apple variety" placeholder="Choose a variety"
         >${apples}</pl-select
       >`,
+    ),
+};
+
+/** The width is the host's `inline-size`: small, medium, large and full. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-select
+          style=${style}
+          label=${label}
+          placeholder="Choose a variety"
+          >${apples}</pl-select
+        >`,
     ),
 };
 
