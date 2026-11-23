@@ -957,7 +957,7 @@ A row in a conversation that is not a message: a status such as "Thinking…" or
 
 **Slots**
 
-- `icon`: A decorative icon. A `pl-spinner` marks work in progress.
+- `icon`: A decorative icon; it is given `aria-hidden="true"`. A `pl-spinner` marks work in progress.
 - default: The text.
 
 **Parts**
