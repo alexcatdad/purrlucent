@@ -66,6 +66,10 @@
       "types": "./dist/types/components/button/button.d.ts",
       "default": "./dist/button.js"
     },
+    "./button-group": {
+      "types": "./dist/types/components/button-group/button-group.d.ts",
+      "default": "./dist/button-group.js"
+    },
     "./card": {
       "types": "./dist/types/components/card/card.d.ts",
       "default": "./dist/card.js"

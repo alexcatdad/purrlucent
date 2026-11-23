@@ -8,6 +8,7 @@ export * from "./components/badge/badge.ts";
 export * from "./components/banner/banner.ts";
 export * from "./components/breadcrumb/breadcrumb.ts";
 export * from "./components/button/button.ts";
+export * from "./components/button-group/button-group.ts";
 export * from "./components/card/card.ts";
 export * from "./components/checkbox/checkbox.ts";
 export * from "./components/collapsible/collapsible.ts";
