@@ -711,7 +711,6 @@ A region with a context menu. The default slot is the region. A `pl-menu` in the
 
 **Events**
 
-- :
 - `pl-open`: The menu opened. `detail.x` and `detail.y` are the viewport point it opened at.
 - `pl-close`: The menu closed, whether by Escape, a press outside, a choice, `disabled` or script.
 - `pl-select`: An item of the menu was activated. It bubbles from the `pl-menu`; `detail.value` holds its value.
