@@ -841,6 +841,55 @@ One field border and focus ring around a `pl-input` or `pl-textarea` and the add
 
 - `shell`: The box behind the field and addons that draws the edge, fill and ring.
 
+## Input otp
+
+```ts
+import "purrlucent/input-otp";
+```
+
+### `<pl-input-otp>`
+
+A one-time code field. One native input does the editing, so typing, paste, the arrow keys, Backspace, IME and the system's one-time-code autofill (an SMS code offered above the keyboard) work as in any text field; the code is drawn as one box per character. It takes part in forms like `pl-input`: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and `required` and `pattern` set its validity. A code that is started but shorter than `length` is invalid, with a message once the field is left. Spaces and dashes are dropped, so a pasted "123 456" fills all boxes.
+
+| Attribute            | Type                   | Default     | Description                                                                               |
+| -------------------- | ---------------------- | ----------- | ----------------------------------------------------------------------------------------- |
+| `length`             | `number`               | `6`         | How many characters the code has. Defaults to 6.                                          |
+| `value`              | `string`               | `""`        | The starting value. The `value` property holds the current one.                           |
+| `label`              | `string \| undefined`  |             | The accessible name when there is no slotted label.                                       |
+| `inputmode`          | `string`               | `"numeric"` | `numeric` (default) accepts digits only; `text` accepts letters and digits.               |
+| `size`               | `"md" \| "lg" \| "xl"` | `"md"`      | `md` (default), `lg` or `xl`.                                                             |
+| `name`               | `string`               | `""`        | The name submitted with a form.                                                           |
+| `required`           | `boolean`              | `false`     | The form is invalid while the field is empty.                                             |
+| `readonly`           | `boolean`              | `false`     | The value can be selected but not edited.                                                 |
+| `disabled`           | `boolean`              | `false`     | No focus, nothing submitted.                                                              |
+| `pattern`            | `string \| undefined`  |             | A regular expression the whole value must match.                                          |
+| `incomplete-message` | `string \| undefined`  |             | The message shown for a code shorter than `length`. Defaults to "Enter all N characters." |
+| `_labelled`          | `boolean`              | `false`     |                                                                                           |
+| `_focused`           | `boolean`              | `false`     |                                                                                           |
+| `_start`             | `number`               | `0`         |                                                                                           |
+| `_end`               | `number`               | `0`         |                                                                                           |
+
+**Slots**
+
+- default: The visible label.
+
+**Parts**
+
+- `label`: The visible label.
+- `field`: The row of boxes.
+- `box`: One character box.
+- `control`: The native input, stretched over the boxes.
+- `message`: The icon and validation message below the field while it is invalid.
+
+**Events**
+
+- `name`:
+- `pl-input`: The value changed through editing. `detail.value` holds it.
+- `pl-change`: The value was committed (blur or Enter after an edit). `detail.value` holds it.
+- `pl-complete`: An edit left the code at `length` characters. `detail.value` holds it.
+- `input`: The native input event of the inner input, which crosses the shadow root.
+- `change`: After each pl-change, as a native input fires it.
+
 ## Item
 
 ```ts
