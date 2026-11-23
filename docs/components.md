@@ -845,6 +845,58 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 - `pl-cancel`: Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
 - `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with.
 
+## Drawer
+
+```ts
+import "purrlucent/drawer";
+```
+
+### `<pl-drawer>`
+
+A modal panel anchored to an edge of the screen. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape; focus returns to the element that had it before opening. The default `side="bottom"` is an iOS-style sheet with a grabber. It can be dragged down to dismiss, and with `detents` dragged between a medium height (half the screen) and a large one (nearly all of it). The grabber is a real button, so the same changes are available without a pointer: Enter or Space grows the sheet to its next detent and, at the largest, closes it; the Up and Down arrow keys step between detents, and Down at the smallest closes it. Its label says which. `start` and `end` are logical edges (mirrored in a right-to-left page) for a side panel such as an inspector; they have no grabber and are not dragged. There is no `top` side: Apple's guidelines show sheets rising from the bottom and panels at the sides. The accessible name is the slotted title, or `label` when there is none, and the `description` slot describes it. An element inside with `data-close="value"` closes the drawer with that return value. Entering and leaving slide from the edge; with reduced motion they do not move. The page cannot scroll while a drawer is open. Show one drawer at a time.
+
+| Attribute      | Type           | Default    | Description                                                                                                                                                      |
+| -------------- | -------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `open`         | `boolean`      | `false`    | The drawer is showing. Setting it opens the drawer modally.                                                                                                      |
+| `side`         | `PlDrawerSide` | `"bottom"` | `bottom` (default), `start` or `end`.                                                                                                                            |
+| `detents`      | `string`       | `""`       | Space-separated heights a bottom sheet can rest at: `medium`, `large` or `medium large`. Without it the sheet is as tall as its content, up to the large height. |
+| `detent`       | `Detent \| ""` | `""`       | The current detent, one of `detents`; the first when unset or not listed. Reflects dragging and the grabber.                                                     |
+| `label`        | `string`       | `""`       | The accessible name when there is no slotted title.                                                                                                              |
+| `expand-label` | `string`       | `"Expand"` | The grabber's accessible name while it grows the sheet. Defaults to `Expand`.                                                                                    |
+| `close-label`  | `string`       | `"Close"`  | The grabber's accessible name while it closes the sheet. Defaults to `Close`.                                                                                    |
+| `dismissible`  | `boolean`      | `false`    | Pressing the backdrop also asks to close.                                                                                                                        |
+| `_scrolls`     | `boolean`      | `false`    |                                                                                                                                                                  |
+
+**Slots**
+
+- `title`: The heading.
+- `description`: A short explanation under the title.
+- default: The scrolling body.
+- `footer`: `pl-button` elements, in the order they are shown.
+
+**Parts**
+
+- `dialog`: The native dialog.
+- `surface`: The panel inside it.
+- `handle`: The grabber and header, where a bottom sheet is dragged.
+- `grabber`: The grabber button.
+- `bar`: The visible bar in the grabber.
+- `header`: The title and description.
+- `body`: The scrolling content.
+- `footer`: The row of actions.
+
+**CSS properties**
+
+- `--pl-drawer-width`: The width of a `start` or `end` panel. Defaults to 320px (80 spacing units) and is capped at the viewport width minus 10 spacing units.
+
+**Events**
+
+- `name`:
+- `pl-open`: The drawer opened.
+- `pl-cancel`: Escape, the backdrop of a dismissible drawer, a drag or the grabber asked to close. Cancelable: `preventDefault()` keeps the drawer open.
+- `pl-close`: The drawer closed. `detail.returnValue` holds the value it closed with.
+- `pl-resize`: A drag, the grabber or a key moved a bottom sheet to another detent.
+
 ## Empty
 
 ```ts

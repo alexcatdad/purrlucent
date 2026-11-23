@@ -22,6 +22,7 @@ export * from "./components/context-menu/context-menu.ts";
 export * from "./components/data-table/data-table.ts";
 export * from "./components/date-picker/date-picker.ts";
 export * from "./components/dialog/dialog.ts";
+export * from "./components/drawer/drawer.ts";
 export * from "./components/empty/empty.ts";
 export * from "./components/hover-card/hover-card.ts";
 export * from "./components/input/input.ts";
