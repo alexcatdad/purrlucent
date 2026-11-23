@@ -78,7 +78,10 @@ export const fieldStyles = css`
     padding-inline: var(--_pad);
     border-radius: var(--pl-radius);
     background: var(--pl-color-input);
-    box-shadow: 0 0 0 1px var(--_edge);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow:
+      var(--pl-material-edge),
+      0 0 0 1px var(--_edge);
     outline: var(--pl-ring-width) solid transparent;
     outline-offset: var(--pl-ring-offset);
     cursor: text;
@@ -137,6 +140,7 @@ export const fieldStyles = css`
   /* Inside a pl-input-group the group draws the edge, fill and ring. */
   :host([data-grouped]) [part="field"] {
     background: none;
+    backdrop-filter: none;
     box-shadow: none;
     outline-color: transparent;
   }

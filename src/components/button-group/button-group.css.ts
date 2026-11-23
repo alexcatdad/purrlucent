@@ -23,8 +23,15 @@ export const buttonGroupStyles = css`
     flex-direction: column;
   }
 
+  /* The group, not each button, carries the light shadow of glass. */
+  :host {
+    border-radius: var(--pl-radius);
+    box-shadow: var(--pl-elevation-control);
+  }
+
   ::slotted(pl-button) {
     border-radius: 0;
+    box-shadow: none;
   }
 
   /* An icon button is round alone; in a group its outer ends stay round. */

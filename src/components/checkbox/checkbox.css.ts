@@ -56,11 +56,19 @@ export const boxStyles = css`
     margin-block-start: calc((1lh - var(--_box)) / 2);
     border-radius: var(--_r);
     background-color: var(--_off);
-    box-shadow: var(--pl-boundary);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     color: var(--pl-color-selected-foreground);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       opacity var(--pl-duration-fast) var(--pl-ease-out);
+  }
+
+  /* Increased contrast outlines the box instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    [part="box"] {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   svg {

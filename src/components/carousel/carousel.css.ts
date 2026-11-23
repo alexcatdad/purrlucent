@@ -80,9 +80,13 @@ export const carouselStyles = css`
     user-select: none;
   }
 
+  /* Under glass the arrows are capsules; solid leaves them without a fill. */
   [part="previous"],
   [part="next"] {
     border-radius: var(--pl-radius);
+    background-color: var(--pl-material-capsule);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
