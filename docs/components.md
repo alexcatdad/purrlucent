@@ -24,6 +24,28 @@ A round picture of a person. When there is no `src`, or the image fails to load,
 - `image`: The picture.
 - `initials`: The fallback initials.
 
+## Badge
+
+```ts
+import "purrlucent/badge";
+```
+
+### `<pl-badge>`
+
+A small label for a count or a status. It is presentational and takes no focus. The text always carries the meaning, so a status badge says its status in words; the variant only adds color. Put a count in context in the surrounding text, for example "Inbox" before a badge reading "3".
+
+| Attribute | Type                                     | Default     | Description                                     |
+| --------- | ---------------------------------------- | ----------- | ----------------------------------------------- |
+| `variant` | `"neutral" \| "accent" \| "destructive"` | `"neutral"` | `neutral` (default), `accent` or `destructive`. |
+
+**Slots**
+
+- default: The badge text.
+
+**Parts**
+
+- `label`: The text.
+
 ## Banner
 
 ```ts
@@ -272,6 +294,24 @@ A single-line text field. A native input inside does the editing, so typing, sel
 - `pl-change`: The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change, as a native input fires it.
+
+## Kbd
+
+```ts
+import "purrlucent/kbd";
+```
+
+### `<pl-kbd>`
+
+A key or a shortcut, shown in a keycap style. It is presentational: it takes no focus and does nothing when pressed. Write a shortcut as symbols with the modifiers in the order Control, Option, Shift, Command and the key last, for example `⌃⌥⇧⌘K`, or use one element for each key.
+
+**Slots**
+
+- default: The key text, for example `⌘K` or `Esc`.
+
+**Parts**
+
+- `key`: The `kbd` element.
 
 ## Menu
 
@@ -546,6 +586,21 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 - `pl-change`: The user chose another option. `detail.value` holds its value.
 - `input`: After pl-change, as a native select fires it.
 - `change`: After input, as a native select fires it.
+
+## Separator
+
+```ts
+import "purrlucent/separator";
+```
+
+### `<pl-separator>`
+
+A hairline rule between groups of content. By default it is decoration and assistive technology skips it (`role="none"`). Set `semantic` when it divides content that a screen reader user should know is divided; it then has `role="separator"` and `aria-orientation`.
+
+| Attribute     | Type                         | Default        | Description                                                                                   |
+| ------------- | ---------------------------- | -------------- | --------------------------------------------------------------------------------------------- |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`. A vertical rule fills the height of a flex or grid row. |
+| `semantic`    | `boolean`                    | `false`        | Expose it as a separator instead of hiding it from assistive technology.                      |
 
 ## Sidebar
 

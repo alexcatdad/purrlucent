@@ -40,3 +40,9 @@
   check: automated
   test: src/behaviors/roving-focus.test.ts > arrow keys move focus in the orientation
   layer: behaviors
+- id: keyboards/9
+  source: https://developer.apple.com/design/human-interface-guidelines/keyboards
+  rule: A shortcut shown in the interface lists its modifiers in the order Control, Option, Shift, Command, with the key last.
+  check: automated
+  test: src/components/kbd/kbd.e2e.ts > a shortcut keeps modifiers in the order Control, Option, Shift, Command
+  layer: components

@@ -38,6 +38,10 @@
       "types": "./dist/types/components/avatar/avatar.d.ts",
       "default": "./dist/avatar.js"
     },
+    "./badge": {
+      "types": "./dist/types/components/badge/badge.d.ts",
+      "default": "./dist/badge.js"
+    },
     "./banner": {
       "types": "./dist/types/components/banner/banner.d.ts",
       "default": "./dist/banner.js"
@@ -62,6 +66,10 @@
       "types": "./dist/types/components/input/input.d.ts",
       "default": "./dist/input.js"
     },
+    "./kbd": {
+      "types": "./dist/types/components/kbd/kbd.d.ts",
+      "default": "./dist/kbd.js"
+    },
     "./menu": {
       "types": "./dist/types/components/menu/menu.d.ts",
       "default": "./dist/menu.js"
@@ -85,6 +93,10 @@
     "./select": {
       "types": "./dist/types/components/select/select.d.ts",
       "default": "./dist/select.js"
+    },
+    "./separator": {
+      "types": "./dist/types/components/separator/separator.d.ts",
+      "default": "./dist/separator.js"
     },
     "./sidebar": {
       "types": "./dist/types/components/sidebar/sidebar.d.ts",
