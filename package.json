@@ -114,6 +114,10 @@
       "types": "./dist/types/components/empty/empty.d.ts",
       "default": "./dist/empty.js"
     },
+    "./hover-card": {
+      "types": "./dist/types/components/hover-card/hover-card.d.ts",
+      "default": "./dist/hover-card.js"
+    },
     "./input": {
       "types": "./dist/types/components/input/input.d.ts",
       "default": "./dist/input.js"

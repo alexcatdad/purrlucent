@@ -687,6 +687,41 @@ An empty state: an optional icon, a title, a description and an action. Say what
 - `text`: The title and description.
 - `action`: The action row.
 
+## Hover card
+
+```ts
+import "purrlucent/hover-card";
+```
+
+### `<pl-hover-card>`
+
+Supplementary content that previews what its trigger points at: a floating card anchored to the trigger. It opens after a short delay when the pointer rests on the trigger or keyboard focus reaches it, and at once on a press. On a touch screen a first tap on the trigger opens it instead of activating the trigger; a tap while it is open activates the trigger as usual. It stays open while the pointer or focus is on the trigger or inside the card, and closes after a short delay when both have left, on Escape (focus that was in the card returns to the trigger) and on a press outside. Nothing is reachable only by hover, but the card is supplementary: what it says must also be available without it, and it never holds the only way to do something. The element sets `aria-expanded` on the trigger. The card is a group, named by `label` when you give one, in the reading order right after the trigger: an id reference cannot reach into a shadow root, so the trigger is not given `aria-describedby`.
+
+| Attribute   | Type                                    | Default    | Description                                                                                                                                       |
+| ----------- | --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`     | `string`                                | `""`       | The card's accessible name. Optional.                                                                                                             |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the card opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                            |
+| `open`      | `boolean`                               | `false`    | The card is showing. Opening it closes any other open hover card in the same document or shadow root, except one that holds it or sits inside it. |
+
+**Slots**
+
+- default: The card's content.
+- `trigger`: The control or link the card is about.
+
+**Parts**
+
+- `panel`: The floating card.
+- `arrow`: The arrow pointing at the trigger.
+
+**CSS properties**
+
+- `--pl-hover-card-open-delay`: How long the pointer or focus must rest on the trigger before the card opens. Default `700ms`.
+- `--pl-hover-card-close-delay`: How long the card waits after the pointer and focus have both left before it closes. Default `300ms`.
+
+**Events**
+
+- `pl-toggle`: The card opened or closed. `detail.open` says which.
+
 ## Input
 
 ```ts
