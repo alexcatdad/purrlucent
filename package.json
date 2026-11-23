@@ -58,6 +58,10 @@
       "types": "./dist/types/components/banner/banner.d.ts",
       "default": "./dist/banner.js"
     },
+    "./breadcrumb": {
+      "types": "./dist/types/components/breadcrumb/breadcrumb.d.ts",
+      "default": "./dist/breadcrumb.js"
+    },
     "./button": {
       "types": "./dist/types/components/button/button.d.ts",
       "default": "./dist/button.js"
