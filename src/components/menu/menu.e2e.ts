@@ -3,6 +3,11 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
+import {
+  compositeOver,
+  contrast,
+  resolveColors,
+} from "../../../e2e/helpers/color.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `menus-menu--${name}`;
@@ -480,6 +485,32 @@ test("the focus ring and the highlight stay visible under forced colors", async 
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("open")));
+});
+
+test("submenu text meets contrast", async ({ page }) => {
+  for (const theme of ["light", "dark"])
+    for (const material of ["solid", "glass"]) {
+      await gotoStory(
+        page,
+        story("submenu"),
+        `material:${material};theme:${theme}`,
+      );
+      await expect(menu(page, "Find")).toBeVisible();
+      // A row that is not highlighted; the submenu's second row has focus.
+      const row = item(page, "Find…");
+      const text = await row.evaluate((el) => getComputedStyle(el).color);
+      const { page: base, text: ink } = await resolveColors(page, {
+        page: "var(--pl-color-background)",
+        text,
+      });
+      const [surface] = await compositeOver(page, "var(--pl-material-panel)", [
+        `rgb(${base!.join(",")})`,
+      ]);
+      expect(
+        contrast(ink!, surface!),
+        `${material} ${theme}`,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
 });
 
 test("virtual screen reader speaks the items of the open menu", async ({

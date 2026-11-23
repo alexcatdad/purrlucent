@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
 import "./card.ts";
+import { isolate } from "../../../.storybook/isolate.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
@@ -18,17 +19,20 @@ const frame = (content: unknown) =>
     ${content}
   </div>`;
 
-const full = html`<pl-card>
-  <strong slot="title">Team plan</strong>
-  <span slot="description">Billed every month.</span>
-  <pl-button slot="actions">Edit</pl-button>
-  Five members share this plan. Each member can create projects and invite
-  guests.
-  <pl-button slot="footer">Cancel plan</pl-button>
-  <pl-button slot="footer" variant="primary">Add member</pl-button>
-</pl-card>`;
+const full = (rtl = false) =>
+  html`<pl-card>
+    <strong slot="title">Team plan</strong>
+    <span slot="description">${isolate(rtl, "Billed every month.")}</span>
+    <pl-button slot="actions">Edit</pl-button>
+    ${isolate(
+      rtl,
+      "Five members share this plan. Each member can create projects and invite guests.",
+    )}
+    <pl-button slot="footer">Cancel plan</pl-button>
+    <pl-button slot="footer" variant="primary">Add member</pl-button>
+  </pl-card>`;
 
-export const Default: Story = { render: () => frame(full) };
+export const Default: Story = { render: () => frame(full()) };
 
 /** Sections with nothing in them are hidden and add no padding. */
 export const ContentOnly: Story = {
@@ -47,12 +51,12 @@ export const HeaderOnly: Story = {
 };
 
 export const Rtl: Story = {
-  render: () => frame(full),
+  render: () => frame(full(true)),
   globals: { dir: "rtl" },
 };
 
 /** The card is a content surface, so glass leaves it solid. */
 export const Glass: Story = {
-  render: () => underGlass(frame(full)),
+  render: () => underGlass(frame(full())),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

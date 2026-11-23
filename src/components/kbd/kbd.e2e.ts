@@ -57,6 +57,26 @@ test("under rtl the key keeps its own text order", async ({ page }) => {
   await expect(page.locator("#key")).toHaveText("⌘K");
 });
 
+test("kbd rtl reads ⌘K", async ({ page }) => {
+  await gotoStory(page, story("rtl"));
+  const key = page.locator("#key");
+  expect(
+    await key.locator("kbd").evaluate((el) => getComputedStyle(el).direction),
+  ).toBe("ltr");
+  // ⌘ is drawn left of K.
+  const [command, letter] = await key.evaluate((el) => {
+    const text = el.firstChild as Text;
+    const left = (at: number) => {
+      const range = document.createRange();
+      range.setStart(text, at);
+      range.setEnd(text, at + 1);
+      return range.getBoundingClientRect().left;
+    };
+    return [left(0), left(1)];
+  });
+  expect(command).toBeLessThan(letter!);
+});
+
 test("the keycap keeps its edge under forced colors", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });

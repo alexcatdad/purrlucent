@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html, nothing } from "lit";
 import { expect, userEvent } from "storybook/test";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "../button/button.ts";
 import "./drawer.ts";
 import type { PlDrawer } from "./drawer.ts";
@@ -64,11 +65,15 @@ const detents = (detent?: string) =>
     ${footer}
   </pl-drawer>`;
 
-const panel = (side: string) =>
+const panel = (side: string, rtl = false) =>
   html`<pl-drawer id="drawer" side=${side} dismissible>
     <h2 slot="title">Inspector</h2>
-    <p slot="description" style="margin:0">Details of the selected photo.</p>
-    <p style="margin:0">Taken on 4 June 2026, 12 megapixels.</p>
+    <p slot="description" style="margin:0">
+      ${isolate(rtl, "Details of the selected photo.")}
+    </p>
+    <p style="margin:0">
+      ${isolate(rtl, "Taken on 4 June 2026, 12 megapixels.")}
+    </p>
     <pl-button slot="footer" data-close="done">Done</pl-button>
   </pl-drawer>`;
 
@@ -131,7 +136,7 @@ export const OpenEnd: Story = {
 };
 
 export const Rtl: Story = {
-  render: () => scene("Show inspector", panel("start")),
+  render: () => scene("Show inspector", panel("start", true)),
   play: open,
   globals: { dir: "rtl" },
 };

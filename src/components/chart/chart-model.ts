@@ -38,6 +38,8 @@ export interface ChartSpec {
   format?: ((value: number) => string) | undefined;
   /** Axis text size in pixels, read from the host's computed font. */
   fontSize?: number | undefined;
+  /** Right to left: the categories run from the right and the value axis sits on the right. */
+  rtl?: boolean | undefined;
   /** No animation, whatever the definition says. */
   reducedMotion?: boolean | undefined;
 }
@@ -182,6 +184,7 @@ export function buildDefinition(spec: ChartSpec): ChartDefinition {
   }
 
   const x = {
+    ...(spec.rtl ? { reverse: true } : {}),
     scale: () =>
       spec.type === "bar"
         ? scaleBand<string>().padding(0.2)
@@ -192,6 +195,7 @@ export function buildDefinition(spec: ChartSpec): ChartDefinition {
     },
   };
   const y = {
+    ...(spec.rtl ? { side: "right" } : {}),
     scale: scaleLinear,
     nice: true,
     grid: true,

@@ -47,9 +47,15 @@ export const menuStyles = css`
     transition: opacity var(--pl-duration) var(--pl-ease-out);
   }
 
+  /* A submenu sits inside its parent's popup, which is a backdrop root: a glass
+     panel would blur nothing but the parent's own row text. The panel material
+     stays on top of an opaque page color so the rows keep their contrast. */
   :host([slot="submenu"]) [part="menu"] {
     min-inline-size: 0;
     margin: 0;
+    background:
+      linear-gradient(var(--pl-material-panel) 0 0), var(--pl-color-background);
+    backdrop-filter: none;
   }
 
   /* Entry only: nothing waits for an exit animation to end. */
@@ -60,7 +66,8 @@ export const menuStyles = css`
   }
 
   @media (forced-colors: active) {
-    [part="menu"] {
+    [part="menu"],
+    :host([slot="submenu"]) [part="menu"] {
       border: 1px solid CanvasText;
       background: Canvas;
       color: CanvasText;

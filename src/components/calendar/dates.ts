@@ -121,15 +121,25 @@ function layout(locale: string) {
   };
 }
 
-/** An ISO day as the locale writes it, for the text field. */
+/** An ISO day as the locale writes it, in its own digits, for the text field. */
 export function formatDay(iso: string, locale: string) {
-  return dayFormat(locale, {
-    numberingSystem: "latn",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(parseIso(iso)!);
+  return dayFormat(locale, {}).format(parseIso(iso)!);
 }
+
+/** The text with the locale's own digits written as Latin ones. */
+function latinDigits(text: string, locale: string) {
+  const numbers = new Intl.NumberFormat(locale, { useGrouping: false });
+  const own = new Map(
+    Array.from({ length: 10 }, (_, i) => [numbers.format(i), String(i)]),
+  );
+  return text.replace(/\p{Nd}/gu, (digit) => own.get(digit) ?? digit);
+}
+
+/** The day number of a cell as the locale writes it, without a suffix such as the Japanese 日. */
+export const dayNumber = (iso: string, locale: string) =>
+  dayFormat(locale, { day: "numeric" })
+    .formatToParts(parseIso(iso)!)
+    .find((part) => part.type === "day")!.value;
 
 /**
  * Reads typed text as an ISO day: ISO itself, or three numbers in the order the
@@ -138,10 +148,10 @@ export function formatDay(iso: string, locale: string) {
  * a real day.
  */
 export function parseTyped(text: string, locale: string) {
-  const typed = text.trim();
+  const typed = latinDigits(text.trim(), locale);
   if (parseIso(typed) !== undefined) return typed;
   const numbers = typed.match(/\d+/g);
-  if (!numbers || numbers.length !== 3 || /[^\d\s./\-,‎‏]/.test(typed))
+  if (!numbers || numbers.length !== 3 || /[^\d\s./\-,‎‏؜]/.test(typed))
     return undefined;
   const { order } = layout(locale);
   const at = (kind: "day" | "month" | "year") => numbers[order.indexOf(kind)]!;

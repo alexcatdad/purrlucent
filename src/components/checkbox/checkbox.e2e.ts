@@ -4,6 +4,11 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
+import {
+  compositeOver,
+  contrast,
+  resolveColors,
+} from "../../../e2e/helpers/color.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `forms-checkbox--${name}`;
@@ -306,6 +311,33 @@ test("virtual screen reader speaks the role, name and state", async ({
   expect(spoken).toContain("checkbox, Shared, not checked");
   expect(spoken).toContain("checkbox, Recents, checked");
   expect(spoken).toContain("checkbox, Tags, partially checked");
+});
+
+// Disabled controls are exempt from WCAG 1.4.11; increased contrast is the mode
+// where the disabled color is dark enough to reach 3:1, and the outline must use it.
+test("disabled unchecked checkbox border meets 3:1 non-text contrast", async ({
+  page,
+}) => {
+  for (const theme of ["light", "dark"]) {
+    await gotoStory(page, story("states"), `theme:${theme};contrast:more`);
+    const shadow = await page
+      .locator("pl-checkbox[disabled]:not([checked])")
+      .first()
+      .evaluate(
+        (el) =>
+          getComputedStyle(el.shadowRoot!.querySelector('[part="box"]')!)
+            .boxShadow,
+      );
+    const line = /^(?:rgba?|color)\([^)]*\)/.exec(shadow)?.[0];
+    expect(line, `${theme}: a 1px outline`).toBeDefined();
+    const { page: base } = await resolveColors(page, {
+      page: "var(--pl-color-background)",
+    });
+    const [outline] = await compositeOver(page, line!, [
+      `rgb(${base!.join(",")})`,
+    ]);
+    expect(contrast(outline!, base!), theme).toBeGreaterThanOrEqual(3);
+  }
 });
 
 test.describe("coarse pointer on a wide screen", () => {

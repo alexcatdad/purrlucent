@@ -106,6 +106,7 @@ export const calendarStyles = css`
     cursor: default;
     font-variant-numeric: tabular-nums;
     text-align: center;
+    white-space: nowrap;
     user-select: none;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
