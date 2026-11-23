@@ -199,7 +199,8 @@ export async function ignoresSpacing(page: Page): Promise<string[]> {
         );
         return {
           tag: el.localName,
-          shown: r.width > 0 && r.height > 0,
+          // A one-pixel hairline is the house exception to the spacing base.
+          shown: r.width > 1 && r.height > 1,
           size: `${r.width.toFixed(1)}x${r.height.toFixed(1)} ${inner.join(" ")}`,
         };
       });

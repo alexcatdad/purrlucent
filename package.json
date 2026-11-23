@@ -34,6 +34,10 @@
       "types": "./dist/types/surfaces/surfaces.css.d.ts",
       "default": "./dist/surfaces.js"
     },
+    "./badge": {
+      "types": "./dist/types/components/badge/badge.d.ts",
+      "default": "./dist/badge.js"
+    },
     "./banner": {
       "types": "./dist/types/components/banner/banner.d.ts",
       "default": "./dist/banner.js"
@@ -70,6 +74,10 @@
       "types": "./dist/types/components/item/item.d.ts",
       "default": "./dist/item.js"
     },
+    "./kbd": {
+      "types": "./dist/types/components/kbd/kbd.d.ts",
+      "default": "./dist/kbd.js"
+    },
     "./menu": {
       "types": "./dist/types/components/menu/menu.d.ts",
       "default": "./dist/menu.js"
@@ -93,6 +101,10 @@
     "./select": {
       "types": "./dist/types/components/select/select.d.ts",
       "default": "./dist/select.js"
+    },
+    "./separator": {
+      "types": "./dist/types/components/separator/separator.d.ts",
+      "default": "./dist/separator.js"
     },
     "./sidebar": {
       "types": "./dist/types/components/sidebar/sidebar.d.ts",

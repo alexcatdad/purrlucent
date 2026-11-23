@@ -3,9 +3,9 @@ name: purrlucent
 description: Use purrlucent's pl-* web components in an app. Use when adding, migrating to, styling, testing or upgrading pl-* elements, or when a task touches a purrlucent import.
 ---
 
-ALWAYS read components.md, react.md and install.md beside this file before using an element; they match the installed version
-NEVER guess an attribute, event, slot, part or method: look it up in components.md
-IF the package is missing: install from the GitHub Release URL in install.md; it is not on the npm registry
+ALWAYS read references/components.md, references/react.md and references/install.md before using an element
+NEVER guess an attribute, event, slot, part or method: look it up in references/components.md
+IF the package is missing: install from the GitHub Release URL in references/install.md; it is not on the npm registry
 IF npm 12 or later: add allow-remote=root to the project's .npmrc first
 IF upgrading: change the version in the URL
 DO import purrlucent/tokens.css once and each component's path (purrlucent/button) once, in the app entry; child elements come with their parent (pl-option with purrlucent/select)
@@ -19,7 +19,7 @@ IF react-hook-form: spread register() on the element as on a native input; pl-ch
 IF setting value/checked from code: no event fires; update app state yourself
 IF calling a method (dialog show/close, popover show/hide, menu showAt/hide): use a ref to the element
 NEVER wrap pl-* elements in React components only to rename props or events
-FOR EACH element: give it the accessible name components.md asks for: slotted text (button, checkbox, switch, radio, toggle, input, textarea, number-field), slot="label" (select, combobox), label attribute (radio-group, toggle-group, slider, progress, spinner, popover, toolbar, sidebar, dialog); icon-only: aria-label
+FOR EACH element: give it the accessible name references/components.md asks for: slotted text (button, checkbox, switch, radio, toggle, input, textarea, number-field), slot="label" (select, combobox), label attribute (radio-group, toggle-group, slider, progress, spinner, popover, toolbar, sidebar, dialog); icon-only: aria-label
 IF forms: put controls in a native <form>; they submit name and value, reset and validate like native inputs
 IF styling: --pl-* tokens first, ::part() second; NEVER style shadow DOM internals another way
 NEVER lower text contrast with a token override; the contrast checks cover only the defaults
@@ -29,4 +29,4 @@ IF purrlucent has no element for a need: keep the native element or the existing
 IF testing pl-* elements: run in a real browser (Vitest browser mode, Playwright); NEVER jsdom/happy-dom for form controls
 IF a test reads an element right after creating it: await el.updateComplete
 IF server rendering: render pl-* elements on the client only
-IF an element misbehaves: check the version's components.md first; then report it on the purrlucent repo's issues
+IF an element misbehaves: check references/components.md first; then report it on the purrlucent repo's issues
