@@ -1,0 +1,35 @@
+- id: lists-and-tables/1
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: A row leads with a short title, and secondary detail sits under it in a quieter style.
+  check: rubric
+  layer: components
+- id: lists-and-tables/2
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: A row that navigates is one target across its full width, with a single tab stop.
+  check: automated
+  test: src/components/item/item.e2e.ts > a click anywhere on the row follows the link
+  layer: components
+- id: lists-and-tables/3
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Controls inside a row stay separate targets and do not trigger the row.
+  check: automated
+  test: src/components/item/item.e2e.ts > clicking the button does not follow the link
+  layer: components
+- id: lists-and-tables/4
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: A row is at least as tall as the minimum touch target.
+  check: automated
+  test: src/components/item/item.e2e.ts > the row is at least the minimum target height
+  layer: components
+- id: lists-and-tables/5
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Leading media comes first and trailing controls last, mirrored in right-to-left layouts.
+  check: automated
+  test: src/components/item/item.e2e.ts > under rtl the media sits at the right edge
+  layer: components
+- id: lists-and-tables/6
+  source: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables
+  rule: Row text wraps instead of being cut off, so larger text sizes stay readable.
+  check: automated
+  test: src/components/item/item.e2e.ts > long text wraps without horizontal overflow at 200% text zoom
+  layer: components
