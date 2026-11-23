@@ -259,6 +259,27 @@ class SignInDemo extends LitElement {
         >We sent a 6-digit code to ${this.email || "your email"}.</span
       >
       <form novalidate @submit=${this.#verify}>
+        <!-- Above the code field: the field's own message, shown when it
+             loses focus, would otherwise push this button from under the
+             pointer that is pressing it. -->
+        <div class="resend">
+          <pl-button
+            variant="ghost"
+            ?disabled=${this.left > 0}
+            @click=${this.#resend}
+            >Send a new code</pl-button
+          >
+          <p class="hint">
+            <span role="status"
+              >${this.resent ? "A new code is on its way." : ""}</span
+            >
+            ${
+              this.left > 0
+                ? html`<span>You can ask for another in ${this.left}s.</span>`
+                : ""
+            }
+          </p>
+        </div>
         <pl-input-otp
           length="6"
           name="code"
@@ -272,23 +293,7 @@ class SignInDemo extends LitElement {
           <pl-button type="submit" variant="primary" size="lg"
             >Verify</pl-button
           >
-          <pl-button
-            variant="ghost"
-            ?disabled=${this.left > 0}
-            @click=${this.#resend}
-            >Send a new code</pl-button
-          >
         </div>
-        <p class="hint">
-          <span role="status"
-            >${this.resent ? "A new code is on its way." : ""}</span
-          >
-          ${
-            this.left > 0
-              ? html`<span>You can ask for another in ${this.left}s.</span>`
-              : ""
-          }
-        </p>
       </form>
     </pl-card>`;
   }
@@ -330,6 +335,13 @@ class SignInDemo extends LitElement {
 
     .actions {
       display: grid;
+      gap: var(--pl-gap-controls);
+    }
+
+    .resend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
       gap: var(--pl-gap-controls);
     }
 
