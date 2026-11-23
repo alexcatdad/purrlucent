@@ -57,6 +57,96 @@ const GLASS: {
     solidStory: "dialogs-hover-card--open",
     surface: (root) => root.locator("pl-hover-card [part=panel]"),
   },
+  {
+    story: "actions-button--glass",
+    solidStory: "actions-button--default",
+    surface: (root) => root.locator("pl-button"),
+  },
+  {
+    story: "actions-button-group--glass",
+    solidStory: "actions-button-group--default",
+    surface: (root) => root.locator("pl-button-group pl-button"),
+  },
+  {
+    story: "actions-toggle--glass",
+    solidStory: "actions-toggle--default",
+    surface: (root) => root.locator("pl-toggle"),
+  },
+  {
+    story: "actions-toggle-group--glass",
+    solidStory: "actions-toggle-group--default",
+    surface: (root) => root.locator("pl-toggle-group"),
+  },
+  {
+    story: "forms-switch--glass",
+    solidStory: "forms-switch--default",
+    surface: (root) => root.locator("pl-switch [part=track]"),
+  },
+  {
+    story: "forms-slider--glass",
+    solidStory: "forms-slider--default",
+    surface: (root) => root.locator("pl-slider [part=track]"),
+  },
+  {
+    story: "forms-checkbox--glass",
+    solidStory: "forms-checkbox--default",
+    surface: (root) => root.locator("pl-checkbox [part=box]"),
+  },
+  {
+    story: "forms-radio-group--glass",
+    solidStory: "forms-radio-group--default",
+    surface: (root) => root.locator("pl-radio [part=box]"),
+  },
+  {
+    story: "forms-input--glass",
+    solidStory: "forms-input--default",
+    surface: (root) => root.locator("pl-input [part=field]"),
+  },
+  {
+    story: "forms-text-area--glass",
+    solidStory: "forms-text-area--default",
+    surface: (root) => root.locator("pl-textarea [part=field]"),
+  },
+  {
+    story: "forms-select--glass",
+    solidStory: "forms-select--default",
+    surface: (root) => root.locator("pl-select [part=trigger]"),
+  },
+  {
+    story: "forms-combobox--glass",
+    solidStory: "forms-combobox--default",
+    surface: (root) => root.locator("pl-combobox [part=field]"),
+  },
+  {
+    story: "forms-number-field--glass",
+    solidStory: "forms-number-field--default",
+    surface: (root) => root.locator("pl-number-field [part=field]"),
+  },
+  {
+    story: "forms-date-picker--glass",
+    solidStory: "forms-date-picker--default",
+    surface: (root) => root.locator("pl-date-picker [part=field]"),
+  },
+  {
+    story: "forms-input-otp--glass",
+    solidStory: "forms-input-otp--default",
+    surface: (root) => root.locator("pl-input-otp [part=box]"),
+  },
+  {
+    story: "ai-chat-prompt-input--glass",
+    solidStory: "ai-chat-prompt-input--default",
+    surface: (root) => root.locator("pl-prompt-input [part=shell]"),
+  },
+  {
+    story: "ai-chat-message-scroller--glass",
+    solidStory: "ai-chat-message-scroller--default",
+    surface: (root) => root.locator("pl-message-scroller-button pl-button"),
+  },
+  {
+    story: "containers-carousel--glass",
+    solidStory: "containers-carousel--default",
+    surface: (root) => root.locator("pl-carousel [part=previous]"),
+  },
 ];
 
 // WebKit may expose only the prefixed property.

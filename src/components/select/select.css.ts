@@ -10,7 +10,7 @@ export const selectStyles = css`
     --_size: var(--pl-size-md);
     --_pad: var(--pl-pad-control);
     --_glyph: var(--pl-icon-md);
-    --_face: var(--pl-color-secondary);
+    --_face: var(--pl-material-control);
     --_face-pressed: var(--pl-color-secondary-pressed);
     --_face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
 
@@ -57,7 +57,8 @@ export const selectStyles = css`
     padding: 0;
     padding-inline-start: var(--_pad);
     background: var(--_face);
-    box-shadow: var(--pl-boundary);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: start;
@@ -65,6 +66,13 @@ export const selectStyles = css`
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);
+  }
+
+  /* Increased contrast outlines the trigger instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    [part="trigger"] {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   @media (hover: hover) {

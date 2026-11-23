@@ -19,8 +19,9 @@ export const groupStyles = css`
     max-inline-size: 100%;
     overflow: clip;
     border-radius: var(--pl-radius);
-    background-color: var(--pl-color-secondary);
-    box-shadow: var(--pl-boundary);
+    background-color: var(--pl-material-control);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
@@ -36,6 +37,13 @@ export const groupStyles = css`
     --_pad: var(--pl-pad-control-xl);
     --_sep: calc(var(--pl-spacing) * 5);
     --_min: calc(var(--pl-spacing) * 9.5);
+  }
+
+  /* Increased contrast outlines the track instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    :host {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   /* Forced colors drop the track's shadow and fill: outline it instead. */

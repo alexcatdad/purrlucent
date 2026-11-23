@@ -100,7 +100,10 @@ export const inputOtpStyles = css`
     block-size: var(--_h);
     border-radius: var(--pl-radius);
     background: var(--pl-color-input);
-    box-shadow: 0 0 0 1px var(--_edge);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow:
+      var(--pl-material-edge),
+      0 0 0 1px var(--_edge);
     outline: var(--pl-ring-width) solid transparent;
     outline-offset: var(--pl-ring-offset);
     font: 500 var(--pl-text-xl) / 1 var(--pl-font-sans);

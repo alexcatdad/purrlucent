@@ -59,8 +59,16 @@ export const switchStyles = css`
     margin-block-start: calc((var(--_row) - var(--_h)) / 2);
     border-radius: var(--pl-radius-full);
     background-color: var(--pl-color-track);
-    box-shadow: var(--pl-boundary);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
+  }
+
+  /* Increased contrast outlines the track instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    [part="track"] {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   [part="thumb"] {

@@ -57,7 +57,10 @@ export const inputGroupStyles = css`
     block-size: var(--_h);
     border-radius: var(--pl-radius);
     background: var(--pl-color-input);
-    box-shadow: 0 0 0 1px var(--_edge);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow:
+      var(--pl-material-edge),
+      0 0 0 1px var(--_edge);
     outline: var(--pl-ring-width) solid transparent;
     outline-offset: var(--pl-ring-offset);
     pointer-events: none;
@@ -115,6 +118,7 @@ export const inputGroupStyles = css`
   /* A button fills its end of the field and brings its own padding and face. */
   ::slotted(pl-button[slot]) {
     padding-block: 0;
+    box-shadow: none;
   }
 
   ::slotted(pl-button[slot="start"]) {
