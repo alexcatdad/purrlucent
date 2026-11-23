@@ -292,3 +292,111 @@ test("axe finds no violations in a sorted table", async ({ page }) => {
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await open(page));
 });
+
+const filterable = "data-data-table--filterable";
+const paginated = "data-data-table--paginated";
+
+const engineers = ["Margaret Hamilton", "Mary Jackson", "Radia Perlman"];
+
+type Table = HTMLElement & { page: number; filter: string };
+
+const setAttr = (page: Page, name: string, value = "") =>
+  page
+    .locator("#control")
+    .evaluate((el, [n, v]) => el.setAttribute(n!, v!), [name, value]);
+
+const filterField = (page: Page) =>
+  page.getByRole("searchbox", { name: "Filter" });
+
+test("filter narrows rows and resets the page", async ({ page }) => {
+  await open(page, filterable);
+  await setAttr(page, "page-size", "4");
+  await page.getByRole("button", { name: "2", exact: true }).click();
+  expect((await firstColumn(page))[0]).toBe("Mary Jackson");
+  await record(page, "pl-filter");
+  await filterField(page).fill("engineer");
+  expect(await firstColumn(page)).toEqual(engineers);
+  expect(await events(page)).toEqual([{ value: "engineer" }]);
+  expect(
+    await page.locator("#control").evaluate((el) => (el as Table).page),
+  ).toBe(1);
+});
+
+test("filter ignores case and accents", async ({ page }) => {
+  await open(page, filterable);
+  await filterField(page).fill("RENE");
+  expect(await firstColumn(page)).toEqual(["René Descartes"]);
+});
+
+test("no matches shows the empty state", async ({ page }) => {
+  await open(page, filterable);
+  await filterField(page).fill("zzz");
+  await expect(page.getByText("Nobody matches this filter.")).toBeVisible();
+  await expect(page.locator("#control tbody tr")).toHaveCount(1);
+});
+
+test("select all acts on the filtered rows", async ({ page }) => {
+  await open(page, filterable);
+  await setAttr(page, "selectable");
+  await filterField(page).fill("engineer");
+  await record(page, "pl-selection-change");
+  await page.getByRole("checkbox", { name: "Select all" }).click();
+  expect((await events(page)).at(-1)).toEqual({
+    keys: ["margaret", "mary", "radia"],
+  });
+});
+
+test("pagination moves through rows", async ({ page }) => {
+  await open(page, paginated);
+  expect(await firstColumn(page)).toHaveLength(4);
+  expect((await firstColumn(page))[0]).toBe("Ada Lovelace");
+  await record(page, "pl-page");
+  await page.getByRole("button", { name: "Next page" }).click();
+  expect((await firstColumn(page))[0]).toBe("Mary Jackson");
+  await page.getByRole("button", { name: "3", exact: true }).click();
+  expect(await firstColumn(page)).toEqual(["René Descartes"]);
+  await expect(page.getByRole("button", { name: "Next page" })).toBeDisabled();
+  expect(await events(page)).toEqual([{ page: 2 }, { page: 3 }]);
+});
+
+test("filter then page past the end clamps", async ({ page }) => {
+  await open(page, paginated);
+  await page.locator("#control").evaluate((el) => {
+    (el as Table).page = 9;
+  });
+  await expect(
+    page.getByRole("button", { name: "3", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  expect(await firstColumn(page)).toEqual(["René Descartes"]);
+  await page.locator("#control").evaluate((el) => {
+    (el as Table).filter = "engineer";
+  });
+  await expect(
+    page.getByRole("button", { name: "1", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  expect(await firstColumn(page)).toEqual(engineers);
+});
+
+test("the inner controls' events do not leave the table", async ({ page }) => {
+  await open(page, filterable);
+  await setAttr(page, "page-size", "4");
+  await page.locator("#control").evaluate((el) => {
+    const w = window as unknown as { leaked: string[] };
+    w.leaked = [];
+    for (const type of ["pl-change", "pl-input", "input", "change"])
+      el.addEventListener(type, () => w.leaked.push(type));
+  });
+  await filterField(page).fill("a");
+  await filterField(page).blur();
+  await page.getByRole("button", { name: "Next page" }).click();
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { leaked: string[] }).leaked,
+    ),
+  ).toEqual([]);
+});
+
+for (const id of [filterable, paginated])
+  test(`axe finds no violations in ${id}`, async ({ page }) => {
+    await expectAccessible(await open(page, id));
+  });
