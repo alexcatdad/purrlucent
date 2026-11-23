@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Storybook and component reference
+    url: https://alexcatdad.github.io/purrlucent/
+    about: Examples of every component and state.
+  - name: Report a security vulnerability
+    url: https://github.com/alexcatdad/purrlucent/security/policy
+    about: Report it privately, not in a public issue.

@@ -1,0 +1,32 @@
+name: HIG deviation
+description: A component looks or behaves differently from Apple's Human Interface Guidelines.
+labels: [hig]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: pl-toolbar
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: HIG page
+      description: A link to the guideline it departs from.
+      placeholder: https://developer.apple.com/design/human-interface-guidelines/toolbars
+    validations:
+      required: true
+  - type: textarea
+    id: deviation
+    attributes:
+      label: The deviation
+      description: What the guideline says, and what the component does instead. A screenshot helps.
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: HIG rule id
+      description: Optional. The matching rule in `hig/rules/`, if there is one.
+      placeholder: toolbars/3

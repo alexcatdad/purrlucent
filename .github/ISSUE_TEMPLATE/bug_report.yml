@@ -1,0 +1,72 @@
+name: Bug report
+description: A component does something it should not, or fails to do something it should.
+labels: [bug, needs repro]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      description: The element, for example `pl-select`.
+      placeholder: pl-select
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: purrlucent version
+      placeholder: "0.9.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browsers
+      description: Where it happens.
+      multiple: true
+      options:
+        - Chrome or Edge
+        - Firefox
+        - Safari
+        - Safari on iOS or iPadOS
+        - Other (say which below)
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest markup and steps that show it. A link to a CodePen, StackBlitz or repository helps.
+      placeholder: |
+        1. Render `<pl-select label="Fruit">…</pl-select>`
+        2. Press Down Arrow
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Include console errors if there are any.
+    validations:
+      required: true
+  - type: dropdown
+    id: setting
+    attributes:
+      label: Display settings in use
+      description: Many bugs only show under one of these.
+      multiple: true
+      options:
+        - Dark appearance
+        - Right-to-left text
+        - Increased contrast
+        - Forced colors (Windows High Contrast)
+        - Reduced motion
+        - Browser zoom or larger text
+        - Touch screen
+        - None of these
