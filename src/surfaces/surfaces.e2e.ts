@@ -140,11 +140,14 @@ const bodyImage = (page: Page) =>
 
 test("glass stories paint the backdrop", async ({ page }) => {
   await openStory(page, "", "foundations-surfaces--glass");
-  expect(await bodyImage(page)).toContain("radial-gradient");
+  // The decorator sets the attribute during render, after the root attaches.
+  await expect.poll(() => bodyImage(page)).toContain("radial-gradient");
 });
 
 test("solid stories do not", async ({ page }) => {
   await openStory(page);
+  // Wait for the story to render, so the read cannot pass before the decorator ran.
+  await page.locator("#bar").waitFor();
   expect(await bodyImage(page)).toBe("none");
 });
 

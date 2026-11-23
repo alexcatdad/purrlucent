@@ -25,7 +25,7 @@ export const backdrop = css`
       repeating-linear-gradient(
         45deg,
         color-mix(in srgb, var(--pl-color-foreground) 8%, transparent) 0 1px,
-        transparent 1px 24px
+        transparent 1px calc(var(--pl-spacing) * 6)
       ),
       var(--pl-color-background);
     background-attachment: fixed;
