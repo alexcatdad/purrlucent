@@ -13,50 +13,49 @@ export const dialogStyles = css`
   }
 
   dialog {
-    --_material: var(--purr-material-sheet);
-    --_filter: var(--purr-material-sheet-filter);
-    --_elevation: var(--purr-elevation-sheet);
-    --_width: var(--purr-dialog-width, calc(var(--purr-spacing) * 97.5));
-    --_icon: calc(var(--purr-spacing) * 16);
+    --_material: var(--pl-material-sheet);
+    --_filter: var(--pl-material-sheet-filter);
+    --_elevation: var(--pl-elevation-sheet);
+    --_width: var(--pl-dialog-width, calc(var(--pl-spacing) * 97.5));
+    --_icon: calc(var(--pl-spacing) * 16);
     --_scrim: light-dark(
       color-mix(
         in srgb,
         color-mix(
             in srgb,
-            var(--purr-color-oxford-navy),
-            var(--purr-color-honeydew) 63%
+            var(--pl-color-oxford-navy),
+            var(--pl-color-honeydew) 63%
           )
           60%,
         transparent
       ),
-      color-mix(in srgb, var(--purr-color-shade) 62%, transparent)
+      color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
     );
 
     box-sizing: border-box;
     inline-size: var(--_width);
-    max-inline-size: calc(100vw - var(--purr-space-8));
-    max-block-size: calc(100dvh - var(--purr-space-8));
+    max-inline-size: calc(100vw - var(--pl-space-8));
+    max-block-size: calc(100dvh - var(--pl-space-8));
     margin: auto;
     border: 0;
-    border-radius: var(--purr-radius-lg);
+    border-radius: var(--pl-radius-lg);
     padding: 0;
     background: var(--_material);
     backdrop-filter: var(--_filter);
-    box-shadow: var(--purr-material-edge), var(--_elevation);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    box-shadow: var(--pl-material-edge), var(--_elevation);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     transition:
-      opacity var(--purr-duration-slow) var(--purr-ease-out),
-      scale var(--purr-duration-slow) var(--purr-ease-out);
+      opacity var(--pl-duration-slow) var(--pl-ease-out),
+      scale var(--pl-duration-slow) var(--pl-ease-out);
   }
 
   :host([variant="alert"]) dialog {
-    --_material: var(--purr-material-panel);
-    --_filter: var(--purr-material-panel-filter);
-    --_elevation: var(--purr-elevation-panel);
-    --_width: calc(var(--purr-spacing) * 65);
-    --_icon: calc(var(--purr-spacing) * 18);
+    --_material: var(--pl-material-panel);
+    --_filter: var(--pl-material-panel-filter);
+    --_elevation: var(--pl-elevation-panel);
+    --_width: calc(var(--pl-spacing) * 65);
+    --_icon: calc(var(--pl-spacing) * 18);
   }
 
   dialog[open] {
@@ -66,7 +65,7 @@ export const dialogStyles = css`
 
   dialog::backdrop {
     background: var(--_scrim);
-    transition: opacity var(--purr-duration-slow) var(--purr-ease-out);
+    transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
 
   @starting-style {
@@ -86,24 +85,24 @@ export const dialogStyles = css`
     flex-direction: column;
     box-sizing: border-box;
     min-block-size: 0;
-    padding: var(--purr-pad-panel);
+    padding: var(--pl-pad-panel);
   }
 
   :host([variant="alert"]) [part="surface"] {
-    padding-block-start: var(--purr-space-5);
+    padding-block-start: var(--pl-space-5);
   }
 
   [part="header"] {
     display: flex;
     align-items: center;
-    gap: var(--purr-space-4);
+    gap: var(--pl-space-4);
   }
 
   :host([variant="alert"]) [part="header"] {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--purr-space-3);
-    padding-inline: var(--purr-space-1-5);
+    gap: var(--pl-space-3);
+    padding-inline: var(--pl-space-1-5);
   }
 
   ::slotted([slot="icon"]) {
@@ -112,16 +111,12 @@ export const dialogStyles = css`
     inline-size: var(--_icon);
     block-size: var(--_icon);
     padding: calc(var(--_icon) / 4);
-    border-radius: var(--purr-radius);
+    border-radius: var(--pl-radius);
     background: linear-gradient(
-      color-mix(
-        in srgb,
-        var(--purr-color-accent),
-        var(--purr-color-honeydew) 25%
-      ),
-      var(--purr-color-accent)
+      color-mix(in srgb, var(--pl-color-accent), var(--pl-color-honeydew) 25%),
+      var(--pl-color-accent)
     );
-    color: var(--purr-color-accent-foreground);
+    color: var(--pl-color-accent-foreground);
     fill: none;
     stroke: currentColor;
     stroke-width: 1.5;
@@ -136,11 +131,11 @@ export const dialogStyles = css`
 
   [part="title"] {
     font-weight: 700;
-    font-size: var(--purr-text-base);
+    font-size: var(--pl-text-base);
   }
 
   :host([variant="alert"]) [part="title"] {
-    font-size: var(--purr-text-sm);
+    font-size: var(--pl-text-sm);
   }
 
   ::slotted([slot="title"]) {
@@ -151,20 +146,20 @@ export const dialogStyles = css`
 
   [part="description"] {
     font-weight: 400;
-    font-size: var(--purr-text-xs);
+    font-size: var(--pl-text-xs);
   }
 
   ::slotted([slot="description"]) {
-    margin: var(--purr-space-1-5) 0 0;
+    margin: var(--pl-space-1-5) 0 0;
   }
 
   /* The scroll box clips, so it bleeds past the content by a focus ring. */
   [part="body"] {
-    --_bleed: var(--purr-space-1);
+    --_bleed: var(--pl-space-1);
 
     flex: 1 1 auto;
     min-block-size: 0;
-    margin: calc(var(--purr-space-5) - var(--_bleed)) calc(-1 * var(--_bleed))
+    margin: calc(var(--pl-space-5) - var(--_bleed)) calc(-1 * var(--_bleed))
       calc(-1 * var(--_bleed));
     padding: var(--_bleed);
     overflow-y: auto;
@@ -173,13 +168,13 @@ export const dialogStyles = css`
   }
 
   :host([variant="alert"]) [part="body"] {
-    margin: var(--purr-space-3) 0 0;
-    padding: 0 var(--purr-space-1-5);
+    margin: var(--pl-space-3) 0 0;
+    padding: 0 var(--pl-space-1-5);
   }
 
   [part="body"]:focus-visible {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   [part="actions"] {
@@ -188,8 +183,8 @@ export const dialogStyles = css`
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
-    gap: var(--purr-gap-controls);
-    margin-block-start: var(--purr-space-5);
+    gap: var(--pl-gap-controls);
+    margin-block-start: var(--pl-space-5);
   }
 
   /* The destructive action sits apart, at the leading edge. */
@@ -199,7 +194,7 @@ export const dialogStyles = css`
 
   :host([variant="alert"]) [part="actions"] {
     flex-wrap: nowrap;
-    margin-block-start: var(--purr-space-3);
+    margin-block-start: var(--pl-space-3);
   }
 
   :host([variant="alert"]) ::slotted([slot="actions"]) {
@@ -210,7 +205,7 @@ export const dialogStyles = css`
   :host([variant="alert"]) [part="actions"][data-stacked] {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--purr-space-1-5);
+    gap: var(--pl-space-1-5);
   }
 
   :host([variant="alert"]) [part="actions"][data-stacked] ::slotted(*) {

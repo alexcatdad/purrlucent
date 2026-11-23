@@ -1,6 +1,6 @@
 import { css } from "lit";
 
-// Bar, sidebar, panel and sheet read --purr-material-*, so glass (and its solid
+// Bar, sidebar, panel and sheet read --pl-material-*, so glass (and its solid
 // fallbacks) apply through the tokens. They carry no stroke: elevation separates
 // floating surfaces, and increased contrast turns it into a 1px outline. List rows and field shells hold content and stay solid.
 
@@ -9,17 +9,17 @@ export const barSurface = css`
   :host {
     display: block;
     box-sizing: border-box;
-    background: var(--purr-material-bar);
-    backdrop-filter: var(--purr-material-bar-filter);
-    box-shadow: var(--purr-material-edge);
-    color: var(--purr-color-foreground);
-    padding: var(--purr-space-2) var(--purr-space-4);
+    background: var(--pl-material-bar);
+    backdrop-filter: var(--pl-material-bar-filter);
+    box-shadow: var(--pl-material-edge);
+    color: var(--pl-color-foreground);
+    padding: var(--pl-space-2) var(--pl-space-4);
   }
 
   /* The content-facing edge. */
   @media (prefers-contrast: more) {
     :host {
-      border-block-end: 1px solid var(--purr-color-input-border);
+      border-block-end: 1px solid var(--pl-color-input-border);
     }
   }
 
@@ -44,12 +44,12 @@ export const sidebarSurface = css`
   :host {
     display: block;
     box-sizing: border-box;
-    background: var(--purr-material-sidebar);
-    backdrop-filter: var(--purr-material-sidebar-filter);
-    box-shadow: var(--purr-material-edge), var(--purr-elevation-panel);
-    border-radius: var(--purr-radius-lg);
-    color: var(--purr-color-foreground);
-    padding: var(--purr-space-2);
+    background: var(--pl-material-sidebar);
+    backdrop-filter: var(--pl-material-sidebar-filter);
+    box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
+    border-radius: var(--pl-radius-lg);
+    color: var(--pl-color-foreground);
+    padding: var(--pl-space-2);
   }
 
   ${forcedEdge}
@@ -60,12 +60,12 @@ export const panelSurface = css`
   :host {
     display: block;
     box-sizing: border-box;
-    background: var(--purr-material-panel);
-    backdrop-filter: var(--purr-material-panel-filter);
-    box-shadow: var(--purr-material-edge), var(--purr-elevation-panel);
-    border-radius: var(--purr-radius-lg);
-    color: var(--purr-color-foreground);
-    padding: var(--purr-space-4);
+    background: var(--pl-material-panel);
+    backdrop-filter: var(--pl-material-panel-filter);
+    box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
+    border-radius: var(--pl-radius-lg);
+    color: var(--pl-color-foreground);
+    padding: var(--pl-space-4);
   }
 
   ${forcedEdge}
@@ -76,12 +76,12 @@ export const sheetSurface = css`
   :host {
     display: block;
     box-sizing: border-box;
-    background: var(--purr-material-sheet);
-    backdrop-filter: var(--purr-material-sheet-filter);
-    box-shadow: var(--purr-material-edge), var(--purr-elevation-sheet);
-    border-radius: var(--purr-radius-lg);
-    color: var(--purr-color-foreground);
-    padding: var(--purr-space-6);
+    background: var(--pl-material-sheet);
+    backdrop-filter: var(--pl-material-sheet-filter);
+    box-shadow: var(--pl-material-edge), var(--pl-elevation-sheet);
+    border-radius: var(--pl-radius-lg);
+    color: var(--pl-color-foreground);
+    padding: var(--pl-space-6);
   }
 
   ${forcedEdge}
@@ -93,12 +93,12 @@ export const listRowSurface = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    background: var(--purr-color-background);
+    background: var(--pl-color-background);
     backdrop-filter: none;
-    border-block-end: 1px solid var(--purr-color-border);
-    color: var(--purr-color-foreground);
-    min-block-size: var(--purr-touch-min);
-    padding: var(--purr-space-2) var(--purr-space-4);
+    border-block-end: 1px solid var(--pl-color-border);
+    color: var(--pl-color-foreground);
+    min-block-size: var(--pl-touch-min);
+    padding: var(--pl-space-2) var(--pl-space-4);
   }
 `;
 
@@ -107,11 +107,11 @@ export const fieldShell = css`
   :host {
     display: block;
     box-sizing: border-box;
-    background: var(--purr-color-background);
+    background: var(--pl-color-background);
     backdrop-filter: none;
-    border: 1px solid var(--purr-color-input-border);
-    border-radius: var(--purr-radius);
-    color: var(--purr-color-foreground);
-    padding: var(--purr-space-2) var(--purr-space-3);
+    border: 1px solid var(--pl-color-input-border);
+    border-radius: var(--pl-radius);
+    color: var(--pl-color-foreground);
+    padding: var(--pl-space-2) var(--pl-space-3);
   }
 `;

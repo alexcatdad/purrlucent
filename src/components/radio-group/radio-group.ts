@@ -11,7 +11,7 @@ import { groupStyles, radioStyles } from "./radio-group.css.ts";
 const MOVES = new Set(["ArrowLeft", "ArrowRight", "Home", "End"]);
 
 /**
- * One choice in a `purr-radio-group`. The slotted text is its label and
+ * One choice in a `pl-radio-group`. The slotted text is its label and
  * accessible name.
  *
  * @attr {string} value - The value the group reports when this radio is chosen.
@@ -22,7 +22,7 @@ const MOVES = new Set(["ArrowLeft", "ArrowRight", "Home", "End"]);
  * @csspart box - The drawn circle.
  * @csspart label - The wrapper around the label.
  */
-export class PurrRadio extends LitElement {
+export class PlRadio extends LitElement {
   static override styles = [boxStyles, radioStyles];
   static override properties = {
     value: { reflect: true },
@@ -52,7 +52,7 @@ export class PurrRadio extends LitElement {
   }
 
   get #group() {
-    return this.closest("purr-radio-group");
+    return this.closest("pl-radio-group");
   }
 
   get #off() {
@@ -118,12 +118,12 @@ export class PurrRadio extends LitElement {
  * @attr {string} orientation - `vertical` (default) or `horizontal`.
  * @attr {boolean} required - The form is invalid while no radio is chosen.
  * @attr {boolean} disabled - Disables every radio: no focus, no feedback, nothing submitted.
- * @slot - `purr-radio` elements.
- * @fires purr-change - The user chose a radio. `detail.selected` is a one-item array of its value.
- * @fires input - After purr-change, as a native radio fires it.
+ * @slot - `pl-radio` elements.
+ * @fires pl-change - The user chose a radio. `detail.selected` is a one-item array of its value.
+ * @fires input - After pl-change, as a native radio fires it.
  * @fires change - After input, as a native radio fires it.
  */
-export class PurrRadioGroup extends LitElement {
+export class PlRadioGroup extends LitElement {
   static formAssociated = true;
   static override styles = groupStyles;
   static override properties = {
@@ -153,7 +153,7 @@ export class PurrRadioGroup extends LitElement {
     orientation: "horizontal",
     wrap: true,
   });
-  #radios: PurrRadio[] = [];
+  #radios: PlRadio[] = [];
   /** True while the selection is synced from `value`: not a user change. */
   #syncing = false;
 
@@ -165,18 +165,18 @@ export class PurrRadioGroup extends LitElement {
     this.orientation = "vertical";
     this.required = false;
     this.disabled = false;
-    this.addEventListener("purr-change", (event) => {
+    this.addEventListener("pl-change", (event) => {
       if (this.#syncing) return event.stopImmediatePropagation();
       const [selected] = (event as CustomEvent<{ selected: string[] }>).detail
         .selected;
       if (selected !== undefined) this.value = selected;
     });
-    this.addEventListener("purr-press", (event) => {
-      if (event.target instanceof PurrRadio) this.#choose(event.target.value);
+    this.addEventListener("pl-press", (event) => {
+      if (event.target instanceof PlRadio) this.#choose(event.target.value);
     });
   }
 
-  /** The user's choice; the native events follow purr-change, as on a native radio. */
+  /** The user's choice; the native events follow pl-change, as on a native radio. */
   #choose(value: string) {
     const before = this.value;
     this.#selection.select(value);
@@ -223,7 +223,7 @@ export class PurrRadioGroup extends LitElement {
     const enabled = this.#enabled;
     const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
     if (step && !(event.altKey || event.ctrlKey || event.metaKey)) {
-      const from = enabled.indexOf(event.target as PurrRadio);
+      const from = enabled.indexOf(event.target as PlRadio);
       if (from < 0) return;
       event.preventDefault();
       enabled[(from + step + enabled.length) % enabled.length]!.focus();
@@ -235,7 +235,7 @@ export class PurrRadioGroup extends LitElement {
   #onSlotChange = (event: Event) => {
     this.#radios = (event.target as HTMLSlotElement)
       .assignedElements()
-      .filter((el): el is PurrRadio => el instanceof PurrRadio);
+      .filter((el): el is PlRadio => el instanceof PlRadio);
     if (!this.value) this.value = this.#initial;
     this.requestUpdate();
   };
@@ -278,12 +278,12 @@ export class PurrRadioGroup extends LitElement {
   }
 }
 
-customElements.define("purr-radio", PurrRadio);
-customElements.define("purr-radio-group", PurrRadioGroup);
+customElements.define("pl-radio", PlRadio);
+customElements.define("pl-radio-group", PlRadioGroup);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-radio": PurrRadio;
-    "purr-radio-group": PurrRadioGroup;
+    "pl-radio": PlRadio;
+    "pl-radio-group": PlRadioGroup;
   }
 }

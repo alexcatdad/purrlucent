@@ -14,7 +14,7 @@ import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
 import { PopupController } from "../select/popup.ts";
 import { listboxStyles } from "../select/select.css.ts";
-import type { PurrOption } from "../select/select.ts";
+import type { PlOption } from "../select/select.ts";
 import "../select/select.ts";
 import { comboboxStyles } from "./combobox.css.ts";
 
@@ -32,9 +32,9 @@ type ActiveDescendantHost = HTMLInputElement & {
 /**
  * A text field with a list of suggestions. It follows the editable combobox
  * pattern with list autocomplete: a native input inside does the editing and
- * keeps focus, the `purr-option` children are the choices, and the list shows
+ * keeps focus, the `pl-option` children are the choices, and the list shows
  * the ones whose label matches the typed text (starting with it first, then
- * containing it). It takes part in forms like `purr-input`: it submits `name`
+ * containing it). It takes part in forms like `pl-input`: it submits `name`
  * with `value`, a form reset returns it to the option marked `selected`, and a
  * disabled fieldset disables it. A `slot="label"` element is a visible label
  * that names the field; without it, `label` becomes the accessible name, and
@@ -59,7 +59,7 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {boolean} open - The list is showing.
  * @attr {string} toggle-label - The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when the field has a label.
  * @attr {string} empty-label - The text shown when no option matches. Defaults to "No results".
- * @slot - The `purr-option` children.
+ * @slot - The `pl-option` children.
  * @slot label - The visible label.
  * @csspart label - The visible label.
  * @csspart field - The shell around the input and the button.
@@ -68,12 +68,12 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart listbox - The popup.
  * @csspart empty - The "no results" row.
  * @csspart message - The validation message below the field.
- * @fires purr-input - The text changed through typing or Escape. `detail.text` holds it.
- * @fires purr-change - The value changed. `detail.value` holds it.
- * @fires input - After each purr-input, as a native input fires it.
- * @fires change - After each purr-change.
+ * @fires pl-input - The text changed through typing or Escape. `detail.text` holds it.
+ * @fires pl-change - The value changed. `detail.value` holds it.
+ * @fires input - After each pl-input, as a native input fires it.
+ * @fires change - After each pl-change.
  */
-export class PurrCombobox extends LitElement {
+export class PlCombobox extends LitElement {
   static formAssociated = true;
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -112,7 +112,7 @@ export class PurrCombobox extends LitElement {
   declare open: boolean;
   declare toggleLabel: string;
   declare emptyLabel: string;
-  declare _active: PurrOption | null;
+  declare _active: PlOption | null;
   declare _labelled: boolean;
 
   readonly #internals = this.attachInternals();
@@ -164,11 +164,11 @@ export class PurrCombobox extends LitElement {
     return [...this.querySelectorAll(":scope > [slot=label]")];
   }
 
-  get #options(): PurrOption[] {
-    return [...this.querySelectorAll("purr-option")];
+  get #options(): PlOption[] {
+    return [...this.querySelectorAll("pl-option")];
   }
 
-  get #listed(): PurrOption[] {
+  get #listed(): PlOption[] {
     const options = this.#options;
     return filterIndexes(
       options.map((o) => o.label),
@@ -176,7 +176,7 @@ export class PurrCombobox extends LitElement {
     ).map((i) => options[i]!);
   }
 
-  get #chosen(): PurrOption | undefined {
+  get #chosen(): PlOption | undefined {
     return this.value
       ? this.#options.find((o) => o.optionValue === this.value)
       : undefined;
@@ -235,7 +235,7 @@ export class PurrCombobox extends LitElement {
     this.text = this.#chosen?.label ?? (this.allowCustom ? this.value : "");
   }
 
-  #emit(name: "purr-input" | "purr-change", detail: object) {
+  #emit(name: "pl-input" | "pl-change", detail: object) {
     this.dispatchEvent(
       new CustomEvent(name, { detail, bubbles: true, composed: true }),
     );
@@ -246,7 +246,7 @@ export class PurrCombobox extends LitElement {
     this.value = value;
     this.text = text;
     if (!changed) return;
-    this.#emit("purr-change", { value });
+    this.#emit("pl-change", { value });
     fireNative(this, "change");
   }
 
@@ -274,7 +274,7 @@ export class PurrCombobox extends LitElement {
     } else this.text = this.#chosen?.label ?? "";
   }
 
-  #choose(option: PurrOption) {
+  #choose(option: PlOption) {
     if (option.disabled) return;
     this.#setValue(option.optionValue, option.label);
     this.#hide();
@@ -287,18 +287,18 @@ export class PurrCombobox extends LitElement {
     this.#input.focus();
   }
 
-  #show(active?: PurrOption) {
+  #show(active?: PlOption) {
     this.open = true;
     this._active = active && this.#listed.includes(active) ? active : null;
   }
 
   #onClick = (event: Event) => {
-    const option = (event.target as Element).closest("purr-option");
+    const option = (event.target as Element).closest("pl-option");
     if (option) this.#choose(option);
   };
 
   #onPointerover = (event: Event) => {
-    const option = (event.target as Element).closest("purr-option");
+    const option = (event.target as Element).closest("pl-option");
     if (option && !option.disabled) this._active = option;
   };
 
@@ -312,7 +312,7 @@ export class PurrCombobox extends LitElement {
     this.text = (event.target as HTMLInputElement).value;
     this.#filtering = true;
     this.#show();
-    this.#emit("purr-input", { text: this.text });
+    this.#emit("pl-input", { text: this.text });
   };
 
   #onKeydown = (event: KeyboardEvent) => {
@@ -354,7 +354,7 @@ export class PurrCombobox extends LitElement {
         event.preventDefault();
         this.#filtering = false;
         this.#setValue("", "");
-        this.#emit("purr-input", { text: "" });
+        this.#emit("pl-input", { text: "" });
         // Typing fires the inner input's own input event; clearing does not.
         fireNative(this, "input");
       }
@@ -507,10 +507,10 @@ export class PurrCombobox extends LitElement {
   }
 }
 
-customElements.define("purr-combobox", PurrCombobox);
+customElements.define("pl-combobox", PlCombobox);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-combobox": PurrCombobox;
+    "pl-combobox": PlCombobox;
   }
 }

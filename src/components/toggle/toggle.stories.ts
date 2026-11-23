@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./toggle.ts";
-import type { PurrToggle } from "./toggle.ts";
+import type { PlToggle } from "./toggle.ts";
 
 const meta = {
   title: "Components/Toggle",
-  component: "purr-toggle",
+  component: "pl-toggle",
 } satisfies Meta;
 
 export default meta;
@@ -15,7 +15,7 @@ type Story = StoryObj;
 
 const row = (content: unknown) =>
   html`<div
-    style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--purr-space-4);padding:var(--purr-space-4)"
+    style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--pl-space-4);padding:var(--pl-space-4)"
   >
     ${content}
   </div>`;
@@ -38,17 +38,17 @@ const star = html`<svg
 </svg>`;
 
 export const Default: Story = {
-  render: () => html`<purr-toggle id="toggle">Favorite</purr-toggle>`,
+  render: () => html`<pl-toggle id="toggle">Favorite</pl-toggle>`,
 };
 
 /** Off and on, with and without an icon. */
 export const States: Story = {
   render: () =>
     row([
-      html`<purr-toggle>${star}Favorite</purr-toggle>`,
-      html`<purr-toggle pressed>${star}Favorite</purr-toggle>`,
-      html`<purr-toggle>Favorite</purr-toggle>`,
-      html`<purr-toggle pressed>Favorite</purr-toggle>`,
+      html`<pl-toggle>${star}Favorite</pl-toggle>`,
+      html`<pl-toggle pressed>${star}Favorite</pl-toggle>`,
+      html`<pl-toggle>Favorite</pl-toggle>`,
+      html`<pl-toggle pressed>Favorite</pl-toggle>`,
     ]),
 };
 
@@ -57,18 +57,18 @@ export const Sizes: Story = {
     row([
       ...sizes.map(
         (size) =>
-          html`<purr-toggle size=${size} pressed>${star}Favorite</purr-toggle>`,
+          html`<pl-toggle size=${size} pressed>${star}Favorite</pl-toggle>`,
       ),
       ...sizes.map(
         (size) =>
-          html`<purr-toggle size=${size} icon aria-label="Favorite"
-            >${star}</purr-toggle
+          html`<pl-toggle size=${size} icon aria-label="Favorite"
+            >${star}</pl-toggle
           >`,
       ),
       ...sizes.map(
         (size) =>
-          html`<purr-toggle size=${size} icon pressed aria-label="Favorite"
-            >${star}</purr-toggle
+          html`<pl-toggle size=${size} icon pressed aria-label="Favorite"
+            >${star}</pl-toggle
           >`,
       ),
     ]),
@@ -77,18 +77,18 @@ export const Sizes: Story = {
 export const Disabled: Story = {
   render: () =>
     row([
-      html`<purr-toggle disabled>${star}Favorite</purr-toggle>`,
-      html`<purr-toggle disabled pressed>${star}Favorite</purr-toggle>`,
+      html`<pl-toggle disabled>${star}Favorite</pl-toggle>`,
+      html`<pl-toggle disabled pressed>${star}Favorite</pl-toggle>`,
     ]),
 };
 
-/** A click, Enter and Space each flip the state and fire purr-change. */
+/** A click, Enter and Space each flip the state and fire pl-change. */
 export const Behavior: Story = {
-  render: () => html`<purr-toggle id="toggle">${star}Favorite</purr-toggle>`,
+  render: () => html`<pl-toggle id="toggle">${star}Favorite</pl-toggle>`,
   play: async () => {
-    const toggle = document.getElementById("toggle") as PurrToggle;
+    const toggle = document.getElementById("toggle") as PlToggle;
     const changes: boolean[] = [];
-    toggle.addEventListener("purr-change", (event) =>
+    toggle.addEventListener("pl-change", (event) =>
       changes.push((event as CustomEvent<{ pressed: boolean }>).detail.pressed),
     );
     await userEvent.click(toggle);
@@ -110,18 +110,18 @@ export const InFieldset: Story = {
     html`<fieldset
       id="fieldset"
       disabled
-      style="border:0;padding:var(--purr-space-4)"
+      style="border:0;padding:var(--pl-space-4)"
     >
-      <purr-toggle id="toggle" pressed>${star}Favorite</purr-toggle>
+      <pl-toggle id="toggle" pressed>${star}Favorite</pl-toggle>
     </fieldset>`,
 };
 
 export const Glass: Story = {
   render: () =>
     row([
-      html`<purr-toggle>${star}Favorite</purr-toggle>`,
-      html`<purr-toggle pressed>${star}Favorite</purr-toggle>`,
-      html`<purr-toggle disabled pressed>${star}Favorite</purr-toggle>`,
+      html`<pl-toggle>${star}Favorite</pl-toggle>`,
+      html`<pl-toggle pressed>${star}Favorite</pl-toggle>`,
+      html`<pl-toggle disabled pressed>${star}Favorite</pl-toggle>`,
     ]),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "rtl" },
 };

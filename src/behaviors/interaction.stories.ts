@@ -4,7 +4,7 @@ import { interactionStyles } from "./interaction.css.ts";
 import { PressableController } from "./pressable.ts";
 
 /** A bare pressable control that the interaction behaviors are tested on. */
-class PurrInteractionHost extends LitElement {
+class PlInteractionHost extends LitElement {
   static override styles = [interactionStyles];
   static override properties = { disabled: { type: Boolean, reflect: true } };
   declare disabled: boolean;
@@ -28,7 +28,7 @@ class PurrInteractionHost extends LitElement {
   }
 }
 
-customElements.define("purr-interaction-host", PurrInteractionHost);
+customElements.define("pl-interaction-host", PlInteractionHost);
 
 const meta = { title: "Behaviors/Interaction" } satisfies Meta;
 
@@ -38,5 +38,5 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () =>
-    html`<purr-interaction-host id="host">Press</purr-interaction-host>`,
+    html`<pl-interaction-host id="host">Press</pl-interaction-host>`,
 };

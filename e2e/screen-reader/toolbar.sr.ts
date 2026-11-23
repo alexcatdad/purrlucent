@@ -29,12 +29,7 @@ test("screen reader announces the toolbar and its items", async ({
     }
     spoken = (await screenReader.spokenPhraseLog()).join(" ");
   } else {
-    spoken = await walkCompositeWithArrows(
-      page,
-      screenReader,
-      "purr-toolbar",
-      4,
-    );
+    spoken = await walkCompositeWithArrows(page, screenReader, "pl-toolbar", 4);
     await traceState("arrows", page, screenReader);
   }
   for (const text of ["Document actions", "Search", "Add", "More", "Done"])

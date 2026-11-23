@@ -31,31 +31,31 @@ test("the destructive tone is an alert and the others are status", async ({
   await expect(page.getByRole("status")).toHaveCount(1);
   await expect(page.getByRole("alert")).toHaveCount(1);
   await page
-    .locator("purr-banner")
+    .locator("pl-banner")
     .first()
     .evaluate((el) => el.setAttribute("tone", "destructive"));
   await expect(page.getByRole("alert")).toHaveCount(2);
 });
 
-test("the close button hides the banner and fires purr-close once", async ({
+test("the close button hides the banner and fires pl-close once", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
   // Listening before the click, so the count cannot race it.
-  await page.locator("purr-banner").evaluate((el) => {
+  await page.locator("pl-banner").evaluate((el) => {
     const w = window as never as { closes: number };
     w.closes = 0;
-    el.addEventListener("purr-close", () => w.closes++);
+    el.addEventListener("pl-close", () => w.closes++);
   });
   await close(page).click();
-  await expect(page.locator("purr-banner")).toBeHidden();
+  await expect(page.locator("pl-banner")).toBeHidden();
   // A duplicate would follow right after the first event.
   await page.waitForTimeout(300);
   expect(
     await page.evaluate(() => (window as never as { closes: number }).closes),
   ).toBe(1);
   expect(
-    await page.locator("purr-banner").evaluate((el) => el.hasAttribute("open")),
+    await page.locator("pl-banner").evaluate((el) => el.hasAttribute("open")),
   ).toBe(false);
 });
 
@@ -63,28 +63,28 @@ test("the keyboard closes the banner", async ({ page }) => {
   await gotoStory(page, story("default"));
   await close(page).focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator("purr-banner")).toBeHidden();
+  await expect(page.locator("pl-banner")).toBeHidden();
 });
 
 test("closing with the keyboard continues the tab order after the banner", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-banner").evaluate((el) => {
+  await page.locator("pl-banner").evaluate((el) => {
     const next = document.createElement("input");
     next.setAttribute("aria-label", "Next");
     el.after(next);
   });
   await close(page).focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator("purr-banner")).toBeHidden();
+  await expect(page.locator("pl-banner")).toBeHidden();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("textbox", { name: "Next" })).toBeFocused();
 });
 
 test("an author-set role is kept", async ({ page }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-banner").evaluate((el) => {
+  await page.locator("pl-banner").evaluate((el) => {
     el.setAttribute("role", "note");
     el.setAttribute("tone", "destructive");
   });
@@ -94,7 +94,7 @@ test("an author-set role is kept", async ({ page }) => {
 /** The tone's own icon, drawn in the icon slot's fallback. */
 const toneIcon = (page: Page, i: number) =>
   page
-    .locator("purr-banner")
+    .locator("pl-banner")
     .nth(i)
     .evaluate((el) => {
       const icon = el.shadowRoot!.querySelector("slot[name=icon] > svg")!;
@@ -124,10 +124,8 @@ test("a slotted icon replaces the tone's own", async ({ page }) => {
 
 test("a banner that appears does not take focus", async ({ page }) => {
   await gotoStory(page, story("closed"));
-  await page
-    .locator("purr-banner")
-    .evaluate((el) => el.setAttribute("open", ""));
-  await expect(page.locator("purr-banner")).toBeVisible();
+  await page.locator("pl-banner").evaluate((el) => el.setAttribute("open", ""));
+  await expect(page.locator("pl-banner")).toBeVisible();
   expect(
     await page.evaluate(() => document.activeElement === document.body),
   ).toBe(true);
@@ -135,13 +133,13 @@ test("a banner that appears does not take focus", async ({ page }) => {
 
 test("a banner without open is not shown", async ({ page }) => {
   await gotoStory(page, story("closed"));
-  await expect(page.locator("purr-banner")).toBeHidden();
+  await expect(page.locator("pl-banner")).toBeHidden();
 });
 
 test("close-label names the close button", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page
-    .locator("purr-banner")
+    .locator("pl-banner")
     .evaluate((el) => el.setAttribute("close-label", "Ignorer"));
   await expect(page.getByRole("button", { name: "Ignorer" })).toBeVisible();
 });
@@ -150,7 +148,7 @@ test("actions sit under the text and take part in tab order", async ({
   page,
 }) => {
   await gotoStory(page, story("with-actions"));
-  const text = (await page.locator("purr-banner [slot=title]").boundingBox())!;
+  const text = (await page.locator("pl-banner [slot=title]").boundingBox())!;
   const later = (await page
     .getByRole("button", { name: "Later" })
     .boundingBox())!;
@@ -163,7 +161,7 @@ test("actions sit under the text and take part in tab order", async ({
 
 test("under rtl the close button sits at the left edge", async ({ page }) => {
   await gotoStory(page, story("rtl"));
-  const banner = (await page.locator("purr-banner").boundingBox())!;
+  const banner = (await page.locator("pl-banner").boundingBox())!;
   const button = (await close(page).boundingBox())!;
   expect(button.x - banner.x).toBeLessThan(banner.width / 2);
 });

@@ -42,7 +42,7 @@ test("a slotted label names the input and a click on it focuses the field", asyn
   await gotoStory(page, story("labelled"));
   const field = page.getByRole("textbox", { name: "Name" });
   await expect(field).toHaveValue("Ada");
-  await page.locator("purr-input label").click();
+  await page.locator("pl-input label").click();
   await expect(field).toBeFocused();
 });
 
@@ -51,17 +51,17 @@ test("focusing the host or clicking the shell focuses the input", async ({
 }) => {
   await gotoStory(page, story("default"));
   const field = page.getByRole("textbox", { name: "Name" });
-  await page.locator("purr-input").focus();
+  await page.locator("pl-input").focus();
   await expect(field).toBeFocused();
   await field.blur();
-  const box = (await page.locator("purr-input").boundingBox())!;
+  const box = (await page.locator("pl-input").boundingBox())!;
   await page.mouse.click(box.x + 2, box.y + box.height / 2);
   await expect(field).toBeFocused();
 });
 
 test("a value wider than the field ends in an ellipsis", async ({ page }) => {
   await gotoStory(page, story("default"));
-  const host = page.locator("purr-input");
+  const host = page.locator("pl-input");
   await host.evaluate(
     (el) => ((el as HTMLElement & { value: string }).value = "x".repeat(200)),
   );
@@ -72,14 +72,14 @@ test("a value wider than the field ends in an ellipsis", async ({ page }) => {
   );
 });
 
-test("typing edits the value and fires purr-input and purr-change", async ({
+test("typing edits the value and fires pl-input and pl-change", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-input").evaluate((el) => {
+  await page.locator("pl-input").evaluate((el) => {
     const log: string[] = [];
     (window as unknown as { log: string[] }).log = log;
-    for (const name of ["purr-input", "purr-change"])
+    for (const name of ["pl-input", "pl-change"])
       el.addEventListener(name, (event) =>
         log.push(
           `${name}:${(event as CustomEvent<{ value: string }>).detail.value}`,
@@ -90,7 +90,7 @@ test("typing edits the value and fires purr-input and purr-change", async ({
   await page.keyboard.press("Tab");
   expect(
     await page.evaluate(() => (window as unknown as { log: string[] }).log),
-  ).toEqual(["purr-input:a", "purr-input:ab", "purr-change:ab"]);
+  ).toEqual(["pl-input:a", "pl-input:ab", "pl-change:ab"]);
 });
 
 test("the focus ring is drawn on the shell", async ({ page }) => {
@@ -100,7 +100,7 @@ test("the focus ring is drawn on the shell", async ({ page }) => {
   await expect
     .poll(() =>
       page
-        .locator("purr-input")
+        .locator("pl-input")
         .evaluate(
           (el) =>
             getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
@@ -114,7 +114,7 @@ test("a search field shows its clear button only while it has text", async ({
   page,
 }) => {
   await gotoStory(page, story("search"));
-  const fields = page.locator("purr-input");
+  const fields = page.locator("pl-input");
   const clear = (i: number) => fields.nth(i).getByRole("button");
   await expect(clear(0)).toHaveCount(0);
   await expect(clear(1)).toHaveCount(1);
@@ -127,11 +127,11 @@ test("Clear empties a search field, keeps focus in it and fires the events", asy
   page,
 }) => {
   await gotoStory(page, story("search"));
-  const host = page.locator("purr-input").nth(1);
+  const host = page.locator("pl-input").nth(1);
   await host.evaluate((el) => {
     const log: string[] = [];
     (window as unknown as { log: string[] }).log = log;
-    for (const name of ["purr-input", "purr-change"])
+    for (const name of ["pl-input", "pl-change"])
       el.addEventListener(name, (event) =>
         log.push(
           `${name}:${(event as CustomEvent<{ value: string }>).detail.value}`,
@@ -145,19 +145,19 @@ test("Clear empties a search field, keeps focus in it and fires the events", asy
   await expect(host.getByRole("button")).toHaveCount(0);
   expect(
     await page.evaluate(() => (window as unknown as { log: string[] }).log),
-  ).toEqual(["purr-input:", "purr-change:"]);
+  ).toEqual(["pl-input:", "pl-change:"]);
 });
 
 test("clear-label names the clear button", async ({ page }) => {
   await gotoStory(page, story("search"));
-  const host = page.locator("purr-input").nth(1);
+  const host = page.locator("pl-input").nth(1);
   await host.evaluate((el) => el.setAttribute("clear-label", "Effacer"));
   await expect(host.getByRole("button", { name: "Effacer" })).toBeVisible();
 });
 
 test("Escape clears a search field", async ({ page }) => {
   await gotoStory(page, story("search"));
-  const field = page.locator("purr-input").nth(1).getByRole("searchbox");
+  const field = page.locator("pl-input").nth(1).getByRole("searchbox");
   await field.focus();
   await page.keyboard.press("Escape");
   await expect(field).toHaveValue("");
@@ -167,7 +167,7 @@ test("a password field masks its value in the system font", async ({
   page,
 }) => {
   await gotoStory(page, story("password"));
-  const field = page.locator("purr-input").nth(1);
+  const field = page.locator("pl-input").nth(1);
   expect(
     await field.evaluate((el) => {
       const input = el.shadowRoot!.querySelector("input")!;
@@ -180,7 +180,7 @@ test("a disabled field takes no focus", async ({ page }) => {
   await gotoStory(page, story("states"));
   const field = page.getByRole("textbox", { name: "Disabled" });
   await expect(field).toBeDisabled();
-  await page.locator("purr-input").nth(3).click({ force: true });
+  await page.locator("pl-input").nth(3).click({ force: true });
   await expect(field).not.toBeFocused();
 });
 
@@ -353,7 +353,7 @@ test("a read-only search field offers no Clear and Escape keeps its value", asyn
 }) => {
   const root = await gotoStory(page, story("search"));
   await root.evaluate((el) => {
-    const host = document.createElement("purr-input");
+    const host = document.createElement("pl-input");
     host.id = "ro";
     host.setAttribute("type", "search");
     host.setAttribute("label", "Frozen");
@@ -361,7 +361,7 @@ test("a read-only search field offers no Clear and Escape keeps its value", asyn
     host.setAttribute("readonly", "");
     el.append(host);
     (window as unknown as { fired: number }).fired = 0;
-    for (const name of ["purr-input", "purr-change"])
+    for (const name of ["pl-input", "pl-change"])
       host.addEventListener(name, () => {
         (window as unknown as { fired: number }).fired++;
       });
@@ -383,7 +383,7 @@ test("a number field takes step, min and max like a native input", async ({
   await root.evaluate((el) => {
     el.insertAdjacentHTML(
       "beforeend",
-      '<form id="f"><purr-input id="n" type="number" label="Qty" min="1" max="5" step="any"></purr-input></form>',
+      '<form id="f"><pl-input id="n" type="number" label="Qty" min="1" max="5" step="any"></pl-input></form>',
     );
   });
   const field = page.locator("#n").getByRole("spinbutton");
@@ -472,7 +472,7 @@ test("a label whose text arrives later replaces the aria-label", async ({
   await root.evaluate((el) => {
     el.insertAdjacentHTML(
       "beforeend",
-      '<purr-input id="late" label="Fallback"><span id="t"> </span></purr-input>',
+      '<pl-input id="late" label="Fallback"><span id="t"> </span></pl-input>',
     );
   });
   const input = page.locator("#late").locator("input");
@@ -486,7 +486,7 @@ test("a disabled search field keeps its end inset", async ({ page }) => {
   await root.evaluate((el) => {
     el.insertAdjacentHTML(
       "beforeend",
-      '<purr-input id="d" type="search" label="D" value="a long value" disabled></purr-input><purr-input id="c" type="search" label="C" value="x"></purr-input>',
+      '<pl-input id="d" type="search" label="D" value="a long value" disabled></pl-input><pl-input id="c" type="search" label="C" value="x"></pl-input>',
     );
   });
   const padEnd = (id: string) =>
@@ -506,7 +506,7 @@ test("a custom validity set before the first render is kept", async ({
 }) => {
   const root = await gotoStory(page, story("default"));
   const result = await root.evaluate(async (el) => {
-    const field = document.createElement("purr-input") as HTMLElement & {
+    const field = document.createElement("pl-input") as HTMLElement & {
       setCustomValidity(message: string): void;
       validity: ValidityState;
       validationMessage: string;
@@ -528,8 +528,8 @@ test("an external label names the field, even one added later", async ({
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      '<label for="ext">City <img alt="(required)"><span aria-hidden="true">*</span></label><purr-input id="ext"></purr-input><purr-input id="late"></purr-input>' +
-        '<label for="own">Ignored</label><purr-input id="own" label="Postcode"></purr-input>',
+      '<label for="ext">City <img alt="(required)"><span aria-hidden="true">*</span></label><pl-input id="ext"></pl-input><pl-input id="late"></pl-input>' +
+        '<label for="own">Ignored</label><pl-input id="own" label="Postcode"></pl-input>',
     ),
   );
   await expect(
@@ -550,7 +550,7 @@ test("an external label names the field, even one added later", async ({
 test("a search field mirrors under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const sides = await page
-    .locator("purr-input")
+    .locator("pl-input")
     .nth(1)
     .evaluate((el) => {
       const part = (name: string) =>
@@ -577,7 +577,7 @@ test("the field keeps a border under forced colors and a ring on focus", async (
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });
   await page.keyboard.press("Tab");
-  const style = await page.locator("purr-input").evaluate((el) => {
+  const style = await page.locator("pl-input").evaluate((el) => {
     const css = getComputedStyle(
       el.shadowRoot!.querySelector('[part="field"]')!,
     );
@@ -589,7 +589,7 @@ test("the field keeps a border under forced colors and a ring on focus", async (
 test("an input without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-input");
+    const bare = document.createElement("pl-input");
     bare.id = "bare";
     el.append(bare);
   });
@@ -615,12 +615,12 @@ test.describe("coarse pointer on a wide screen", () => {
     page,
   }) => {
     await gotoStory(page, story("search"));
-    for (const control of await page.locator("purr-input").all()) {
+    for (const control of await page.locator("pl-input").all()) {
       const box = (await control.boundingBox())!;
       expect(box.height).toBeGreaterThanOrEqual(44);
     }
     const clear = (await page
-      .locator("purr-input")
+      .locator("pl-input")
       .nth(1)
       .getByRole("button")
       .boundingBox())!;

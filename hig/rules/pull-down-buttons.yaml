@@ -7,7 +7,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
   rule: Choosing an item runs its action and closes the menu.
   check: automated
-  test: src/components/menu/menu.e2e.ts > a click on an item fires purr-select once and closes
+  test: src/components/menu/menu.e2e.ts > a click on an item fires pl-select once and closes
   layer: components
 - id: pull-down-buttons/3
   source: https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons

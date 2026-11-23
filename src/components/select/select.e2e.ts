@@ -67,7 +67,7 @@ test("clicking an option chooses it, closes the list and returns focus", async (
     const log: string[] = [];
     document
       .querySelector("#select")!
-      .addEventListener("purr-change", (e) =>
+      .addEventListener("pl-change", (e) =>
         log.push((e as CustomEvent<{ value: string }>).detail.value),
       );
     (window as unknown as { log: string[] }).log = log;
@@ -159,7 +159,7 @@ test("Tab closes the list and moves on", async ({ page }) => {
     // An input: WebKit's Tab order skips buttons and links by default.
     const next = document.createElement("input");
     next.id = "next";
-    document.querySelector("purr-select")!.after(next);
+    document.querySelector("pl-select")!.after(next);
   });
   await trigger(page).focus();
   await page.keyboard.press("ArrowDown");
@@ -360,9 +360,9 @@ const mount = (page: Page, markup: string) =>
   }, markup);
 
 const abc = `
-  <purr-option value="a">Alpha</purr-option>
-  <purr-option value="b">Beta</purr-option>
-  <purr-option value="c">Gamma</purr-option>`;
+  <pl-option value="a">Alpha</pl-option>
+  <pl-option value="b">Beta</pl-option>
+  <pl-option value="c">Gamma</pl-option>`;
 
 test("a form reset returns a select to its starting value attribute", async ({
   page,
@@ -370,7 +370,7 @@ test("a form reset returns a select to its starting value attribute", async ({
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<form id="probe"><purr-select label="Probe" value="b">${abc}</purr-select></form>`,
+    `<form id="probe"><pl-select label="Probe" value="b">${abc}</pl-select></form>`,
   );
   await expect(selectedLabel(page, "Probe")).toHaveText("Beta");
   await trigger(page, "Probe").click();
@@ -387,7 +387,7 @@ test("Escape closes an open select without closing the dialog around it", async 
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<dialog id="probe"><purr-select label="Probe">${abc}</purr-select></dialog>`,
+    `<dialog id="probe"><pl-select label="Probe">${abc}</pl-select></dialog>`,
   );
   await page
     .locator("#probe")
@@ -401,13 +401,10 @@ test("Escape closes an open select without closing the dialog around it", async 
 
 test("a changed option label shows in the trigger", async ({ page }) => {
   await gotoStory(page, story("default"));
-  await mount(
-    page,
-    `<purr-select label="Probe" value="b">${abc}</purr-select>`,
-  );
+  await mount(page, `<pl-select label="Probe" value="b">${abc}</pl-select>`);
   await expect(selectedLabel(page, "Probe")).toHaveText("Beta");
   await page.evaluate(() => {
-    document.querySelector('purr-option[value="b"]')!.textContent = "Renamed";
+    document.querySelector('pl-option[value="b"]')!.textContent = "Renamed";
   });
   await expect(selectedLabel(page, "Probe")).toHaveText("Renamed");
 });
@@ -436,7 +433,7 @@ test("a select moved in the DOM while open still shows its list", async ({
   await trigger(page).click();
   await expect(listbox(page)).toBeVisible();
   await page.evaluate(() => {
-    const el = document.querySelector("purr-select")!;
+    const el = document.querySelector("pl-select")!;
     el.parentElement!.append(el);
   });
   await expect(listbox(page)).toBeVisible();
@@ -449,12 +446,12 @@ test("the open list keeps at least the trigger's width when the trigger grows", 
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<purr-select label="Probe" style="inline-size:200px">${abc}</purr-select>`,
+    `<pl-select label="Probe" style="inline-size:200px">${abc}</pl-select>`,
   );
   await trigger(page, "Probe").click();
   await page.evaluate(() => {
     document.querySelector<HTMLElement>(
-      'purr-select[label="Probe"]',
+      'pl-select[label="Probe"]',
     )!.style.inlineSize = "320px";
     dispatchEvent(new Event("resize"));
   });
@@ -525,7 +522,7 @@ test("a slotted label names the trigger and wins over the label attribute", asyn
   await expect(page.locator("[slot=label]")).toBeVisible();
   await mount(
     page,
-    `<purr-select label="Ignored"><span slot="label">Shown</span>${abc}</purr-select>`,
+    `<pl-select label="Ignored"><span slot="label">Shown</span>${abc}</pl-select>`,
   );
   await expect(trigger(page, "Shown")).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Ignored" })).toHaveCount(0);
@@ -543,10 +540,8 @@ test("the label attribute names the trigger when nothing is slotted", async ({
 }) => {
   await gotoStory(page, story("default"));
   await expect(trigger(page)).toBeVisible();
-  await expect(page.locator("purr-select [slot=label]")).toHaveCount(0);
-  await expect(
-    page.locator("purr-select").locator("[part=label]"),
-  ).toBeHidden();
+  await expect(page.locator("pl-select [slot=label]")).toHaveCount(0);
+  await expect(page.locator("pl-select").locator("[part=label]")).toBeHidden();
 });
 
 test("an external label names the trigger, even one added later", async ({
@@ -555,7 +550,7 @@ test("an external label names the trigger, even one added later", async ({
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<label for="ext">City</label><purr-select id="ext">${abc}</purr-select><purr-select id="late">${abc}</purr-select>`,
+    `<label for="ext">City</label><pl-select id="ext">${abc}</pl-select><pl-select id="late">${abc}</pl-select>`,
   );
   await expect(trigger(page, "City")).toBeVisible();
   await page.evaluate(() =>
@@ -571,8 +566,8 @@ test("an external label names the trigger, even one added later", async ({
 test("a select without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-select");
-    bare.innerHTML = "<purr-option>One</purr-option>";
+    const bare = document.createElement("pl-select");
+    bare.innerHTML = "<pl-option>One</pl-option>";
     el.append(bare);
   });
   await expect(expectAccessible(root)).rejects.toThrow();

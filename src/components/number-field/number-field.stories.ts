@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./number-field.ts";
-import type { PurrNumberField } from "./number-field.ts";
+import type { PlNumberField } from "./number-field.ts";
 
 const meta = {
   title: "Components/Number field",
-  component: "purr-number-field",
+  component: "pl-number-field",
 } satisfies Meta;
 
 export default meta;
@@ -15,7 +15,7 @@ type Story = StoryObj;
 
 const column = (content: unknown) =>
   html`<div
-    style="display:grid;justify-items:start;gap:var(--purr-space-3);padding:var(--purr-space-4)"
+    style="display:grid;justify-items:start;gap:var(--pl-space-3);padding:var(--pl-space-4)"
   >
     ${content}
   </div>`;
@@ -23,20 +23,20 @@ const column = (content: unknown) =>
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {
   render: () =>
-    html`<purr-number-field
+    html`<pl-number-field
       id="field"
       label="Quantity"
       value="3"
       min="0"
       max="99"
-    ></purr-number-field>`,
+    ></pl-number-field>`,
 };
 
 export const Labelled: Story = {
   render: () =>
     column(
-      html`<purr-number-field id="field" value="3" min="0" max="99"
-        >Quantity</purr-number-field
+      html`<pl-number-field id="field" value="3" min="0" max="99"
+        >Quantity</pl-number-field
       >`,
     ),
 };
@@ -47,14 +47,14 @@ export const Sizes: Story = {
       (["inside", "outside"] as const).map((stepper) =>
         (["md", "lg", "xl"] as const).map(
           (size) =>
-            html`<purr-number-field
+            html`<pl-number-field
               size=${size}
               stepper=${stepper}
               label="${stepper} ${size}"
               value="3"
               min="0"
               max="99"
-            ></purr-number-field>`,
+            ></pl-number-field>`,
         ),
       ),
     ),
@@ -64,34 +64,34 @@ export const States: Story = {
   render: () =>
     column(
       (["inside", "outside"] as const).map((stepper) => [
-        html`<purr-number-field
+        html`<pl-number-field
           stepper=${stepper}
           label="At max ${stepper}"
           value="9"
           max="9"
-        ></purr-number-field>`,
-        html`<purr-number-field
+        ></pl-number-field>`,
+        html`<pl-number-field
           stepper=${stepper}
           label="At min ${stepper}"
           value="0"
           min="0"
-        ></purr-number-field>`,
-        html`<purr-number-field
+        ></pl-number-field>`,
+        html`<pl-number-field
           stepper=${stepper}
           label="Empty ${stepper}"
-        ></purr-number-field>`,
-        html`<purr-number-field
+        ></pl-number-field>`,
+        html`<pl-number-field
           stepper=${stepper}
           label="Disabled ${stepper}"
           value="3"
           disabled
-        ></purr-number-field>`,
-        html`<purr-number-field
+        ></pl-number-field>`,
+        html`<pl-number-field
           stepper=${stepper}
           label="Read only ${stepper}"
           value="3"
           readonly
-        ></purr-number-field>`,
+        ></pl-number-field>`,
       ]),
     ),
 };
@@ -99,35 +99,35 @@ export const States: Story = {
 /** In a form the field submits its number and follows reset, fieldset and required. */
 export const InForm: Story = {
   render: () => html`
-    <form id="form" style="padding:var(--purr-space-4)">
+    <form id="form" style="padding:var(--pl-space-4)">
       <fieldset
         id="fieldset"
-        style="display:grid;justify-items:start;gap:var(--purr-space-3);border:0;padding:0;margin:0"
+        style="display:grid;justify-items:start;gap:var(--pl-space-3);border:0;padding:0;margin:0"
       >
-        <purr-number-field
+        <pl-number-field
           id="count"
           name="count"
           value="4"
           min="0"
           max="10"
           step="2"
-          >Count</purr-number-field
+          >Count</pl-number-field
         >
-        <purr-number-field id="age" name="age" required stepper="outside"
-          >Age</purr-number-field
+        <pl-number-field id="age" name="age" required stepper="outside"
+          >Age</pl-number-field
         >
       </fieldset>
     </form>
   `,
 };
 
-const quantity = html`<purr-number-field
+const quantity = html`<pl-number-field
   id="field"
   label="Quantity"
   value="5"
   min="0"
   max="10"
-></purr-number-field>`;
+></pl-number-field>`;
 
 export const Steps: Story = { render: () => quantity };
 
@@ -135,7 +135,7 @@ export const Steps: Story = { render: () => quantity };
 export const Keyboard: Story = {
   render: () => quantity,
   play: async ({ canvasElement }) => {
-    const el = canvasElement.querySelector<PurrNumberField>("#field")!;
+    const el = canvasElement.querySelector<PlNumberField>("#field")!;
     await el.updateComplete;
     el.focus();
     await userEvent.keyboard("{ArrowUp}{ArrowUp}");
@@ -150,9 +150,9 @@ export const Keyboard: Story = {
 /** Under `lang="de"` the decimal separator is a comma; the form still gets a plain number. */
 export const Decimals: Story = {
   render: () => html`
-    <form id="form" lang="de" style="padding:var(--purr-space-4)">
-      <purr-number-field name="weight" value="1.5" step="0.1"
-        >Weight</purr-number-field
+    <form id="form" lang="de" style="padding:var(--pl-space-4)">
+      <pl-number-field name="weight" value="1.5" step="0.1"
+        >Weight</pl-number-field
       >
     </form>
   `,
@@ -163,11 +163,11 @@ export const Rtl: Story = {
     column(
       (["inside", "outside"] as const).map(
         (stepper) =>
-          html`<purr-number-field
+          html`<pl-number-field
             stepper=${stepper}
             label="Quantity"
             value="3"
-          ></purr-number-field>`,
+          ></pl-number-field>`,
       ),
     ),
   globals: { dir: "rtl" },
@@ -178,12 +178,12 @@ export const Glass: Story = {
     column(
       (["inside", "outside"] as const).map(
         (stepper) =>
-          html`<purr-number-field
+          html`<pl-number-field
             stepper=${stepper}
             label="Quantity"
             value="3"
             min="0"
-          ></purr-number-field>`,
+          ></pl-number-field>`,
       ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },

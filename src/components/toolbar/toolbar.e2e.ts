@@ -69,7 +69,7 @@ const addNeighbors = (page: Page) =>
 test("the toolbar is one tab stop", async ({ page }) => {
   await openStory(page);
   await addNeighbors(page);
-  const items = page.locator("#toolbar purr-button");
+  const items = page.locator("#toolbar pl-button");
   await expect(items).toHaveCount(4);
   expect(await items.evaluateAll((els) => els.map((e) => e.tabIndex))).toEqual([
     0, -1, -1, -1,
@@ -126,7 +126,7 @@ test("disabled items are skipped", async ({ page }) => {
 /** Tab stops of the enabled items: exactly one should be 0. */
 const enabledStops = (page: Page) =>
   page
-    .locator("#toolbar purr-button")
+    .locator("#toolbar pl-button")
     .evaluateAll((els) =>
       els.filter((e) => !e.hasAttribute("disabled")).map((e) => e.tabIndex),
     );
@@ -135,7 +135,7 @@ test("disabling the tab stop moves it, and enabling the item keeps one stop", as
   page,
 }) => {
   await openStory(page);
-  const first = page.locator("#toolbar purr-button").first();
+  const first = page.locator("#toolbar pl-button").first();
   await first.evaluate((el) => ((el as HTMLButtonElement).disabled = true));
   await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1]);
   await first.evaluate((el) => ((el as HTMLButtonElement).disabled = false));
@@ -146,11 +146,11 @@ test("hiding the tab stop moves it to a visible item", async ({ page }) => {
   await openStory(page);
   const visibleStops = () =>
     page
-      .locator("#toolbar purr-button")
+      .locator("#toolbar pl-button")
       .evaluateAll((els) =>
         els.filter((e) => !e.hasAttribute("hidden")).map((e) => e.tabIndex),
       );
-  const first = page.locator("#toolbar purr-button").first();
+  const first = page.locator("#toolbar pl-button").first();
   await first.evaluate((el) => el.setAttribute("hidden", ""));
   await expect.poll(visibleStops).toEqual([0, -1, -1]);
   await first.evaluate((el) => el.removeAttribute("hidden"));
@@ -178,14 +178,14 @@ test("controls added to or removed from a group keep one tab stop", async ({
   page,
 }) => {
   await openStory(page);
-  await page.locator("#toolbar purr-toolbar-group").evaluate((group) => {
-    const added = document.createElement("purr-button");
+  await page.locator("#toolbar pl-toolbar-group").evaluate((group) => {
+    const added = document.createElement("pl-button");
     added.setAttribute("aria-label", "Extra");
     group.append(added);
   });
   await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1, -1, -1]);
   await page
-    .locator("#toolbar purr-button")
+    .locator("#toolbar pl-button")
     .first()
     .evaluate((el) => el.remove());
   await expect.poll(() => enabledStops(page)).toEqual([0, -1, -1, -1]);
@@ -235,7 +235,7 @@ const rects = (page: Page) =>
         bar.right -
         parseFloat(style.borderRightWidth) -
         parseFloat(style.paddingRight),
-      items: [...toolbar.querySelectorAll("purr-button")].map(box),
+      items: [...toolbar.querySelectorAll("pl-button")].map(box),
     };
   });
 
@@ -250,7 +250,7 @@ for (const [dir, name] of [
       await openStory(page, name);
       const { left, right, items } = await rects(page);
       const prominent = await page
-        .locator("#toolbar purr-button")
+        .locator("#toolbar pl-button")
         .evaluateAll((els) =>
           els.map((e) => e.getAttribute("variant") === "primary"),
         );
@@ -307,13 +307,13 @@ test("the default toolbar logs no warning", async ({ page }) => {
 
 test("two prominent items log a warning", async ({ page }) => {
   expect(await warnings(page, "two-prominent")).toContain(
-    "purr-toolbar: A toolbar has at most one prominent item, found 2.",
+    "pl-toolbar: A toolbar has at most one prominent item, found 2.",
   );
 });
 
 test("a prominent item that is not last logs a warning", async ({ page }) => {
   expect(await warnings(page, "prominent-first")).toContain(
-    "purr-toolbar: The prominent item belongs at the trailing end of the toolbar.",
+    "pl-toolbar: The prominent item belongs at the trailing end of the toolbar.",
   );
 });
 
@@ -321,7 +321,7 @@ test("a toolbar without a label logs a warning and has no aria-label", async ({
   page,
 }) => {
   expect(await warnings(page, "no-label")).toContain(
-    "purr-toolbar needs a label.",
+    "pl-toolbar needs a label.",
   );
   await expect(page.locator("#toolbar")).not.toHaveAttribute("aria-label");
 });
@@ -333,7 +333,7 @@ test("warns when an item has no accessible name", async ({ page }) => {
   expect(unnamed()).toEqual([]);
   await page.locator("#toolbar").evaluate((toolbar) => {
     const add = (name: string | null, text: string) => {
-      const button = document.createElement("purr-button");
+      const button = document.createElement("pl-button");
       if (name) button.setAttribute("aria-label", name);
       button.innerHTML = text;
       toolbar.append(button);
@@ -348,7 +348,7 @@ test("warns when an item has no accessible name", async ({ page }) => {
   await expect
     .poll(unnamed)
     .toEqual([
-      "purr-toolbar: an item needs an accessible name (aria-label or text).",
+      "pl-toolbar: an item needs an accessible name (aria-label or text).",
     ]);
   // Another update does not repeat the warning for the same element.
   await page.locator("#toolbar").evaluate((toolbar) => {
@@ -444,7 +444,7 @@ test("a separator is vertical, one pixel wide and drawn in the muted tone", asyn
   page,
 }) => {
   await openStory(page, "chrome");
-  const rule = page.locator("purr-toolbar-separator");
+  const rule = page.locator("pl-toolbar-separator");
   await expect(rule).toHaveAttribute("role", "separator");
   await expect(rule).toHaveAttribute("aria-orientation", "vertical");
   const look = await rule.evaluate((el) => {
@@ -458,7 +458,7 @@ test("a separator is vertical, one pixel wide and drawn in the muted tone", asyn
   expect(look.width).toBe("1px");
   expect(look.height).toBeGreaterThan(8);
   expect(look.background).toBe(
-    await resolve(page, "color", "var(--purr-color-muted-3)"),
+    await resolve(page, "color", "var(--pl-color-muted-3)"),
   );
 });
 
@@ -551,11 +551,9 @@ test("the search field takes the capsule material and the toolbar height", async
   await openStory(page, "chrome");
   const field = await searchField(page);
   expect(field.background).toBe(
-    await resolve(page, "color", "var(--purr-color-overlay)"),
+    await resolve(page, "color", "var(--pl-color-overlay)"),
   );
-  expect(field.height).toBe(
-    await resolve(page, "width", "var(--purr-size-xl)"),
-  );
+  expect(field.height).toBe(await resolve(page, "width", "var(--pl-size-xl)"));
 });
 
 test("a compact toolbar is shorter and uses md controls", async ({ page }) => {
@@ -569,7 +567,7 @@ test("a compact toolbar is shorter and uses md controls", async ({ page }) => {
         .shadowRoot!.querySelector("[part=field]")!;
       return {
         bar: height("#toolbar"),
-        group: height("purr-toolbar-group"),
+        group: height("pl-toolbar-group"),
         field: field.getBoundingClientRect().height,
       };
     });
@@ -579,7 +577,7 @@ test("a compact toolbar is shorter and uses md controls", async ({ page }) => {
   expect(md.group).toBeLessThan(xl.group);
   expect(md.field).toBeLessThan(xl.field);
   expect(`${md.field}px`).toBe(
-    await resolve(page, "width", "var(--purr-size-md)"),
+    await resolve(page, "width", "var(--pl-size-md)"),
   );
 });
 
@@ -588,7 +586,7 @@ test("the title stacks its subtitle, and the compact title puts it beside", asyn
 }) => {
   const layout = async (name: string) => {
     await openStory(page, name);
-    return page.locator("purr-toolbar-title").evaluate((el) => {
+    return page.locator("pl-toolbar-title").evaluate((el) => {
       // The content box: the title's clip padding is taken back by a negative margin.
       const box = (part: string) => {
         const node = el.shadowRoot!.querySelector(`[part=${part}]`)!;
@@ -614,12 +612,12 @@ test("the title stacks its subtitle, and the compact title puts it beside", asyn
 test("a title without a subtitle shows only the title", async ({ page }) => {
   await openStory(page, "chrome");
   await page
-    .locator("purr-toolbar-title [slot=subtitle]")
+    .locator("pl-toolbar-title [slot=subtitle]")
     .evaluate((el) => el.remove());
   await expect
     .poll(() =>
       page
-        .locator("purr-toolbar-title")
+        .locator("pl-toolbar-title")
         .evaluate(
           (el) =>
             getComputedStyle(el.shadowRoot!.querySelector("[part=subtitle]")!)
@@ -663,7 +661,7 @@ test.describe("coarse pointer on a wide screen", () => {
   }) => {
     await openStory(page, "compact");
     const boxes = await page
-      .locator("#toolbar purr-button, #search")
+      .locator("#toolbar pl-button, #search")
       .evaluateAll((els) =>
         els.map((el) => {
           const box = el.getBoundingClientRect();
@@ -718,7 +716,7 @@ test("a spacer pushes the following items to the trailing edge and is not a tab 
   page,
 }) => {
   const root = await openStory(page, "spacers");
-  const spacers = page.locator("purr-toolbar-spacer");
+  const spacers = page.locator("pl-toolbar-spacer");
   await expect(spacers).toHaveCount(2);
   for (const spacer of await spacers.all()) {
     await expect(spacer).toHaveAttribute("aria-hidden", "true");
@@ -734,13 +732,13 @@ test("a spacer pushes the following items to the trailing edge and is not a tab 
   const { left, right, items } = await rects(page);
   const [back, close, done] = [items[0]!, items[1]!, items[2]!];
   const title = await page
-    .locator("purr-toolbar-title")
+    .locator("pl-toolbar-title")
     .evaluate((el) => el.getBoundingClientRect().toJSON());
   expect(Math.abs(back.left - left)).toBeLessThan(1);
   expect(Math.abs(right - done.right)).toBeLessThan(1);
   // No spacer sits between Close and the prominent item, so only the gap does.
   const gap = parseFloat(
-    await resolve(page, "width", "var(--purr-gap-controls)"),
+    await resolve(page, "width", "var(--pl-gap-controls)"),
   );
   expect(Math.abs(done.left - close.right - gap)).toBeLessThan(1);
   // The spacers open room on both sides of the title.
@@ -767,7 +765,7 @@ test("a long title ends in an ellipsis and keeps its accessible name", async ({
       - text: ${full}
       - button "Done"
   `);
-  const look = await page.locator("purr-toolbar-title").evaluate((el) => {
+  const look = await page.locator("pl-toolbar-title").evaluate((el) => {
     const title = el.shadowRoot!.querySelector("[part=title]")!;
     const style = getComputedStyle(title);
     return {
@@ -786,7 +784,7 @@ test("a long title ends in an ellipsis and keeps its accessible name", async ({
   // The title does not push the Done item to a second row.
   const { items } = await rects(page);
   const title = await page
-    .locator("purr-toolbar-title")
+    .locator("pl-toolbar-title")
     .evaluate((el) => el.getBoundingClientRect().toJSON());
   expect(items[0]!.top).toBeLessThan(title.bottom);
 });

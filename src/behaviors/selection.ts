@@ -5,7 +5,7 @@ export type SelectionOptions = {
   required: boolean;
 };
 
-/** Selected values for a group; fires `purr-change` once per change. */
+/** Selected values for a group; fires `pl-change` once per change. */
 export class SelectionController<T> {
   #host: ReactiveControllerHost & EventTarget;
   #opts: SelectionOptions;
@@ -46,7 +46,7 @@ export class SelectionController<T> {
     this.#selected = next;
     this.#host.requestUpdate();
     this.#host.dispatchEvent(
-      new CustomEvent("purr-change", {
+      new CustomEvent("pl-change", {
         detail: { selected: [...next] },
         bubbles: true,
         composed: true,

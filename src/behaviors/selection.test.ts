@@ -7,7 +7,7 @@ function setup(opts: { mode: "single" | "multiple"; required: boolean }) {
     requestUpdate() {},
   });
   const events: string[][] = [];
-  host.addEventListener("purr-change", (e) =>
+  host.addEventListener("pl-change", (e) =>
     events.push((e as CustomEvent<{ selected: string[] }>).detail.selected),
   );
   const controller = new SelectionController<string>(
@@ -51,7 +51,7 @@ test("not required single toggle can empty the selection", () => {
   expect(controller.selected.size).toBe(0);
 });
 
-test("purr-change fires once per change", () => {
+test("pl-change fires once per change", () => {
   const { controller, events } = setup({ mode: "single", required: true });
   controller.select("a");
   controller.select("a");

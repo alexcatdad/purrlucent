@@ -3,11 +3,11 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "../button/button.ts";
 import "./spinner.ts";
-import type { PurrSpinner } from "./spinner.ts";
+import type { PlSpinner } from "./spinner.ts";
 
 const meta = {
   title: "Components/Spinner",
-  component: "purr-spinner",
+  component: "pl-spinner",
 } satisfies Meta;
 
 export default meta;
@@ -16,14 +16,13 @@ type Story = StoryObj;
 
 const column = (content: unknown) =>
   html`<div
-    style="display:grid;justify-items:start;gap:var(--purr-space-3);padding:var(--purr-space-4)"
+    style="display:grid;justify-items:start;gap:var(--pl-space-3);padding:var(--pl-space-4)"
   >
     ${content}
   </div>`;
 
 export const Default: Story = {
-  render: () =>
-    html`<purr-spinner id="spinner" label="Loading"></purr-spinner>`,
+  render: () => html`<pl-spinner id="spinner" label="Loading"></pl-spinner>`,
 };
 
 export const Sizes: Story = {
@@ -31,10 +30,7 @@ export const Sizes: Story = {
     column(
       (["md", "lg", "xl"] as const).map(
         (size) =>
-          html`<purr-spinner
-            size=${size}
-            label="Loading ${size}"
-          ></purr-spinner>`,
+          html`<pl-spinner size=${size} label="Loading ${size}"></pl-spinner>`,
       ),
     ),
 };
@@ -43,11 +39,11 @@ export const Sizes: Story = {
 export const Small: Story = {
   render: () =>
     html`<div
-      style="display:flex;align-items:center;gap:var(--purr-space-4);padding:var(--purr-space-4)"
+      style="display:flex;align-items:center;gap:var(--pl-space-4);padding:var(--pl-space-4)"
     >
-      <purr-spinner id="small" size="sm" label="Loading small"></purr-spinner>
-      <purr-spinner id="medium" label="Loading medium"></purr-spinner>
-      <purr-button id="control">Save</purr-button>
+      <pl-spinner id="small" size="sm" label="Loading small"></pl-spinner>
+      <pl-spinner id="medium" label="Loading medium"></pl-spinner>
+      <pl-button id="control">Save</pl-button>
     </div>`,
 };
 
@@ -55,24 +51,23 @@ export const Small: Story = {
 export const Determinate: Story = {
   render: () =>
     html`<div
-      style="display:flex;align-items:center;gap:var(--purr-space-4);padding:var(--purr-space-4)"
+      style="display:flex;align-items:center;gap:var(--pl-space-4);padding:var(--pl-space-4)"
     >
       ${[0, 25, 50, 75, 100].map(
         (value) =>
-          html`<purr-spinner
+          html`<pl-spinner
             label="Upload ${value}%"
             value=${value}
-          ></purr-spinner>`,
+          ></pl-spinner>`,
       )}
     </div>`,
 };
 
 /** The role and name come from the host. */
 export const Semantics: Story = {
-  render: () =>
-    html`<purr-spinner id="spinner" label="Loading"></purr-spinner>`,
+  render: () => html`<pl-spinner id="spinner" label="Loading"></pl-spinner>`,
   play: async ({ canvasElement }) => {
-    const el = canvasElement.querySelector<PurrSpinner>("#spinner")!;
+    const el = canvasElement.querySelector<PlSpinner>("#spinner")!;
     await el.updateComplete;
     expect(el.getAttribute("role")).toBe("progressbar");
     expect(el.getAttribute("aria-label")).toBe("Loading");
@@ -81,6 +76,6 @@ export const Semantics: Story = {
 };
 
 export const Glass: Story = {
-  render: () => html`<purr-spinner label="Loading"></purr-spinner>`,
+  render: () => html`<pl-spinner label="Loading"></pl-spinner>`,
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

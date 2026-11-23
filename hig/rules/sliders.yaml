@@ -18,7 +18,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/sliders
   rule: The effect of a change shows live while the thumb moves, not only on release.
   check: automated
-  test: src/components/slider/slider.e2e.ts > purr-input fires while dragging and purr-change once on release
+  test: src/components/slider/slider.e2e.ts > pl-input fires while dragging and pl-change once on release
   layer: components
 - id: sliders/5
   source: https://developer.apple.com/design/human-interface-guidelines/sliders

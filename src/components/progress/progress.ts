@@ -10,7 +10,7 @@ import { progressStyles } from "./progress.css.ts";
  * @attr {string} label - The accessible name.
  * @csspart fill - The done part of the bar, or the moving segment when indeterminate.
  */
-export class PurrProgress extends LitElement {
+export class PlProgress extends LitElement {
   static override styles = progressStyles;
   static override properties = {
     value: { type: Number },
@@ -56,10 +56,10 @@ export class PurrProgress extends LitElement {
   }
 }
 
-customElements.define("purr-progress", PurrProgress);
+customElements.define("pl-progress", PlProgress);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-progress": PurrProgress;
+    "pl-progress": PlProgress;
   }
 }

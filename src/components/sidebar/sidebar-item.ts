@@ -11,7 +11,7 @@ const icon = html`<slot name="icon"></slot>`;
 const detail = html`<slot name="detail"></slot>`;
 
 /**
- * One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set
+ * One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set
  * by the sidebar because level 2 items follow it, a disclosure button. An
  * expandable item with an `href` keeps its link, which selects like any other,
  * and gets a separate disclosure button before it. Without an `href` an item
@@ -25,9 +25,9 @@ const detail = html`<slot name="detail"></slot>`;
  * @csspart control - The link or disclosure button.
  * @csspart disclosure - The disclosure button beside a link.
  * @csspart chevron - The disclosure arrow.
- * @fires purr-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
+ * @fires pl-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
  */
-export class PurrSidebarItem extends LitElement {
+export class PlSidebarItem extends LitElement {
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
@@ -73,7 +73,7 @@ export class PurrSidebarItem extends LitElement {
   #toggle = () => {
     this.expanded = !this.expanded;
     this.dispatchEvent(
-      new CustomEvent("purr-toggle", {
+      new CustomEvent("pl-toggle", {
         detail: { expanded: this.expanded },
         bubbles: true,
         composed: true,
@@ -86,7 +86,7 @@ export class PurrSidebarItem extends LitElement {
     const children: Element[] = [];
     for (
       let next = this.nextElementSibling;
-      next instanceof PurrSidebarItem && next.level === 2;
+      next instanceof PlSidebarItem && next.level === 2;
       next = next.nextElementSibling
     )
       children.push(next);
@@ -166,10 +166,10 @@ export class PurrSidebarItem extends LitElement {
   }
 }
 
-customElements.define("purr-sidebar-item", PurrSidebarItem);
+customElements.define("pl-sidebar-item", PlSidebarItem);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-sidebar-item": PurrSidebarItem;
+    "pl-sidebar-item": PlSidebarItem;
   }
 }

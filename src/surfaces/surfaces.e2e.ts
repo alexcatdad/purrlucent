@@ -76,7 +76,7 @@ test("glass labels stay legible over any backdrop", async ({ page }) => {
     const colors = await resolveColors(
       page,
       Object.fromEntries(
-        glassForegrounds.map(([role]) => [role, `var(--purr-color-${role})`]),
+        glassForegrounds.map(([role]) => [role, `var(--pl-color-${role})`]),
       ),
     );
     for (const id of ["bar", "panel", "sheet"]) {

@@ -8,35 +8,34 @@ import { css } from "lit";
  */
 export const groupStyles = css`
   :host {
-    --_size: var(--purr-size-md);
-    --_pad: var(--purr-pad-control);
-    --_sep: calc(var(--purr-spacing) * 3.5);
-    --_min: calc(var(--purr-spacing) * 7.5);
+    --_size: var(--pl-size-md);
+    --_pad: var(--pl-pad-control);
+    --_sep: calc(var(--pl-spacing) * 3.5);
+    --_min: calc(var(--pl-spacing) * 7.5);
 
     display: inline-grid;
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
     max-inline-size: 100%;
     overflow: clip;
-    border-radius: var(--purr-radius);
-    background-color: var(--purr-color-secondary);
-    box-shadow: var(--purr-boundary);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    border-radius: var(--pl-radius);
+    background-color: var(--pl-color-secondary);
+    box-shadow: var(--pl-boundary);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
 
   :host([size="lg"]) {
-    --_size: var(--purr-size-lg);
-    --_sep: calc(var(--purr-spacing) * 4.5);
-    --_min: calc(var(--purr-spacing) * 8.5);
+    --_size: var(--pl-size-lg);
+    --_sep: calc(var(--pl-spacing) * 4.5);
+    --_min: calc(var(--pl-spacing) * 8.5);
   }
 
   :host([size="xl"]) {
-    --_size: var(--purr-size-xl);
-    --_pad: var(--purr-pad-control-xl);
-    --_sep: calc(var(--purr-spacing) * 5);
-    --_min: calc(var(--purr-spacing) * 9.5);
+    --_size: var(--pl-size-xl);
+    --_pad: var(--pl-pad-control-xl);
+    --_sep: calc(var(--pl-spacing) * 5);
+    --_min: calc(var(--pl-spacing) * 9.5);
   }
 
   /* Forced colors drop the track's shadow and fill: outline it instead. */
@@ -49,13 +48,13 @@ export const groupStyles = css`
 
 export const itemStyles = css`
   :host {
-    --purr-face-hover: var(--purr-color-muted-3);
-    --purr-face-pressed: var(--purr-color-muted-pressed);
+    --pl-face-hover: var(--pl-color-muted-3);
+    --pl-face-pressed: var(--pl-color-muted-pressed);
 
-    gap: var(--purr-gap-icon);
+    gap: var(--pl-gap-icon);
     min-block-size: var(--_size);
-    min-inline-size: max(var(--_min), var(--purr-size-hit-min));
-    padding: var(--purr-space-1) var(--_pad);
+    min-inline-size: max(var(--_min), var(--pl-size-hit-min));
+    padding: var(--pl-space-1) var(--_pad);
     cursor: default;
     overflow-wrap: anywhere;
     text-align: center;
@@ -65,27 +64,27 @@ export const itemStyles = css`
   [part="label"] {
     display: inline-flex;
     align-items: center;
-    gap: var(--purr-gap-icon);
+    gap: var(--pl-gap-icon);
   }
 
   ::slotted(svg) {
     flex: none;
-    inline-size: var(--purr-icon-md);
-    block-size: var(--purr-icon-md);
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
   }
 
   :host(:first-child) {
-    border-start-start-radius: var(--purr-radius);
-    border-end-start-radius: var(--purr-radius);
+    border-start-start-radius: var(--pl-radius);
+    border-end-start-radius: var(--pl-radius);
   }
 
   :host(:last-child) {
-    border-start-end-radius: var(--purr-radius);
-    border-end-end-radius: var(--purr-radius);
+    border-start-end-radius: var(--pl-radius);
+    border-end-end-radius: var(--pl-radius);
   }
 
   :host::before {
-    transition-duration: var(--purr-duration);
+    transition-duration: var(--pl-duration);
   }
 
   /* A separator at the leading edge of every item but the first. */
@@ -95,26 +94,26 @@ export const itemStyles = css`
     inset-block: calc((100% - var(--_sep)) / 2);
     inset-inline-start: -0.5px;
     inline-size: 1px;
-    background-color: var(--purr-color-border);
-    transition: opacity var(--purr-duration) var(--purr-ease-out);
+    background-color: var(--pl-color-border);
+    transition: opacity var(--pl-duration) var(--pl-ease-out);
   }
 
   /* No separator on either side of the selected item; the group marks the
      item after it. */
   :host([selected]) {
-    --purr-face: color-mix(
+    --pl-face: color-mix(
       in srgb,
-      var(--purr-color-selected) 97%,
-      var(--purr-color-shade)
+      var(--pl-color-selected) 97%,
+      var(--pl-color-shade)
     );
-    --purr-face-hover: var(--purr-face);
-    --purr-face-pressed: color-mix(
+    --pl-face-hover: var(--pl-face);
+    --pl-face-pressed: color-mix(
       in srgb,
-      var(--purr-color-selected) 85%,
-      var(--purr-color-shade)
+      var(--pl-color-selected) 85%,
+      var(--pl-color-shade)
     );
 
-    color: var(--purr-color-selected-foreground);
+    color: var(--pl-color-selected-foreground);
   }
 
   :host([selected])::after,
@@ -123,34 +122,30 @@ export const itemStyles = css`
   }
 
   :host([selected]:state(disabled)) {
-    --purr-face: color-mix(
-      in srgb,
-      var(--purr-color-selected) 45%,
-      transparent
-    );
+    --pl-face: color-mix(in srgb, var(--pl-color-selected) 45%, transparent);
 
     color: color-mix(
       in srgb,
-      var(--purr-color-selected-foreground) 50%,
+      var(--pl-color-selected-foreground) 50%,
       transparent
     );
   }
 
   /* The ring sits inside the item: the track clips anything outside. */
   :host(:focus-visible) {
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   :host([selected]:focus-visible) {
-    outline-color: var(--purr-color-selected-foreground);
+    outline-color: var(--pl-color-selected-foreground);
   }
 
   /* System colors replace ours: the selected item paints Highlight. */
   @media (forced-colors: active) {
     :host([selected]:not(:state(disabled))) {
-      --purr-face: Highlight;
-      --purr-face-hover: Highlight;
-      --purr-face-pressed: Highlight;
+      --pl-face: Highlight;
+      --pl-face-hover: Highlight;
+      --pl-face-pressed: Highlight;
 
       forced-color-adjust: none;
       background-color: Highlight;
@@ -160,7 +155,7 @@ export const itemStyles = css`
 
     /* Disabled, selected: GrayText fill, the reverse of unselected GrayText text. */
     :host([selected]:state(disabled)) {
-      --purr-face: GrayText;
+      --pl-face: GrayText;
 
       forced-color-adjust: none;
       background-color: GrayText;

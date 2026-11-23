@@ -15,12 +15,12 @@ const HOVER_MS = 200;
 const DISABLED_TRIGGER = ":disabled, [aria-disabled=true]";
 
 /**
- * One command in a `purr-menu`. Its text is the label. With `type` it becomes a
+ * One command in a `pl-menu`. Its text is the label. With `type` it becomes a
  * checkbox or radio item; radio items in a run (no separator, label or other
- * kind of item between them) are a group. A nested `purr-menu` in the
+ * kind of item between them) are a group. A nested `pl-menu` in the
  * `submenu` slot makes it open a submenu.
  *
- * @attr {string} value - What `purr-select` reports. Defaults to the label.
+ * @attr {string} value - What `pl-select` reports. Defaults to the label.
  * @attr {string} type - `checkbox` or `radio`. Empty for a plain command.
  * @attr {boolean} checked - Checked, for a checkbox or radio item.
  * @attr {boolean} disabled - Skipped by the keyboard and cannot be activated.
@@ -30,13 +30,13 @@ const DISABLED_TRIGGER = ":disabled, [aria-disabled=true]";
  * @slot - The label.
  * @slot icon - A leading svg.
  * @slot detail - Trailing content, such as a shortcut.
- * @slot submenu - A nested `purr-menu`.
+ * @slot submenu - A nested `pl-menu`.
  * @csspart check - The check mark.
  * @csspart label - The label wrapper.
  * @csspart detail - The trailing text wrapper.
  * @csspart chevron - The submenu arrow.
  */
-export class PurrMenuItem extends LitElement {
+export class PlMenuItem extends LitElement {
   static override styles = itemStyles;
   static override properties = {
     value: { reflect: true },
@@ -87,8 +87,8 @@ export class PurrMenuItem extends LitElement {
     return this.value || this.label;
   }
 
-  get submenu(): PurrMenu | null {
-    return this.querySelector(":scope > purr-menu");
+  get submenu(): PlMenu | null {
+    return this.querySelector(":scope > pl-menu");
   }
 
   override connectedCallback() {
@@ -136,7 +136,7 @@ export class PurrMenuItem extends LitElement {
 }
 
 /** A thin rule between groups of items. */
-export class PurrMenuSeparator extends LitElement {
+export class PlMenuSeparator extends LitElement {
   static override styles = separatorStyles;
 
   override connectedCallback() {
@@ -145,8 +145,8 @@ export class PurrMenuSeparator extends LitElement {
   }
 }
 
-/** A section header inside a `purr-menu`. Its text is the heading. */
-export class PurrMenuLabel extends LitElement {
+/** A section header inside a `pl-menu`. Its text is the heading. */
+export class PlMenuLabel extends LitElement {
   static override styles = labelStyles;
 
   override connectedCallback() {
@@ -166,16 +166,16 @@ export class PurrMenuLabel extends LitElement {
  * moves to them while the menu is open and returns to the trigger on close.
  * Arrow keys move with wrap, Home and End jump, typing jumps to a label,
  * Enter and Space activate, Escape closes one level, Tab closes all of them.
- * Activating an item closes every level and fires `purr-select`.
+ * Activating an item closes every level and fires `pl-select`.
  *
  * @attr {string} label - The accessible name of the menu.
  * @attr {boolean} open - The menu is showing.
  * @slot trigger - A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
- * @slot - The `purr-menu-item`, `purr-menu-separator` and `purr-menu-label` children.
+ * @slot - The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
  * @csspart menu - The popup.
- * @fires purr-select - An item was activated. `detail.value` holds its value.
+ * @fires pl-select - An item was activated. `detail.value` holds its value.
  */
-export class PurrMenu extends LitElement {
+export class PlMenu extends LitElement {
   static override styles = menuStyles;
   static override properties = {
     label: { reflect: true },
@@ -206,24 +206,22 @@ export class PurrMenu extends LitElement {
     this.addEventListener("pointerover", this.#onPointerover);
   }
 
-  get #parent(): PurrMenuItem | null {
-    return this.slot === "submenu"
-      ? (this.parentElement as PurrMenuItem)
-      : null;
+  get #parent(): PlMenuItem | null {
+    return this.slot === "submenu" ? (this.parentElement as PlMenuItem) : null;
   }
 
-  get #root(): PurrMenu {
+  get #root(): PlMenu {
     const parent = this.#parent;
-    return parent ? (parent.parentElement as PurrMenu).#root : this;
+    return parent ? (parent.parentElement as PlMenu).#root : this;
   }
 
-  get #items(): PurrMenuItem[] {
+  get #items(): PlMenuItem[] {
     return [...this.children].filter(
-      (el): el is PurrMenuItem => el instanceof PurrMenuItem,
+      (el): el is PlMenuItem => el instanceof PlMenuItem,
     );
   }
 
-  get #enabled(): PurrMenuItem[] {
+  get #enabled(): PlMenuItem[] {
     return this.#items.filter((item) => !item.disabled);
   }
 
@@ -253,7 +251,7 @@ export class PurrMenu extends LitElement {
   }
 
   #close(refocus: boolean) {
-    for (const sub of this.querySelectorAll<PurrMenu>("purr-menu"))
+    for (const sub of this.querySelectorAll<PlMenu>("pl-menu"))
       sub.open = false;
     const hadFocus = this.matches(":focus-within");
     this.open = false;
@@ -262,7 +260,7 @@ export class PurrMenu extends LitElement {
       (this.#parent ?? this.#trigger ?? this.#opener)?.focus();
   }
 
-  #openSub(item: PurrMenuItem, focus: boolean) {
+  #openSub(item: PlMenuItem, focus: boolean) {
     const sub = item.submenu;
     if (!sub || item.disabled) return;
     this.#closeSubsExcept(item);
@@ -270,17 +268,17 @@ export class PurrMenu extends LitElement {
     sub.open = true;
   }
 
-  #closeSubsExcept(keep: PurrMenuItem | null) {
+  #closeSubsExcept(keep: PlMenuItem | null) {
     for (const item of this.#items) {
       const sub = item.submenu;
       if (item !== keep && sub) sub.#close(false);
     }
   }
 
-  #activate(item: PurrMenuItem) {
+  #activate(item: PlMenuItem) {
     const kids = [...this.children];
     const isRadio = (el?: Element) =>
-      el instanceof PurrMenuItem && el.type === "radio";
+      el instanceof PlMenuItem && el.type === "radio";
     if (item.type === "checkbox") item.checked = !item.checked;
     else if (item.type === "radio") {
       let from = kids.indexOf(item);
@@ -288,10 +286,10 @@ export class PurrMenu extends LitElement {
       while (isRadio(kids[from - 1])) from--;
       while (isRadio(kids[to + 1])) to++;
       for (const kid of kids.slice(from, to + 1))
-        (kid as PurrMenuItem).checked = kid === item;
+        (kid as PlMenuItem).checked = kid === item;
     }
     this.dispatchEvent(
-      new CustomEvent("purr-select", {
+      new CustomEvent("pl-select", {
         detail: { value: item.itemValue },
         bubbles: true,
         composed: true,
@@ -315,7 +313,7 @@ export class PurrMenu extends LitElement {
   // handler acts only on what belongs to this menu.
   #owns(event: Event): Element | null {
     const target = event.target as Element;
-    return target.closest("purr-menu") === this ? target : null;
+    return target.closest("pl-menu") === this ? target : null;
   }
 
   #onClick = (event: MouseEvent) => {
@@ -328,7 +326,7 @@ export class PurrMenu extends LitElement {
       else this.#openFromTrigger("first");
       return;
     }
-    const item = target.closest("purr-menu-item");
+    const item = target.closest("pl-menu-item");
     if (!item || item.disabled) return;
     if (item.submenu) this.#openSub(item, true);
     else this.#activate(item);
@@ -339,7 +337,7 @@ export class PurrMenu extends LitElement {
     if (!target || event.ctrlKey || event.metaKey) return;
     const { key } = event;
     const items = this.#enabled;
-    const current = items.indexOf(target as PurrMenuItem);
+    const current = items.indexOf(target as PlMenuItem);
     const rtl = this.matches(":dir(rtl)");
     const parent = this.#parent;
 
@@ -410,7 +408,7 @@ export class PurrMenu extends LitElement {
     if (event.pointerType === "touch") return;
     clearTimeout(this.#hover);
     const target = this.#owns(event);
-    const item = target?.closest("purr-menu-item");
+    const item = target?.closest("pl-menu-item");
     if (!item) return;
     item.focus({ preventScroll: true });
     this.#hover = setTimeout(() => {
@@ -472,7 +470,7 @@ export class PurrMenu extends LitElement {
       if (!this.#parent) this.#focusOnOpen = "first";
     } else if (!this.open && list.matches(":popover-open")) {
       // Closing through `open` leaves focus on a row that is about to be hidden.
-      if (this.querySelector("purr-menu-item:focus"))
+      if (this.querySelector("pl-menu-item:focus"))
         (this.#parent ?? this.#trigger ?? this.#opener)?.focus();
       list.hidePopover();
       removeEventListener("resize", this.#reposition);
@@ -518,16 +516,16 @@ export class PurrMenu extends LitElement {
   }
 }
 
-customElements.define("purr-menu-item", PurrMenuItem);
-customElements.define("purr-menu-separator", PurrMenuSeparator);
-customElements.define("purr-menu-label", PurrMenuLabel);
-customElements.define("purr-menu", PurrMenu);
+customElements.define("pl-menu-item", PlMenuItem);
+customElements.define("pl-menu-separator", PlMenuSeparator);
+customElements.define("pl-menu-label", PlMenuLabel);
+customElements.define("pl-menu", PlMenu);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-menu-item": PurrMenuItem;
-    "purr-menu-separator": PurrMenuSeparator;
-    "purr-menu-label": PurrMenuLabel;
-    "purr-menu": PurrMenu;
+    "pl-menu-item": PlMenuItem;
+    "pl-menu-separator": PlMenuSeparator;
+    "pl-menu-label": PlMenuLabel;
+    "pl-menu": PlMenu;
   }
 }

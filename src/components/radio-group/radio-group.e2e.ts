@@ -70,7 +70,7 @@ test("with no choice, Tab enters on the first radio and does not choose it", asy
   expect(await chosen(page)).toBe("");
   await page.keyboard.press("Tab");
   expect(
-    await page.evaluate(() => document.querySelector("purr-radio:focus")),
+    await page.evaluate(() => document.querySelector("pl-radio:focus")),
   ).toBeNull();
 });
 
@@ -78,7 +78,7 @@ test("only the chosen radio is a tab stop", async ({ page }) => {
   await gotoStory(page, story("preselected"));
   expect(
     await page
-      .locator("purr-radio")
+      .locator("pl-radio")
       .evaluateAll((els) => els.map((el) => el.getAttribute("tabindex"))),
   ).toEqual(["0", "-1", null]);
 });
@@ -114,7 +114,7 @@ test("an aria-label set by the consumer stays when `label` is unset", async ({
 }) => {
   const root = await gotoStory(page, story("default"));
   const group = await root.evaluateHandle((el) => {
-    const made = document.createElement("purr-radio-group");
+    const made = document.createElement("pl-radio-group");
     made.setAttribute("aria-label", "Theme");
     el.append(made);
     return made;
@@ -148,19 +148,17 @@ test("a radio whose value changes later is checked or unchecked to match", async
 test("radios without a value are not shown as chosen", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    el.innerHTML = `<purr-radio-group label="Bare"><purr-radio>A</purr-radio><purr-radio>B</purr-radio></purr-radio-group>`;
+    el.innerHTML = `<pl-radio-group label="Bare"><pl-radio>A</pl-radio><pl-radio>B</pl-radio></pl-radio-group>`;
   });
   await expect(radio(page, "A")).toHaveAttribute("aria-checked", "false");
   await expect(radio(page, "B")).toHaveAttribute("aria-checked", "false");
 });
 
-test("a click chooses one radio and purr-change fires once", async ({
-  page,
-}) => {
+test("a click chooses one radio and pl-change fires once", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.locator("#control").evaluate((el) => {
     (window as unknown as { changes: unknown[] }).changes = [];
-    el.addEventListener("purr-change", (e) =>
+    el.addEventListener("pl-change", (e) =>
       (window as unknown as { changes: unknown[] }).changes.push(
         (e as CustomEvent).detail,
       ),
@@ -199,7 +197,7 @@ test("a disabled group takes no focus and does not change", async ({
   expect(await chosen(page)).toBe("tabs");
   await page.keyboard.press("Tab");
   expect(
-    await page.evaluate(() => document.querySelector("purr-radio:focus")),
+    await page.evaluate(() => document.querySelector("pl-radio:focus")),
   ).toBeNull();
 });
 
@@ -217,7 +215,7 @@ test("horizontal radios share one width, the longest label's", async ({
 }) => {
   await gotoStory(page, story("horizontal"));
   const widths = await page
-    .locator("purr-radio")
+    .locator("pl-radio")
     .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
   expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(0.5);
 });
@@ -328,7 +326,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every radio keeps a 44 by 44 hit area", async ({ page }) => {
     await gotoStory(page, story("preselected"));
-    for (const control of await page.locator("purr-radio").all()) {
+    for (const control of await page.locator("pl-radio").all()) {
       const box = (await control.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);

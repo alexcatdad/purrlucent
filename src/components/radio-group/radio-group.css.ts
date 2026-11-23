@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const radioStyles = css`
   :host {
-    --_r: var(--purr-radius-full);
+    --_r: var(--pl-radius-full);
   }
 `;
 
@@ -23,7 +23,7 @@ export const groupStyles = css`
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
     align-items: start;
-    column-gap: var(--purr-gap-form);
+    column-gap: var(--pl-gap-form);
     max-inline-size: 100%;
   }
 `;

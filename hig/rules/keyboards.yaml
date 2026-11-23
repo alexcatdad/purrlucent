@@ -2,7 +2,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/keyboards
   rule: Every control can be reached and operated with the keyboard alone, with a visible focus indicator.
   check: automated
-  test: src/behaviors/pressable.test.ts > Enter fires purr-press once
+  test: src/behaviors/pressable.test.ts > Enter fires pl-press once
   layer: behaviors
 - id: keyboards/2
   source: https://developer.apple.com/design/human-interface-guidelines/keyboards

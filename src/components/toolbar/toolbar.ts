@@ -13,7 +13,7 @@ import { prominentIssue } from "./toolbar-rules.ts";
 /**
  * A thin rule between related controls. It is not a tab stop.
  */
-export class PurrToolbarSeparator extends LitElement {
+export class PlToolbarSeparator extends LitElement {
   static override styles = toolbarSeparatorStyles;
 
   override connectedCallback() {
@@ -24,14 +24,14 @@ export class PurrToolbarSeparator extends LitElement {
   }
 }
 
-customElements.define("purr-toolbar-separator", PurrToolbarSeparator);
+customElements.define("pl-toolbar-separator", PlToolbarSeparator);
 
 /**
  * Free space between items. Items before it stay at the leading edge and items
  * after it move to the trailing edge; two spacers leave a center area. It is not
  * a tab stop and is hidden from assistive technology.
  */
-export class PurrToolbarSpacer extends LitElement {
+export class PlToolbarSpacer extends LitElement {
   static override styles = toolbarSpacerStyles;
 
   override connectedCallback() {
@@ -40,7 +40,7 @@ export class PurrToolbarSpacer extends LitElement {
   }
 }
 
-customElements.define("purr-toolbar-spacer", PurrToolbarSpacer);
+customElements.define("pl-toolbar-spacer", PlToolbarSpacer);
 
 /**
  * The title of the window or document a toolbar belongs to, with an optional
@@ -51,7 +51,7 @@ customElements.define("purr-toolbar-spacer", PurrToolbarSpacer);
  * @slot - The title.
  * @slot subtitle - Secondary text under the title; beside it in a compact toolbar.
  */
-export class PurrToolbarTitle extends LitElement {
+export class PlToolbarTitle extends LitElement {
   static override styles = toolbarTitleStyles;
   static override properties = { _subtitled: { state: true } };
 
@@ -77,7 +77,7 @@ export class PurrToolbarTitle extends LitElement {
   }
 }
 
-customElements.define("purr-toolbar-title", PurrToolbarTitle);
+customElements.define("pl-toolbar-title", PlToolbarTitle);
 
 /** A text field keeps the caret keys; at its edge the arrow leads out of it. */
 const keepsKey = (toolbar: HTMLElement, event: KeyboardEvent) => {
@@ -97,9 +97,9 @@ const keepsKey = (toolbar: HTMLElement, event: KeyboardEvent) => {
 const isControl = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement &&
   !(
-    el instanceof PurrToolbarSeparator ||
-    el instanceof PurrToolbarSpacer ||
-    el instanceof PurrToolbarTitle
+    el instanceof PlToolbarSeparator ||
+    el instanceof PlToolbarSpacer ||
+    el instanceof PlToolbarTitle
   ) &&
   el.getAttribute("role") !== "separator";
 
@@ -126,7 +126,7 @@ const isNamed = (item: HTMLElement) =>
  *
  * @slot - The items.
  */
-export class PurrToolbarGroup extends LitElement {
+export class PlToolbarGroup extends LitElement {
   static override styles = toolbarGroupStyles;
 
   override connectedCallback() {
@@ -139,24 +139,24 @@ export class PurrToolbarGroup extends LitElement {
   }
 }
 
-customElements.define("purr-toolbar-group", PurrToolbarGroup);
+customElements.define("pl-toolbar-group", PlToolbarGroup);
 
 /**
  * A bar of controls with one tab stop and arrow-key navigation.
  *
- * A `<purr-input type="search">` takes the toolbar's material; give it the
+ * A `<pl-input type="search">` takes the toolbar's material; give it the
  * `size` of the toolbar. Inside it the caret keys edit the text, and an arrow
  * at the edge of the text moves on to the next item.
  *
  * For a Back or Close item, import `backGlyph` or `closeGlyph` from
- * `purrlucent` and slot it into an icon `purr-button` with an `aria-label`.
+ * `purrlucent` and slot it into an icon `pl-button` with an `aria-label`.
  * The Back chevron points left; mirror it with `scaleX(-1)` under
  * right-to-left.
  *
- * @slot - Controls, `purr-toolbar-group`s, `purr-toolbar-separator`s, `purr-toolbar-spacer`s and a `purr-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
+ * @slot - Controls, `pl-toolbar-group`s, `pl-toolbar-separator`s, `pl-toolbar-spacer`s and a `pl-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
  * @csspart items - The row that lays out the slotted controls.
  */
-export class PurrToolbar extends LitElement {
+export class PlToolbar extends LitElement {
   static override styles = [barSurface, toolbarStyles];
   static override properties = {
     label: { type: String },
@@ -196,7 +196,7 @@ export class PurrToolbar extends LitElement {
 
   #controls(): Element[] {
     return this.#slotted().flatMap((el) =>
-      el instanceof PurrToolbarGroup ? [...el.children] : el,
+      el instanceof PlToolbarGroup ? [...el.children] : el,
     );
   }
 
@@ -229,7 +229,7 @@ export class PurrToolbar extends LitElement {
       if (this.label) this.setAttribute("aria-label", this.label);
       else {
         this.removeAttribute("aria-label");
-        console.warn("purr-toolbar needs a label.");
+        console.warn("pl-toolbar needs a label.");
       }
     }
   }
@@ -238,13 +238,13 @@ export class PurrToolbar extends LitElement {
 
   // Items added later are covered too, since the watcher requests an update.
   // Disabled and hidden items are checked too; `label` names a field such as
-  // `purr-input`.
+  // `pl-input`.
   protected override updated() {
     for (const item of this.#controls().filter(isControl)) {
       if (this.#unnamed.has(item) || isNamed(item)) continue;
       this.#unnamed.add(item);
       console.warn(
-        "purr-toolbar: an item needs an accessible name (aria-label or text).",
+        "pl-toolbar: an item needs an accessible name (aria-label or text).",
       );
     }
   }
@@ -253,7 +253,7 @@ export class PurrToolbar extends LitElement {
     const issue = prominentIssue(
       this.#slotted().map((el) => el.getAttribute("variant") === "primary"),
     );
-    if (issue) console.warn(`purr-toolbar: ${issue}`);
+    if (issue) console.warn(`pl-toolbar: ${issue}`);
     this.requestUpdate();
   }
 
@@ -264,14 +264,14 @@ export class PurrToolbar extends LitElement {
   }
 }
 
-customElements.define("purr-toolbar", PurrToolbar);
+customElements.define("pl-toolbar", PlToolbar);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-toolbar": PurrToolbar;
-    "purr-toolbar-group": PurrToolbarGroup;
-    "purr-toolbar-separator": PurrToolbarSeparator;
-    "purr-toolbar-spacer": PurrToolbarSpacer;
-    "purr-toolbar-title": PurrToolbarTitle;
+    "pl-toolbar": PlToolbar;
+    "pl-toolbar-group": PlToolbarGroup;
+    "pl-toolbar-separator": PlToolbarSeparator;
+    "pl-toolbar-spacer": PlToolbarSpacer;
+    "pl-toolbar-title": PlToolbarTitle;
   }
 }

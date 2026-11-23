@@ -2,29 +2,29 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./radio-group.ts";
-import type { PurrRadioGroup } from "./radio-group.ts";
+import type { PlRadioGroup } from "./radio-group.ts";
 
 const meta = {
   title: "Components/Radio group",
-  component: "purr-radio-group",
+  component: "pl-radio-group",
 } satisfies Meta;
 
 export default meta;
 
 type Story = StoryObj;
 
-const pad = "padding:var(--purr-space-4)";
+const pad = "padding:var(--pl-space-4)";
 
 const render = () => html`
-  <purr-radio-group id="control" label="Open folders in" style=${pad}>
-    <purr-radio value="tabs">Tabs</purr-radio>
-    <purr-radio value="windows">New windows</purr-radio>
-    <purr-radio value="split">Split view</purr-radio>
-  </purr-radio-group>
+  <pl-radio-group id="control" label="Open folders in" style=${pad}>
+    <pl-radio value="tabs">Tabs</pl-radio>
+    <pl-radio value="windows">New windows</pl-radio>
+    <pl-radio value="split">Split view</pl-radio>
+  </pl-radio-group>
 `;
 
 const control = async (canvasElement: HTMLElement) => {
-  const el = canvasElement.querySelector<PurrRadioGroup>("#control")!;
+  const el = canvasElement.querySelector<PlRadioGroup>("#control")!;
   await el.updateComplete;
   return el;
 };
@@ -36,41 +36,41 @@ export const Default: Story = { render };
 /** A radio marked `checked` is the starting choice. */
 export const Preselected: Story = {
   render: () => html`
-    <purr-radio-group id="control" label="Open folders in" style=${pad}>
-      <purr-radio value="tabs" checked>Tabs</purr-radio>
-      <purr-radio value="windows">New windows</purr-radio>
-      <purr-radio value="split" disabled>Split view</purr-radio>
-    </purr-radio-group>
+    <pl-radio-group id="control" label="Open folders in" style=${pad}>
+      <pl-radio value="tabs" checked>Tabs</pl-radio>
+      <pl-radio value="windows">New windows</pl-radio>
+      <pl-radio value="split" disabled>Split view</pl-radio>
+    </pl-radio-group>
   `,
 };
 
 export const Horizontal: Story = {
   render: () => html`
-    <purr-radio-group
+    <pl-radio-group
       id="control"
       label="Open folders in"
       orientation="horizontal"
       style=${pad}
     >
-      <purr-radio value="tabs" checked>Tabs</purr-radio>
-      <purr-radio value="windows">New windows</purr-radio>
-      <purr-radio value="split">Split view</purr-radio>
-    </purr-radio-group>
+      <pl-radio value="tabs" checked>Tabs</pl-radio>
+      <pl-radio value="windows">New windows</pl-radio>
+      <pl-radio value="split">Split view</pl-radio>
+    </pl-radio-group>
   `,
 };
 
 export const Sizes: Story = {
   render: () => html`
-    <div style="display:flex;gap:var(--purr-space-8);${pad}">
+    <div style="display:flex;gap:var(--pl-space-8);${pad}">
       ${(["md", "lg", "xl"] as const).map(
         (size) => html`
-          <purr-radio-group label="Size ${size}">
-            <purr-radio size=${size} value="a">${size} off</purr-radio>
-            <purr-radio size=${size} value="b" checked>${size} on</purr-radio>
-            <purr-radio size=${size} value="c" disabled
-              >${size} disabled</purr-radio
+          <pl-radio-group label="Size ${size}">
+            <pl-radio size=${size} value="a">${size} off</pl-radio>
+            <pl-radio size=${size} value="b" checked>${size} on</pl-radio>
+            <pl-radio size=${size} value="c" disabled
+              >${size} disabled</pl-radio
             >
-          </purr-radio-group>
+          </pl-radio-group>
         `,
       )}
     </div>
@@ -80,15 +80,10 @@ export const Sizes: Story = {
 /** A disabled group keeps its choice visible and gives no feedback. */
 export const Disabled: Story = {
   render: () => html`
-    <purr-radio-group
-      id="control"
-      label="Open folders in"
-      disabled
-      style=${pad}
-    >
-      <purr-radio value="tabs" checked>Tabs</purr-radio>
-      <purr-radio value="windows">New windows</purr-radio>
-    </purr-radio-group>
+    <pl-radio-group id="control" label="Open folders in" disabled style=${pad}>
+      <pl-radio value="tabs" checked>Tabs</pl-radio>
+      <pl-radio value="windows">New windows</pl-radio>
+    </pl-radio-group>
   `,
 };
 
@@ -97,19 +92,19 @@ export const InForm: Story = {
   render: () => html`
     <form id="form" style=${pad}>
       <fieldset id="fieldset" style="border:0;padding:0;margin:0">
-        <purr-radio-group
+        <pl-radio-group
           id="control"
           name="open"
           label="Open folders in"
           required
         >
-          <purr-radio value="tabs">Tabs</purr-radio>
-          <purr-radio value="windows" checked>New windows</purr-radio>
-        </purr-radio-group>
-        <purr-radio-group id="other" name="size" label="Size" required>
-          <purr-radio value="s">Small</purr-radio>
-          <purr-radio value="l">Large</purr-radio>
-        </purr-radio-group>
+          <pl-radio value="tabs">Tabs</pl-radio>
+          <pl-radio value="windows" checked>New windows</pl-radio>
+        </pl-radio-group>
+        <pl-radio-group id="other" name="size" label="Size" required>
+          <pl-radio value="s">Small</pl-radio>
+          <pl-radio value="l">Large</pl-radio>
+        </pl-radio-group>
       </fieldset>
     </form>
   `,
@@ -119,11 +114,11 @@ export const Rtl: Story = { render, globals: { dir: "rtl" } };
 
 export const Glass: Story = {
   render: () => html`
-    <purr-radio-group label="Open folders in" style=${pad}>
-      <purr-radio value="tabs" checked>Tabs</purr-radio>
-      <purr-radio value="windows">New windows</purr-radio>
-      <purr-radio value="split" disabled>Split view</purr-radio>
-    </purr-radio-group>
+    <pl-radio-group label="Open folders in" style=${pad}>
+      <pl-radio value="tabs" checked>Tabs</pl-radio>
+      <pl-radio value="windows">New windows</pl-radio>
+      <pl-radio value="split" disabled>Split view</pl-radio>
+    </pl-radio-group>
   `,
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

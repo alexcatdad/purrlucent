@@ -4,8 +4,8 @@ import { PressableController } from "../../behaviors/pressable.ts";
 import "../spinner/spinner.ts";
 import { buttonStyles } from "./button.css.ts";
 
-export type PurrButtonVariant = "primary" | "secondary" | "tinted" | "ghost";
-export type PurrButtonSize = "md" | "lg" | "xl";
+export type PlButtonVariant = "primary" | "secondary" | "tinted" | "ghost";
+export type PlButtonSize = "md" | "lg" | "xl";
 
 /**
  * A button. The label is the slotted text and is required for an accessible
@@ -21,11 +21,11 @@ export type PurrButtonSize = "md" | "lg" | "xl";
  * @attr {boolean} default - The dialog's default button: Return activates it, it draws as primary and it takes initial focus.
  * @attr {boolean} cancel - The dialog's cancel button: Escape and Command-Period activate it.
  * @attr {boolean} busy - The action is running: a spinner shows before the label, the button ignores presses and stays focusable.
- * @fires purr-press - When the button is activated by pointer, Enter or Space.
+ * @fires pl-press - When the button is activated by pointer, Enter or Space.
  * @slot - The button label, with an optional leading svg icon.
  * @csspart label - The wrapper around the label.
  */
-export class PurrButton extends LitElement {
+export class PlButton extends LitElement {
   static formAssociated = true;
   static override styles = [interactionStyles, buttonStyles];
   static override properties = {
@@ -40,9 +40,9 @@ export class PurrButton extends LitElement {
     busy: { type: Boolean, reflect: true },
   };
 
-  declare variant: PurrButtonVariant;
+  declare variant: PlButtonVariant;
   declare type: "button" | "submit" | "reset";
-  declare size: PurrButtonSize;
+  declare size: PlButtonSize;
   declare icon: boolean;
   declare destructive: boolean;
   declare default: boolean;
@@ -69,7 +69,7 @@ export class PurrButton extends LitElement {
     this.disabled = false;
     this.busy = false;
     // Like a native button: submit or reset the form the button belongs to.
-    this.addEventListener("purr-press", () => {
+    this.addEventListener("pl-press", () => {
       const { form } = this.pressable.internals;
       if (this.type === "submit") form?.requestSubmit();
       else if (this.type === "reset") form?.reset();
@@ -110,17 +110,17 @@ export class PurrButton extends LitElement {
     return html`<span part="label"
       >${
         this.busy
-          ? html`<purr-spinner size="sm" aria-hidden="true"></purr-spinner>`
+          ? html`<pl-spinner size="sm" aria-hidden="true"></pl-spinner>`
           : nothing
       }<slot></slot
     ></span>`;
   }
 }
 
-customElements.define("purr-button", PurrButton);
+customElements.define("pl-button", PlButton);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-button": PurrButton;
+    "pl-button": PlButton;
   }
 }

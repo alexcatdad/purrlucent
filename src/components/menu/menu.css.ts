@@ -30,22 +30,21 @@ export const menuStyles = css`
     box-sizing: border-box;
     overflow-y: auto;
     overscroll-behavior: contain;
-    max-block-size: calc(100dvh - var(--purr-space-4));
-    min-inline-size: calc(var(--purr-spacing) * 61);
+    max-block-size: calc(100dvh - var(--pl-space-4));
+    min-inline-size: calc(var(--pl-spacing) * 61);
     inline-size: max-content;
-    max-inline-size: calc(100vw - var(--purr-space-4));
+    max-inline-size: calc(100vw - var(--pl-space-4));
     inset: auto;
-    margin: var(--purr-space-1) 0;
+    margin: var(--pl-space-1) 0;
     border: 0;
-    border-radius: var(--purr-radius-lg);
-    padding: var(--purr-pad-surface);
-    background: var(--purr-material-panel);
-    backdrop-filter: var(--purr-material-panel-filter);
-    box-shadow: var(--purr-material-edge), var(--purr-elevation-panel);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
-    transition: opacity var(--purr-duration) var(--purr-ease-out);
+    border-radius: var(--pl-radius-lg);
+    padding: var(--pl-pad-surface);
+    background: var(--pl-material-panel);
+    backdrop-filter: var(--pl-material-panel-filter);
+    box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
+    transition: opacity var(--pl-duration) var(--pl-ease-out);
   }
 
   :host([slot="submenu"]) [part="menu"] {
@@ -76,16 +75,16 @@ export const itemStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    block-size: var(--purr-size-md);
-    min-block-size: var(--purr-size-hit-min);
-    border-radius: var(--purr-radius);
-    padding-inline: var(--purr-pad-item);
+    block-size: var(--pl-size-md);
+    min-block-size: var(--pl-size-hit-min);
+    border-radius: var(--pl-radius);
+    padding-inline: var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
     cursor: default;
     transition:
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      color var(--purr-duration-fast) var(--purr-ease-out);
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   :host([hidden]) {
@@ -93,14 +92,14 @@ export const itemStyles = css`
   }
 
   :host([destructive]) {
-    color: var(--purr-color-destructive-text);
+    color: var(--pl-color-destructive-text);
   }
 
   [part="check"] {
     flex: none;
-    inline-size: var(--purr-icon-sm);
-    block-size: var(--purr-icon-sm);
-    margin-inline-end: var(--purr-gap-icon);
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+    margin-inline-end: var(--pl-gap-icon);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -115,9 +114,9 @@ export const itemStyles = css`
 
   ::slotted([slot="icon"]) {
     flex: none;
-    inline-size: var(--purr-icon-sm);
-    block-size: var(--purr-icon-sm);
-    margin-inline-end: var(--purr-gap-icon);
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+    margin-inline-end: var(--pl-gap-icon);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -128,26 +127,26 @@ export const itemStyles = css`
   /* The gap sits here: the detail below is ltr, so its own inline start is always the left. */
   [part="label"] {
     flex: 1;
-    margin-inline-end: var(--purr-space-2);
+    margin-inline-end: var(--pl-space-2);
   }
 
   /* Shortcuts read left to right in every language. */
   [part="detail"] {
     direction: ltr;
-    color: var(--purr-color-muted-foreground);
+    color: var(--pl-color-muted-foreground);
   }
 
   [part="chevron"] {
     flex: none;
-    inline-size: var(--purr-icon-sm);
-    block-size: var(--purr-icon-sm);
-    margin-inline-start: var(--purr-space-2);
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+    margin-inline-start: var(--pl-space-2);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    color: var(--purr-color-muted-foreground);
+    color: var(--pl-color-muted-foreground);
   }
 
   :host(:dir(rtl)) [part="chevron"] {
@@ -160,24 +159,20 @@ export const itemStyles = css`
     position: absolute;
     inline-size: 0;
     block-size: 0;
-    inset-block-start: calc(var(--purr-pad-surface) * -1);
+    inset-block-start: calc(var(--pl-pad-surface) * -1);
   }
 
   [part="anchor"] {
-    inset-inline-start: calc(
-      100% + var(--purr-pad-surface) + var(--purr-space-1)
-    );
+    inset-inline-start: calc(100% + var(--pl-pad-surface) + var(--pl-space-1));
   }
 
   [part="anchor-flip"] {
-    inset-inline-start: calc(
-      (var(--purr-pad-surface) + var(--purr-space-1)) * -1
-    );
+    inset-inline-start: calc((var(--pl-pad-surface) + var(--pl-space-1)) * -1);
   }
 
   :host(:not([disabled]):focus) {
-    background: var(--purr-color-selected);
-    color: var(--purr-color-selected-foreground);
+    background: var(--pl-color-selected);
+    color: var(--pl-color-selected-foreground);
   }
 
   :host(:not([disabled]):focus) :is([part="detail"], [part="chevron"]) {
@@ -186,8 +181,8 @@ export const itemStyles = css`
 
   @media (hover: hover) {
     :host(:not([disabled], [aria-expanded="true"]):hover) {
-      background: var(--purr-color-selected);
-      color: var(--purr-color-selected-foreground);
+      background: var(--pl-color-selected);
+      color: var(--pl-color-selected-foreground);
     }
 
     :host(:not([disabled], [aria-expanded="true"]):hover)
@@ -198,21 +193,17 @@ export const itemStyles = css`
 
   /* The row that owns the open submenu, while focus is elsewhere. */
   :host([aria-expanded="true"]:not(:focus)) {
-    background: color-mix(
-      in srgb,
-      var(--purr-color-foreground) 8%,
-      transparent
-    );
+    background: color-mix(in srgb, var(--pl-color-foreground) 8%, transparent);
   }
 
   /* Inset, so the popup does not clip it. */
   :host(:focus-visible) {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   :host([disabled]) {
-    color: var(--purr-color-disabled-foreground);
+    color: var(--pl-color-disabled-foreground);
     pointer-events: none;
   }
 
@@ -241,13 +232,9 @@ export const separatorStyles = css`
   :host {
     display: block;
     block-size: 1px;
-    margin: var(--purr-space-1) var(--purr-pad-item);
-    border-radius: var(--purr-radius);
-    background: color-mix(
-      in srgb,
-      var(--purr-color-foreground) 12%,
-      transparent
-    );
+    margin: var(--pl-space-1) var(--pl-pad-item);
+    border-radius: var(--pl-radius);
+    background: color-mix(in srgb, var(--pl-color-foreground) 12%, transparent);
   }
 
   @media (forced-colors: active) {
@@ -263,9 +250,9 @@ export const labelStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    block-size: var(--purr-size-md);
-    padding-inline: var(--purr-pad-item);
-    color: var(--purr-color-muted-foreground);
+    block-size: var(--pl-size-md);
+    padding-inline: var(--pl-pad-item);
+    color: var(--pl-color-muted-foreground);
     font-weight: 700;
     white-space: nowrap;
   }

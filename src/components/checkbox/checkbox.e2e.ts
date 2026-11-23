@@ -161,7 +161,7 @@ test("the required message is the browser's own, localized one", async ({
     // The checkbox keeps its validity in ElementInternals, reached through
     // the press behavior that attached them.
     const el = document.querySelector(
-      "purr-checkbox[required]",
+      "pl-checkbox[required]",
     ) as HTMLElement & {
       pressable: { internals: ElementInternals };
     };
@@ -203,7 +203,7 @@ test("a disabled fieldset disables the box and submits nothing", async ({
 test("the label follows the box and mirrors under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const [box, label] = await page
-    .locator("purr-checkbox")
+    .locator("pl-checkbox")
     .first()
     .evaluate((el) => {
       const part = (name: string) =>
@@ -286,7 +286,7 @@ test("each size draws a larger box than the one before", async ({ page }) => {
 test("a box without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-checkbox");
+    const bare = document.createElement("pl-checkbox");
     bare.id = "bare";
     el.append(bare);
   });
@@ -313,7 +313,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every box keeps a 44 by 44 hit area", async ({ page }) => {
     await gotoStory(page, story("states"));
-    for (const control of await page.locator("purr-checkbox").all()) {
+    for (const control of await page.locator("pl-checkbox").all()) {
       const box = (await control.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);

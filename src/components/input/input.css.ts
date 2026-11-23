@@ -7,17 +7,16 @@ import { css } from "lit";
  */
 export const fieldStyles = css`
   :host {
-    --_h: var(--purr-size-md);
-    --_pad: var(--purr-pad-control);
-    --_edge: var(--purr-color-input-border);
+    --_h: var(--pl-size-md);
+    --_pad: var(--pl-pad-control);
+    --_edge: var(--pl-color-input-border);
 
     display: inline-grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--purr-gap-form);
-    inline-size: calc(var(--purr-spacing) * 30);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    gap: var(--pl-gap-form);
+    inline-size: calc(var(--pl-spacing) * 30);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
 
   :host([hidden]) {
@@ -25,16 +24,16 @@ export const fieldStyles = css`
   }
 
   :host([size="lg"]) {
-    --_h: var(--purr-size-lg);
+    --_h: var(--pl-size-lg);
   }
 
   :host([size="xl"]) {
-    --_h: var(--purr-size-xl);
-    --_pad: var(--purr-pad-control-xl);
+    --_h: var(--pl-size-xl);
+    --_pad: var(--pl-pad-control-xl);
   }
 
   :host(:state(user-invalid)) {
-    --_edge: var(--purr-color-destructive);
+    --_edge: var(--pl-color-destructive);
   }
 
   [part="label"] {
@@ -49,9 +48,9 @@ export const fieldStyles = css`
   [part="message"] {
     display: flex;
     align-items: flex-start;
-    gap: var(--purr-gap-icon);
-    color: var(--purr-color-destructive-text);
-    font-size: var(--purr-text-xs);
+    gap: var(--pl-gap-icon);
+    color: var(--pl-color-destructive-text);
+    font-size: var(--pl-text-xs);
     overflow-wrap: anywhere;
   }
 
@@ -61,8 +60,8 @@ export const fieldStyles = css`
 
   [part="message"] svg {
     flex: none;
-    inline-size: var(--purr-icon-md);
-    block-size: var(--purr-icon-md);
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -73,24 +72,24 @@ export const fieldStyles = css`
   [part="field"] {
     display: flex;
     align-items: center;
-    gap: var(--purr-gap-icon);
+    gap: var(--pl-gap-icon);
     box-sizing: border-box;
     block-size: var(--_h);
     padding-inline: var(--_pad);
-    border-radius: var(--purr-radius);
-    background: var(--purr-color-input);
+    border-radius: var(--pl-radius);
+    background: var(--pl-color-input);
     box-shadow: 0 0 0 1px var(--_edge);
-    outline: var(--purr-ring-width) solid transparent;
-    outline-offset: var(--purr-ring-offset);
+    outline: var(--pl-ring-width) solid transparent;
+    outline-offset: var(--pl-ring-offset);
     cursor: text;
     transition:
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      box-shadow var(--purr-duration-fast) var(--purr-ease-out),
-      outline-color var(--purr-duration-fast) var(--purr-ease-out);
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      box-shadow var(--pl-duration-fast) var(--pl-ease-out),
+      outline-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   [part="field"]:has([part="control"]:focus-visible) {
-    outline-color: var(--purr-color-ring);
+    outline-color: var(--pl-color-ring);
   }
 
   [part="control"] {
@@ -104,36 +103,35 @@ export const fieldStyles = css`
     background: none;
     color: inherit;
     font: inherit;
-    caret-color: var(--purr-color-accent);
+    caret-color: var(--pl-color-accent);
     appearance: none;
   }
 
   /* The UA paints its autofill colour on the input; cover it with the shell's. */
   [part="control"]:-webkit-autofill {
-    -webkit-text-fill-color: var(--purr-color-foreground);
-    box-shadow: inset 0 0 0 calc(var(--purr-spacing) * 1000)
-      var(--purr-color-input);
+    -webkit-text-fill-color: var(--pl-color-foreground);
+    box-shadow: inset 0 0 0 calc(var(--pl-spacing) * 1000) var(--pl-color-input);
   }
 
   [part="control"]::placeholder {
-    color: var(--purr-color-muted-foreground);
+    color: var(--pl-color-muted-foreground);
     opacity: 1;
   }
 
   :host(:disabled) [part="field"] {
-    background: var(--purr-color-muted-disabled);
-    box-shadow: 0 0 0 1px var(--purr-color-border);
-    color: var(--purr-color-disabled-foreground);
+    background: var(--pl-color-muted-disabled);
+    box-shadow: 0 0 0 1px var(--pl-color-border);
+    color: var(--pl-color-disabled-foreground);
     cursor: default;
   }
 
   :host(:disabled) [part="control"] {
-    -webkit-text-fill-color: var(--purr-color-disabled-foreground);
+    -webkit-text-fill-color: var(--pl-color-disabled-foreground);
   }
 
   :host(:disabled) [part="control"]::placeholder {
-    color: var(--purr-color-disabled-foreground);
-    -webkit-text-fill-color: var(--purr-color-disabled-foreground);
+    color: var(--pl-color-disabled-foreground);
+    -webkit-text-fill-color: var(--pl-color-disabled-foreground);
   }
 
   @media (forced-colors: active) {
@@ -175,10 +173,10 @@ export const inputStyles = [
     /* Room for about five characters beside the glyph and the clear button. */
     :host(:state(search)) {
       inline-size: max(
-        calc(var(--purr-spacing) * 30),
+        calc(var(--pl-spacing) * 30),
         calc(
-          var(--_pad) + var(--purr-icon-lg) + var(--purr-gap-icon) * 2 +
-            var(--purr-size-hit-min) + var(--purr-spacing) * 12
+          var(--_pad) + var(--pl-icon-lg) + var(--pl-gap-icon) * 2 +
+            var(--pl-size-hit-min) + var(--pl-spacing) * 12
         )
       );
     }
@@ -207,7 +205,7 @@ export const inputStyles = [
 
     [part="glyph"] {
       flex: none;
-      inline-size: var(--purr-icon-lg);
+      inline-size: var(--pl-icon-lg);
       block-size: auto;
       fill: none;
       stroke: currentColor;
@@ -220,18 +218,18 @@ export const inputStyles = [
       flex: none;
       display: grid;
       place-items: center;
-      inline-size: var(--purr-size-hit-min);
-      block-size: var(--purr-size-hit-min);
+      inline-size: var(--pl-size-hit-min);
+      block-size: var(--pl-size-hit-min);
       margin: 0;
       padding: 0;
       border: 0;
-      border-radius: var(--purr-radius-full);
+      border-radius: var(--pl-radius-full);
       background: none;
-      color: var(--purr-color-muted-foreground);
+      color: var(--pl-color-muted-foreground);
       cursor: default;
       transition:
-        color var(--purr-duration-fast) var(--purr-ease-out),
-        opacity var(--purr-duration-slow) var(--purr-ease-out);
+        color var(--pl-duration-fast) var(--pl-ease-out),
+        opacity var(--pl-duration-slow) var(--pl-ease-out);
 
       @starting-style {
         opacity: 0;
@@ -239,18 +237,18 @@ export const inputStyles = [
     }
 
     [part="clear"] svg {
-      inline-size: var(--purr-icon-md);
+      inline-size: var(--pl-icon-md);
       block-size: auto;
       fill: currentColor;
     }
 
     [part="clear"]:active {
-      color: var(--purr-color-foreground);
+      color: var(--pl-color-foreground);
     }
 
     [part="clear"]:focus-visible {
-      outline: var(--purr-ring-width) solid var(--purr-color-ring);
-      outline-offset: calc(var(--purr-ring-width) * -1);
+      outline: var(--pl-ring-width) solid var(--pl-color-ring);
+      outline-offset: calc(var(--pl-ring-width) * -1);
     }
 
     @media (forced-colors: active) {

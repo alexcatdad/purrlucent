@@ -2,14 +2,14 @@ import { LitElement, html, type PropertyValues } from "lit";
 import { sectionStyles } from "./sidebar.css.ts";
 
 /**
- * A titled group of `purr-sidebar-item` children inside a `purr-sidebar`. The
+ * A titled group of `pl-sidebar-item` children inside a `pl-sidebar`. The
  * group is exposed to assistive technology under its `label`, so the visible
  * heading is not read a second time.
  *
- * @slot - `purr-sidebar-item` children.
+ * @slot - `pl-sidebar-item` children.
  * @csspart heading - The visible heading.
  */
-export class PurrSidebarSection extends LitElement {
+export class PlSidebarSection extends LitElement {
   static override styles = sectionStyles;
   static override properties = { label: { type: String } };
 
@@ -41,10 +41,10 @@ export class PurrSidebarSection extends LitElement {
   }
 }
 
-customElements.define("purr-sidebar-section", PurrSidebarSection);
+customElements.define("pl-sidebar-section", PlSidebarSection);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-sidebar-section": PurrSidebarSection;
+    "pl-sidebar-section": PlSidebarSection;
   }
 }

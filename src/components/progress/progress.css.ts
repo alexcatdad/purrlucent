@@ -8,17 +8,17 @@ import { css } from "lit";
  */
 export const progressStyles = css`
   :host {
-    --_h: calc(var(--purr-spacing) * 2.5);
+    --_h: calc(var(--pl-spacing) * 2.5);
     --_d: 1;
     --_p: 0;
 
     display: inline-block;
-    inline-size: calc(var(--purr-spacing) * 35);
+    inline-size: calc(var(--pl-spacing) * 35);
     block-size: var(--_h);
     overflow: hidden;
     vertical-align: middle;
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-track);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-track);
   }
 
   :host([hidden]) {
@@ -34,9 +34,9 @@ export const progressStyles = css`
     block-size: 100%;
     inline-size: calc(var(--_p) * 100%);
     min-inline-size: calc(var(--_h) * min(1, var(--_p) * 100));
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-selected);
-    transition: inline-size var(--purr-duration) var(--purr-ease-out);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-selected);
+    transition: inline-size var(--pl-duration) var(--pl-ease-out);
   }
 
   :host(:state(indeterminate)) [part="fill"] {
@@ -46,15 +46,15 @@ export const progressStyles = css`
     background-image: linear-gradient(
       to right,
       transparent 5%,
-      var(--purr-color-selected)
+      var(--pl-color-selected)
     );
     scale: var(--_d) 1;
-    animation: purr-progress-slide calc(var(--purr-duration-slow) * 5.7) linear
+    animation: pl-progress-slide calc(var(--pl-duration-slow) * 5.7) linear
       infinite;
   }
 
   /* Scaling flips the gradient and the round end; the move is mirrored by hand. */
-  @keyframes purr-progress-slide {
+  @keyframes pl-progress-slide {
     from {
       translate: calc(var(--_d) * -133.4%);
     }

@@ -49,7 +49,7 @@ for (const id of stories) {
 test("a button without label text fails axe", async ({ page }) => {
   const root = await gotoStory(page, "components-button--default");
   await root.evaluate((el) => {
-    const empty = document.createElement("purr-button");
+    const empty = document.createElement("pl-button");
     empty.id = "empty";
     el.append(empty);
   });
@@ -69,7 +69,7 @@ test("a destructive button is never styled as the prominent button", async ({
       .locator(`#${id}`)
       .evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   const primary = await page.evaluate(() => {
-    const el = document.createElement("purr-button");
+    const el = document.createElement("pl-button");
     el.setAttribute("variant", "primary");
     document.body.append(el);
     const color = getComputedStyle(el, "::before").backgroundColor;
@@ -104,7 +104,7 @@ test("a submit button submits its form and a reset button resets it", async ({
 test("each size is taller than the one before", async ({ page }) => {
   await gotoStory(page, "components-button--sizes");
   const heights = await page
-    .locator("purr-button:not([icon])")
+    .locator("pl-button:not([icon])")
     .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
   expect(heights).toEqual([...heights].sort((a, b) => a - b));
   expect(new Set(heights).size).toBe(3);
@@ -112,7 +112,7 @@ test("each size is taller than the one before", async ({ page }) => {
 
 test("an icon button is as wide as it is tall", async ({ page }) => {
   await gotoStory(page, "components-button--sizes");
-  for (const button of await page.locator("purr-button[icon]").all()) {
+  for (const button of await page.locator("pl-button[icon]").all()) {
     const box = await button.boundingBox();
     expect(box!.width).toBe(box!.height);
   }
@@ -151,7 +151,7 @@ test.describe("coarse pointer on a wide screen", () => {
   test("every button keeps a 44 by 44 hit area", async ({ page }) => {
     for (const id of ["variants", "sizes"]) {
       await gotoStory(page, `components-button--${id}`);
-      for (const button of await page.locator("purr-button").all()) {
+      for (const button of await page.locator("pl-button").all()) {
         const box = await button.boundingBox();
         expect(box!.width).toBeGreaterThanOrEqual(44);
         expect(box!.height).toBeGreaterThanOrEqual(44);
@@ -164,7 +164,7 @@ test("the focus ring stays visible under forced colors", async ({ page }) => {
   await gotoStory(page, "components-button--variants");
   await page.emulateMedia({ forcedColors: "active" });
   await page.keyboard.press("Tab");
-  const button = page.locator("purr-button").first();
+  const button = page.locator("pl-button").first();
   await expect(button).toBeFocused();
   expect(
     await button.evaluate((el) => getComputedStyle(el).outlineStyle),
@@ -179,7 +179,7 @@ test("a disabled fieldset makes the button inert, as a native button is", async 
     el.insertAdjacentHTML(
       "beforeend",
       `<form id="f"><fieldset id="fs" disabled>
-        <purr-button id="b" type="submit">Save</purr-button>
+        <pl-button id="b" type="submit">Save</pl-button>
       </fieldset></form>`,
     );
     const form = document.getElementById("f")!;
@@ -189,7 +189,7 @@ test("a disabled fieldset makes the button inert, as a native button is", async 
       e.preventDefault();
       log("submit");
     });
-    form.addEventListener("purr-press", () => log("press"));
+    form.addEventListener("pl-press", () => log("press"));
   });
   const log = page.locator("#f");
   const button = page.locator("#b");
@@ -232,10 +232,10 @@ test("a busy button shows a spinner, ignores presses and stays focusable", async
   await expect(button).toHaveAttribute("aria-busy", "true");
   await expect(button).not.toHaveAttribute("aria-disabled");
   await expect(button).toHaveAttribute("tabindex", "0");
-  await expect(button.locator("purr-spinner")).toBeVisible();
+  await expect(button.locator("pl-spinner")).toBeVisible();
   await button.evaluate((el) => {
     el.dataset.presses = "0";
-    el.addEventListener("purr-press", () => (el.dataset.presses += "x"));
+    el.addEventListener("pl-press", () => (el.dataset.presses += "x"));
   });
   await button.focus();
   await expect(button).toBeFocused();
@@ -247,7 +247,7 @@ test("a busy button shows a spinner, ignores presses and stays focusable", async
   expect(box.width).toBe(box.height);
   await button.evaluate((el) => el.removeAttribute("busy"));
   await expect(button).not.toHaveAttribute("aria-busy");
-  await expect(button.locator("purr-spinner")).toHaveCount(0);
+  await expect(button.locator("pl-spinner")).toHaveCount(0);
   await page.keyboard.press("Enter");
   await expect(button).toHaveAttribute("data-presses", "0x");
 });
@@ -271,7 +271,7 @@ test("a button keeps its own tabindex, also across disabling", async ({
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      `<purr-button id="r" tabindex="-1">Roving</purr-button>`,
+      `<pl-button id="r" tabindex="-1">Roving</pl-button>`,
     ),
   );
   const button = page.locator("#r");
@@ -288,7 +288,7 @@ test("the hidden attribute hides the button", async ({ page }) => {
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      `<purr-button id="h" hidden>Hi</purr-button>`,
+      `<pl-button id="h" hidden>Hi</pl-button>`,
     ),
   );
   await expect(page.locator("#h")).toBeHidden();
@@ -313,14 +313,14 @@ test("increased contrast outlines every filled variant", async ({ page }) => {
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      `<purr-button variant="primary">A</purr-button>
-       <purr-button variant="tinted">B</purr-button>
-       <purr-button destructive>C</purr-button>
-       <purr-button variant="primary" disabled>D</purr-button>`,
+      `<pl-button variant="primary">A</pl-button>
+       <pl-button variant="tinted">B</pl-button>
+       <pl-button destructive>C</pl-button>
+       <pl-button variant="primary" disabled>D</pl-button>`,
     ),
   );
   const shadows = await page
-    .locator("purr-button")
+    .locator("pl-button")
     .evaluateAll((els) =>
       els.map((el) => getComputedStyle(el, "::before").boxShadow),
     );

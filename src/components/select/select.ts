@@ -11,7 +11,7 @@ import { listboxStyles, optionStyles, selectStyles } from "./select.css.ts";
 const TYPE_AHEAD_MS = 500;
 
 /**
- * One choice in a `purr-select`. Its text is the label. The select marks the
+ * One choice in a `pl-select`. Its text is the label. The select marks the
  * chosen option with `aria-selected`; this element does nothing alone.
  *
  * @attr {string} value - What the select submits when this option is chosen. Defaults to the label.
@@ -20,7 +20,7 @@ const TYPE_AHEAD_MS = 500;
  * @slot - The label.
  * @csspart check - The check mark shown on the chosen option.
  */
-export class PurrOption extends LitElement {
+export class PlOption extends LitElement {
   static override styles = optionStyles;
   static override properties = {
     value: { reflect: true },
@@ -88,18 +88,18 @@ export class PurrOption extends LitElement {
  * @attr {boolean} disabled - No focus, no list, nothing submitted.
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} open - The list is showing.
- * @slot - The `purr-option` children.
+ * @slot - The `pl-option` children.
  * @slot label - The visible label.
  * @csspart label - The visible label.
  * @csspart trigger - The combobox that shows the choice.
  * @csspart value - The chosen label or the placeholder.
  * @csspart glyph - The up-down arrows.
  * @csspart listbox - The popup.
- * @fires purr-change - The user chose another option. `detail.value` holds its value.
- * @fires input - After purr-change, as a native select fires it.
+ * @fires pl-change - The user chose another option. `detail.value` holds its value.
+ * @fires input - After pl-change, as a native select fires it.
  * @fires change - After input, as a native select fires it.
  */
-export class PurrSelect extends LitElement {
+export class PlSelect extends LitElement {
   static formAssociated = true;
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -131,7 +131,7 @@ export class PurrSelect extends LitElement {
   readonly #internals = this.attachInternals();
   #query = "";
   #timer: ReturnType<typeof setTimeout> | undefined;
-  #focusOnOpen: PurrOption | undefined;
+  #focusOnOpen: PlOption | undefined;
   #start: string | undefined;
   readonly #watch = new MutationObserver(() => {
     this.#syncLabelled();
@@ -164,11 +164,11 @@ export class PurrSelect extends LitElement {
     this.addEventListener("focusin", () => this.requestUpdate());
   }
 
-  get #options(): PurrOption[] {
-    return [...this.querySelectorAll("purr-option")];
+  get #options(): PlOption[] {
+    return [...this.querySelectorAll("pl-option")];
   }
 
-  get #chosen(): PurrOption | undefined {
+  get #chosen(): PlOption | undefined {
     return this.value
       ? this.#options.find((o) => o.optionValue === this.value)
       : undefined;
@@ -195,14 +195,14 @@ export class PurrSelect extends LitElement {
     if (refocus) this.#trigger.focus();
   }
 
-  #choose(option: PurrOption) {
+  #choose(option: PlOption) {
     if (option.disabled) return;
     const changed = option.optionValue !== this.value;
     this.value = option.optionValue;
     this.#close(true);
     if (changed) {
       this.dispatchEvent(
-        new CustomEvent("purr-change", {
+        new CustomEvent("pl-change", {
           detail: { value: this.value },
           bubbles: true,
           composed: true,
@@ -213,7 +213,7 @@ export class PurrSelect extends LitElement {
   }
 
   #onClick = (event: Event) => {
-    const option = (event.target as Element).closest("purr-option");
+    const option = (event.target as Element).closest("pl-option");
     if (option) this.#choose(option);
   };
 
@@ -223,7 +223,7 @@ export class PurrSelect extends LitElement {
     const options = this.#options.filter((o) => !o.disabled);
     const active = (this.getRootNode() as Document | ShadowRoot).activeElement;
     const current = options.findIndex((o) => o === active);
-    const go = (option: PurrOption | undefined) => {
+    const go = (option: PlOption | undefined) => {
       event.preventDefault();
       if (this.open) option?.focus();
       else {
@@ -375,12 +375,12 @@ export class PurrSelect extends LitElement {
   }
 }
 
-customElements.define("purr-option", PurrOption);
-customElements.define("purr-select", PurrSelect);
+customElements.define("pl-option", PlOption);
+customElements.define("pl-select", PlSelect);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-option": PurrOption;
-    "purr-select": PurrSelect;
+    "pl-option": PlOption;
+    "pl-select": PlSelect;
   }
 }

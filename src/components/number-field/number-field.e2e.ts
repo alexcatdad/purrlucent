@@ -22,7 +22,7 @@ const record = (host: Locator) =>
   host.evaluate((el) => {
     const log: string[] = [];
     (window as unknown as { log: string[] }).log = log;
-    for (const name of ["purr-input", "purr-change"])
+    for (const name of ["pl-input", "pl-change"])
       el.addEventListener(name, (event) =>
         log.push(
           `${name}:${(event as CustomEvent<{ value: unknown }>).detail.value}`,
@@ -51,7 +51,7 @@ test("a slotted label names the field and a click on it focuses the input", asyn
 }) => {
   await gotoStory(page, story("labelled"));
   const field = page.getByRole("spinbutton", { name: "Quantity" });
-  await page.locator("purr-number-field label").click();
+  await page.locator("pl-number-field label").click();
   await expect(field).toBeFocused();
 });
 
@@ -59,7 +59,7 @@ test("increase-label and decrease-label name the stepper buttons", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-number-field").evaluate((el) => {
+  await page.locator("pl-number-field").evaluate((el) => {
     el.setAttribute("increase-label", "Augmenter");
     el.setAttribute("decrease-label", "Diminuer");
   });
@@ -69,7 +69,7 @@ test("increase-label and decrease-label name the stepper buttons", async ({
 
 test("focusing the host focuses the input", async ({ page }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-number-field").focus();
+  await page.locator("pl-number-field").focus();
   await expect(page.getByRole("spinbutton")).toBeFocused();
 });
 
@@ -81,7 +81,7 @@ test("the stepper buttons are not tab stops", async ({ page }) => {
   await expect(page.getByRole("spinbutton")).not.toBeFocused();
   expect(
     await page
-      .locator("purr-number-field")
+      .locator("pl-number-field")
       .evaluate(
         (el) => el.shadowRoot!.querySelectorAll("button[tabindex='-1']").length,
       ),
@@ -139,10 +139,10 @@ test("a typed number is clamped and snapped when committed", async ({
   await page.keyboard.press("Tab");
   await expect(field).toHaveValue("10");
   expect(await logged(page)).toEqual([
-    "purr-input:5",
-    "purr-change:6",
-    "purr-input:99",
-    "purr-change:10",
+    "pl-input:5",
+    "pl-change:6",
+    "pl-input:99",
+    "pl-change:10",
   ]);
 });
 
@@ -174,22 +174,18 @@ test("a custom validity set before the first render is kept", async ({
   page,
 }) => {
   await gotoStory(page, story("steps"));
-  const result = await page
-    .locator("purr-number-field")
-    .evaluate(async (el) => {
-      const field = document.createElement(
-        "purr-number-field",
-      ) as HTMLElement & {
-        setCustomValidity(message: string): void;
-        validity: ValidityState;
-        validationMessage: string;
-        updateComplete: Promise<boolean>;
-      };
-      field.setCustomValidity("Taken");
-      el.after(field);
-      await field.updateComplete;
-      return [field.validity.customError, field.validationMessage];
-    });
+  const result = await page.locator("pl-number-field").evaluate(async (el) => {
+    const field = document.createElement("pl-number-field") as HTMLElement & {
+      setCustomValidity(message: string): void;
+      validity: ValidityState;
+      validationMessage: string;
+      updateComplete: Promise<boolean>;
+    };
+    field.setCustomValidity("Taken");
+    el.after(field);
+    await field.updateComplete;
+    return [field.validity.customError, field.validationMessage];
+  });
   expect(result).toEqual([true, "Taken"]);
 });
 
@@ -198,7 +194,7 @@ test("editing shortcuts with a modifier key do not change the value", async ({
 }) => {
   await gotoStory(page, story("steps"));
   const field = page.getByRole("spinbutton");
-  await record(page.locator("purr-number-field"));
+  await record(page.locator("pl-number-field"));
   await field.focus();
   for (const key of [
     "Shift+Home",
@@ -213,7 +209,7 @@ test("editing shortcuts with a modifier key do not change the value", async ({
 
 test("a read-only field keeps Home and End for the caret", async ({ page }) => {
   await gotoStory(page, story("steps"));
-  const host = page.locator("purr-number-field");
+  const host = page.locator("pl-number-field");
   await host.evaluate(
     (el) => ((el as HTMLElement & { readonly: boolean }).readonly = true),
   );
@@ -288,7 +284,7 @@ test("the buttons step, stop at the limits and are disabled there", async ({
   page,
 }) => {
   await gotoStory(page, story("steps"));
-  const host = page.locator("purr-number-field");
+  const host = page.locator("pl-number-field");
   const field = page.getByRole("spinbutton");
   await record(host);
   await host.getByRole("button", { name: "Increase" }).click();
@@ -297,8 +293,8 @@ test("the buttons step, stop at the limits and are disabled there", async ({
   await host.getByRole("button", { name: "Decrease" }).click();
   await expect(field).toHaveValue("4");
   expect((await logged(page)).slice(0, 2)).toEqual([
-    "purr-input:6",
-    "purr-change:6",
+    "pl-input:6",
+    "pl-change:6",
   ]);
   await field.focus();
   await page.keyboard.press("End");
@@ -309,7 +305,7 @@ test("the buttons step, stop at the limits and are disabled there", async ({
 
 test("shift-click on a stepper button moves ten steps", async ({ page }) => {
   await gotoStory(page, story("labelled"));
-  const host = page.locator("purr-number-field");
+  const host = page.locator("pl-number-field");
   const field = page.getByRole("spinbutton");
   await host
     .getByRole("button", { name: "Increase" })
@@ -329,7 +325,7 @@ test("a pressed button keeps focus in the field and repeats while held", async (
   page,
 }) => {
   await gotoStory(page, story("steps"));
-  const host = page.locator("purr-number-field");
+  const host = page.locator("pl-number-field");
   const field = page.getByRole("spinbutton");
   await field.focus();
   const box = (await host
@@ -346,7 +342,7 @@ test("a pressed button keeps focus in the field and repeats while held", async (
 
 test("a press shorter than the repeat delay steps once", async ({ page }) => {
   await gotoStory(page, story("steps"));
-  const host = page.locator("purr-number-field");
+  const host = page.locator("pl-number-field");
   await host.getByRole("button", { name: "Decrease" }).click();
   await page.waitForTimeout(600);
   await expect(page.getByRole("spinbutton")).toHaveValue("4");
@@ -358,7 +354,7 @@ test("a disabled field and a read-only field cannot be stepped", async ({
   await gotoStory(page, story("states"));
   const host = (name: string) =>
     page
-      .locator("purr-number-field")
+      .locator("pl-number-field")
       .filter({ has: page.getByRole("spinbutton", { name }) });
   await expect(
     page.getByRole("spinbutton", { name: "Disabled inside" }),
@@ -381,7 +377,7 @@ test("the focus ring is drawn on the field", async ({ page }) => {
   await expect
     .poll(() =>
       page
-        .locator("purr-number-field")
+        .locator("pl-number-field")
         .evaluate(
           (el) =>
             getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
@@ -460,7 +456,7 @@ test("the stepper sits at the inline end and mirrors under rtl", async ({
   page,
 }) => {
   await gotoStory(page, story("rtl"));
-  const sides = await page.locator("purr-number-field").evaluateAll((hosts) =>
+  const sides = await page.locator("pl-number-field").evaluateAll((hosts) =>
     hosts.map((el) => {
       const part = (name: string) =>
         el.shadowRoot!.querySelector(name)!.getBoundingClientRect();
@@ -484,7 +480,7 @@ test("the field and stepper keep their edges under forced colors", async ({
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });
   await page.keyboard.press("Tab");
-  const style = await page.locator("purr-number-field").evaluate((el) => {
+  const style = await page.locator("pl-number-field").evaluate((el) => {
     const field = getComputedStyle(
       el.shadowRoot!.querySelector('[part="field"]')!,
     );
@@ -500,7 +496,7 @@ test("the field and stepper keep their edges under forced colors", async ({
 test("a number field without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-number-field");
+    const bare = document.createElement("pl-number-field");
     bare.id = "bare";
     el.append(bare);
   });
@@ -515,7 +511,7 @@ test("an external label names the number field, even one added later", async ({
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      '<label for="ext">Guests</label><purr-number-field id="ext"></purr-number-field><purr-number-field id="late"></purr-number-field>',
+      '<label for="ext">Guests</label><pl-number-field id="ext"></pl-number-field><pl-number-field id="late"></pl-number-field>',
     ),
   );
   await expect(page.getByRole("spinbutton", { name: "Guests" })).toBeVisible();
@@ -544,7 +540,7 @@ test.describe("coarse pointer on a wide screen", () => {
     page,
   }) => {
     await gotoStory(page, story("sizes"));
-    for (const control of await page.locator("purr-number-field").all()) {
+    for (const control of await page.locator("pl-number-field").all()) {
       const input = (await control.getByRole("spinbutton").boundingBox())!;
       const button = (await control
         .getByRole("button", { name: "Increase" })
@@ -557,7 +553,7 @@ test.describe("coarse pointer on a wide screen", () => {
     page,
   }) => {
     await gotoStory(page, story("sizes"));
-    for (const control of await page.locator("purr-number-field").all()) {
+    for (const control of await page.locator("pl-number-field").all()) {
       expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       for (const name of ["Increase", "Decrease"]) {
         const box = (await control

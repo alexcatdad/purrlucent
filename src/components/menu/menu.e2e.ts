@@ -15,11 +15,11 @@ const item = (page: Page, name: string) =>
 const check = (page: Page, name: string, role = "menuitemcheckbox") =>
   page.getByRole(role as "menuitem", { name, exact: false });
 
-/** Records every purr-select on the page as the item values, in order. */
+/** Records every pl-select on the page as the item values, in order. */
 const recordSelects = (page: Page) =>
   page.evaluate(() => {
     const log: string[] = [];
-    document.addEventListener("purr-select", (e) =>
+    document.addEventListener("pl-select", (e) =>
       log.push((e as CustomEvent<{ value: string }>).detail.value),
     );
     (window as unknown as { log: string[] }).log = log;
@@ -131,7 +131,7 @@ test("Tab closes the menu and moves on", async ({ page }) => {
     // An input: WebKit's Tab order skips buttons and links by default.
     const next = document.createElement("input");
     next.id = "next";
-    document.querySelector("purr-menu")!.after(next);
+    document.querySelector("pl-menu")!.after(next);
   });
   await openByKey(page, "ArrowDown");
   await page.keyboard.press("Tab");
@@ -155,9 +155,7 @@ test("Enter and Space activate once, close and return focus", async ({
   expect(await selects(page)).toEqual(["Undo", "Redo"]);
 });
 
-test("a click on an item fires purr-select once and closes", async ({
-  page,
-}) => {
+test("a click on an item fires pl-select once and closes", async ({ page }) => {
   await gotoStory(page, story("default"));
   await recordSelects(page);
   await trigger(page).click();
@@ -192,7 +190,7 @@ test("an item that becomes checkable or plain later updates the check column", a
   page,
 }) => {
   await gotoStory(page, story("default"));
-  const undo = page.locator("purr-menu-item").first();
+  const undo = page.locator("pl-menu-item").first();
   await expect(undo).not.toHaveAttribute("indent", "");
   await undo.evaluate((el) => {
     (el as unknown as { type: string }).type = "checkbox";
@@ -322,7 +320,7 @@ test.describe("submenu", () => {
     await expect(trigger(page)).toBeFocused();
   });
 
-  test("choosing a submenu item fires purr-select once and closes every level", async ({
+  test("choosing a submenu item fires pl-select once and closes every level", async ({
     page,
   }) => {
     await gotoStory(page, story("submenu"));

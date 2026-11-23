@@ -16,7 +16,7 @@ Add the page background, text color and font from the install guide to your glob
 
 ## Types
 
-`purrlucent/react` adds every `purr-*` element to React's JSX types, with its props and its events. Load it once, for example in `src/vite-env.d.ts`:
+`purrlucent/react` adds every `pl-*` element to React's JSX types, with its props and its events. Load it once, for example in `src/vite-env.d.ts`:
 
 ```ts
 import type {} from "purrlucent/react";
@@ -29,9 +29,9 @@ The types are generated from the components on every release, so they match the 
 Write the elements as JSX tags. Props are set as properties, so booleans, numbers and strings all work:
 
 ```tsx
-<purr-button variant="primary" disabled={saving}>
+<pl-button variant="primary" disabled={saving}>
   Save
-</purr-button>
+</pl-button>
 ```
 
 Listen to an event with `on` followed by its exact name. The event's `detail` holds its data; the [component reference](./components.md) lists each element's events:
@@ -39,27 +39,27 @@ Listen to an event with `on` followed by its exact name. The event's `detail` ho
 ```tsx
 const [fruit, setFruit] = useState("apple");
 
-<purr-select value={fruit} onpurr-change={(e) => setFruit(e.detail.value)}>
+<pl-select value={fruit} onpl-change={(e) => setFruit(e.detail.value)}>
   <span slot="label">Fruit</span>
-  <purr-option value="apple">Apple</purr-option>
-  <purr-option value="pear">Pear</purr-option>
-</purr-select>;
+  <pl-option value="apple">Apple</pl-option>
+  <pl-option value="pear">Pear</pl-option>
+</pl-select>;
 ```
 
 Call an element's methods through a ref:
 
 ```tsx
-const dialog = useRef<PurrDialog>(null);
-// import type { PurrDialog } from "purrlucent/dialog";
+const dialog = useRef<PlDialog>(null);
+// import type { PlDialog } from "purrlucent/dialog";
 
-<purr-button onpurr-press={() => dialog.current?.show()}>Delete…</purr-button>;
+<pl-button onpl-press={() => dialog.current?.show()}>Delete…</pl-button>;
 ```
 
 Use `className`, `slot`, `id` and the other usual attributes as on any element.
 
 ## Forms
 
-The form controls take part in a native `<form>` like built-in inputs: they submit their `name` and value, reset with the form, and report validity. Read them with `FormData` in a submit handler, or keep them controlled with `value` and their `purr-change` event.
+The form controls take part in a native `<form>` like built-in inputs: they submit their `name` and value, reset with the form, and report validity. Read them with `FormData` in a submit handler, or keep them controlled with `value` and their `pl-change` event.
 
 ## Server rendering
 

@@ -9,18 +9,18 @@ const story = (name: string) => `components-dialog--${name}`;
 
 const alert = (page: Page) => page.getByRole("alertdialog");
 const sheet = (page: Page) => page.getByRole("dialog");
-const dialogEl = (page: Page) => page.locator("purr-dialog");
+const dialogEl = (page: Page) => page.locator("pl-dialog");
 const isOpen = (page: Page) =>
   dialogEl(page).evaluate((el) => (el as HTMLElement & { open: boolean }).open);
 const activeInside = (page: Page) =>
-  page.evaluate(() => !!document.activeElement?.closest("purr-dialog"));
+  page.evaluate(() => !!document.activeElement?.closest("pl-dialog"));
 
 /** Records what the dialog fires, as [event, detail] pairs, on window.log. */
 const record = (page: Page) =>
   dialogEl(page).evaluate((el) => {
     const log: unknown[][] = [];
     (window as unknown as { log: unknown[][] }).log = log;
-    for (const name of ["purr-cancel", "purr-close"])
+    for (const name of ["pl-cancel", "pl-close"])
       el.addEventListener(name, (event) =>
         log.push([name, (event as CustomEvent).detail ?? null]),
       );
@@ -115,7 +115,7 @@ test("Return in the body activates the default action", async ({ page }) => {
   await expect(sheet(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["purr-close", { returnValue: "save" }]]);
+    .toEqual([["pl-close", { returnValue: "save" }]]);
 });
 
 test("Escape activates the cancel action", async ({ page }) => {
@@ -125,7 +125,7 @@ test("Escape activates the cancel action", async ({ page }) => {
   await expect(sheet(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["purr-close", { returnValue: "cancel" }]]);
+    .toEqual([["pl-close", { returnValue: "cancel" }]]);
 });
 
 test("Command-Period activates the cancel action", async ({ page }) => {
@@ -135,7 +135,7 @@ test("Command-Period activates the cancel action", async ({ page }) => {
   await expect(sheet(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["purr-close", { returnValue: "cancel" }]]);
+    .toEqual([["pl-close", { returnValue: "cancel" }]]);
 });
 
 test("Return in a textarea adds a newline and does not activate the default", async ({
@@ -171,7 +171,7 @@ test("an alert with more than three actions warns", async ({ page }) => {
         el.setAttribute("variant", kind as string);
         el.querySelectorAll("[slot=actions]").forEach((a) => a.remove());
         for (let i = 0; i < (total as number); i++) {
-          const button = document.createElement("purr-button");
+          const button = document.createElement("pl-button");
           button.slot = "actions";
           button.textContent = `Action ${i}`;
           el.append(button);
@@ -192,13 +192,13 @@ test("an alert with more than three actions warns", async ({ page }) => {
   expect(alertWarnings()).toHaveLength(0);
   await showWith("alert", 4);
   await expect(alert(page)).toBeVisible();
-  await expect(page.locator("purr-dialog purr-button")).toHaveCount(4);
+  await expect(page.locator("pl-dialog pl-button")).toHaveCount(4);
   await expect
     .poll(alertWarnings)
-    .toEqual(["purr-dialog: an alert takes at most three buttons."]);
+    .toEqual(["pl-dialog: an alert takes at most three buttons."]);
 });
 
-test("--purr-dialog-width sets a sheet's width", async ({ page }) => {
+test("--pl-dialog-width sets a sheet's width", async ({ page }) => {
   await gotoStory(page, story("open-sheet"));
   const width = () =>
     dialogEl(page)
@@ -206,7 +206,7 @@ test("--purr-dialog-width sets a sheet's width", async ({ page }) => {
       .evaluate((el) => el.getBoundingClientRect().width);
   const initial = await width();
   await dialogEl(page).evaluate((el) =>
-    el.setAttribute("style", "--purr-dialog-width: 500px"),
+    el.setAttribute("style", "--pl-dialog-width: 500px"),
   );
   await expect.poll(width).toBe(500);
   expect(initial).not.toBe(500);
@@ -225,7 +225,7 @@ test("a sheet opened over another sheet warns; an alert over a sheet does not", 
   await expect(sheet(page)).toBeVisible();
   const showOver = (variant: string) =>
     page.evaluate(async (kind) => {
-      const el = document.createElement("purr-dialog") as HTMLElement & {
+      const el = document.createElement("pl-dialog") as HTMLElement & {
         show(): void;
         updateComplete: Promise<unknown>;
       };
@@ -243,7 +243,7 @@ test("a sheet opened over another sheet warns; an alert over a sheet does not", 
   await expect
     .poll(stacked)
     .toEqual([
-      "purr-dialog: show one sheet at a time; close the open sheet first.",
+      "pl-dialog: show one sheet at a time; close the open sheet first.",
     ]);
 });
 
@@ -257,10 +257,10 @@ test("closing a sheet and showing another in one tick does not warn", async ({
   await gotoStory(page, story("open-sheet"));
   await expect(sheet(page)).toBeVisible();
   await page.evaluate(async () => {
-    const a = document.querySelector("purr-dialog") as HTMLElement & {
+    const a = document.querySelector("pl-dialog") as HTMLElement & {
       close(): void;
     };
-    const b = document.createElement("purr-dialog") as HTMLElement & {
+    const b = document.createElement("pl-dialog") as HTMLElement & {
       show(): void;
       updateComplete: Promise<unknown>;
     };
@@ -354,8 +354,8 @@ test("Escape asks to cancel, closes, and returns focus to the opener", async ({
   await expect
     .poll(() => recorded(page))
     .toEqual([
-      ["purr-cancel", null],
-      ["purr-close", { returnValue: "" }],
+      ["pl-cancel", null],
+      ["pl-close", { returnValue: "" }],
     ]);
   await expect(page.locator("#trigger")).toBeFocused();
 });
@@ -364,7 +364,7 @@ test("a cancel handler can keep the dialog open", async ({ page }) => {
   await openDefault(page);
   await withoutRole(page, "cancel");
   await dialogEl(page).evaluate((el) =>
-    el.addEventListener("purr-cancel", (event) => event.preventDefault(), {
+    el.addEventListener("pl-cancel", (event) => event.preventDefault(), {
       once: true,
     }),
   );
@@ -396,7 +396,7 @@ test("pressing the backdrop closes a dismissible sheet and can be cancelled", as
   await gotoStory(page, story("open-long-content"));
   await record(page);
   await dialogEl(page).evaluate((el) =>
-    el.addEventListener("purr-cancel", (event) => event.preventDefault(), {
+    el.addEventListener("pl-cancel", (event) => event.preventDefault(), {
       once: true,
     }),
   );
@@ -407,9 +407,9 @@ test("pressing the backdrop closes a dismissible sheet and can be cancelled", as
   await expect
     .poll(() => recorded(page))
     .toEqual([
-      ["purr-cancel", null],
-      ["purr-cancel", null],
-      ["purr-close", { returnValue: "" }],
+      ["pl-cancel", null],
+      ["pl-cancel", null],
+      ["pl-close", { returnValue: "" }],
     ]);
 });
 
@@ -433,7 +433,7 @@ test("an element with data-close closes the dialog with its value", async ({
   await expect(alert(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["purr-close", { returnValue: "save" }]]);
+    .toEqual([["pl-close", { returnValue: "save" }]]);
   await expect(page.locator("#trigger")).toBeFocused();
 });
 
@@ -447,14 +447,14 @@ test("the keyboard closes with a value, and a later Escape reports none", async 
   await expect(alert(page)).toBeHidden();
   await expect
     .poll(async () => (await recorded(page)).at(-1))
-    .toEqual(["purr-close", { returnValue: "cancel" }]);
+    .toEqual(["pl-close", { returnValue: "cancel" }]);
   await page.locator("#trigger").click();
   await withoutRole(page, "cancel");
   await page.keyboard.press("Escape");
   await expect(alert(page)).toBeHidden();
   await expect
     .poll(async () => (await recorded(page)).at(-1))
-    .toEqual(["purr-close", { returnValue: "" }]);
+    .toEqual(["pl-close", { returnValue: "" }]);
   expect(
     await dialogEl(page).evaluate(
       (el) => (el as never as { returnValue: string }).returnValue,
@@ -493,8 +493,8 @@ test("show() and close(value) work from script, and removing open closes", async
   await expect
     .poll(() => recorded(page))
     .toEqual([
-      ["purr-close", { returnValue: "done" }],
-      ["purr-close", { returnValue: "" }],
+      ["pl-close", { returnValue: "done" }],
+      ["pl-close", { returnValue: "" }],
     ]);
 });
 

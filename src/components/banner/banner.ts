@@ -9,7 +9,7 @@ const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12
  * A notification banner: an icon, a title, a message, optional actions and a
  * close button. It is a live region (`status`, or `alert` for the destructive
  * tone) and never takes focus when it appears. The close button hides the
- * banner and fires `purr-close`.
+ * banner and fires `pl-close`.
  *
  * @attr {boolean} open - The banner is showing.
  * @attr {string} tone - `info` (default) or `destructive`.
@@ -20,9 +20,9 @@ const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12
  * @slot actions - Buttons below the message.
  * @csspart text - The title and message.
  * @csspart close - The close button.
- * @fires purr-close - The user closed the banner.
+ * @fires pl-close - The user closed the banner.
  */
-export class PurrBanner extends LitElement {
+export class PlBanner extends LitElement {
   static override styles = [panelSurface, bannerStyles];
   static override properties = {
     open: { type: Boolean, reflect: true },
@@ -56,7 +56,7 @@ export class PurrBanner extends LitElement {
   #close() {
     this.open = false;
     this.dispatchEvent(
-      new CustomEvent("purr-close", { bubbles: true, composed: true }),
+      new CustomEvent("pl-close", { bubbles: true, composed: true }),
     );
   }
 
@@ -80,10 +80,10 @@ export class PurrBanner extends LitElement {
   }
 }
 
-customElements.define("purr-banner", PurrBanner);
+customElements.define("pl-banner", PlBanner);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-banner": PurrBanner;
+    "pl-banner": PlBanner;
   }
 }

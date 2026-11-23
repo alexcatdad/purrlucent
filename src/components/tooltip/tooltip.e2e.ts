@@ -8,7 +8,7 @@ import { gotoStory } from "../../../e2e/helpers/story.ts";
 const story = (name: string) => `components-tooltip--${name}`;
 
 const target = (page: Page, scope = "") =>
-  page.locator(`${scope} purr-button`.trim());
+  page.locator(`${scope} pl-button`.trim());
 const bubble = (page: Page, scope = "") =>
   page.locator(`${scope} [part=bubble]`.trim());
 const box = async (locator: ReturnType<Page["locator"]>) =>
@@ -52,7 +52,7 @@ test("the browser exposes the text as the target's accessible description", asyn
 
 test("an existing description on the target is kept", async ({ page }) => {
   await gotoStory(page, story("default"));
-  const ids = await page.locator("purr-tooltip").evaluate(async (el) => {
+  const ids = await page.locator("pl-tooltip").evaluate(async (el) => {
     const copy = el.cloneNode(false) as HTMLElement;
     const button = document.createElement("button");
     button.setAttribute("aria-describedby", "own");
@@ -85,10 +85,10 @@ test("the face takes the panel material, opaque in the default light look", asyn
   page,
 }) => {
   await gotoStory(page, story("open"), "theme:light");
-  const fills = await page.locator("purr-tooltip").evaluate((el) => {
+  const fills = await page.locator("pl-tooltip").evaluate((el) => {
     const root = el.shadowRoot!;
     const probe = document.createElement("div");
-    probe.style.background = "var(--purr-material-panel)";
+    probe.style.background = "var(--pl-material-panel)";
     root.append(probe);
     const material = getComputedStyle(probe).backgroundColor;
     probe.remove();
@@ -102,7 +102,7 @@ test("the face takes the panel material, opaque in the default light look", asyn
 
 test("long unbroken text wraps inside the face", async ({ page }) => {
   await gotoStory(page, story("open"));
-  const fits = await page.locator("purr-tooltip").evaluate(async (el) => {
+  const fits = await page.locator("pl-tooltip").evaluate(async (el) => {
     const tooltip = el as HTMLElement & {
       text: string;
       updateComplete: Promise<boolean>;
@@ -177,7 +177,7 @@ test("a tap on touch never shows the bubble or blocks the tap", async ({
     (window as never as { seen: string[] }).seen = seen;
     for (const type of ["pointerup", "click"]) {
       document
-        .querySelector("purr-button")!
+        .querySelector("pl-button")!
         .addEventListener(type, () => seen.push(type));
     }
   });
@@ -225,7 +225,7 @@ test("the placements put the bubble on the requested side of the target", async 
 test("changing placement while shown moves the bubble", async ({ page }) => {
   await gotoStory(page, story("open"));
   await expect(bubble(page)).toBeVisible();
-  await page.locator("purr-tooltip").evaluate((el) => {
+  await page.locator("pl-tooltip").evaluate((el) => {
     el.setAttribute("placement", "top");
   });
   await expect
@@ -259,7 +259,7 @@ test.describe("near the edges of a small viewport", () => {
         page,
       }) => {
         await gotoStory(page, story("default"));
-        await page.locator("purr-tooltip").evaluate(
+        await page.locator("pl-tooltip").evaluate(
           (el, args) => {
             el.setAttribute("placement", args.placement);
             el.setAttribute("style", `position:fixed;${args.inset}`);
@@ -280,7 +280,7 @@ test.describe("near the edges of a small viewport", () => {
   test("a bubble with no room below flips above", async ({ page }) => {
     await gotoStory(page, story("default"));
     await page
-      .locator("purr-tooltip")
+      .locator("pl-tooltip")
       .evaluate((el) =>
         el.setAttribute("style", "position:fixed;bottom:0;left:40px"),
       );

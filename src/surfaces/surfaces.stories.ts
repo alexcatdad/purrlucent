@@ -18,7 +18,7 @@ const defineDemo = (tag: string, surface: CSSResult) =>
         surface,
         css`
           :host {
-            font-family: var(--purr-font-sans);
+            font-family: var(--pl-font-sans);
           }
         `,
       ];
@@ -28,11 +28,11 @@ const defineDemo = (tag: string, surface: CSSResult) =>
     },
   );
 
-defineDemo("purr-bar-demo", barSurface);
-defineDemo("purr-panel-demo", panelSurface);
-defineDemo("purr-sheet-demo", sheetSurface);
-defineDemo("purr-list-row-demo", listRowSurface);
-defineDemo("purr-field-demo", fieldShell);
+defineDemo("pl-bar-demo", barSurface);
+defineDemo("pl-panel-demo", panelSurface);
+defineDemo("pl-sheet-demo", sheetSurface);
+defineDemo("pl-list-row-demo", listRowSurface);
+defineDemo("pl-field-demo", fieldShell);
 
 const meta = { title: "Surfaces" } satisfies Meta;
 
@@ -41,13 +41,13 @@ export default meta;
 type Story = StoryObj;
 
 const render = () => html`
-  <purr-bar-demo id="bar">Bar</purr-bar-demo>
-  <purr-panel-demo id="panel">Panel</purr-panel-demo>
-  <purr-sheet-demo id="sheet">Sheet</purr-sheet-demo>
-  <purr-list-row-demo id="list-row">List row</purr-list-row-demo>
-  <purr-field-demo id="field"
+  <pl-bar-demo id="bar">Bar</pl-bar-demo>
+  <pl-panel-demo id="panel">Panel</pl-panel-demo>
+  <pl-sheet-demo id="sheet">Sheet</pl-sheet-demo>
+  <pl-list-row-demo id="list-row">List row</pl-list-row-demo>
+  <pl-field-demo id="field"
     ><input aria-label="Name" value="Whiskers"
-  /></purr-field-demo>
+  /></pl-field-demo>
 `;
 
 export const Default: Story = { render };
@@ -59,10 +59,10 @@ export const Default: Story = { render };
 export const TextOnly: Story = {
   render: () => html`
     <button type="button">Start</button>
-    <purr-bar-demo>Bar</purr-bar-demo>
-    <purr-panel-demo>Panel</purr-panel-demo>
-    <purr-sheet-demo>Sheet</purr-sheet-demo>
-    <purr-list-row-demo>List row</purr-list-row-demo>
+    <pl-bar-demo>Bar</pl-bar-demo>
+    <pl-panel-demo>Panel</pl-panel-demo>
+    <pl-sheet-demo>Sheet</pl-sheet-demo>
+    <pl-list-row-demo>List row</pl-list-row-demo>
   `,
 };
 
@@ -83,7 +83,7 @@ export const Glass: Story = {
   // Doubles as the check that every Storybook global reaches the document root.
   play: () => {
     const root = document.documentElement;
-    expect(root.getAttribute("purr-material")).toBe("glass");
+    expect(root.getAttribute("pl-material")).toBe("glass");
     expect(root.getAttribute("data-theme")).toBe("dark");
     expect(root.getAttribute("data-contrast")).toBe("more");
     expect(root.getAttribute("dir")).toBe("rtl");

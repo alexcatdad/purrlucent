@@ -45,7 +45,7 @@ test("it turns with motion allowed", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await gotoStory(page, story("default"));
   const ring = page.locator("#spinner").locator(".arc");
-  await expect(ring).toHaveCSS("animation-name", "purr-spinner-turn");
+  await expect(ring).toHaveCSS("animation-name", "pl-spinner-turn");
   const angle = () => ring.evaluate((el) => getComputedStyle(el).rotate);
   const first = await angle();
   await page.waitForTimeout(200);
@@ -106,7 +106,7 @@ test("the ring keeps system colors under forced colors", async ({ page }) => {
 test("a spinner without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-spinner");
+    const bare = document.createElement("pl-spinner");
     bare.id = "bare";
     el.append(bare);
   });

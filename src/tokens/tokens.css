@@ -2,418 +2,414 @@
    else is calculated from them. Colors are light-dark() pairs and follow the
    page's color-scheme. Every token sits in a cascade layer, so app styles
    override it. */
-@layer purr.tokens {
+@layer pl.tokens {
   :root {
     color-scheme: light dark;
 
-    --purr-color-punch-red: #e63946;
-    --purr-color-honeydew: #f1faee;
-    --purr-color-frosted-blue: #a8dadc;
-    --purr-color-cerulean: #457b9d;
-    --purr-color-oxford-navy: #1d3557;
-    --purr-color-shade: color-mix(
+    --pl-color-punch-red: #e63946;
+    --pl-color-honeydew: #f1faee;
+    --pl-color-frosted-blue: #a8dadc;
+    --pl-color-cerulean: #457b9d;
+    --pl-color-oxford-navy: #1d3557;
+    --pl-color-shade: color-mix(
       in srgb,
-      var(--purr-color-oxford-navy),
+      var(--pl-color-oxford-navy),
       black 42%
     );
-    --purr-color-accent: color-mix(
-      in srgb,
-      var(--purr-color-cerulean) 88%,
-      black
-    );
-    --purr-color-accent-text: light-dark(
+    --pl-color-accent: color-mix(in srgb, var(--pl-color-cerulean) 88%, black);
+    --pl-color-accent-text: light-dark(
       color-mix(
         in srgb,
-        var(--purr-color-cerulean),
-        var(--purr-color-oxford-navy) 50%
+        var(--pl-color-cerulean),
+        var(--pl-color-oxford-navy) 50%
       ),
-      var(--purr-color-frosted-blue)
+      var(--pl-color-frosted-blue)
     );
-    --purr-color-destructive: color-mix(
+    --pl-color-destructive: color-mix(
       in srgb,
-      var(--purr-color-punch-red) 90%,
+      var(--pl-color-punch-red) 90%,
       black
     );
-    --purr-color-destructive-text: light-dark(
-      color-mix(in srgb, var(--purr-color-punch-red) 62%, black),
-      color-mix(in srgb, var(--purr-color-punch-red), white 72%)
+    --pl-color-destructive-text: light-dark(
+      color-mix(in srgb, var(--pl-color-punch-red) 62%, black),
+      color-mix(in srgb, var(--pl-color-punch-red), white 72%)
     );
-    --purr-color-accent-foreground: #fff;
-    --purr-color-destructive-foreground: #fff;
-    --purr-color-selected: light-dark(
-      var(--purr-color-accent),
-      var(--purr-color-frosted-blue)
+    --pl-color-accent-foreground: #fff;
+    --pl-color-destructive-foreground: #fff;
+    --pl-color-selected: light-dark(
+      var(--pl-color-accent),
+      var(--pl-color-frosted-blue)
     );
-    --purr-color-selected-foreground: light-dark(
-      var(--purr-color-accent-foreground),
-      var(--purr-color-oxford-navy)
+    --pl-color-selected-foreground: light-dark(
+      var(--pl-color-accent-foreground),
+      var(--pl-color-oxford-navy)
     );
-    --purr-color-ring: light-dark(
-      var(--purr-color-cerulean),
-      var(--purr-color-frosted-blue)
+    --pl-color-ring: light-dark(
+      var(--pl-color-cerulean),
+      var(--pl-color-frosted-blue)
     );
-    --purr-color-input: light-dark(
+    --pl-color-input: light-dark(
       #fff,
       color-mix(
         in srgb,
-        var(--purr-color-oxford-navy),
-        var(--purr-color-honeydew) 7%
+        var(--pl-color-oxford-navy),
+        var(--pl-color-honeydew) 7%
       )
     );
-    --purr-color-input-border: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 62%, transparent),
-      color-mix(in srgb, var(--purr-color-frosted-blue) 68%, transparent)
+    --pl-color-input-border: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 62%, transparent),
+      color-mix(in srgb, var(--pl-color-frosted-blue) 68%, transparent)
     );
-    --purr-color-popover: light-dark(
+    --pl-color-popover: light-dark(
       rgb(255 255 255 / 82%),
       color-mix(
         in srgb,
-        var(--purr-color-oxford-navy),
-        var(--purr-color-honeydew) 16%
+        var(--pl-color-oxford-navy),
+        var(--pl-color-honeydew) 16%
       )
     );
-    --purr-color-foreground: light-dark(
-      var(--purr-color-oxford-navy),
-      var(--purr-color-honeydew)
+    --pl-color-foreground: light-dark(
+      var(--pl-color-oxford-navy),
+      var(--pl-color-honeydew)
     );
-    --purr-color-muted-foreground: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 80%, transparent),
-      var(--purr-color-frosted-blue)
+    --pl-color-muted-foreground: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 80%, transparent),
+      var(--pl-color-frosted-blue)
     );
-    --purr-color-disabled-foreground: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 35%, transparent),
-      color-mix(in srgb, var(--purr-color-frosted-blue) 40%, transparent)
+    --pl-color-disabled-foreground: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 35%, transparent),
+      color-mix(in srgb, var(--pl-color-frosted-blue) 40%, transparent)
     );
-    --purr-color-foreground-faint: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 12%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 12%, transparent)
+    --pl-color-foreground-faint: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 12%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 12%, transparent)
     );
-    --purr-color-foreground-ghost: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 6%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 6%, transparent)
+    --pl-color-foreground-ghost: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 6%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 6%, transparent)
     );
-    --purr-color-muted-1: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 12%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 12%, transparent)
+    --pl-color-muted-1: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 12%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 12%, transparent)
     );
-    --purr-color-muted-2: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 9%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 9%, transparent)
+    --pl-color-muted-2: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 9%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 9%, transparent)
     );
-    --purr-color-muted-3: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 6%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 6%, transparent)
+    --pl-color-muted-3: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 6%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 6%, transparent)
     );
-    --purr-color-muted-4: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 4%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 4%, transparent)
+    --pl-color-muted-4: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 4%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 4%, transparent)
     );
-    --purr-color-muted-5: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 2%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 2%, transparent)
+    --pl-color-muted-5: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 2%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 2%, transparent)
     );
-    --purr-color-muted-pressed: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 18%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 13%, transparent)
+    --pl-color-muted-pressed: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 18%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 13%, transparent)
     );
-    --purr-color-muted-disabled: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 4%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 4%, transparent)
+    --pl-color-muted-disabled: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 4%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 4%, transparent)
     );
-    --purr-color-border: light-dark(
-      color-mix(in srgb, var(--purr-color-oxford-navy) 22%, transparent),
-      color-mix(in srgb, var(--purr-color-honeydew) 18%, transparent)
+    --pl-color-border: light-dark(
+      color-mix(in srgb, var(--pl-color-oxford-navy) 22%, transparent),
+      color-mix(in srgb, var(--pl-color-honeydew) 18%, transparent)
     );
-    --purr-color-background: light-dark(
-      var(--purr-color-honeydew),
-      var(--purr-color-oxford-navy)
+    --pl-color-background: light-dark(
+      var(--pl-color-honeydew),
+      var(--pl-color-oxford-navy)
     );
-    --purr-color-sidebar: light-dark(
+    --pl-color-sidebar: light-dark(
       color-mix(
         in srgb,
         color-mix(
             in srgb,
-            var(--purr-color-oxford-navy),
-            var(--purr-color-honeydew) 93.7%
+            var(--pl-color-oxford-navy),
+            var(--pl-color-honeydew) 93.7%
           )
           80%,
         transparent
       ),
       color-mix(
         in srgb,
-        color-mix(in srgb, var(--purr-color-oxford-navy), black 26%) 85%,
+        color-mix(in srgb, var(--pl-color-oxford-navy), black 26%) 85%,
         transparent
       )
     );
-    --purr-color-overlay: light-dark(
+    --pl-color-overlay: light-dark(
       rgb(255 255 255 / 82%),
       color-mix(
         in srgb,
         color-mix(
             in srgb,
-            var(--purr-color-oxford-navy),
-            var(--purr-color-honeydew) 10%
+            var(--pl-color-oxford-navy),
+            var(--pl-color-honeydew) 10%
           )
           92%,
         transparent
       )
     );
-    --purr-color-overlay-border: light-dark(
-      var(--purr-color-frosted-blue),
-      color-mix(in srgb, var(--purr-color-honeydew) 16%, transparent)
+    --pl-color-overlay-border: light-dark(
+      var(--pl-color-frosted-blue),
+      color-mix(in srgb, var(--pl-color-honeydew) 16%, transparent)
     );
-    --purr-visual-md: calc(var(--purr-spacing) * 6);
-    --purr-visual-lg: calc(var(--purr-spacing) * 7);
-    --purr-visual-xl: calc(var(--purr-spacing) * 9);
-    --purr-size-md: var(--purr-visual-md);
-    --purr-size-lg: var(--purr-visual-lg);
-    --purr-size-xl: var(--purr-visual-xl);
-    --purr-size-bar: max(
-      calc(var(--purr-spacing) * 13),
-      calc(var(--purr-size-xl) + var(--purr-space-4))
+    --pl-visual-md: calc(var(--pl-spacing) * 6);
+    --pl-visual-lg: calc(var(--pl-spacing) * 7);
+    --pl-visual-xl: calc(var(--pl-spacing) * 9);
+    --pl-size-md: var(--pl-visual-md);
+    --pl-size-lg: var(--pl-visual-lg);
+    --pl-size-xl: var(--pl-visual-xl);
+    --pl-size-bar: max(
+      calc(var(--pl-spacing) * 13),
+      calc(var(--pl-size-xl) + var(--pl-space-4))
     );
 
     /* Hit regions (design/decisions.md item 4). A coarse pointer gets 44px,
        HIG's iOS default control size. A fine pointer gets 24px: above HIG's
        macOS minimum control size (20pt) and equal to WCAG 2.2 AA's target
        minimum, which keeps the compact macOS density. */
-    --purr-touch-min: 2.75rem;
-    --purr-size-hit-min: max(1.5rem, var(--purr-visual-md));
-    --purr-radius: 0.375rem;
-    --purr-radius-lg: 0.5rem;
-    --purr-radius-full: 62.4375rem;
-    --purr-spacing: 0.25rem;
-    --purr-space-0-5: calc(var(--purr-spacing) * 0.5);
-    --purr-space-1: var(--purr-spacing);
-    --purr-space-1-5: calc(var(--purr-spacing) * 1.5);
-    --purr-space-2: calc(var(--purr-spacing) * 2);
-    --purr-space-3: calc(var(--purr-spacing) * 3);
-    --purr-space-4: calc(var(--purr-spacing) * 4);
-    --purr-space-5: calc(var(--purr-spacing) * 5);
-    --purr-space-6: calc(var(--purr-spacing) * 6);
-    --purr-space-8: calc(var(--purr-spacing) * 8);
-    --purr-space-10: calc(var(--purr-spacing) * 10);
-    --purr-pad-control: var(--purr-space-3);
-    --purr-pad-control-xl: var(--purr-space-4);
-    --purr-gap-icon: var(--purr-space-1-5);
-    --purr-gap-controls: var(--purr-space-2);
-    --purr-gap-form: var(--purr-space-3);
-    --purr-pad-surface: var(--purr-space-1);
-    --purr-pad-item: var(--purr-space-2);
-    --purr-pad-panel: var(--purr-space-4);
-    --purr-indent: var(--purr-space-4);
-    --purr-ring-width: calc(var(--purr-spacing) / 2);
-    --purr-ring-offset: calc(var(--purr-ring-width) / 2);
-    --purr-duration-fast: 120ms;
-    --purr-duration: 200ms;
-    --purr-duration-slow: 280ms;
-    --purr-ease-out: cubic-bezier(0.2, 0, 0, 1);
-    --purr-text-xs: 0.75rem;
-    --purr-text-sm: 0.8125rem;
-    --purr-text-base: 0.875rem;
-    --purr-text-lg: 0.9375rem;
-    --purr-text-xl: 1.25rem;
-    --purr-leading-tight: calc(var(--purr-spacing) * 3.5);
-    --purr-leading-normal: calc(var(--purr-spacing) * 4);
-    --purr-leading-loose: calc(var(--purr-spacing) * 5);
-    --purr-icon-sm: calc(var(--purr-spacing) * 3);
-    --purr-icon-md: calc(var(--purr-spacing) * 4);
-    --purr-icon-lg: calc(var(--purr-spacing) * 5);
-    --purr-blur-md: calc(var(--purr-spacing) * 5);
-    --purr-blur-lg: calc(var(--purr-spacing) * 7.5);
-    --purr-font-sans: "Inter", system-ui, sans-serif;
-    --purr-font-mono: monospace;
-    --purr-shadow-lg:
-      0 calc(var(--purr-spacing) * 2) calc(var(--purr-spacing) * 6)
-        color-mix(in srgb, var(--purr-color-shade) 30%, transparent),
+    --pl-touch-min: 2.75rem;
+    --pl-size-hit-min: max(1.5rem, var(--pl-visual-md));
+    --pl-radius: 0.375rem;
+    --pl-radius-lg: 0.5rem;
+    --pl-radius-full: 62.4375rem;
+    --pl-spacing: 0.25rem;
+    --pl-space-0-5: calc(var(--pl-spacing) * 0.5);
+    --pl-space-1: var(--pl-spacing);
+    --pl-space-1-5: calc(var(--pl-spacing) * 1.5);
+    --pl-space-2: calc(var(--pl-spacing) * 2);
+    --pl-space-3: calc(var(--pl-spacing) * 3);
+    --pl-space-4: calc(var(--pl-spacing) * 4);
+    --pl-space-5: calc(var(--pl-spacing) * 5);
+    --pl-space-6: calc(var(--pl-spacing) * 6);
+    --pl-space-8: calc(var(--pl-spacing) * 8);
+    --pl-space-10: calc(var(--pl-spacing) * 10);
+    --pl-pad-control: var(--pl-space-3);
+    --pl-pad-control-xl: var(--pl-space-4);
+    --pl-gap-icon: var(--pl-space-1-5);
+    --pl-gap-controls: var(--pl-space-2);
+    --pl-gap-form: var(--pl-space-3);
+    --pl-pad-surface: var(--pl-space-1);
+    --pl-pad-item: var(--pl-space-2);
+    --pl-pad-panel: var(--pl-space-4);
+    --pl-indent: var(--pl-space-4);
+    --pl-ring-width: calc(var(--pl-spacing) / 2);
+    --pl-ring-offset: calc(var(--pl-ring-width) / 2);
+    --pl-duration-fast: 120ms;
+    --pl-duration: 200ms;
+    --pl-duration-slow: 280ms;
+    --pl-ease-out: cubic-bezier(0.2, 0, 0, 1);
+    --pl-text-xs: 0.75rem;
+    --pl-text-sm: 0.8125rem;
+    --pl-text-base: 0.875rem;
+    --pl-text-lg: 0.9375rem;
+    --pl-text-xl: 1.25rem;
+    --pl-leading-tight: calc(var(--pl-spacing) * 3.5);
+    --pl-leading-normal: calc(var(--pl-spacing) * 4);
+    --pl-leading-loose: calc(var(--pl-spacing) * 5);
+    --pl-icon-sm: calc(var(--pl-spacing) * 3);
+    --pl-icon-md: calc(var(--pl-spacing) * 4);
+    --pl-icon-lg: calc(var(--pl-spacing) * 5);
+    --pl-blur-md: calc(var(--pl-spacing) * 5);
+    --pl-blur-lg: calc(var(--pl-spacing) * 7.5);
+    --pl-font-sans: "Inter", system-ui, sans-serif;
+    --pl-font-mono: monospace;
+    --pl-shadow-lg:
+      0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 6)
+        color-mix(in srgb, var(--pl-color-shade) 30%, transparent),
       0 0 0 0.5px
         light-dark(
-          color-mix(in srgb, var(--purr-color-oxford-navy) 14%, transparent),
-          color-mix(in srgb, var(--purr-color-honeydew) 18%, transparent)
+          color-mix(in srgb, var(--pl-color-oxford-navy) 14%, transparent),
+          color-mix(in srgb, var(--pl-color-honeydew) 18%, transparent)
         );
   }
 
   /* Increased contrast: stronger text, borders, fills and accents. */
   @media (prefers-contrast: more) {
     :root {
-      --purr-color-input-border: light-dark(
-        var(--purr-color-oxford-navy),
-        var(--purr-color-honeydew)
+      --pl-color-input-border: light-dark(
+        var(--pl-color-oxford-navy),
+        var(--pl-color-honeydew)
       );
-      --purr-color-ring: light-dark(var(--purr-color-oxford-navy), #fff);
-      --purr-color-selected: light-dark(
-        var(--purr-color-accent),
-        var(--purr-color-honeydew)
+      --pl-color-ring: light-dark(var(--pl-color-oxford-navy), #fff);
+      --pl-color-selected: light-dark(
+        var(--pl-color-accent),
+        var(--pl-color-honeydew)
       );
-      --purr-color-accent: color-mix(
+      --pl-color-accent: color-mix(
         in srgb,
-        var(--purr-color-cerulean),
-        var(--purr-color-oxford-navy) 50%
+        var(--pl-color-cerulean),
+        var(--pl-color-oxford-navy) 50%
       );
-      --purr-color-accent-text: light-dark(
-        var(--purr-color-oxford-navy),
-        color-mix(in srgb, var(--purr-color-frosted-blue), white 45%)
+      --pl-color-accent-text: light-dark(
+        var(--pl-color-oxford-navy),
+        color-mix(in srgb, var(--pl-color-frosted-blue), white 45%)
       );
-      --purr-color-destructive: color-mix(
+      --pl-color-destructive: color-mix(
         in srgb,
-        var(--purr-color-punch-red) 76%,
+        var(--pl-color-punch-red) 76%,
         black
       );
-      --purr-color-destructive-text: light-dark(
-        color-mix(in srgb, var(--purr-color-punch-red) 56%, black),
-        color-mix(in srgb, var(--purr-color-punch-red), white 88%)
+      --pl-color-destructive-text: light-dark(
+        color-mix(in srgb, var(--pl-color-punch-red) 56%, black),
+        color-mix(in srgb, var(--pl-color-punch-red), white 88%)
       );
-      --purr-color-foreground: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy), black 45%),
+      --pl-color-foreground: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy), black 45%),
         #fff
       );
-      --purr-color-muted-foreground: light-dark(
-        var(--purr-color-oxford-navy),
-        var(--purr-color-honeydew)
+      --pl-color-muted-foreground: light-dark(
+        var(--pl-color-oxford-navy),
+        var(--pl-color-honeydew)
       );
-      --purr-color-disabled-foreground: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 62%, transparent),
-        color-mix(in srgb, var(--purr-color-frosted-blue) 60%, transparent)
+      --pl-color-disabled-foreground: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 62%, transparent),
+        color-mix(in srgb, var(--pl-color-frosted-blue) 60%, transparent)
       );
-      --purr-color-muted-1: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 18%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 20%, transparent)
+      --pl-color-muted-1: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 18%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 20%, transparent)
       );
-      --purr-color-muted-2: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 15%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 16%, transparent)
+      --pl-color-muted-2: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 15%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 16%, transparent)
       );
-      --purr-color-muted-3: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 11%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 12%, transparent)
+      --pl-color-muted-3: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 11%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 12%, transparent)
       );
-      --purr-color-muted-4: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 8%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 9%, transparent)
+      --pl-color-muted-4: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 8%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 9%, transparent)
       );
-      --purr-color-muted-5: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 5%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 6%, transparent)
+      --pl-color-muted-5: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 5%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 6%, transparent)
       );
-      --purr-color-muted-pressed: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 24%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 20%, transparent)
+      --pl-color-muted-pressed: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 24%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 20%, transparent)
       );
-      --purr-color-border: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 60%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 55%, transparent)
+      --pl-color-border: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 60%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 55%, transparent)
       );
-      --purr-color-sidebar: light-dark(
+      --pl-color-sidebar: light-dark(
         color-mix(
           in srgb,
-          var(--purr-color-oxford-navy),
-          var(--purr-color-honeydew) 93.7%
+          var(--pl-color-oxford-navy),
+          var(--pl-color-honeydew) 93.7%
         ),
-        color-mix(in srgb, var(--purr-color-oxford-navy), black 26%)
+        color-mix(in srgb, var(--pl-color-oxford-navy), black 26%)
       );
-      --purr-color-overlay: light-dark(
+      --pl-color-overlay: light-dark(
         rgb(255 255 255 / 94%),
-        color-mix(in srgb, var(--purr-color-oxford-navy) 94%, transparent)
+        color-mix(in srgb, var(--pl-color-oxford-navy) 94%, transparent)
       );
-      --purr-color-overlay-border: light-dark(
-        color-mix(in srgb, var(--purr-color-oxford-navy) 60%, transparent),
-        color-mix(in srgb, var(--purr-color-honeydew) 55%, transparent)
+      --pl-color-overlay-border: light-dark(
+        color-mix(in srgb, var(--pl-color-oxford-navy) 60%, transparent),
+        color-mix(in srgb, var(--pl-color-honeydew) 55%, transparent)
       );
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     :root {
-      --purr-duration-fast: 0s;
-      --purr-duration: 0s;
-      --purr-duration-slow: 0s;
+      --pl-duration-fast: 0s;
+      --pl-duration: 0s;
+      --pl-duration-slow: 0s;
     }
   }
 
   /* Touch: every control is at least 44 by 44. */
   @media (pointer: coarse) {
     :root {
-      --purr-size-md: max(var(--purr-touch-min), var(--purr-visual-md));
-      --purr-size-lg: max(var(--purr-touch-min), var(--purr-visual-lg));
-      --purr-size-xl: max(var(--purr-touch-min), var(--purr-visual-xl));
-      --purr-size-hit-min: var(--purr-touch-min);
+      --pl-size-md: max(var(--pl-touch-min), var(--pl-visual-md));
+      --pl-size-lg: max(var(--pl-touch-min), var(--pl-visual-lg));
+      --pl-size-xl: max(var(--pl-touch-min), var(--pl-visual-xl));
+      --pl-size-hit-min: var(--pl-touch-min);
     }
   }
 }
 
 /* Surface materials. Solid is the default. Glass is opt-in with
-   purr-material="glass" on any ancestor, for bars, sidebars, panels and sheets. */
-@layer purr.tokens {
+   pl-material="glass" on any ancestor, for bars, sidebars, panels and sheets. */
+@layer pl.tokens {
   :root {
-    --purr-color-surface: color-mix(
+    --pl-color-surface: color-mix(
       in srgb,
-      var(--purr-color-background),
-      var(--purr-color-foreground) 5%
+      var(--pl-color-background),
+      var(--pl-color-foreground) 5%
     );
-    --purr-material-bar: var(--purr-color-surface);
-    --purr-material-sidebar: var(--purr-color-surface);
-    --purr-material-panel: var(--purr-color-surface);
-    --purr-material-sheet: var(--purr-color-surface);
-    --purr-material-bar-filter: none;
-    --purr-material-sidebar-filter: none;
-    --purr-material-panel-filter: none;
-    --purr-material-sheet-filter: none;
-    --purr-material-edge: 0 0 transparent;
+    --pl-material-bar: var(--pl-color-surface);
+    --pl-material-sidebar: var(--pl-color-surface);
+    --pl-material-panel: var(--pl-color-surface);
+    --pl-material-sheet: var(--pl-color-surface);
+    --pl-material-bar-filter: none;
+    --pl-material-sidebar-filter: none;
+    --pl-material-panel-filter: none;
+    --pl-material-sheet-filter: none;
+    --pl-material-edge: 0 0 transparent;
 
     /* The neutral control face. Glass makes it stronger. */
-    --purr-color-secondary: var(--purr-color-muted-2);
-    --purr-color-secondary-pressed: var(--purr-color-muted-pressed);
-    --purr-color-secondary-disabled: var(--purr-color-muted-disabled);
+    --pl-color-secondary: var(--pl-color-muted-2);
+    --pl-color-secondary-pressed: var(--pl-color-muted-pressed);
+    --pl-color-secondary-disabled: var(--pl-color-muted-disabled);
 
     /* The groove of a switch or slider, and the knob that moves in it. */
-    --purr-color-track: light-dark(
-      var(--purr-color-muted-1),
-      color-mix(in srgb, var(--purr-color-honeydew) 26%, transparent)
+    --pl-color-track: light-dark(
+      var(--pl-color-muted-1),
+      color-mix(in srgb, var(--pl-color-honeydew) 26%, transparent)
     );
-    --purr-color-thumb: light-dark(#fff, rgb(255 255 255 / 85%));
+    --pl-color-thumb: light-dark(#fff, rgb(255 255 255 / 85%));
 
     /* A 1px inside outline that only shows under increased contrast. */
-    --purr-boundary: none;
+    --pl-boundary: none;
 
     /* The hairline of a floating surface, as a color so a shape that is not a box can draw it too. */
-    --purr-color-edge: transparent;
-    --purr-elevation-panel: var(--purr-shadow-lg);
-    --purr-elevation-sheet: var(--purr-shadow-lg);
+    --pl-color-edge: transparent;
+    --pl-elevation-panel: var(--pl-shadow-lg);
+    --pl-elevation-sheet: var(--pl-shadow-lg);
   }
 
   @supports (backdrop-filter: blur(1px)) {
-    [purr-material="glass"] {
-      --purr-material-bar: var(--purr-color-overlay);
-      --purr-material-sidebar: var(--purr-color-overlay);
-      --purr-material-panel: var(--purr-color-overlay);
-      --purr-material-sheet: var(--purr-color-overlay);
-      --purr-material-bar-filter: blur(var(--purr-blur-md)) saturate(125%);
-      --purr-material-sidebar-filter: blur(var(--purr-blur-md)) saturate(125%);
-      --purr-material-panel-filter: blur(var(--purr-blur-lg)) saturate(125%);
-      --purr-material-sheet-filter: blur(var(--purr-blur-lg)) saturate(125%);
-      --purr-material-edge: inset 0 0 0 1px var(--purr-color-overlay-border);
-      --purr-color-edge: var(--purr-color-overlay-border);
-      --purr-color-secondary: color-mix(
+    [pl-material="glass"] {
+      --pl-material-bar: var(--pl-color-overlay);
+      --pl-material-sidebar: var(--pl-color-overlay);
+      --pl-material-panel: var(--pl-color-overlay);
+      --pl-material-sheet: var(--pl-color-overlay);
+      --pl-material-bar-filter: blur(var(--pl-blur-md)) saturate(125%);
+      --pl-material-sidebar-filter: blur(var(--pl-blur-md)) saturate(125%);
+      --pl-material-panel-filter: blur(var(--pl-blur-lg)) saturate(125%);
+      --pl-material-sheet-filter: blur(var(--pl-blur-lg)) saturate(125%);
+      --pl-material-edge: inset 0 0 0 1px var(--pl-color-overlay-border);
+      --pl-color-edge: var(--pl-color-overlay-border);
+      --pl-color-secondary: color-mix(
         in srgb,
-        var(--purr-color-foreground) 17%,
+        var(--pl-color-foreground) 17%,
         transparent
       );
-      --purr-color-secondary-pressed: color-mix(
+      --pl-color-secondary-pressed: color-mix(
         in srgb,
-        var(--purr-color-foreground) 23%,
+        var(--pl-color-foreground) 23%,
         transparent
       );
-      --purr-color-secondary-disabled: color-mix(
+      --pl-color-secondary-disabled: color-mix(
         in srgb,
-        var(--purr-color-foreground) 9%,
+        var(--pl-color-foreground) 9%,
         transparent
       );
-      --purr-color-track: color-mix(
+      --pl-color-track: color-mix(
         in srgb,
-        var(--purr-color-foreground) 26%,
+        var(--pl-color-foreground) 26%,
         transparent
       );
-      --purr-color-thumb: #fff;
+      --pl-color-thumb: #fff;
     }
   }
 
@@ -423,34 +419,34 @@
   @media (prefers-reduced-transparency: reduce),
     (prefers-contrast: more),
     (forced-colors: active) {
-    [purr-material="glass"] {
-      --purr-material-bar: var(--purr-color-surface);
-      --purr-material-sidebar: var(--purr-color-surface);
-      --purr-material-panel: var(--purr-color-surface);
-      --purr-material-sheet: var(--purr-color-surface);
-      --purr-material-bar-filter: none;
-      --purr-material-sidebar-filter: none;
-      --purr-material-panel-filter: none;
-      --purr-material-sheet-filter: none;
-      --purr-material-edge: 0 0 transparent;
-      --purr-color-edge: transparent;
-      --purr-color-secondary: var(--purr-color-muted-2);
-      --purr-color-secondary-pressed: var(--purr-color-muted-pressed);
-      --purr-color-secondary-disabled: var(--purr-color-muted-disabled);
-      --purr-color-track: light-dark(
-        var(--purr-color-muted-1),
-        color-mix(in srgb, var(--purr-color-honeydew) 26%, transparent)
+    [pl-material="glass"] {
+      --pl-material-bar: var(--pl-color-surface);
+      --pl-material-sidebar: var(--pl-color-surface);
+      --pl-material-panel: var(--pl-color-surface);
+      --pl-material-sheet: var(--pl-color-surface);
+      --pl-material-bar-filter: none;
+      --pl-material-sidebar-filter: none;
+      --pl-material-panel-filter: none;
+      --pl-material-sheet-filter: none;
+      --pl-material-edge: 0 0 transparent;
+      --pl-color-edge: transparent;
+      --pl-color-secondary: var(--pl-color-muted-2);
+      --pl-color-secondary-pressed: var(--pl-color-muted-pressed);
+      --pl-color-secondary-disabled: var(--pl-color-muted-disabled);
+      --pl-color-track: light-dark(
+        var(--pl-color-muted-1),
+        color-mix(in srgb, var(--pl-color-honeydew) 26%, transparent)
       );
-      --purr-color-thumb: light-dark(#fff, rgb(255 255 255 / 85%));
+      --pl-color-thumb: light-dark(#fff, rgb(255 255 255 / 85%));
     }
   }
 
   @media (prefers-contrast: more) {
     :root {
-      --purr-boundary: inset 0 0 0 1px var(--purr-color-input-border);
-      --purr-color-edge: var(--purr-color-input-border);
-      --purr-elevation-panel: var(--purr-boundary);
-      --purr-elevation-sheet: var(--purr-boundary);
+      --pl-boundary: inset 0 0 0 1px var(--pl-color-input-border);
+      --pl-color-edge: var(--pl-color-input-border);
+      --pl-elevation-panel: var(--pl-boundary);
+      --pl-elevation-sheet: var(--pl-boundary);
     }
   }
 }

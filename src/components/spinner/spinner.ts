@@ -12,7 +12,7 @@ import { spinnerStyles } from "./spinner.css.ts";
  * @attr {number} max - The value that means done. Defaults to 100.
  * @csspart ring - The drawing.
  */
-export class PurrSpinner extends LitElement {
+export class PlSpinner extends LitElement {
   static override styles = spinnerStyles;
   static override properties = {
     label: {},
@@ -78,10 +78,10 @@ export class PurrSpinner extends LitElement {
   }
 }
 
-customElements.define("purr-spinner", PurrSpinner);
+customElements.define("pl-spinner", PlSpinner);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-spinner": PurrSpinner;
+    "pl-spinner": PlSpinner;
   }
 }

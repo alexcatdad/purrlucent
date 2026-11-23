@@ -50,12 +50,12 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * @csspart glyph - The magnifier of a search field.
  * @csspart clear - The clear button of a search field.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires purr-input - The value changed through editing or the clear button. `detail.value` holds it.
- * @fires purr-change - The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
- * @fires input - After each purr-input, as a native input fires it.
- * @fires change - After each purr-change, as a native input fires it.
+ * @fires pl-input - The value changed through editing or the clear button. `detail.value` holds it.
+ * @fires pl-change - The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
+ * @fires input - After each pl-input, as a native input fires it.
+ * @fires change - After each pl-change, as a native input fires it.
  */
-export class PurrInput extends LitElement {
+export class PlInput extends LitElement {
   static formAssociated = true;
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -233,7 +233,7 @@ export class PurrInput extends LitElement {
     );
   }
 
-  #emit(name: "purr-input" | "purr-change") {
+  #emit(name: "pl-input" | "pl-change") {
     this.dispatchEvent(
       new CustomEvent(name, {
         detail: { value: this.value },
@@ -246,13 +246,13 @@ export class PurrInput extends LitElement {
   #onInput = (event: Event) => {
     this.value = (event.target as HTMLInputElement).value;
     this.#sync();
-    this.#emit("purr-input");
+    this.#emit("pl-input");
   };
 
   #onChange = () => {
     this.#touched = true;
     this.#sync();
-    this.#emit("purr-change");
+    this.#emit("pl-change");
     // The inner input's change event stays in the shadow root.
     fireNative(this, "change");
   };
@@ -268,9 +268,9 @@ export class PurrInput extends LitElement {
     this.value = "";
     input.focus();
     this.#sync();
-    this.#emit("purr-input");
+    this.#emit("pl-input");
     fireNative(this, "input");
-    this.#emit("purr-change");
+    this.#emit("pl-change");
     fireNative(this, "change");
   }
 
@@ -339,10 +339,10 @@ export class PurrInput extends LitElement {
   }
 }
 
-customElements.define("purr-input", PurrInput);
+customElements.define("pl-input", PlInput);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-input": PurrInput;
+    "pl-input": PlInput;
   }
 }

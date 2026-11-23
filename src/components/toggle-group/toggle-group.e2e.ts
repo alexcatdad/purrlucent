@@ -13,7 +13,7 @@ const selectedValue = (page: Page) =>
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
-  await expect(page.locator("purr-toggle-group-item[selected]")).toHaveCount(1);
+  await expect(page.locator("pl-toggle-group-item[selected]")).toHaveCount(1);
   return root;
 };
 
@@ -55,7 +55,7 @@ test("only the selected segment is a tab stop", async ({ page }) => {
   await page.keyboard.press("Tab");
   expect(
     await page.evaluate(() =>
-      document.querySelector("purr-toggle-group-item:focus"),
+      document.querySelector("pl-toggle-group-item:focus"),
     ),
   ).toBeNull();
   await page.keyboard.press("Shift+Tab");
@@ -80,13 +80,13 @@ test("Enter does not select a segment, as with a native radio", async ({
   expect(await selectedValue(page)).toBe(before);
 });
 
-test("a click selects one segment and purr-change fires once", async ({
+test("a click selects one segment and pl-change fires once", async ({
   page,
 }) => {
   await open(page);
   await page.locator("#control").evaluate((el) => {
     (window as unknown as { changes: unknown[] }).changes = [];
-    el.addEventListener("purr-change", (e) =>
+    el.addEventListener("pl-change", (e) =>
       (window as unknown as { changes: unknown[] }).changes.push(
         (e as CustomEvent).detail,
       ),
@@ -147,7 +147,7 @@ test("the form gets the selected value, and a reset returns to the start", async
   await page.locator("#form").evaluate((form) => {
     (window as unknown as { changes: number }).changes = 0;
     form.addEventListener(
-      "purr-change",
+      "pl-change",
       () => (window as unknown as { changes: number }).changes++,
     );
     (form as HTMLFormElement).reset();
@@ -173,16 +173,16 @@ test("a disabled fieldset disables the group and submits nothing", async ({
     .evaluate((el) => ((el as HTMLFieldSetElement).disabled = true));
   await expect(page.getByRole("radio", { name: "Week" })).toBeDisabled();
   expect(await submitted(page)).toEqual([]);
-  await expect(page.locator("purr-toggle-group-item[tabindex]")).toHaveCount(0);
+  await expect(page.locator("pl-toggle-group-item[tabindex]")).toHaveCount(0);
 });
 
-test("a disabled group has no tab stop and fires no purr-change", async ({
+test("a disabled group has no tab stop and fires no pl-change", async ({
   page,
 }) => {
   await open(page, "components-toggle-group--disabled");
   const changes = await page.locator("#control").evaluate(async (el) => {
     let count = 0;
-    el.addEventListener("purr-change", () => count++);
+    el.addEventListener("pl-change", () => count++);
     el.querySelector<HTMLElement>("[value=month]")!.click();
     return count;
   });
@@ -190,7 +190,7 @@ test("a disabled group has no tab stop and fires no purr-change", async ({
   await page.keyboard.press("Tab");
   expect(
     await page.evaluate(() =>
-      document.querySelector("purr-toggle-group-item:focus"),
+      document.querySelector("pl-toggle-group-item:focus"),
     ),
   ).toBeNull();
   await expect(page.getByRole("radio", { name: "Week" })).toHaveAttribute(
@@ -223,7 +223,7 @@ test("a disabled click in the same task as disabled = true selects nothing", asy
   await open(page);
   const changes = await page.locator("#control").evaluate((el) => {
     let count = 0;
-    el.addEventListener("purr-change", () => count++);
+    el.addEventListener("pl-change", () => count++);
     (el as HTMLElement & { disabled: boolean }).disabled = true;
     el.querySelector<HTMLElement>("[value=week]")!.click();
     return count;
@@ -234,11 +234,11 @@ test("a disabled click in the same task as disabled = true selects nothing", asy
 test("an aria-label set by the consumer names the group", async ({ page }) => {
   const root = await open(page);
   await root.evaluate((el) => {
-    const group = document.createElement("purr-toggle-group");
+    const group = document.createElement("pl-toggle-group");
     group.setAttribute("aria-label", "Alignment");
     group.id = "own-label";
     group.innerHTML =
-      '<purr-toggle-group-item value="a">A</purr-toggle-group-item>';
+      '<pl-toggle-group-item value="a">A</pl-toggle-group-item>';
     el.append(group);
   });
   await expect(
@@ -250,13 +250,13 @@ test("an aria-label set by the consumer names the group", async ({ page }) => {
   );
 });
 
-test("a programmatic value change moves the selection without purr-change", async ({
+test("a programmatic value change moves the selection without pl-change", async ({
   page,
 }) => {
   await open(page);
   const changes = await page.locator("#control").evaluate(async (el) => {
     let count = 0;
-    el.addEventListener("purr-change", () => count++);
+    el.addEventListener("pl-change", () => count++);
     (el as HTMLInputElement).value = "month";
     await (el as unknown as { updateComplete: Promise<boolean> })
       .updateComplete;
@@ -335,19 +335,18 @@ test("a one-character segment keeps the per-size minimum width", async ({
 }) => {
   const root = await open(page);
   const widths = await root.evaluate(async (el) => {
-    const group = document.createElement("purr-toggle-group");
+    const group = document.createElement("pl-toggle-group");
     group.setAttribute("label", "Digits");
     group.innerHTML = [1, 2, 3]
       .map(
-        (n) =>
-          `<purr-toggle-group-item value="${n}">${n}</purr-toggle-group-item>`,
+        (n) => `<pl-toggle-group-item value="${n}">${n}</pl-toggle-group-item>`,
       )
       .join("");
     el.append(group);
     await (group as unknown as { updateComplete: Promise<boolean> })
       .updateComplete;
     const probe = el.appendChild(document.createElement("div"));
-    probe.style.inlineSize = "calc(var(--purr-spacing) * 7.5)";
+    probe.style.inlineSize = "calc(var(--pl-spacing) * 7.5)";
     const min = probe.getBoundingClientRect().width;
     return [
       min,
@@ -371,11 +370,11 @@ test("an icon-only segment is named by aria-label and fills its column", async (
   await expectAccessible(root);
   const side = await root.evaluate((el) => {
     const probe = document.body.appendChild(document.createElement("div"));
-    probe.style.inlineSize = "var(--purr-icon-md)";
+    probe.style.inlineSize = "var(--pl-icon-md)";
     const size = probe.getBoundingClientRect().width;
     probe.remove();
     const box = el.querySelector("svg")!.getBoundingClientRect();
-    const widths = [...el.querySelectorAll("purr-toggle-group-item")].map(
+    const widths = [...el.querySelectorAll("pl-toggle-group-item")].map(
       (i) => i.getBoundingClientRect().width,
     );
     return [size, box.width, box.height, ...widths];

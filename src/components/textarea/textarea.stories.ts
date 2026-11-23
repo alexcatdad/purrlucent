@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./textarea.ts";
-import type { PurrTextarea } from "./textarea.ts";
+import type { PlTextarea } from "./textarea.ts";
 
 const meta = {
   title: "Components/Text area",
-  component: "purr-textarea",
+  component: "pl-textarea",
 } satisfies Meta;
 
 export default meta;
@@ -15,7 +15,7 @@ type Story = StoryObj;
 
 const column = (content: unknown) =>
   html`<div
-    style="display:grid;justify-items:start;gap:var(--purr-space-3);padding:var(--purr-space-4)"
+    style="display:grid;justify-items:start;gap:var(--pl-space-3);padding:var(--pl-space-4)"
   >
     ${content}
   </div>`;
@@ -23,50 +23,40 @@ const column = (content: unknown) =>
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {
   render: () =>
-    html`<purr-textarea
+    html`<pl-textarea
       id="area"
       label="Message"
       placeholder="Message"
-    ></purr-textarea>`,
+    ></pl-textarea>`,
 };
 
 export const Labelled: Story = {
   render: () =>
-    column(
-      html`<purr-textarea id="area" value="Hello">Message</purr-textarea>`,
-    ),
+    column(html`<pl-textarea id="area" value="Hello">Message</pl-textarea>`),
 };
 
 export const States: Story = {
   render: () =>
     column([
-      html`<purr-textarea
+      html`<pl-textarea
         label="Placeholder"
         placeholder="Placeholder"
-      ></purr-textarea>`,
-      html`<purr-textarea
+      ></pl-textarea>`,
+      html`<pl-textarea
         label="Filled"
         value="Value on the first line
 and a second line"
-      ></purr-textarea>`,
-      html`<purr-textarea
-        label="Disabled"
-        value="Value"
-        disabled
-      ></purr-textarea>`,
-      html`<purr-textarea
+      ></pl-textarea>`,
+      html`<pl-textarea label="Disabled" value="Value" disabled></pl-textarea>`,
+      html`<pl-textarea
         label="Read only"
         value="Value"
         readonly
-      ></purr-textarea>`,
-      html`<purr-textarea
-        id="invalid"
-        label="Invalid"
-        required
-      ></purr-textarea>`,
+      ></pl-textarea>`,
+      html`<pl-textarea id="invalid" label="Invalid" required></pl-textarea>`,
     ]),
   play: async ({ canvasElement }) => {
-    const el = canvasElement.querySelector<PurrTextarea>("#invalid")!;
+    const el = canvasElement.querySelector<PlTextarea>("#invalid")!;
     await el.updateComplete;
     el.focus();
     await userEvent.tab();
@@ -77,17 +67,17 @@ and a second line"
 export const Resize: Story = {
   render: () =>
     column([
-      html`<purr-textarea label="Vertical" value="Resizes"></purr-textarea>`,
-      html`<purr-textarea
+      html`<pl-textarea label="Vertical" value="Resizes"></pl-textarea>`,
+      html`<pl-textarea
         label="Fixed"
         value="Does not resize"
         resize="none"
-      ></purr-textarea>`,
-      html`<purr-textarea
+      ></pl-textarea>`,
+      html`<pl-textarea
         label="Two rows"
         rows="2"
         value="Two rows tall"
-      ></purr-textarea>`,
+      ></pl-textarea>`,
     ]),
 };
 
@@ -96,12 +86,12 @@ export const Sizes: Story = {
     column(
       (["md", "lg", "xl"] as const).map(
         (size) =>
-          html`<purr-textarea
+          html`<pl-textarea
             size=${size}
             rows="1"
             label="Size ${size}"
             value="Size ${size}"
-          ></purr-textarea>`,
+          ></pl-textarea>`,
       ),
     ),
 };
@@ -109,27 +99,27 @@ export const Sizes: Story = {
 /** In a form the field submits its value and follows reset, fieldset and validity. */
 export const InForm: Story = {
   render: () => html`
-    <form id="form" style="padding:var(--purr-space-4)">
+    <form id="form" style="padding:var(--pl-space-4)">
       <fieldset
         id="fieldset"
-        style="display:grid;justify-items:start;gap:var(--purr-space-3);border:0;padding:0;margin:0"
+        style="display:grid;justify-items:start;gap:var(--pl-space-3);border:0;padding:0;margin:0"
       >
-        <purr-textarea id="note" name="note" value="Hi">Note</purr-textarea>
-        <purr-textarea id="body" name="body" required minlength="3"
-          >Body</purr-textarea
+        <pl-textarea id="note" name="note" value="Hi">Note</pl-textarea>
+        <pl-textarea id="body" name="body" required minlength="3"
+          >Body</pl-textarea
         >
       </fieldset>
     </form>
   `,
 };
 
-/** Typing fires purr-input per edit and Enter adds a line. */
+/** Typing fires pl-input per edit and Enter adds a line. */
 export const Types: Story = {
-  render: () => html`<purr-textarea id="area" label="Message"></purr-textarea>`,
+  render: () => html`<pl-textarea id="area" label="Message"></pl-textarea>`,
   play: async ({ canvasElement }) => {
-    const el = canvasElement.querySelector<PurrTextarea>("#area")!;
+    const el = canvasElement.querySelector<PlTextarea>("#area")!;
     const values: string[] = [];
-    el.addEventListener("purr-input", (event) =>
+    el.addEventListener("pl-input", (event) =>
       values.push((event as CustomEvent<{ value: string }>).detail.value),
     );
     await el.updateComplete;
@@ -141,12 +131,12 @@ export const Types: Story = {
 
 export const Rtl: Story = {
   render: () =>
-    column(html`<purr-textarea label="Message" value="Value"></purr-textarea>`),
+    column(html`<pl-textarea label="Message" value="Value"></pl-textarea>`),
   globals: { dir: "rtl" },
 };
 
 export const Glass: Story = {
   render: () =>
-    column(html`<purr-textarea label="Message" value="Value"></purr-textarea>`),
+    column(html`<pl-textarea label="Message" value="Value"></pl-textarea>`),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

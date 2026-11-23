@@ -21,11 +21,11 @@ import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
  * @slot - The label.
  * @csspart box - The drawn box.
  * @csspart label - The wrapper around the label.
- * @fires purr-change - The user changed the box. `detail.checked` holds the new state.
- * @fires input - After purr-change, as a native checkbox fires it.
+ * @fires pl-change - The user changed the box. `detail.checked` holds the new state.
+ * @fires input - After pl-change, as a native checkbox fires it.
  * @fires change - After input, as a native checkbox fires it.
  */
-export class PurrCheckbox extends LitElement {
+export class PlCheckbox extends LitElement {
   static formAssociated = true;
   static override styles = [boxStyles, checkboxStyles];
   static override properties = {
@@ -65,11 +65,11 @@ export class PurrCheckbox extends LitElement {
     this.size = "md";
     this.required = false;
     this.disabled = false;
-    this.addEventListener("purr-press", () => {
+    this.addEventListener("pl-press", () => {
       this.checked = !this.checked;
       this.indeterminate = false;
       this.dispatchEvent(
-        new CustomEvent("purr-change", {
+        new CustomEvent("pl-change", {
           detail: { checked: this.checked },
           bubbles: true,
           composed: true,
@@ -142,10 +142,10 @@ export class PurrCheckbox extends LitElement {
   }
 }
 
-customElements.define("purr-checkbox", PurrCheckbox);
+customElements.define("pl-checkbox", PlCheckbox);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-checkbox": PurrCheckbox;
+    "pl-checkbox": PlCheckbox;
   }
 }

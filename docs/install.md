@@ -40,7 +40,7 @@ import "purrlucent/button";
 ```
 
 ```html
-<purr-button>Save</purr-button>
+<pl-button>Save</pl-button>
 ```
 
 `import "purrlucent"` loads every component at once. The [component reference](./components.md) lists each element with its attributes, slots, parts and events. For a React app, see [Use with React](./react.md).
@@ -51,9 +51,9 @@ Control fills are translucent and tint whatever is behind them, so paint the pag
 
 ```css
 body {
-  background: var(--purr-color-background);
-  color: var(--purr-color-foreground);
-  font-family: var(--purr-font-sans);
+  background: var(--pl-color-background);
+  color: var(--pl-color-foreground);
+  font-family: var(--pl-font-sans);
 }
 ```
 
@@ -73,18 +73,18 @@ Colors follow the page's `color-scheme`, which the tokens set to `light dark`, s
 
 ### Forms
 
-`purr-button` with `type="submit"` or `type="reset"` acts on the form it is in. The input controls, such as `purr-switch`, submit their `name` and `value` with the form, return to their starting state on reset, and are disabled by a disabled `fieldset`.
+`pl-button` with `type="submit"` or `type="reset"` acts on the form it is in. The input controls, such as `pl-switch`, submit their `name` and `value` with the form, return to their starting state on reset, and are disabled by a disabled `fieldset`.
 
 ```html
 <form>
-  <purr-switch name="wifi" checked>Wi-Fi</purr-switch>
-  <purr-button type="submit" variant="primary">Save</purr-button>
+  <pl-switch name="wifi" checked>Wi-Fi</pl-switch>
+  <pl-button type="submit" variant="primary">Save</pl-button>
 </form>
 ```
 
 ### TypeScript
 
-The package ships type declarations. Each import adds its elements to `HTMLElementTagNameMap`, so `document.querySelector("purr-button")` is typed.
+The package ships type declarations. Each import adds its elements to `HTMLElementTagNameMap`, so `document.querySelector("pl-button")` is typed.
 
 The package also ships `purrlucent/custom-elements.json`, the Custom Elements Manifest. Editors and frameworks can use it for typings and completion.
 
@@ -94,10 +94,10 @@ The version is part of the URL. To upgrade, install again with the new version i
 
 ## Glass mode
 
-Surfaces are solid by default. To turn on glass, set `purr-material="glass"` on any ancestor, usually `<html>`:
+Surfaces are solid by default. To turn on glass, set `pl-material="glass"` on any ancestor, usually `<html>`:
 
 ```html
-<html purr-material="glass"></html>
+<html pl-material="glass"></html>
 ```
 
 Glass applies only to controls and navigation. Content stays plain in both modes. A surface falls back to solid when the browser has no `backdrop-filter`, or when the user asks for reduced transparency or more contrast.
@@ -108,29 +108,29 @@ You change the look in three ways. Use them in this order.
 
 ### Tokens
 
-Every color, size and duration is a custom property with the `--purr-` prefix. Override them on `:root` or on any element:
+Every color, size and duration is a custom property with the `--pl-` prefix. Override them on `:root` or on any element:
 
 ```css
 :root {
-  --purr-color-accent: oklch(51% 0.17 250deg);
-  --purr-radius: 6px;
+  --pl-color-accent: oklch(51% 0.17 250deg);
+  --pl-radius: 6px;
 }
 ```
 
-The tokens are in the `purr.tokens` cascade layer, so your unlayered styles win without extra selectors. Keep your colors readable: the contrast checks apply to the defaults, not to your overrides.
+The tokens are in the `pl.tokens` cascade layer, so your unlayered styles win without extra selectors. Keep your colors readable: the contrast checks apply to the defaults, not to your overrides.
 
 ### Parts
 
-Elements expose named parts for styling from outside. For example, `<purr-button>` exposes `label`:
+Elements expose named parts for styling from outside. For example, `<pl-button>` exposes `label`:
 
 ```css
-purr-button::part(label) {
+pl-button::part(label) {
   letter-spacing: 0.02em;
 }
 ```
 
 ### Slots
 
-Content goes into slots. The default slot of `<purr-button>` holds its label, and the label is required for an accessible name.
+Content goes into slots. The default slot of `<pl-button>` holds its label, and the label is required for an accessible name.
 
 The Custom Elements Manifest lists the parts, slots, events and properties of every component.

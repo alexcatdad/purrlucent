@@ -28,7 +28,7 @@ test("screen reader speaks each segment and the selected one", async ({
     spoken = await walkCompositeWithArrows(
       page,
       screenReader,
-      "purr-toggle-group",
+      "pl-toggle-group",
       3,
     );
     await traceState("arrows", page, screenReader);

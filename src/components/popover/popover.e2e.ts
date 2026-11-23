@@ -9,7 +9,7 @@ import { gotoStory } from "../../../e2e/helpers/story.ts";
 const story = (name: string) => `components-popover--${name}`;
 
 const trigger = (page: Page, scope = "") =>
-  page.locator(`${scope} purr-button[slot=trigger]`.trim());
+  page.locator(`${scope} pl-button[slot=trigger]`.trim());
 const dialog = (page: Page, name = "Sharing") =>
   page.getByRole("dialog", { name });
 const inside = (page: Page) =>
@@ -76,7 +76,7 @@ test("a panel without focusable content takes focus itself", async ({
 }) => {
   await gotoStory(page, story("default"));
   await page.locator("#popover").evaluate((el) => {
-    el.querySelector("purr-button:not([slot])")!.remove();
+    el.querySelector("pl-button:not([slot])")!.remove();
   });
   await trigger(page).click();
   await expect(dialog(page)).toBeFocused();
@@ -99,7 +99,7 @@ test("Tab out of the panel closes it and moves on", async ({ page }) => {
   await page.evaluate(() => {
     const next = document.createElement("input");
     next.id = "next";
-    document.querySelector("purr-popover")!.after(next);
+    document.querySelector("pl-popover")!.after(next);
   });
   await trigger(page).click();
   await expect(inside(page)).toBeFocused();
@@ -121,7 +121,7 @@ test("focus moving elsewhere closes the panel", async ({ page }) => {
   await expect(page.locator("#other")).toBeFocused();
 });
 
-test("open, show() and hide() work from script and purr-toggle reports them", async ({
+test("open, show() and hide() work from script and pl-toggle reports them", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
@@ -133,7 +133,7 @@ test("open, show() and hide() work from script and purr-toggle reports them", as
       updateComplete: Promise<boolean>;
     };
     const seen: boolean[] = [];
-    popover.addEventListener("purr-toggle", (e) =>
+    popover.addEventListener("pl-toggle", (e) =>
       seen.push((e as CustomEvent<{ open: boolean }>).detail.open),
     );
     popover.show();
@@ -162,7 +162,7 @@ test("opening a popover from script closes another open popover", async ({
     const first = document.getElementById("top") as Popover;
     const second = document.getElementById("bottom") as Popover;
     const seen: boolean[] = [];
-    first.addEventListener("purr-toggle", (e) =>
+    first.addEventListener("pl-toggle", (e) =>
       seen.push((e as CustomEvent<{ open: boolean }>).detail.open),
     );
     first.open = true;
@@ -181,9 +181,9 @@ test("a nested popover does not close its parent", async ({ page }) => {
   await gotoStory(page, story("default"));
   const open = await page.evaluate(async () => {
     const parent = document.getElementById("popover") as Popover;
-    const child = document.createElement("purr-popover") as Popover;
+    const child = document.createElement("pl-popover") as Popover;
     child.setAttribute("label", "Nested");
-    child.innerHTML = `<purr-button slot="trigger">More</purr-button><p>Details</p>`;
+    child.innerHTML = `<pl-button slot="trigger">More</pl-button><p>Details</p>`;
     parent.append(child);
     parent.open = true;
     await parent.updateComplete;
@@ -330,7 +330,7 @@ test("the panel and the arrow take the panel material, opaque in the default lig
   const fills = await page.locator("#popover").evaluate((el) => {
     const root = el.shadowRoot!;
     const probe = document.createElement("div");
-    probe.style.background = "var(--purr-material-panel)";
+    probe.style.background = "var(--pl-material-panel)";
     root.append(probe);
     const material = getComputedStyle(probe).backgroundColor;
     probe.remove();
@@ -376,7 +376,7 @@ test("a popover is only as wide as its content, up to the cap", async ({
     };
     const panel = host.shadowRoot!.querySelector("[part=panel]")!;
     const probe = document.createElement("div");
-    probe.style.inlineSize = "calc(var(--purr-spacing) * 45)";
+    probe.style.inlineSize = "calc(var(--pl-spacing) * 45)";
     host.shadowRoot!.append(probe);
     const cap = probe.getBoundingClientRect().width;
     probe.remove();
@@ -520,7 +520,7 @@ test("the focus ring shows under forced colors", async ({ page }) => {
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });
   await page.locator("#popover").evaluate((el) => {
-    el.querySelector("purr-button:not([slot])")!.remove();
+    el.querySelector("pl-button:not([slot])")!.remove();
   });
   await trigger(page).focus();
   await page.keyboard.press("Enter");

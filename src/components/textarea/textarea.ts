@@ -34,12 +34,12 @@ import { textareaStyles } from "./textarea.css.ts";
  * @csspart field - The shell around the textarea.
  * @csspart control - The native textarea.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires purr-input - The value changed through editing. `detail.value` holds it.
- * @fires purr-change - The value was committed (blur after an edit). `detail.value` holds it.
- * @fires input - After each purr-input, as a native textarea fires it.
- * @fires change - After each purr-change, as a native textarea fires it.
+ * @fires pl-input - The value changed through editing. `detail.value` holds it.
+ * @fires pl-change - The value was committed (blur after an edit). `detail.value` holds it.
+ * @fires input - After each pl-input, as a native textarea fires it.
+ * @fires change - After each pl-change, as a native textarea fires it.
  */
-export class PurrTextarea extends LitElement {
+export class PlTextarea extends LitElement {
   static formAssociated = true;
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -193,7 +193,7 @@ export class PurrTextarea extends LitElement {
     syncFieldMessage(this.renderRoot as ShadowRoot, control, invalid);
   }
 
-  #emit(name: "purr-input" | "purr-change") {
+  #emit(name: "pl-input" | "pl-change") {
     this.dispatchEvent(
       new CustomEvent(name, {
         detail: { value: this.value },
@@ -206,13 +206,13 @@ export class PurrTextarea extends LitElement {
   #onInput = (event: Event) => {
     this.value = (event.target as HTMLTextAreaElement).value;
     this.#sync();
-    this.#emit("purr-input");
+    this.#emit("pl-input");
   };
 
   #onChange = () => {
     this.#touched = true;
     this.#sync();
-    this.#emit("purr-change");
+    this.#emit("pl-change");
     // The inner textarea's change event stays in the shadow root.
     fireNative(this, "change");
   };
@@ -256,10 +256,10 @@ export class PurrTextarea extends LitElement {
   }
 }
 
-customElements.define("purr-textarea", PurrTextarea);
+customElements.define("pl-textarea", PlTextarea);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-textarea": PurrTextarea;
+    "pl-textarea": PlTextarea;
   }
 }
