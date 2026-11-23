@@ -72,6 +72,56 @@ A box that keeps its content at a fixed width-to-height ratio. Slotted media fil
 
 - default: The media, such as an image, a video or a map.
 
+## Attachment
+
+```ts
+import "purrlucent/attachment";
+```
+
+### `<pl-attachment>`
+
+A file or other item attached to a message or a draft: media, a title, a description and actions. With an `href` or `clickable` the whole card is one target, named by the title; buttons in the `actions` slot stay separate. While `uploading` or `processing` the title shimmers (still under reduced motion), and in `error` the card uses the destructive colors; keep the reason in the description text, since color alone does not say it. A hidden status word is added to the title's name for the states that need one.
+
+| Attribute      | Type                         | Default        | Description                                                                                                                        |
+| -------------- | ---------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `state`        | `PlAttachmentState`          | `"done"`       | `idle`, `uploading`, `processing`, `error` or `done` (default). Idle looks like done.                                              |
+| `media`        | `"icon" \| "image"`          | `"icon"`       | What the `media` slot holds: `icon` (default) in a tile, or `image`, which fills it.                                               |
+| `size`         | `PlAttachmentSize`           | `"default"`    | `default`, `sm` or `xs`.                                                                                                           |
+| `orientation`  | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`, with the media above the text.                                                               |
+| `href`         | `string \| null`             | `null`         | Makes the card a link to this address.                                                                                             |
+| `target`       | `string \| null`             | `null`         | Where the link opens, as on `a`.                                                                                                   |
+| `rel`          | `string \| null`             | `null`         | The link's relationship, as on `a`.                                                                                                |
+| `clickable`    | `boolean`                    | `false`        | Makes the card a button that fires `pl-press`. Ignored when there is an `href`.                                                    |
+| `status-label` | `string \| null`             | `null`         | The hidden word added to the name while the state is `uploading`, `processing` or `error`. Set it when the page is not in English. |
+
+**Slots**
+
+- `media`: An svg icon, or an image when `media="image"`. Give an image `alt=""` when the title says the same.
+- `title`: The attachment's name. It names the link or button when the card is one.
+- `description`: Secondary text, such as the size or, in `error`, the reason.
+- `actions`: Icon buttons, each with an `aria-label` that names the action and the attachment. They stay separate from the card's own target.
+
+**Parts**
+
+- `trigger`: The link or button, when the card is one.
+- `text`: The title and description.
+
+**Events**
+
+- `pl-press`: When a `clickable` card is activated by pointer, Enter or Space. Presses of buttons in the `actions` slot do not reach the card.
+
+### `<pl-attachment-group>`
+
+A row of attachments that scrolls sideways and snaps each card to the start. A fade marks each edge that has more to scroll to. Give it a `label`. When it overflows and nothing in it takes focus (no link, button or action), the row takes a tab stop so the keyboard can scroll it.
+
+| Attribute | Type     | Default | Description                       |
+| --------- | -------- | ------- | --------------------------------- |
+| `label`   | `string` | `""`    | The accessible name of the group. |
+
+**Slots**
+
+- default: The attachments.
+
 ## Avatar
 
 ```ts
