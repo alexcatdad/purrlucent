@@ -338,7 +338,8 @@
 }
 
 /* Surface materials. Solid is the default. Glass is opt-in with
-   pl-material="glass" on any ancestor, for bars, sidebars, panels and sheets. */
+   pl-material="glass" on any ancestor, for the controls and navigation layer:
+   controls, bars, sidebars, panels and sheets. Content stays solid. */
 @layer pl.tokens {
   :root {
     --pl-color-surface: color-mix(
@@ -354,7 +355,10 @@
     --pl-material-sidebar-filter: none;
     --pl-material-panel-filter: none;
     --pl-material-sheet-filter: none;
+    --pl-material-highlight: transparent;
     --pl-material-edge: 0 0 transparent;
+    --pl-material-control: var(--pl-color-secondary);
+    --pl-material-control-filter: none;
 
     /* The neutral control face. Glass makes it stronger. */
     --pl-color-secondary: var(--pl-color-muted-2);
@@ -375,6 +379,7 @@
     --pl-color-edge: transparent;
     --pl-elevation-panel: var(--pl-shadow-lg);
     --pl-elevation-sheet: var(--pl-shadow-lg);
+    --pl-elevation-control: none;
   }
 
   @supports (backdrop-filter: blur(1px)) {
@@ -387,7 +392,17 @@
       --pl-material-sidebar-filter: blur(var(--pl-blur-md)) saturate(125%);
       --pl-material-panel-filter: blur(var(--pl-blur-lg)) saturate(125%);
       --pl-material-sheet-filter: blur(var(--pl-blur-lg)) saturate(125%);
-      --pl-material-edge: inset 0 0 0 1px var(--pl-color-overlay-border);
+      --pl-material-highlight: light-dark(
+        color-mix(in srgb, #fff 45%, transparent),
+        color-mix(in srgb, #fff 22%, transparent)
+      );
+      --pl-material-edge:
+        inset 0 1px 0 0 var(--pl-material-highlight),
+        inset 0 0 0 1px var(--pl-color-overlay-border);
+      --pl-material-control: var(--pl-color-overlay);
+      --pl-material-control-filter: blur(var(--pl-blur-md)) saturate(125%);
+      --pl-elevation-control: 0 calc(var(--pl-spacing) / 4)
+        calc(var(--pl-spacing) * 2) color-mix(in srgb, #000 18%, transparent);
       --pl-color-edge: var(--pl-color-overlay-border);
       --pl-color-secondary: color-mix(
         in srgb,
@@ -428,7 +443,11 @@
       --pl-material-sidebar-filter: none;
       --pl-material-panel-filter: none;
       --pl-material-sheet-filter: none;
+      --pl-material-highlight: transparent;
       --pl-material-edge: 0 0 transparent;
+      --pl-material-control: var(--pl-color-secondary);
+      --pl-material-control-filter: none;
+      --pl-elevation-control: none;
       --pl-color-edge: transparent;
       --pl-color-secondary: var(--pl-color-muted-2);
       --pl-color-secondary-pressed: var(--pl-color-muted-pressed);
