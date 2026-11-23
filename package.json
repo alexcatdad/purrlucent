@@ -106,6 +106,10 @@
       "types": "./dist/types/components/menu/menu.d.ts",
       "default": "./dist/menu.js"
     },
+    "./navigation-menu": {
+      "types": "./dist/types/components/navigation-menu/navigation-menu.d.ts",
+      "default": "./dist/navigation-menu.js"
+    },
     "./number-field": {
       "types": "./dist/types/components/number-field/number-field.d.ts",
       "default": "./dist/number-field.js"

@@ -595,6 +595,55 @@ A menu: a list of commands that opens from a trigger (the menu button pattern), 
 
 - `pl-select`: An item was activated. `detail.value` holds its value.
 
+## Navigation menu
+
+```ts
+import "purrlucent/navigation-menu";
+```
+
+### `<pl-navigation-item>`
+
+One entry of a `pl-navigation-menu`. With an `href` it is a link. With children in the `panel` slot (usually `<a slot="panel">` links) it is a disclosure button that shows and hides a panel of those links, per the disclosure navigation pattern: it is not an ARIA menu, so the links are reached with Tab and the arrow keys are not used. Escape closes the panel and returns focus to the button, as does a press outside it; Tab out of the panel closes it. A panel opens below the button, flips above it when there is no room, and never goes beyond the viewport.
+
+| Attribute | Type                  | Default | Description                                                                                                                                                        |
+| --------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `href`    | `string \| undefined` |         | The destination of a link item. Ignored when the item has a panel.                                                                                                 |
+| `current` | `boolean`             | `false` | This item is, or holds, the current page: `aria-current="page"` on a link, `"true"` on a disclosure button. Mark a panel link yourself with `aria-current="page"`. |
+| `open`    | `boolean`             | `false` | The panel is showing. Opening it closes the other panels in the same menu.                                                                                         |
+
+**Slots**
+
+- default: The item label.
+- `panel`: The links of the panel. Giving the item any makes it a disclosure button.
+
+**Parts**
+
+- `control`: The link or the disclosure button.
+- `label`: The label wrapper.
+- `chevron`: The disclosure arrow.
+- `panel`: The floating panel of links.
+
+**Events**
+
+- `pl-toggle`: The panel opened or closed. `detail.open` says which.
+
+### `<pl-navigation-menu>`
+
+Site navigation: a `nav` landmark holding `pl-navigation-item` children in a row. Each item is a link or a disclosure button that opens a panel of links (the APG disclosure navigation pattern, not a menu). Every link and button is a tab stop. One panel is open at a time: opening one closes the others.
+
+| Attribute | Type     | Default | Description                                               |
+| --------- | -------- | ------- | --------------------------------------------------------- |
+| `label`   | `string` | `""`    | The accessible name of the navigation landmark. Required. |
+
+**Slots**
+
+- default: `pl-navigation-item` children.
+
+**Parts**
+
+- `nav`: The navigation landmark.
+- `list`: The row that lays out the items.
+
 ## Number field
 
 ```ts
