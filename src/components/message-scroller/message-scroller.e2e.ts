@@ -222,29 +222,11 @@ test.describe("fades", () => {
     await expect.poll(shown).toEqual([true, false]);
   });
 
-  test("reduced motion turns the scroll-driven animation off", async ({
-    page,
-  }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
+  test("the fades do not animate", async ({ page }) => {
     await gotoStory(page, story("default"));
     expect(
       await scroller(page).evaluate((e) => getComputedStyle(e).animationName),
     ).toBe("none");
-  });
-
-  test("where scroll-driven animations exist the fade grows with the scroll offset", async ({
-    page,
-  }) => {
-    await gotoStory(page, story("default"));
-    const supported = await page.evaluate(() =>
-      CSS.supports("animation-timeline", "scroll()"),
-    );
-    test.skip(!supported, "No scroll-driven animations in this engine");
-    const el = scroller(page);
-    await el.evaluate((e) => (e.scrollTop = 8));
-    await expect
-      .poll(async () => Math.abs((await fades(el)).start - 8) < 3)
-      .toBe(true);
   });
 
   test("forced colors draw no mask", async ({ page }) => {

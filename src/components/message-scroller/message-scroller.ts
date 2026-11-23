@@ -6,9 +6,9 @@ import {
   messageScrollerStyles,
 } from "./message-scroller.css.ts";
 
-// The edge fades animate these two lengths. A registered property interpolates,
-// and registration is document-wide, so it is done here and not in the styles.
-// Without it the fades still show, but switch on and off instead of growing.
+// The edge fades' two lengths. Registered, they compute to a length, so script
+// can read them; registration is document-wide, so it is done here and not in
+// the styles. Without it the fades still show.
 for (const name of ["--_ms-fade-start", "--_ms-fade-end"]) {
   try {
     CSS.registerProperty({
@@ -416,12 +416,10 @@ export class PlMessageScroller extends LitElement {
         ? Math.min(this.#topFor(anchor, "start"), this.#max())
         : this.#max();
     };
-    const first = top();
-    this.scrollTo({ top: first, behavior: "instant" });
-    requestAnimationFrame(() => {
-      // Rows skipped by content-visibility get their real size once seen.
-      if (this.#released || Math.abs(this.scrollTop - first) > EDGE) return;
-      this.scrollTo({ top: top(), behavior: "instant" });
+    this.scrollTo({ top: top(), behavior: "instant" });
+    // Rows skipped by content-visibility get their real size once seen, and
+    // scroll anchoring may move the offset meanwhile; correct until it settles.
+    this.#settle(top, () => {
       this.#measure();
       this.#sync();
     });
