@@ -18,5 +18,13 @@ export const hoverCardStyles = [
       transition-delay:
         var(--pl-hover-card-open-delay), var(--pl-hover-card-close-delay);
     }
+
+    /* The popover panel's own edge and shadow, with the glass edge on top. */
+    [part="panel"] {
+      box-shadow:
+        var(--pl-material-edge),
+        inset 0 0 0 1px var(--pl-color-edge),
+        var(--pl-elevation-panel);
+    }
   `,
 ];
