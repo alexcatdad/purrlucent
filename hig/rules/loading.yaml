@@ -27,3 +27,24 @@
   check: automated
   test: src/components/empty/empty.e2e.ts > the icon sits above the title and the action below the text
   layer: components
+- id: loading/6
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: Something fills the place of content as soon as possible, so a screen is never blank while content loads.
+  check: automated
+  test: src/components/skeleton/skeleton.e2e.ts > a placeholder takes up space before content arrives
+  layer: components
+- id: loading/7
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: A placeholder is replaced by the real content as it becomes available.
+  check: rubric
+  layer: components
+- id: loading/8
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: People can keep using other parts of the app while content loads in the background.
+  check: rubric
+  layer: components
+- id: loading/9
+  source: https://developer.apple.com/design/human-interface-guidelines/loading
+  rule: A load that takes more than a moment or two shows a progress indicator, determinate when the duration is known and indeterminate when it is not.
+  check: rubric
+  layer: components

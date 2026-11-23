@@ -20,6 +20,28 @@ A box that keeps its content at a fixed width-to-height ratio. Slotted media fil
 
 - default: The media, such as an image, a video or a map.
 
+## Avatar
+
+```ts
+import "purrlucent/avatar";
+```
+
+### `<pl-avatar>`
+
+A round picture of a person. When there is no `src`, or the image fails to load, it shows the initials of `name`. With a `name` the host is an image named by it, and the picture and the initials are hidden from assistive technology so the name is read once. Without a `name` the avatar is decorative and has no role.
+
+| Attribute | Type                               | Default     | Description                                                       |
+| --------- | ---------------------------------- | ----------- | ----------------------------------------------------------------- |
+| `src`     | `string`                           | `""`        | The image address.                                                |
+| `name`    | `string`                           | `""`        | The person's name. It gives the accessible name and the initials. |
+| `size`    | `"sm" \| "md" \| "lg" \| "xl"`     | `"md"`      | `sm`, `md` (default), `lg` or `xl`.                               |
+| `_status` | `"loading" \| "loaded" \| "error"` | `"loading"` |                                                                   |
+
+**Parts**
+
+- `image`: The picture.
+- `initials`: The fallback initials.
+
 ## Badge
 
 ```ts
@@ -771,6 +793,21 @@ A navigation sidebar: a `nav` landmark holding `pl-sidebar-item` children, loose
 
 - `pl-collapse`: The sidebar was hidden or shown. `detail.collapsed` holds the new state.
 - `pl-change`: The selected item changed. `detail.selected` is an array holding the new item.
+
+## Skeleton
+
+```ts
+import "purrlucent/skeleton";
+```
+
+### `<pl-skeleton>`
+
+A placeholder shown in the place of content that is still loading. It is hidden from assistive technology by default, so mark the loading region itself with `aria-busy="true"` and clear it when the content arrives. Size it with `inline-size` and `block-size`. Replace it with the real content as soon as that is ready.
+
+| Attribute | Type                 | Default  | Description                                                                 |
+| --------- | -------------------- | -------- | --------------------------------------------------------------------------- |
+| `shape`   | `"rect" \| "circle"` | `"rect"` | `rect` (default) or `circle`.                                               |
+| `shimmer` | `boolean`            | `false`  | A light band sweeps across it. It stops when the user asks for less motion. |
 
 ## Slider
 
