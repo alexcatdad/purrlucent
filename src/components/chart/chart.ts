@@ -48,6 +48,7 @@ const drawn = [
 /**
  * A chart that is named, themed and keyboard-operable by default, drawn by
  * TanStack Charts (an optional peer dependency: install `@tanstack/charts`).
+ * It is not part of `import "purrlucent"`; import `purrlucent/chart`.
  *
  * For the common cases give it a `type`, `data` and the keys to read:
  * `<pl-chart label="Visits by month" type="line" x="month" y="visits">` with
