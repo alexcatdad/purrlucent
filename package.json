@@ -166,6 +166,10 @@
       "types": "./dist/types/components/message/message.d.ts",
       "default": "./dist/message.js"
     },
+    "./message-scroller": {
+      "types": "./dist/types/components/message-scroller/message-scroller.d.ts",
+      "default": "./dist/message-scroller.js"
+    },
     "./navigation-menu": {
       "types": "./dist/types/components/navigation-menu/navigation-menu.d.ts",
       "default": "./dist/navigation-menu.js"
