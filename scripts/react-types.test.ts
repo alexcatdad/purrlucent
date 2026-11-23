@@ -14,7 +14,15 @@ const types = reactTypes({
             { fieldName: "disabled" },
             { fieldName: "_labelled" },
           ],
-          events: [{ name: "pl-change" }, { name: "name" }],
+          events: [
+            { name: "pl-change", type: { text: "CustomEvent" } },
+            {
+              name: "pl-change",
+              type: { text: "CustomEvent<{ value: string }>" },
+            },
+            { name: "pl-input" },
+            { name: "name" },
+          ],
         },
         { name: "PlOption", tagName: "pl-option" },
         { name: "helper" },
@@ -33,18 +41,18 @@ test("each element imports its class from the emitted declarations", () => {
   expect(types).not.toContain("helper");
 });
 
-test("public attributes become props and events become on<event> props", () => {
+test("public attributes become props and typed events become on<event> props", () => {
   expect(types).toContain(
-    '"pl-select": PlElement<PlSelect, "value" | "disabled", "pl-change">;',
+    '"pl-select": PlElement<PlSelect, "value" | "disabled", { "pl-change": CustomEvent<{ value: string }>; "pl-input": CustomEvent }>;',
   );
   expect(types).not.toContain("_labelled");
   expect(types).toContain(
-    "[K in V as `on${K}`]?: (event: CustomEvent) => void;",
+    "[K in keyof V as `on${K & string}`]?: (event: V[K]) => void;",
   );
 });
 
-test("an element with no attributes or events gets never", () => {
-  expect(types).toContain('"pl-option": PlElement<PlOption, never, never>;');
+test("an element with no attributes or events gets none", () => {
+  expect(types).toContain('"pl-option": PlElement<PlOption, never, {}>;');
 });
 
 test("the types extend React's JSX namespace", () => {

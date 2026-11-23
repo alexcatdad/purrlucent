@@ -77,8 +77,8 @@ const optionalNumber = {
  * @csspart increment - The up button.
  * @csspart decrement - The down button.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires pl-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
- * @fires pl-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
+ * @fires {CustomEvent<{ value: number | null }>} pl-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
+ * @fires {CustomEvent<{ value: number | null }>} pl-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
  * @fires input - After each pl-input, as a native input fires it.
  * @fires change - After each pl-change, as a native input fires it.
  */

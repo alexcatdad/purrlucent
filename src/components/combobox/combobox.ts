@@ -68,8 +68,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart listbox - The popup.
  * @csspart empty - The "no results" row.
  * @csspart message - The validation message below the field.
- * @fires pl-input - The text changed through typing or Escape. `detail.text` holds it.
- * @fires pl-change - The value changed. `detail.value` holds it.
+ * @fires {CustomEvent<{ text: string }>} pl-input - The text changed through typing or Escape. `detail.text` holds it.
+ * @fires {CustomEvent<{ value: string }>} pl-change - The value changed. `detail.value` holds it.
  * @fires input - After each pl-input, as a native input fires it.
  * @fires change - After each pl-change.
  */

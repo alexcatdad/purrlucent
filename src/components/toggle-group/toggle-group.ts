@@ -91,7 +91,7 @@ export class PlToggleGroupItem extends LitElement {
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `pl-toggle-group-item` elements.
- * @fires pl-change - The selection changed by the user. `detail.selected` is a one-item array.
+ * @fires {CustomEvent<{ selected: string[] }>} pl-change - The selection changed by the user. `detail.selected` is a one-item array.
  * @fires input - After pl-change, as a native radio fires it.
  * @fires change - After input, as a native radio fires it.
  */

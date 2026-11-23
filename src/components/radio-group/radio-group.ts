@@ -119,7 +119,7 @@ export class PlRadio extends LitElement {
  * @attr {boolean} required - The form is invalid while no radio is chosen.
  * @attr {boolean} disabled - Disables every radio: no focus, no feedback, nothing submitted.
  * @slot - `pl-radio` elements.
- * @fires pl-change - The user chose a radio. `detail.selected` is a one-item array of its value.
+ * @fires {CustomEvent<{ selected: string[] }>} pl-change - The user chose a radio. `detail.selected` is a one-item array of its value.
  * @fires input - After pl-change, as a native radio fires it.
  * @fires change - After input, as a native radio fires it.
  */

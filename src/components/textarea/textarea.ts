@@ -34,8 +34,8 @@ import { textareaStyles } from "./textarea.css.ts";
  * @csspart field - The shell around the textarea.
  * @csspart control - The native textarea.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires pl-input - The value changed through editing. `detail.value` holds it.
- * @fires pl-change - The value was committed (blur after an edit). `detail.value` holds it.
+ * @fires {CustomEvent<{ value: string }>} pl-input - The value changed through editing. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: string }>} pl-change - The value was committed (blur after an edit). `detail.value` holds it.
  * @fires input - After each pl-input, as a native textarea fires it.
  * @fires change - After each pl-change, as a native textarea fires it.
  */

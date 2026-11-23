@@ -58,7 +58,7 @@ const unlockScroll = () => {
  * @csspart body - The scrolling content.
  * @csspart actions - The row or column of actions.
  * @fires pl-cancel - Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
- * @fires pl-close - The dialog closed. `detail.returnValue` holds the value it closed with.
+ * @fires {CustomEvent<{ returnValue: string }>} pl-close - The dialog closed. `detail.returnValue` holds the value it closed with.
  */
 export class PlDialog extends LitElement {
   static override styles = dialogStyles;

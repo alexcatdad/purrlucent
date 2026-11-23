@@ -29,8 +29,8 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
- * @fires pl-change - The selected item changed. `detail.selected` is an array holding the new item.
- * @fires pl-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
+ * @fires {CustomEvent<{ selected: PlSidebarItem[] }>} pl-change - The selected item changed. `detail.selected` is an array holding the new item.
+ * @fires {CustomEvent<{ collapsed: boolean }>} pl-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
  */
 export class PlSidebar extends LitElement {
   static override styles = sidebarStyles;

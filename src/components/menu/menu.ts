@@ -173,7 +173,7 @@ export class PlMenuLabel extends LitElement {
  * @slot trigger - A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
  * @slot - The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
  * @csspart menu - The popup.
- * @fires pl-select - An item was activated. `detail.value` holds its value.
+ * @fires {CustomEvent<{ value: string }>} pl-select - An item was activated. `detail.value` holds its value.
  */
 export class PlMenu extends LitElement {
   static override styles = menuStyles;

@@ -50,8 +50,8 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * @csspart glyph - The magnifier of a search field.
  * @csspart clear - The clear button of a search field.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires pl-input - The value changed through editing or the clear button. `detail.value` holds it.
- * @fires pl-change - The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: string }>} pl-input - The value changed through editing or the clear button. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: string }>} pl-change - The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
  * @fires input - After each pl-input, as a native input fires it.
  * @fires change - After each pl-change, as a native input fires it.
  */

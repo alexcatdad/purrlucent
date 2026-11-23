@@ -132,13 +132,15 @@ export function App() {
       <pl-button variant="primary" disabled={false} onpl-press={() => dialog.current?.show()}>
         Save
       </pl-button>
-      <pl-select value="a" onpl-change={(e) => String(e.detail.value)}>
+      <pl-select value="a" onpl-change={(e) => e.detail.value satisfies string}>
         <span slot="label">Fruit</span>
         <pl-option value="a">A</pl-option>
       </pl-select>
       <pl-dialog ref={dialog} variant="alert" className="x" />
       {/* @ts-expect-error not a prop of pl-button */}
       <pl-button notAProp />
+      {/* @ts-expect-error the detail of a select's pl-change has no text */}
+      <pl-select onpl-change={(e) => e.detail.text} />
     </>
   );
 }

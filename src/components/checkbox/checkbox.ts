@@ -21,7 +21,7 @@ import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
  * @slot - The label.
  * @csspart box - The drawn box.
  * @csspart label - The wrapper around the label.
- * @fires pl-change - The user changed the box. `detail.checked` holds the new state.
+ * @fires {CustomEvent<{ checked: boolean }>} pl-change - The user changed the box. `detail.checked` holds the new state.
  * @fires input - After pl-change, as a native checkbox fires it.
  * @fires change - After input, as a native checkbox fires it.
  */
