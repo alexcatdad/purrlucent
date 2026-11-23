@@ -605,6 +605,7 @@ class DashboardDemo extends LitElement {
       inset-block-start: 0;
       block-size: 1px;
       overflow: hidden;
+      overflow-wrap: anywhere;
       clip-path: inset(50%);
     }
   `;

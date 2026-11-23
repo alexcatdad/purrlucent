@@ -42,14 +42,15 @@ test("the screen has the sidebar, the header, four tiles, two charts and the tab
   page,
 }) => {
   const root = await gotoStory(page, story("default"));
-  const nav = root.getByRole("navigation", { name: "Main" });
-  await expect(nav.locator("pl-sidebar-item")).toHaveText([
+  await expect(root.getByRole("navigation", { name: "Main" })).toBeVisible();
+  // The items are the sidebar's slotted children, not descendants of its nav.
+  await expect(root.locator("pl-sidebar-item")).toHaveText([
     "Overview",
     "Customers",
     "Orders",
     "Settings",
   ]);
-  await expect(nav.getByRole("link", { name: "Overview" })).toHaveAttribute(
+  await expect(root.getByRole("link", { name: "Overview" })).toHaveAttribute(
     "aria-current",
     "page",
   );
