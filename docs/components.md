@@ -100,6 +100,8 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 **Events**
 
 - `purr-change`: The user changed the box. `detail.checked` holds the new state.
+- `input`: After purr-change, as a native checkbox fires it.
+- `change`: After input, as a native checkbox fires it.
 
 ## Combobox
 
@@ -148,6 +150,8 @@ A text field with a list of suggestions. It follows the editable combobox patter
 - `name`:
 - `purr-input`: The text changed through typing or Escape. `detail.text` holds it.
 - `purr-change`: The value changed. `detail.value` holds it.
+- `input`: After each purr-input, as a native input fires it.
+- `change`: After each purr-change.
 
 ## Dialog
 
@@ -244,6 +248,8 @@ A single-line text field. A native input inside does the editing, so typing, sel
 - `name`:
 - `purr-input`: The value changed through editing or the clear button. `detail.value` holds it.
 - `purr-change`: The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
+- `input`: After each purr-input, as a native input fires it.
+- `change`: After each purr-change, as a native input fires it.
 
 ## Menu
 
@@ -357,6 +363,8 @@ A numeric field with up and down stepper buttons, following the WAI-ARIA spinbut
 - `name`:
 - `purr-input`: The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
 - `purr-change`: The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
+- `input`: After each purr-input, as a native input fires it.
+- `change`: After each purr-change, as a native input fires it.
 
 ## Popover
 
@@ -454,6 +462,8 @@ A set of radios that offers one choice, as a native radio group does. Tab enters
 **Events**
 
 - `purr-change`: The user chose a radio. `detail.selected` is a one-item array of its value.
+- `input`: After purr-change, as a native radio fires it.
+- `change`: After input, as a native radio fires it.
 
 ## Select
 
@@ -512,6 +522,8 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 **Events**
 
 - `purr-change`: The user chose another option. `detail.value` holds its value.
+- `input`: After purr-change, as a native select fires it.
+- `change`: After input, as a native select fires it.
 
 ## Sidebar
 
@@ -623,6 +635,8 @@ A slider: one value chosen on a track, following the WAI-ARIA slider pattern. Th
 - `name`:
 - `purr-input`: The value changed while dragging or on a key. `detail.value` holds it.
 - `purr-change`: The user committed a changed value, on release or on a key. `detail.value` holds it.
+- `input`: After each purr-input, as a native range input fires it.
+- `change`: After each purr-change, as a native range input fires it.
 
 ## Spinner
 
@@ -677,6 +691,8 @@ A switch: an on/off setting that takes effect at once. The slotted text is its l
 **Events**
 
 - `purr-change`: The user turned the switch on or off. `detail.checked` holds the new state.
+- `input`: After purr-change, as a native switch fires it.
+- `change`: After input, as a native switch fires it.
 
 ## Textarea
 
@@ -720,6 +736,8 @@ A multi-line text field. A native textarea inside does the editing, so typing, s
 - `name`:
 - `purr-input`: The value changed through editing. `detail.value` holds it.
 - `purr-change`: The value was committed (blur after an edit). `detail.value` holds it.
+- `input`: After each purr-input, as a native textarea fires it.
+- `change`: After each purr-change, as a native textarea fires it.
 
 ## Toggle
 
@@ -800,6 +818,8 @@ A row of equal-width items that offers one required choice, as a radio group. Ar
 **Events**
 
 - `purr-change`: The selection changed by the user. `detail.selected` is a one-item array.
+- `input`: After purr-change, as a native radio fires it.
+- `change`: After input, as a native radio fires it.
 
 ## Toolbar
 

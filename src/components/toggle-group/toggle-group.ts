@@ -1,5 +1,6 @@
 import { LitElement, html, type PropertyValues } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { SelectionController } from "../../behaviors/selection.ts";
@@ -91,6 +92,8 @@ export class PurrToggleGroupItem extends LitElement {
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `purr-toggle-group-item` elements.
  * @fires purr-change - The selection changed by the user. `detail.selected` is a one-item array.
+ * @fires input - After purr-change, as a native radio fires it.
+ * @fires change - After input, as a native radio fires it.
  */
 export class PurrToggleGroup extends LitElement {
   static formAssociated = true;
@@ -141,8 +144,15 @@ export class PurrToggleGroup extends LitElement {
     });
     this.addEventListener("purr-press", (event) => {
       if (!this.#off && event.target instanceof PurrToggleGroupItem)
-        this.#selection.select(event.target.value);
+        this.#choose(event.target.value);
     });
+  }
+
+  /** The user's choice; the native events follow purr-change, as on a native radio. */
+  #choose(value: string) {
+    const before = this.value;
+    this.#selection.select(value);
+    if (this.value !== before) fireNative(this, "input", "change");
   }
 
   // :disabled covers a disabled fieldset around the group; the property is
@@ -199,7 +209,7 @@ export class PurrToggleGroup extends LitElement {
       enabled[(from + step + enabled.length) % enabled.length]!.focus();
     } else if (!event.defaultPrevented) return;
     const focused = enabled.find((s) => s.matches(":focus"));
-    if (focused) this.#selection.select(focused.value);
+    if (focused) this.#choose(focused.value);
   };
 
   #onSlotChange = (event: Event) => {

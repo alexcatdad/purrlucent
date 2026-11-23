@@ -8,6 +8,7 @@ import {
 } from "../../behaviors/field-message.ts";
 import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
@@ -69,6 +70,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart message - The validation message below the field.
  * @fires purr-input - The text changed through typing or Escape. `detail.text` holds it.
  * @fires purr-change - The value changed. `detail.value` holds it.
+ * @fires input - After each purr-input, as a native input fires it.
+ * @fires change - After each purr-change.
  */
 export class PurrCombobox extends LitElement {
   static formAssociated = true;
@@ -242,7 +245,9 @@ export class PurrCombobox extends LitElement {
     const changed = value !== this.value;
     this.value = value;
     this.text = text;
-    if (changed) this.#emit("purr-change", { value });
+    if (!changed) return;
+    this.#emit("purr-change", { value });
+    fireNative(this, "change");
   }
 
   #close() {
@@ -350,6 +355,8 @@ export class PurrCombobox extends LitElement {
         this.#filtering = false;
         this.#setValue("", "");
         this.#emit("purr-input", { text: "" });
+        // Typing fires the inner input's own input event; clearing does not.
+        fireNative(this, "input");
       }
     }
   };

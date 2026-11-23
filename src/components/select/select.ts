@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
 import { labelText } from "../../behaviors/labels.ts";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { matchIndex } from "./match.ts";
 import { PopupController } from "./popup.ts";
@@ -95,6 +96,8 @@ export class PurrOption extends LitElement {
  * @csspart glyph - The up-down arrows.
  * @csspart listbox - The popup.
  * @fires purr-change - The user chose another option. `detail.value` holds its value.
+ * @fires input - After purr-change, as a native select fires it.
+ * @fires change - After input, as a native select fires it.
  */
 export class PurrSelect extends LitElement {
   static formAssociated = true;
@@ -205,6 +208,7 @@ export class PurrSelect extends LitElement {
           composed: true,
         }),
       );
+      fireNative(this, "input", "change");
     }
   }
 
