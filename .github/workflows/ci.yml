@@ -105,13 +105,15 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      # WebKit and Firefox take about three times as long as Chromium.
+      # WebKit and Firefox take about one and a half times as long as Chromium.
+      # Each shard should finish well inside its step's 20 minutes.
       matrix:
         browser: [webkit, firefox]
         shard: [1, 2, 3]
         of: [3]
         include:
-          - { browser: chromium, shard: 1, of: 1 }
+          - { browser: chromium, shard: 1, of: 2 }
+          - { browser: chromium, shard: 2, of: 2 }
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: ./.github/actions/setup
