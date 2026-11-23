@@ -8,6 +8,15 @@ import { clampPage } from "../pagination/pages.ts";
 import "../table/table.ts";
 import { dataTableStyles } from "./data-table.css.ts";
 import { filterRows, pageCount, pageRows } from "./data-table-model.ts";
+import type {
+  PlDataTableModel,
+  PlModelCell,
+  PlModelColumn,
+  PlModelHeader,
+  PlModelRow,
+} from "./data-table-types.ts";
+
+export type * from "./data-table-types.ts";
 
 export interface PlDataTableColumn {
   /** The row property this column shows. */
@@ -27,6 +36,8 @@ const glyph = {
   ascending: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6 -6l6 6" /></svg>`,
   descending: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6l6 -6" /></svg>`,
   none: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4 -4l4 4" /><path d="M16 15l-4 4l-4 -4" /></svg>`,
+  collapsed: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6l-6 6" /></svg>`,
+  expanded: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6l6 -6" /></svg>`,
 };
 
 const collator = new Intl.Collator(undefined, { numeric: true });
@@ -55,6 +66,14 @@ const compare = (a: unknown, b: unknown) =>
  * `manual-pagination` show the state but leave the rows to the app, which
  * answers `pl-filter` and `pl-page`.
  *
+ * With `model`, the table draws exactly that model: its header rows, spanning
+ * cells, group rows (value and count), indented rows with a disclosure
+ * button, aggregate footer, pinned rows and columns, and column widths. It
+ * then ignores `columns`, `rows`, the sort, the filter and the paging logic,
+ * and only reports `pl-sort`, `pl-filter`, `pl-page` and `pl-expand`; the app
+ * answers with a new model. A pinned column needs a `width` so the ones after
+ * it can sit beside it.
+ *
  * @attr {string} caption - A visible caption that also names the table.
  * @attr {boolean} sticky-header - The headings stay at the top while the rows scroll; give the element a `max-block-size`.
  * @attr {boolean} selectable - Adds a checkbox column.
@@ -73,11 +92,13 @@ const compare = (a: unknown, b: unknown) =>
  * @attr {string} empty-label - The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".
  * @attr {string} select-all-label - The select-all checkbox's accessible name. Defaults to "Select all".
  * @attr {string} select-row-label - Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".
+ * @attr {string} expand-label - Prefix of each disclosure button's accessible name, followed by the row's first cell, in model mode. Defaults to "Expand".
  * @slot empty - Content shown instead of the rows when there are none.
  * @fires {CustomEvent<{ column: string, direction: "ascending" | "descending" }>} pl-sort - A heading was activated. `detail.column` is the column key and `detail.direction` the new direction.
  * @fires {CustomEvent<{ keys: string[] }>} pl-selection-change - The selection changed through a checkbox. `detail.keys` holds the selected row keys, in row order.
  * @fires {CustomEvent<{ value: string }>} pl-filter - The filter field changed. `detail.value` is the query.
  * @fires {CustomEvent<{ page: number }>} pl-page - Another page was chosen. `detail.page` is the page.
+ * @fires {CustomEvent<{ row: string, expanded: boolean }>} pl-expand - A disclosure button was activated in model mode. `detail.expanded` is the new state.
  */
 export class PlDataTable extends LitElement {
   static override styles = dataTableStyles;
@@ -103,6 +124,8 @@ export class PlDataTable extends LitElement {
     emptyLabel: { attribute: "empty-label" },
     selectAllLabel: { attribute: "select-all-label" },
     selectRowLabel: { attribute: "select-row-label" },
+    expandLabel: { attribute: "expand-label" },
+    model: { attribute: false },
   };
 
   declare columns: PlDataTableColumn[];
@@ -127,6 +150,9 @@ export class PlDataTable extends LitElement {
   declare emptyLabel: string;
   declare selectAllLabel: string;
   declare selectRowLabel: string;
+  declare expandLabel: string;
+  /** A table to draw as it is; see the class description. */
+  declare model: PlDataTableModel | undefined;
 
   constructor() {
     super();
@@ -148,6 +174,7 @@ export class PlDataTable extends LitElement {
     this.emptyLabel = "No results";
     this.selectAllLabel = "Select all";
     this.selectRowLabel = "Select";
+    this.expandLabel = "Expand";
   }
 
   #key(row: PlDataTableRow, index: number) {
@@ -183,8 +210,36 @@ export class PlDataTable extends LitElement {
 
   protected override willUpdate() {
     // A filter that leaves fewer rows than the page needs moves to the last page.
-    if (this.pageSize > 0)
+    if (!this.model && this.pageSize > 0)
       this.page = clampPage(this.page, this.#pages(this.#view.length));
+  }
+
+  protected override updated() {
+    if (this.model) this.#stickRows();
+  }
+
+  /** Heading rows stack as they stick; pinned rows sit below them and stack in order. */
+  #stickRows() {
+    const root = this.renderRoot;
+    let top = 0;
+    for (const tr of root.querySelectorAll<HTMLElement>("thead tr")) {
+      tr.style.setProperty("--head-pin", `${top}px`);
+      top += tr.offsetHeight;
+    }
+    if (!this.stickyHeader) top = 0;
+    for (const tr of root.querySelectorAll<HTMLElement>(
+      "tr[data-row-pin=top]",
+    )) {
+      tr.style.setProperty("--row-pin", `${top}px`);
+      top += tr.offsetHeight;
+    }
+    let bottom = 0;
+    for (const tr of [
+      ...root.querySelectorAll<HTMLElement>("tr[data-row-pin=bottom]"),
+    ].reverse()) {
+      tr.style.setProperty("--row-pin", `${bottom}px`);
+      bottom += tr.offsetHeight;
+    }
   }
 
   #emit<T>(name: string, detail: T) {
@@ -214,6 +269,8 @@ export class PlDataTable extends LitElement {
   // The inner controls' own events would reach the app as if the table were one.
   #onFilter = (event: CustomEvent<{ value: string }>) => {
     event.stopPropagation();
+    // A model is the whole state: the app answers with a new one.
+    if (this.model) return this.#emit("pl-filter", event.detail);
     this.filter = event.detail.value;
     this.#emit("pl-filter", { value: this.filter });
     this.#goto(1);
@@ -225,6 +282,10 @@ export class PlDataTable extends LitElement {
   };
 
   #goto(page: number) {
+    if (this.model) {
+      if (page !== this.model.page?.page) this.#emit("pl-page", { page });
+      return;
+    }
     if (page === this.page) return;
     this.page = page;
     this.#emit("pl-page", { page });
@@ -270,7 +331,220 @@ export class PlDataTable extends LitElement {
     </th>`;
   }
 
+  #filterField(value: string) {
+    return this.filterable
+      ? html`<pl-input
+          type="search"
+          class="filter"
+          label=${this.filterLabel}
+          .value=${value}
+          @pl-input=${this.#onFilter}
+          @pl-change=${this.#contain}
+          @input=${this.#contain}
+          @change=${this.#contain}
+        ></pl-input>`
+      : nothing;
+  }
+
+  #pager(page: number, total: number) {
+    return html`<pl-pagination
+      class="pages"
+      .page=${page}
+      .total=${total}
+      @pl-change=${this.#onPage}
+      @input=${this.#contain}
+      @change=${this.#contain}
+    ></pl-pagination>`;
+  }
+
+  /** The inline offset of each pinned column: the widths of the pinned columns before it. */
+  #offsets(columns: PlModelColumn[]) {
+    const offsets = new Map<string, number>();
+    let start = 0;
+    for (const c of columns)
+      if (c.visible && c.pinned === "start") {
+        offsets.set(c.key, start);
+        start += c.width ?? 0;
+      }
+    let end = 0;
+    for (const c of [...columns].reverse())
+      if (c.visible && c.pinned === "end") {
+        offsets.set(c.key, end);
+        end += c.width ?? 0;
+      }
+    return offsets;
+  }
+
+  #modelHeading(
+    h: PlModelHeader,
+    offsets: Map<string, number>,
+  ): ReturnType<typeof html> {
+    const span = h.colSpan > 1 ? h.colSpan : undefined;
+    const rows = h.rowSpan && h.rowSpan > 1 ? h.rowSpan : undefined;
+    const pin = h.pinned;
+    const offset = pin ? `--pin: ${offsets.get(h.column ?? "") ?? 0}px` : "";
+    if (h.placeholder)
+      return html`<td
+        class="placeholder"
+        colspan=${ifDefined(span)}
+        rowspan=${ifDefined(rows)}
+        data-pin=${ifDefined(pin)}
+        style=${ifDefined(pin ? offset : undefined)}
+      ></td>`;
+    const column = h.column ?? h.id;
+    return html`<th
+      scope=${h.colSpan > 1 ? "colgroup" : "col"}
+      colspan=${ifDefined(span)}
+      rowspan=${ifDefined(rows)}
+      aria-sort=${ifDefined(h.sort)}
+      data-pin=${ifDefined(pin)}
+      style=${ifDefined(pin ? offset : undefined)}
+    >
+      ${
+        h.sortable
+          ? html`<button
+              type="button"
+              @click=${() =>
+                this.#emit("pl-sort", {
+                  column,
+                  direction:
+                    h.sort === "ascending" ? "descending" : "ascending",
+                })}
+            >
+              ${h.label}${glyph[h.sort ?? "none"]}
+            </button>`
+          : h.label
+      }
+    </th>`;
+  }
+
+  #modelCell(
+    cell: PlModelCell,
+    offsets: Map<string, number>,
+    lead?: { row: PlModelRow; indent: boolean },
+  ) {
+    const pin = cell.pinned;
+    const text = String(cell.value ?? "");
+    const row = lead?.row;
+    const label = row?.group ? row.group.value : text;
+    const body = row?.group
+      ? html`${row.group.value}<span class="count">${row.group.count}</span>`
+      : text;
+    return html`<td
+      colspan=${ifDefined(cell.colSpan && cell.colSpan > 1 ? cell.colSpan : undefined)}
+      rowspan=${ifDefined(cell.rowSpan && cell.rowSpan > 1 ? cell.rowSpan : undefined)}
+      class=${cell.aggregate ? "aggregate" : ""}
+      ?data-selected=${cell.selected}
+      data-pin=${ifDefined(pin)}
+      style=${ifDefined(pin ? `--pin: ${offsets.get(cell.column) ?? 0}px` : undefined)}
+    >
+      ${
+        row
+          ? html`<div class="lead" style="--depth: ${row.depth}">
+              ${
+                row.expandable
+                  ? html`<button
+                      type="button"
+                      class="expand"
+                      aria-expanded=${row.expanded ? "true" : "false"}
+                      aria-label=${`${this.expandLabel} ${label}`.trim()}
+                      @click=${() =>
+                        this.#emit("pl-expand", {
+                          row: row.id,
+                          expanded: !row.expanded,
+                        })}
+                    >
+                      ${glyph[row.expanded ? "expanded" : "collapsed"]}
+                    </button>`
+                  : lead?.indent
+                    ? html`<span class="expand"></span>`
+                    : nothing
+              }
+              <span>${body}</span>
+            </div>`
+          : body
+      }
+    </td>`;
+  }
+
+  #renderModel(model: PlDataTableModel) {
+    const offsets = this.#offsets(model.columns);
+    const shown = model.columns.filter((c) => c.visible);
+    const indent = model.rows.some((r) => r.expandable);
+    const total = shown.reduce((sum, c) => sum + (c.width ?? 0), 0);
+    return html`${this.#filterField(model.filter ?? "")}<pl-table
+        ?sticky-header=${this.stickyHeader}
+      >
+        <table
+          class="model"
+          style=${ifDefined(total ? `min-inline-size: ${total}px` : undefined)}
+        >
+          ${
+            this.caption
+              ? html`<caption>
+                  ${this.caption}
+                </caption>`
+              : nothing
+          }
+          <colgroup>
+            ${shown.map(
+              (c) =>
+                html`<col
+                  style=${ifDefined(c.width ? `inline-size: ${c.width}px` : undefined)}
+                />`,
+            )}
+          </colgroup>
+          <thead>
+            ${model.headerGroups.map(
+              (group) =>
+                html`<tr>
+                  ${group.map((h) => this.#modelHeading(h, offsets))}
+                </tr>`,
+            )}
+          </thead>
+          <tbody>
+            ${
+              model.rows.length
+                ? repeat(
+                    model.rows,
+                    (row) => row.id,
+                    (row) =>
+                      html`<tr
+                        class=${row.group ? "group" : ""}
+                        data-row-pin=${ifDefined(row.pinned)}
+                        ?data-selected=${row.selected}
+                      >
+                        ${row.cells.map((cell, i) =>
+                          this.#modelCell(
+                            cell,
+                            offsets,
+                            i === 0 ? { row, indent } : undefined,
+                          ),
+                        )}
+                      </tr>`,
+                  )
+                : html`<tr>
+                    <td class="empty" colspan=${shown.length || 1}>
+                      <slot name="empty">${this.emptyLabel}</slot>
+                    </td>
+                  </tr>`
+            }
+          </tbody>
+          ${
+            model.footer
+              ? html`<tfoot>
+                  <tr>
+                    ${model.footer.map((cell) => this.#modelCell(cell, offsets))}
+                  </tr>
+                </tfoot>`
+              : nothing
+          }
+        </table> </pl-table
+      >${model.page ? this.#pager(model.page.page, model.page.total) : nothing}`;
+  }
+
   override render() {
+    if (this.model) return this.#renderModel(this.model);
     const view = this.#view;
     const shown = this.manualPagination
       ? view
@@ -279,20 +553,9 @@ export class PlDataTable extends LitElement {
     const picked = view.filter((v) => chosen.has(v.key)).length;
     const first = this.columns[0]?.key;
     const span = this.columns.length + (this.selectable ? 1 : 0);
-    return html`${
-        this.filterable
-          ? html`<pl-input
-              type="search"
-              class="filter"
-              label=${this.filterLabel}
-              .value=${this.filter}
-              @pl-input=${this.#onFilter}
-              @pl-change=${this.#contain}
-              @input=${this.#contain}
-              @change=${this.#contain}
-            ></pl-input>`
-          : nothing
-      }<pl-table ?sticky-header=${this.stickyHeader}>
+    return html`${this.#filterField(this.filter)}<pl-table
+        ?sticky-header=${this.stickyHeader}
+      >
         <table>
           ${
             this.caption
@@ -360,14 +623,7 @@ export class PlDataTable extends LitElement {
         </table> </pl-table
       >${
         this.pageSize > 0
-          ? html`<pl-pagination
-              class="pages"
-              .page=${this.page}
-              .total=${this.#pages(view.length)}
-              @pl-change=${this.#onPage}
-              @input=${this.#contain}
-              @change=${this.#contain}
-            ></pl-pagination>`
+          ? this.#pager(this.page, this.#pages(view.length))
           : nothing
       }`;
   }

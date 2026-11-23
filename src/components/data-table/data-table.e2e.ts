@@ -400,3 +400,129 @@ for (const id of [filterable, paginated])
   test(`axe finds no violations in ${id}`, async ({ page }) => {
     await expectAccessible(await open(page, id));
   });
+
+const grouped = "data-data-table--model-grouped";
+const groupedRtl = "data-data-table--model-grouped-rtl";
+
+test("model: header groups render with colspan", async ({ page }) => {
+  await open(page, grouped);
+  await expect(
+    page.getByRole("columnheader", { name: "Person" }),
+  ).toHaveAttribute("colspan", "3");
+  await expect(
+    page.getByRole("columnheader", { name: "Numbers" }),
+  ).toHaveAttribute("colspan", "2");
+  await expect(page.locator("#control thead tr")).toHaveCount(2);
+});
+
+test("model: group rows show the value and the count", async ({ page }) => {
+  await open(page, grouped);
+  const groups = page.locator("#control tr.group");
+  await expect(groups).toHaveCount(2);
+  await expect(groups.first()).toContainText("Engineering");
+  await expect(groups.first().locator(".count")).toHaveText("3");
+  await expect(groups.last()).toContainText("Design");
+  await expect(groups.last().locator(".count")).toHaveText("2");
+});
+
+test("model: the expand button toggles aria-expanded and fires pl-expand", async ({
+  page,
+}) => {
+  await open(page, grouped);
+  const button = page.getByRole("button", { name: "Expand Design" });
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByText("Hedy Lamarr")).toHaveCount(0);
+  await record(page, "pl-expand");
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByText("Hedy Lamarr")).toBeVisible();
+  expect(await events(page)).toEqual([{ row: "design", expanded: true }]);
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  expect((await events(page)).at(-1)).toEqual({
+    row: "design",
+    expanded: false,
+  });
+});
+
+test("model: child rows are indented under their group", async ({ page }) => {
+  await open(page, grouped);
+  const marker = (name: string) =>
+    page
+      .locator("#control .lead", { hasText: name })
+      .first()
+      .locator(".expand");
+  const [group, child] = await Promise.all([
+    marker("Engineering").boundingBox(),
+    marker("Ada Lovelace").boundingBox(),
+  ]);
+  expect(child!.x).toBeGreaterThan(group!.x);
+});
+
+test("model: the table keeps native table semantics", async ({ page }) => {
+  await open(page, grouped);
+  await expect(page.getByRole("grid")).toHaveCount(0);
+  await expect(page.getByRole("table", { name: "Teams" })).toBeVisible();
+});
+
+test("model: a pinned row is marked", async ({ page }) => {
+  await open(page, grouped);
+  await expect(page.locator("#control tr[data-row-pin='top']")).toHaveCount(1);
+});
+
+const scroller = (page: Page) =>
+  page.locator("pl-data-table pl-table >> [part=scroller]");
+
+test("model: the pinned column stays visible while scrolling horizontally", async ({
+  page,
+}) => {
+  await open(page, grouped);
+  await scroller(page).evaluate((el) => el.scrollBy(200, 0));
+  const [name, score, area] = await Promise.all([
+    page.getByRole("columnheader", { name: "Name" }).boundingBox(),
+    page.getByRole("columnheader", { name: "Score" }).boundingBox(),
+    scroller(page).boundingBox(),
+  ]);
+  expect(Math.abs(name!.x - area!.x)).toBeLessThanOrEqual(3);
+  expect(
+    Math.abs(score!.x + score!.width - (area!.x + area!.width)),
+  ).toBeLessThanOrEqual(3);
+});
+
+test("model: under rtl the pinned column sits at the right edge", async ({
+  page,
+}) => {
+  await open(page, groupedRtl);
+  await scroller(page).evaluate((el) => el.scrollBy(-200, 0));
+  const [name, area] = await Promise.all([
+    page.getByRole("columnheader", { name: "Name" }).boundingBox(),
+    scroller(page).boundingBox(),
+  ]);
+  expect(
+    Math.abs(name!.x + name!.width - (area!.x + area!.width)),
+  ).toBeLessThanOrEqual(3);
+});
+
+test("model: the footer shows aggregates", async ({ page }) => {
+  await open(page, grouped);
+  const footer = page.locator("#control tfoot td");
+  await expect(footer).toHaveCount(3);
+  await expect(footer.first()).toHaveText("Average");
+  await expect(footer.first()).toHaveAttribute("colspan", "3");
+  await expect(footer.nth(1)).toHaveText("98");
+  await expect(footer.nth(2)).toHaveText("8.9");
+});
+
+test("model: a heading button reports pl-sort", async ({ page }) => {
+  await open(page, grouped);
+  await record(page, "pl-sort");
+  await page.getByRole("button", { name: "Salary (k)" }).click();
+  expect(await events(page)).toEqual([
+    { column: "salary", direction: "ascending" },
+  ]);
+});
+
+for (const id of [grouped, groupedRtl])
+  test(`axe finds no violations in ${id}`, async ({ page }) => {
+    await expectAccessible(await open(page, id));
+  });
