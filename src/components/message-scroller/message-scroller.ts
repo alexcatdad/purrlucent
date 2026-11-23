@@ -137,7 +137,9 @@ export class PlMessageScroller extends LitElement {
     // Not during a scroll the reader started either: setting the offset would
     // stop a smooth scroll (the End key's, say) partway.
     const following = !this.#released && this.autoScroll && this.#atEnd;
-    if (!this.#hold && !following && !this.#scrolling()) this.#keep();
+    const placing = this.#placing === this.#settling;
+    if (!this.#hold && !following && !placing && !this.#scrolling())
+      this.#keep();
     this.#follow();
     this.#sync();
     this.#remember();
@@ -168,6 +170,8 @@ export class PlMessageScroller extends LitElement {
   #top = 0;
   // Identifies the scroll being settled; any newer scroll or release cancels it.
   #settling = 0;
+  // The settle that places the first render; while it runs, it alone moves the view.
+  #placing = -1;
 
   constructor() {
     super();
@@ -493,10 +497,13 @@ export class PlMessageScroller extends LitElement {
         return placed;
       },
       () => {
+        this.#placing = -1;
         this.#measure();
         this.#sync();
+        this.#remember();
       },
     );
+    this.#placing = this.#settling;
   }
 
   /**
