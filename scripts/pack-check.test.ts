@@ -12,8 +12,9 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { chromium } from "playwright";
+import { FILES } from "./agent-skill.ts";
 
 type Target = string | { types: string; default: string };
 
@@ -64,6 +65,13 @@ test("every export points at a file in the package", () => {
       typeof target === "string" ? [target] : Object.values(target),
     )
     .filter((file) => !existsSync(join(installed, file)));
+  expect(missing).toEqual([]);
+});
+
+test("the agent skill ships with the docs it reads", () => {
+  const missing = FILES.map(
+    (file) => `dist/skills/purrlucent/${basename(file)}`,
+  ).filter((file) => !existsSync(join(installed, file)));
   expect(missing).toEqual([]);
 });
 
