@@ -1203,6 +1203,59 @@ Consecutive messages from one sender, stacked tightly. Only the last message sho
 
 - default: `pl-message` elements from the same sender, with the same `align`.
 
+## Message scroller
+
+```ts
+import "purrlucent/message-scroller";
+```
+
+### `<pl-message-scroller-item>`
+
+A row of a `pl-message-scroller`. It names a message for `scrollToMessage` and can mark where a turn begins. Rows far from the viewport are not laid out or painted (`content-visibility: auto`), so a long transcript stays cheap. The row holds anything: a `pl-message`, a marker, a system notice. Any element in the scroller with `message-id` or `scroll-anchor` works the same; this element only adds the row styles.
+
+| Attribute       | Type      | Default | Description                                                                                                                     |
+| --------------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `message-id`    | `string`  | `""`    | A stable id for `scrollToMessage`.                                                                                              |
+| `scroll-anchor` | `boolean` | `false` | The row starts a turn. When one is added at the end, the scroller scrolls it near the top, leaving a peek of the row before it. |
+
+**Slots**
+
+- default: The row content.
+
+### `<pl-message-scroller>`
+
+A scrolling transcript for a chat. The element is the scroll viewport (a named, focusable region, so the keyboard scrolls it) and holds a `log` that announces added messages. It never scrolls by itself unless asked: a row marked `scroll-anchor` scrolls into place when it is added, `auto-scroll` follows streamed content while the reader is at the end, and `default-scroll-position` picks where it opens. Scrolling away (wheel, touch, the keys that scroll up, the scrollbar, or selecting text) stops the following until the reader returns to the end or calls `scrollToEnd`. Older rows added before the first one keep the visible rows where they are. There is no virtualization; the rows use `content-visibility: auto`. The element never parses message content. `data-scrollable` lists the edges the content can still scroll toward: `start`, `end`, both separated by a space, or absent. The edges of the viewport fade where there is more to see.
+
+| Attribute                 | Type                        | Default              | Description                                                                                                                                                                             |
+| ------------------------- | --------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`                   | `string`                    | `"Messages"`         | The accessible name of the region. Defaults to "Messages".                                                                                                                              |
+| `busy`                    | `boolean`                   | `false`              | A reply is streaming; the log is `aria-busy`, so assistive technology waits for the reply before reading it.                                                                            |
+| `auto-scroll`             | `boolean`                   | `false`              | Follow new content while the reader is at the end. Off by default.                                                                                                                      |
+| `default-scroll-position` | `PlMessageScrollerPosition` | `"start"`            | Where the first non-empty render opens, once: `start` (default), `end` or `last-anchor`, the last row with `scroll-anchor`, or the end when that row and what follows fit the viewport. |
+| `peek`                    | `number \| null`            | `null`               | Pixels of the previous row left visible above an anchor. Defaults to the 16-spacing-unit token.                                                                                         |
+| `button-label`            | `string`                    | `"Scroll to latest"` | The accessible name of the built-in scroll-to-end button. Defaults to "Scroll to latest".                                                                                               |
+
+**Slots**
+
+- default: The rows: `pl-message-scroller-item` or any element.
+- `button`: Replaces the built-in scroll-to-end button, for example a `pl-message-scroller-button` with its own label.
+
+**Parts**
+
+- `log`: The log that holds the rows.
+
+**Events**
+
+- `pl-scroll`: The edges the content can still scroll toward changed. It does not fire on every scroll tick.
+
+### `<pl-message-scroller-button>`
+
+A button that scrolls its `pl-message-scroller` to the end. The scroller draws one by default; use this element in the `button` slot to give it its own label. It is inert, and not drawn, while there is nothing below to scroll to. After it is pressed, focus moves to the scroller so the keyboard keeps working when the button goes away.
+
+| Attribute | Type     | Default              | Description                                          |
+| --------- | -------- | -------------------- | ---------------------------------------------------- |
+| `label`   | `string` | `"Scroll to latest"` | The accessible name. Defaults to "Scroll to latest". |
+
 ## Navigation menu
 
 ```ts
