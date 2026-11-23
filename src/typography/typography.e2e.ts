@@ -27,16 +27,83 @@ test("aria snapshot", async ({ page }) => {
   await expect(root).toMatchAriaSnapshot(`
     - article:
       - heading "Caring for a cat" [level=1]
-      - paragraph
+      - heading "Text styles" [level=2]
+      - heading "Fifth level" [level=5]
+      - heading "Sixth level" [level=6]
       - heading "Daily routine" [level=2]
-      - list
-      - list
       - blockquote
       - heading "Meals" [level=3]
       - table
       - heading "Notes" [level=4]
-      - paragraph: Wash the bowls after every meal.
+      - figure
+      - separator
+      - group
+      - heading "Text colors" [level=2]
   `);
+});
+
+const elements = [
+  "mark",
+  "del",
+  "ins",
+  "s",
+  "sub",
+  "sup",
+  "abbr[title]",
+  "q",
+  "cite",
+  "kbd",
+  "time",
+  "dl",
+  "dt",
+  "dd",
+  "figure",
+  "figcaption",
+  "hr",
+  "address",
+  "details",
+  "summary",
+  "pre",
+  "small",
+  ".lead",
+];
+
+test("the article uses every listed element", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  for (const selector of elements)
+    await expect(
+      page.locator(`#prose ${selector}`).first(),
+      selector,
+    ).toBeAttached();
+});
+
+test("every prose element is styled", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const same = await page.locator("#prose").evaluate((prose, selectors) => {
+    const props = [
+      "font-size",
+      "font-style",
+      "font-weight",
+      "color",
+      "background-color",
+      "text-decoration-line",
+      "margin-block-start",
+    ];
+    const unstyled: string[] = [];
+    for (const selector of selectors) {
+      const el = prose.querySelector(selector)!;
+      const reference = document.createElement("div");
+      reference.textContent = el.textContent;
+      el.parentElement!.append(reference);
+      const a = getComputedStyle(el);
+      const b = getComputedStyle(reference);
+      if (props.every((p) => a.getPropertyValue(p) === b.getPropertyValue(p)))
+        unstyled.push(selector);
+      reference.remove();
+    }
+    return unstyled;
+  }, elements);
+  expect(same).toEqual([]);
 });
 
 test("headings step down in size and every heading is bold", async ({
@@ -47,7 +114,7 @@ test("headings step down in size and every heading is bold", async ({
     await style(page, "#prose h1"),
     await style(page, "#prose h2"),
     await style(page, "#prose h3"),
-    await style(page, "#prose > p"),
+    await style(page, "#prose > p:not(.lead)"),
   ];
   expect(h1.size).toBeGreaterThan(h2.size);
   expect(h2.size).toBeGreaterThan(h3.size - 0.01);
@@ -70,7 +137,9 @@ test("body text is at least 13 CSS pixels and code is not smaller than 12", asyn
   page,
 }) => {
   await gotoStory(page, story("default"));
-  expect((await style(page, "#prose > p")).size).toBeGreaterThanOrEqual(13);
+  expect(
+    (await style(page, "#prose > p:not(.lead)")).size,
+  ).toBeGreaterThanOrEqual(13);
   expect((await style(page, "#prose code")).size).toBeGreaterThanOrEqual(12);
 });
 
@@ -78,7 +147,7 @@ test("paragraphs use loose leading and every line height clears the font size", 
   page,
 }) => {
   await gotoStory(page, story("default"));
-  const p = await style(page, "#prose > p");
+  const p = await style(page, "#prose > p:not(.lead)");
   const li = await style(page, "#prose li");
   expect(p.lineHeight).toBeGreaterThan(li.lineHeight);
   const rows = await page
