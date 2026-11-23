@@ -27,15 +27,15 @@ export const inputGroupStyles = css`
     display: none;
   }
 
-  :host(:has(> pl-textarea)) {
+  :host(:state(textarea)) {
     inline-size: calc(var(--pl-spacing) * 60);
   }
 
-  :host(:has(> [size="xl"])) {
+  :host(:state(xl)) {
     --_pad: var(--pl-pad-control-xl);
   }
 
-  :host(:has(> :state(user-invalid))) {
+  :host(:state(invalid)) {
     --_edge: var(--pl-color-destructive);
   }
 
@@ -62,7 +62,7 @@ export const inputGroupStyles = css`
     outline-color: var(--pl-color-ring);
   }
 
-  :host(:has(> :disabled)) [part="shell"] {
+  :host(:state(disabled)) [part="shell"] {
     background: var(--pl-color-muted-disabled);
     box-shadow: 0 0 0 1px var(--pl-color-border);
   }
@@ -132,13 +132,13 @@ export const inputGroupStyles = css`
   }
 
   /* A multi-line field is tall: the addon stays beside its first line. */
-  :host(:has(> pl-textarea)) ::slotted([slot="start"]),
-  :host(:has(> pl-textarea)) ::slotted([slot="end"]) {
+  :host(:state(textarea)) ::slotted([slot="start"]),
+  :host(:state(textarea)) ::slotted([slot="end"]) {
     align-items: flex-start;
     padding-block: var(--pl-space-1);
   }
 
-  :host(:has(> :disabled)) ::slotted([slot]:not(pl-button)) {
+  :host(:state(disabled)) ::slotted([slot]:not(pl-button)) {
     color: var(--pl-color-disabled-foreground);
   }
 
@@ -154,11 +154,11 @@ export const inputGroupStyles = css`
       outline-color: Highlight;
     }
 
-    :host(:has(> :state(user-invalid))) [part="shell"] {
+    :host(:state(invalid)) [part="shell"] {
       border-style: dashed;
     }
 
-    :host(:has(> :disabled)) [part="shell"] {
+    :host(:state(disabled)) [part="shell"] {
       border-color: GrayText;
       background: Field;
     }
@@ -167,7 +167,7 @@ export const inputGroupStyles = css`
       color: FieldText;
     }
 
-    :host(:has(> :disabled)) ::slotted([slot]:not(pl-button)) {
+    :host(:state(disabled)) ::slotted([slot]:not(pl-button)) {
       color: GrayText;
     }
   }

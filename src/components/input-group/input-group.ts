@@ -24,14 +24,15 @@ export class PlInputGroup extends LitElement {
   readonly #internals = this.attachInternals();
   readonly #resize = new ResizeObserver(() => this.#measure());
   readonly #watch = new MutationObserver(() => this.#describe());
+  readonly #track = new MutationObserver(() => this.#sync());
   #field: Field | undefined;
 
   constructor() {
     super();
     this.addEventListener("focusin", (event) =>
-      this.#setFocused(event.target === this.#field),
+      this.#setState("focused", event.target === this.#field),
     );
-    this.addEventListener("focusout", () => this.#setFocused(false));
+    this.addEventListener("focusout", () => this.#setState("focused", false));
   }
 
   override connectedCallback() {
@@ -50,12 +51,22 @@ export class PlInputGroup extends LitElement {
     super.disconnectedCallback();
     this.#watch.disconnect();
     this.#resize.disconnect();
+    this.#track.disconnect();
     this.#field?.removeAttribute("data-grouped");
   }
 
-  #setFocused(on: boolean) {
-    if (on) this.#internals.states.add("focused");
-    else this.#internals.states.delete("focused");
+  #setState(name: string, on: boolean) {
+    if (on) this.#internals.states.add(name);
+    else this.#internals.states.delete(name);
+  }
+
+  /** `:host(:has())` never matches, so the field's traits become states of the group. */
+  #sync() {
+    const field = this.#field;
+    this.#setState("textarea", field?.localName === "pl-textarea");
+    this.#setState("xl", field?.getAttribute("size") === "xl");
+    this.#setState("invalid", !!field?.matches(":state(user-invalid)"));
+    this.#setState("disabled", !!field?.matches(":disabled"));
   }
 
   /** The shell and addons follow the field row, which a label and a message move. */
@@ -98,7 +109,9 @@ export class PlInputGroup extends LitElement {
     if (field === this.#field) return;
     this.#field?.removeAttribute("data-grouped");
     this.#resize.disconnect();
+    this.#track.disconnect();
     this.#field = field as Field | undefined;
+    this.#sync();
     this.#adopt();
   };
 
@@ -109,9 +122,21 @@ export class PlInputGroup extends LitElement {
     grouped.setAttribute("data-grouped", "");
     this.#resize.observe(this);
     this.#resize.observe(grouped);
+    this.#track.observe(grouped, {
+      attributes: true,
+      attributeFilter: ["size", "disabled"],
+    });
     void grouped.updateComplete.then(() => {
       const row = grouped.shadowRoot?.querySelector('[part="field"]');
       if (row) this.#resize.observe(row);
+      // The control's own `aria-invalid` and `disabled` follow validation and a disabled fieldset.
+      if (grouped.shadowRoot)
+        this.#track.observe(grouped.shadowRoot, {
+          attributes: true,
+          attributeFilter: ["aria-invalid", "disabled"],
+          subtree: true,
+        });
+      this.#sync();
       this.#measure();
       void this.#describe();
     });
