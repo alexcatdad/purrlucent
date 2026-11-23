@@ -11,9 +11,7 @@ const story = (name: string) => `components-badge--${name}`;
 test("aria snapshot: the badge is its text", async ({ page }) => {
   const root = await gotoStory(page, story("variants"));
   await expect(root).toMatchAriaSnapshot(`
-    - text: Draft
-    - text: New
-    - text: Failed
+    - text: Draft New Failed
   `);
 });
 

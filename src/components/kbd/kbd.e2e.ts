@@ -11,15 +11,15 @@ const story = (name: string) => `components-kbd--${name}`;
 test("aria snapshot: the key text is plain text", async ({ page }) => {
   const root = await gotoStory(page, story("shortcut"));
   await expect(root).toMatchAriaSnapshot(`
-    - text: ⌃⌥⇧⌘K
-    - text: ⌘S
-    - text: Esc
+    - text: ⌃⌥⇧⌘K ⌘S Esc
   `);
 });
 
+// The text stays in the light DOM; the kbd element holds the slot it shows in.
 test("it renders a kbd element with the slotted text", async ({ page }) => {
   await gotoStory(page, story("default"));
-  const key = page.locator("#key").locator("kbd");
+  const key = page.locator("#key");
+  await expect(key.locator("kbd slot")).toHaveCount(1);
   await expect(key).toHaveText("⌘K");
 });
 
@@ -54,7 +54,7 @@ test("a single glyph is at least as wide as it is tall", async ({ page }) => {
 
 test("under rtl the key keeps its own text order", async ({ page }) => {
   await gotoStory(page, story("rtl"));
-  await expect(page.locator("#key").locator("kbd")).toHaveText("⌘K");
+  await expect(page.locator("#key")).toHaveText("⌘K");
 });
 
 test("the keycap keeps its edge under forced colors", async ({ page }) => {

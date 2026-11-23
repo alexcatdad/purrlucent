@@ -16,7 +16,7 @@ export const badgeStyles = css`
     box-sizing: border-box;
     min-inline-size: calc(var(--pl-leading-normal) + var(--pl-space-1));
     block-size: calc(var(--pl-leading-normal) + var(--pl-space-1));
-    padding-inline: var(--pl-space-1-5);
+    padding-inline: var(--pl-space-1);
     border: 1px solid transparent;
     border-radius: var(--pl-radius-full);
     background: var(--_fill);
