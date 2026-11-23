@@ -1,0 +1,22 @@
+- id: page-controls/1
+  source: https://developer.apple.com/design/human-interface-guidelines/page-controls
+  rule: Paging controls are for moving through an ordered list of pages, not for hierarchy or unordered relationships.
+  check: rubric
+  layer: components
+- id: page-controls/2
+  source: https://developer.apple.com/design/human-interface-guidelines/page-controls
+  rule: The control sits where people can always find it, such as centered below the content.
+  check: rubric
+  layer: components
+- id: page-controls/3
+  source: https://developer.apple.com/design/human-interface-guidelines/page-controls
+  rule: The number of items shown stays small, so a long range collapses into a fixed-width row.
+  check: automated
+  test: src/components/pagination/pagination.e2e.ts > a long range stays seven items wide with ellipses
+  layer: components
+- id: page-controls/4
+  source: https://developer.apple.com/design/human-interface-guidelines/page-controls
+  rule: The current page stays clearly marked, including under forced colors.
+  check: automated
+  test: src/components/pagination/pagination.e2e.ts > the current page stays visible under forced colors
+  layer: components
