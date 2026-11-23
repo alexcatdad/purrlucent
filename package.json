@@ -1,6 +1,21 @@
 {
   "name": "purrlucent",
   "version": "0.7.0",
+  "description": "Accessible web components built with Lit: form controls, menus, dialogs and navigation for any framework, following Apple's Human Interface Guidelines.",
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "lit",
+    "design-system",
+    "accessibility",
+    "react"
+  ],
+  "homepage": "https://alexcatdad.github.io/purrlucent/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexcatdad/purrlucent.git"
+  },
+  "bugs": "https://github.com/alexcatdad/purrlucent/issues",
   "type": "module",
   "license": "Apache-2.0",
   "files": [
