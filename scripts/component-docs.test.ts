@@ -26,6 +26,9 @@ test("one section per component folder, one entry per element", () => {
     ],
   });
   expect(page).toContain(
+    "## Contents\n\n- [Toggle group](#toggle-group): `pl-toggle-group`\n\n",
+  );
+  expect(page).toContain(
     '## Toggle group\n\n```ts\nimport "purrlucent/toggle-group";',
   );
   expect(page).toContain("### `<pl-toggle-group>`\n\nA row of items.");

@@ -2,6 +2,69 @@
 
 This page is generated from the code by `bun scripts/component-docs.ts`. Each component has its own import path; `import "purrlucent"` loads all of them. Examples for every component are in Storybook.
 
+## Contents
+
+- [Accordion](#accordion): `pl-accordion-item`, `pl-accordion`
+- [Aspect ratio](#aspect-ratio): `pl-aspect-ratio`
+- [Attachment](#attachment): `pl-attachment`, `pl-attachment-group`
+- [Avatar](#avatar): `pl-avatar`
+- [Badge](#badge): `pl-badge`
+- [Banner](#banner): `pl-banner`
+- [Breadcrumb](#breadcrumb): `pl-breadcrumb-item`, `pl-breadcrumb`
+- [Bubble](#bubble): `pl-bubble`, `pl-bubble-reactions`, `pl-bubble-group`
+- [Button](#button): `pl-button`
+- [Button group](#button-group): `pl-button-group`
+- [Calendar](#calendar): `pl-calendar`
+- [Card](#card): `pl-card`
+- [Carousel](#carousel): `pl-carousel-item`, `pl-carousel`
+- [Chart](#chart): `pl-chart`
+- [Checkbox](#checkbox): `pl-checkbox`
+- [Collapsible](#collapsible): `pl-collapsible`
+- [Combobox](#combobox): `pl-combobox`
+- [Command](#command): `pl-command-item`, `pl-command-group`, `pl-command`
+- [Context menu](#context-menu): `pl-context-menu`
+- [Data table](#data-table): `pl-data-table`
+- [Date picker](#date-picker): `pl-date-picker`
+- [Dialog](#dialog): `pl-dialog`
+- [Drawer](#drawer): `pl-drawer`
+- [Empty](#empty): `pl-empty`
+- [Field](#field): `pl-field`, `pl-fieldset`
+- [Hover card](#hover-card): `pl-hover-card`
+- [Input](#input): `pl-input`
+- [Input group](#input-group): `pl-input-group`
+- [Input otp](#input-otp): `pl-input-otp`
+- [Item](#item): `pl-item`
+- [Kbd](#kbd): `pl-kbd`
+- [Marker](#marker): `pl-marker`
+- [Menu](#menu): `pl-menu-item`, `pl-menu-separator`, `pl-menu-label`, `pl-menu`
+- [Menubar](#menubar): `pl-menubar`
+- [Message](#message): `pl-message`, `pl-message-group`
+- [Message scroller](#message-scroller): `pl-message-scroller-item`, `pl-message-scroller`, `pl-message-scroller-button`
+- [Navigation menu](#navigation-menu): `pl-navigation-item`, `pl-navigation-menu`
+- [Number field](#number-field): `pl-number-field`
+- [Pagination](#pagination): `pl-pagination`
+- [Popover](#popover): `pl-popover`
+- [Progress](#progress): `pl-progress`
+- [Prompt input](#prompt-input): `pl-prompt-input`
+- [Radio group](#radio-group): `pl-radio`, `pl-radio-group`
+- [Resizable](#resizable): `pl-resizable-handle`, `pl-resizable-panel`, `pl-resizable`
+- [Scroll area](#scroll-area): `pl-scroll-area`
+- [Select](#select): `pl-option`, `pl-select`
+- [Separator](#separator): `pl-separator`
+- [Sidebar](#sidebar): `pl-sidebar-item`, `pl-sidebar-section`, `pl-sidebar`
+- [Skeleton](#skeleton): `pl-skeleton`
+- [Slider](#slider): `pl-slider`
+- [Spinner](#spinner): `pl-spinner`
+- [Switch](#switch): `pl-switch`
+- [Table](#table): `pl-table`
+- [Tabs](#tabs): `pl-tab`, `pl-tab-panel`, `pl-tabs`
+- [Textarea](#textarea): `pl-textarea`
+- [Toast](#toast): `pl-toast`, `pl-toaster`
+- [Toggle](#toggle): `pl-toggle`
+- [Toggle group](#toggle-group): `pl-toggle-group-item`, `pl-toggle-group`
+- [Toolbar](#toolbar): `pl-toolbar-separator`, `pl-toolbar-spacer`, `pl-toolbar-title`, `pl-toolbar-group`, `pl-toolbar`
+- [Tooltip](#tooltip): `pl-tooltip`
+
 ## Accordion
 
 ```ts
