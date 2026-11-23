@@ -106,8 +106,13 @@ export const inputGroupStyles = css`
   }
 
   /* A button fills its end of the field and brings its own padding and face. */
+  /*
+   * Firefox counts the label's overflow-wrap: anywhere in the button's minimum
+   * width despite nowrap, so the grid would squeeze the button below its text.
+   */
   ::slotted(pl-button[slot]) {
     padding-block: 0;
+    min-inline-size: max-content;
   }
 
   ::slotted(pl-button[slot="start"]) {
