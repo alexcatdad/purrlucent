@@ -1438,6 +1438,41 @@ A progress bar. With a `value` it shows how far along the work is; without one i
 
 - `fill`: The done part of the bar, or the moving segment when indeterminate.
 
+## Prompt input
+
+```ts
+import "purrlucent/prompt-input";
+```
+
+### `<pl-prompt-input>`
+
+The chat composer: a text field that grows from one line to about eight, then scrolls, with a send button at its end. Enter sends and Shift+Enter inserts a newline; Enter during IME composition never sends. Send is off while the text is empty or only whitespace. While `busy` (a reply is streaming) the button becomes Stop, the field stays editable for the next message, and Enter sends nothing. `label` names the field for assistive technology and is not shown; without it a native `<label for>` names it, and without both the name is "Message". It takes part in forms like a native textarea (`name`, `value`, `required`, `disabled`, reset) but never submits the form itself: listen for `pl-submit`.
+
+| Attribute     | Type                  | Default | Description                                                    |
+| ------------- | --------------------- | ------- | -------------------------------------------------------------- |
+| `value`       | `string`              | `""`    | The starting text. The `value` property holds the current one. |
+| `label`       | `string \| undefined` |         | The accessible name of the field.                              |
+| `name`        | `string`              | `""`    | The name submitted with a form.                                |
+| `placeholder` | `string \| undefined` |         | Hint shown while empty.                                        |
+| `required`    | `boolean`             | `false` | The form is invalid while the field is empty.                  |
+| `disabled`    | `boolean`             | `false` | No focus, no send, nothing submitted.                          |
+| `busy`        | `boolean`             | `false` | A reply is streaming: the send button becomes Stop.            |
+
+**Slots**
+
+- `start`: Tools before the field, such as an attach button. Give an icon `pl-button` an `aria-label`.
+- `end`: Tools before the send button, such as a model picker.
+
+**Events**
+
+- `name`:
+- `pl-submit`: Enter or Send, with the text trimmed. Cancelable: the field clears unless it is prevented.
+- `pl-input`: The text changed through editing. `detail.value` holds it.
+- `pl-change`: The text was committed (blur after an edit). `detail.value` holds it.
+- `pl-stop`: Stop was pressed while `busy`.
+- `input`: After each pl-input, as a native textarea fires it.
+- `change`: After each pl-change, as a native textarea fires it.
+
 ## Radio group
 
 ```ts
