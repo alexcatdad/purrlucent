@@ -1,0 +1,28 @@
+- id: tab-views/1
+  source: https://developer.apple.com/design/human-interface-guidelines/tab-views
+  rule: A tab view shows one of several mutually exclusive panes of content in the same area.
+  check: automated
+  test: src/components/tabs/tabs.e2e.ts > a click selects a tab and shows only its panel
+  layer: components
+- id: tab-views/2
+  source: https://developer.apple.com/design/human-interface-guidelines/tab-views
+  rule: The selected tab is clearly marked, and a tab is never used for an action.
+  check: automated
+  test: src/components/tabs/tabs.e2e.ts > the selected tab stays visible under forced colors
+  layer: components
+- id: tab-views/3
+  source: https://developer.apple.com/design/human-interface-guidelines/tab-views
+  rule: Tab labels are short nouns or noun phrases, and a tab view has a small number of tabs.
+  check: rubric
+  layer: components
+- id: tab-views/4
+  source: https://developer.apple.com/design/human-interface-guidelines/tab-views
+  rule: Tabs switch the content of one view; a segmented control is for choosing a value or a mode, not for switching panels.
+  check: rubric
+  layer: components
+- id: tab-views/5
+  source: https://developer.apple.com/design/human-interface-guidelines/tab-views
+  rule: Tabs expose tab roles with one tab stop, arrow-key movement that follows the reading direction, and a panel tied to each tab.
+  check: automated
+  test: src/components/tabs/tabs.e2e.ts > Tab enters on the selected tab, arrows move and select, and wrap
+  layer: components

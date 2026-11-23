@@ -150,6 +150,10 @@
       "types": "./dist/types/components/switch/switch.d.ts",
       "default": "./dist/switch.js"
     },
+    "./tabs": {
+      "types": "./dist/types/components/tabs/tabs.d.ts",
+      "default": "./dist/tabs.js"
+    },
     "./textarea": {
       "types": "./dist/types/components/textarea/textarea.d.ts",
       "default": "./dist/textarea.js"
