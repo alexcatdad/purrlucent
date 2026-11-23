@@ -73,6 +73,10 @@ export const itemStyles = [
       gap: var(--pl-gap-controls);
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     @media (hover: hover) {
       :host([href]:hover) {
         background: var(--pl-color-muted-1);

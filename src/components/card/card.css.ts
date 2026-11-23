@@ -45,6 +45,12 @@ export const cardStyles = css`
     gap: var(--pl-gap-controls);
   }
 
+  /* Slots are display: contents by default, which ignores grid-area. */
+  slot[name="title"],
+  slot[name="description"] {
+    display: block;
+  }
+
   slot[name="title"] {
     grid-area: title;
     font-weight: 700;

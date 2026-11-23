@@ -53,8 +53,19 @@ export class PlItem extends LitElement {
         }
         <slot name="description"></slot>
       </div>
-      <div part="actions"><slot name="actions"></slot></div>`;
+      <div part="actions" hidden>
+        <slot name="actions" @slotchange=${this.#syncActions}></slot>
+      </div>`;
   }
+
+  // Without actions the wrapper is hidden, so it adds no trailing gap.
+  #syncActions = (event: Event) => {
+    const slot = event.target as HTMLSlotElement;
+    slot.parentElement?.toggleAttribute(
+      "hidden",
+      slot.assignedElements({ flatten: true }).length === 0,
+    );
+  };
 }
 
 customElements.define("pl-item", PlItem);
