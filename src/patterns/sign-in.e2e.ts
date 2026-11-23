@@ -18,7 +18,19 @@ const button = (root: Locator, name: string) =>
 const toast = (root: Locator) =>
   root.locator("pl-toast", { hasText: "Signed in" });
 
-for (const name of ["default", "code", "error-states", "rtl", "glass"])
+for (const name of [
+  "default",
+  "code",
+  "error-states",
+  "rtl",
+  "glass",
+  "with-logo",
+  "providers",
+  "sso",
+  "passkey",
+  "magic-link",
+  "complete",
+])
   test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
     await expectAccessible(await gotoStory(page, story(name)));
   });
@@ -214,6 +226,112 @@ test("the error story shows the field errors and the wrong-code message", async 
   await expect(
     root.getByText("That code is not right. Try again."),
   ).toBeVisible();
+});
+
+const PROVIDERS = ["Apple", "Google", "GitHub"];
+
+test("with-logo shows a labelled logo above the heading", async ({ page }) => {
+  const root = await gotoStory(page, story("with-logo"));
+  await expect(root.getByRole("img", { name: "Company logo" })).toBeVisible();
+  await expect(root.getByRole("heading", { name: "Sign in" })).toBeVisible();
+});
+
+test("every provider button has an accessible name and an or divider follows", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("providers"));
+  for (const name of PROVIDERS)
+    await expect(button(root, `Continue with ${name}`)).toBeVisible();
+  await expect(root.getByText("or", { exact: true })).toBeVisible();
+  await expect(email(root)).toBeVisible();
+});
+
+test("sso: a work email and Continue show the hand-off status", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("sso"));
+  await root
+    .getByRole("textbox", { name: "Work email" })
+    .fill("hello@example.com");
+  await button(root, "Continue").click();
+  await expect(
+    root.getByText("Redirecting to your company's sign-in"),
+  ).toBeVisible();
+  await expect(button(root, "Use a different email")).toBeVisible();
+});
+
+test("sso: an empty email shows its error and stays on the form", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("sso"));
+  await button(root, "Continue").click();
+  await expect(root.getByText("Enter your email address.")).toBeVisible();
+  await expect(root.getByText(/Redirecting to/)).toHaveCount(0);
+});
+
+test("passkey: the button is labelled and signs in", async ({ page }) => {
+  const root = await gotoStory(page, story("passkey"));
+  const passkey = button(root, "Sign in with a passkey");
+  await expect(passkey).toBeVisible();
+  await passkey.click();
+  await expect(toast(root)).toBeVisible();
+  await expect(
+    root.getByRole("heading", { name: "You are signed in" }),
+  ).toBeVisible();
+});
+
+test("magic link: an email and Send link show the sent state", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("magic-link"));
+  await email(root).fill("hello@example.com");
+  await button(root, "Send link").click();
+  await expect(
+    root.getByRole("heading", { name: "Check your email" }),
+  ).toBeVisible();
+  await expect(
+    root.getByText("We sent a sign-in link to hello@example.com."),
+  ).toBeVisible();
+  await button(root, "Use a different email").click();
+  await expect(email(root)).toBeFocused();
+});
+
+test("complete has the logo, providers, divider, fields, links and terms", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("complete"));
+  await expect(root.getByRole("img", { name: "Company logo" })).toBeVisible();
+  for (const name of PROVIDERS)
+    await expect(button(root, `Continue with ${name}`)).toBeVisible();
+  await expect(root.getByText("or", { exact: true })).toBeVisible();
+  await expect(email(root)).toBeVisible();
+  await expect(password(root)).toHaveAttribute("type", "password");
+  await expect(
+    root.getByRole("checkbox", { name: "Remember me" }),
+  ).toBeVisible();
+  await expect(
+    root.getByRole("link", { name: "Forgot password?" }),
+  ).toBeVisible();
+  await expect(
+    root.getByRole("link", { name: "Create an account" }),
+  ).toBeVisible();
+  await expect(
+    root.getByRole("link", { name: "Terms of Service" }),
+  ).toBeVisible();
+  await expect(
+    root.getByRole("link", { name: "Privacy Policy" }),
+  ).toBeVisible();
+});
+
+test("complete: the forgot password link shows the confirmation toast", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("complete"));
+  await root.getByRole("link", { name: "Forgot password?" }).click();
+  await expect(
+    root.locator("pl-toast", { hasText: "Check your email" }),
+  ).toBeVisible();
+  await expect(root.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
 
 test("under rtl the card keeps its fields readable and aligned to the start", async ({

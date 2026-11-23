@@ -25,17 +25,32 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INCOMPLETE = "Enter the 6-digit code.";
 const WRONG = "That code is not right. Try again.";
 
-type Step = "credentials" | "code" | "done";
+type Step = "credentials" | "code" | "done" | "redirect" | "sent";
+type Mode = "password" | "sso" | "passkey" | "magic";
+
+/** Neutral glyphs, one per provider: shapes, not brand marks. */
+const GLYPHS: Record<string, string> = {
+  Apple: "M12 3 L21 12 L12 21 L3 12 Z",
+  Google: "M12 3 a9 9 0 1 0 0.001 0 Z",
+  GitHub: "M4 4 H20 V20 H4 Z",
+};
+const PROVIDERS = Object.keys(GLYPHS);
 
 /**
- * A two-step sign-in: email and password, then a one-time code. It is the
- * demo's own element, not a library component. Both steps are real forms, so
- * Enter submits. The first valid email and password lead to the code step; the
- * code 123456 signs in and anything else shows an error.
+ * A sign-in: email and password then a one-time code, or one of its variants
+ * picked by `mode` (password, sso, passkey, magic). `logo`, `providers` and
+ * `complete` add the logo, the provider buttons and the full set of extras. It
+ * is the demo's own element, not a library component. Every step is a real
+ * form, so Enter submits. The first valid email and password lead to the code
+ * step; the code 123456 signs in and anything else shows an error.
  */
 class SignInDemo extends LitElement {
   static override properties = {
     step: { reflect: true },
+    mode: { reflect: true },
+    logo: { type: Boolean },
+    providers: { type: Boolean },
+    complete: { type: Boolean },
     email: {},
     password: {},
     code: {},
@@ -47,6 +62,10 @@ class SignInDemo extends LitElement {
   };
 
   declare step: Step;
+  declare mode: Mode;
+  declare logo: boolean;
+  declare providers: boolean;
+  declare complete: boolean;
   declare email: string;
   declare password: string;
   declare code: string;
@@ -62,6 +81,10 @@ class SignInDemo extends LitElement {
   constructor() {
     super();
     this.step = "credentials";
+    this.mode = "password";
+    this.logo = false;
+    this.providers = false;
+    this.complete = false;
     this.email = "";
     this.password = "";
     this.code = "";
@@ -124,7 +147,9 @@ class SignInDemo extends LitElement {
         ? ""
         : "Enter an email address like name@example.com.";
     this.passwordError =
-      this.password.length < 8 ? "Use at least 8 characters." : "";
+      this.mode === "password" && this.password.length < 8
+        ? "Use at least 8 characters."
+        : "";
     return !this.emailError && !this.passwordError;
   }
 
@@ -136,10 +161,34 @@ class SignInDemo extends LitElement {
       );
       return;
     }
-    this.code = "";
-    this.resent = false;
-    this.step = "code";
-    void this.#focus("pl-input-otp");
+    if (this.mode === "sso") {
+      this.step = "redirect";
+      void this.#focus("h1");
+    } else if (this.mode === "magic") {
+      this.step = "sent";
+      void this.#focus("h1");
+    } else {
+      this.code = "";
+      this.resent = false;
+      this.step = "code";
+      void this.#focus("pl-input-otp");
+    }
+  };
+
+  #passkey = () => {
+    this.step = "done";
+    this.renderRoot
+      .querySelector<PlToaster>("pl-toaster")
+      ?.show({ title: "Signed in", description: "Passkey verified." });
+    void this.#focus("h1");
+  };
+
+  /** Stops a demo link from navigating the story frame. */
+  #link = (event: Event) => event.preventDefault();
+
+  #forgotLink = (event: Event) => {
+    event.preventDefault();
+    this.#forgot();
   };
 
   /** Shows a message under the code boxes and keeps the focus in them. */
@@ -210,24 +259,125 @@ class SignInDemo extends LitElement {
     this.#otp?.setCustomValidity("");
   };
 
+  #logo() {
+    return this.logo
+      ? html`<svg
+          class="logo"
+          role="img"
+          aria-label="Company logo"
+          viewBox="0 0 24 24"
+        >
+          <rect width="24" height="24" rx="6" fill="currentColor" />
+          <circle cx="12" cy="12" r="5" fill="var(--pl-color-background)" />
+        </svg>`
+      : "";
+  }
+
+  #providerButtons() {
+    return html`<div class="providers">
+        ${PROVIDERS.map(
+          (name) =>
+            html`<pl-button variant="secondary" size="lg"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d=${GLYPHS[name]!} fill="currentColor" /></svg
+              >Continue with ${name}</pl-button
+            >`,
+        )}
+      </div>
+      <div class="divider" aria-hidden="true"><span>or</span></div>`;
+  }
+
+  #terms() {
+    return html`<p slot="footer" class="terms">
+      By continuing you agree to the
+      <a href="#terms" @click=${this.#link}>Terms of Service</a> and the
+      <a href="#privacy" @click=${this.#link}>Privacy Policy</a>.
+    </p>`;
+  }
+
+  #emailField(label: string) {
+    return html`<pl-field ?invalid=${!!this.emailError}>
+      <label slot="label">${label}</label>
+      <pl-input
+        type="text"
+        inputmode="email"
+        name="email"
+        autocomplete="email"
+        placeholder="name@example.com"
+        .value=${this.email}
+        @pl-input=${this.#onEmail}
+      ></pl-input>
+      <span slot="error">${this.emailError}</span>
+    </pl-field>`;
+  }
+
+  /** Sso and magic link: one email field and one button. */
+  #emailOnly() {
+    const sso = this.mode === "sso";
+    return html`<pl-card>
+      <h1 slot="title" tabindex="-1">
+        ${sso ? "Sign in with single sign-on" : "Sign in with a link"}
+      </h1>
+      <span slot="description"
+        >${
+          sso
+            ? "Enter your work email and we will find your company's sign-in."
+            : "We will email you a link that signs you in."
+        }</span
+      >
+      <form novalidate @submit=${this.#signIn}>
+        ${this.#emailField(sso ? "Work email" : "Email")}
+        <div class="actions">
+          <pl-button type="submit" variant="primary" size="lg"
+            >${sso ? "Continue" : "Send link"}</pl-button
+          >
+        </div>
+      </form>
+    </pl-card>`;
+  }
+
+  #passkeyCard() {
+    return html`<pl-card>
+      <h1 slot="title" tabindex="-1">Sign in with a passkey</h1>
+      <span slot="description"
+        >Use your fingerprint, face or screen lock instead of a password.</span
+      >
+      <pl-button variant="primary" size="lg" @click=${this.#passkey}
+        >Sign in with a passkey</pl-button
+      >
+    </pl-card>`;
+  }
+
+  #redirecting() {
+    return html`<pl-card>
+      <h1 slot="title" tabindex="-1">Single sign-on</h1>
+      <span slot="description">Your work email is ${this.email}.</span>
+      <p class="hint" role="status">Redirecting to your company's sign-in</p>
+      <pl-button variant="ghost" @click=${this.#signOut}
+        >Use a different email</pl-button
+      >
+    </pl-card>`;
+  }
+
+  #linkSent() {
+    return html`<pl-card>
+      <h1 slot="title" tabindex="-1">Check your email</h1>
+      <span slot="description">We sent a sign-in link to ${this.email}.</span>
+      <pl-button variant="ghost" @click=${this.#signOut}
+        >Use a different email</pl-button
+      >
+    </pl-card>`;
+  }
+
   #credentials() {
+    if (this.mode === "sso" || this.mode === "magic") return this.#emailOnly();
+    if (this.mode === "passkey") return this.#passkeyCard();
     return html`<pl-card>
       <h1 slot="title" tabindex="-1">Sign in</h1>
       <span slot="description">Use your email and password to continue.</span>
       <form novalidate @submit=${this.#signIn}>
-        <pl-field ?invalid=${!!this.emailError}>
-          <label slot="label">Email</label>
-          <pl-input
-            type="text"
-            inputmode="email"
-            name="email"
-            autocomplete="email"
-            placeholder="name@example.com"
-            .value=${this.email}
-            @pl-input=${this.#onEmail}
-          ></pl-input>
-          <span slot="error">${this.emailError}</span>
-        </pl-field>
+        ${this.providers ? this.#providerButtons() : ""}
+        ${this.#emailField("Email")}
         <pl-field ?invalid=${!!this.passwordError}>
           <label slot="label">Password</label>
           <pl-input
@@ -239,16 +389,33 @@ class SignInDemo extends LitElement {
           ></pl-input>
           <span slot="error">${this.passwordError}</span>
         </pl-field>
-        <pl-checkbox name="keep">Keep me signed in</pl-checkbox>
+        <pl-checkbox name="keep"
+          >${this.complete ? "Remember me" : "Keep me signed in"}</pl-checkbox
+        >
         <div class="actions">
           <pl-button type="submit" variant="primary" size="lg"
             >Continue</pl-button
           >
-          <pl-button variant="ghost" @click=${this.#forgot}
-            >Forgot password</pl-button
-          >
+          ${
+            this.complete
+              ? html`<a href="#forgot" @click=${this.#forgotLink}
+                  >Forgot password?</a
+                >`
+              : html`<pl-button variant="ghost" @click=${this.#forgot}
+                  >Forgot password</pl-button
+                >`
+          }
         </div>
       </form>
+      ${
+        this.complete
+          ? html`<p class="hint">
+              New here?
+              <a href="#create" @click=${this.#link}>Create an account</a>
+            </p>`
+          : ""
+      }
+      ${this.complete ? this.#terms() : ""}
     </pl-card>`;
   }
 
@@ -301,7 +468,9 @@ class SignInDemo extends LitElement {
   #signedIn() {
     return html`<pl-card>
       <h1 slot="title" tabindex="-1">You are signed in</h1>
-      <span slot="description">Welcome back, ${this.email}.</span>
+      <span slot="description"
+        >Welcome back${this.email ? `, ${this.email}` : ""}.</span
+      >
       <pl-button variant="secondary" size="lg" @click=${this.#signOut}
         >Sign out</pl-button
       >
@@ -309,13 +478,14 @@ class SignInDemo extends LitElement {
   }
 
   override render() {
-    return html`${
-        this.step === "code"
-          ? this.#verification()
-          : this.step === "done"
-            ? this.#signedIn()
-            : this.#credentials()
-      } <pl-toaster></pl-toaster>`;
+    const card = {
+      code: () => this.#verification(),
+      done: () => this.#signedIn(),
+      redirect: () => this.#redirecting(),
+      sent: () => this.#linkSent(),
+      credentials: () => this.#credentials(),
+    }[this.step];
+    return html`${this.#logo()}${card()}<pl-toaster></pl-toaster>`;
   }
 
   static override styles = css`
@@ -353,6 +523,55 @@ class SignInDemo extends LitElement {
 
     h1 {
       margin: 0;
+    }
+
+    .logo {
+      display: block;
+      inline-size: calc(var(--pl-spacing) * 10);
+      block-size: calc(var(--pl-spacing) * 10);
+      margin: 0 auto var(--pl-space-4);
+      color: var(--pl-color-foreground);
+    }
+
+    .providers {
+      display: grid;
+      gap: var(--pl-gap-controls);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: var(--pl-space-3);
+      color: var(--pl-color-muted-foreground);
+      font-size: var(--pl-text-sm);
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      block-size: 1px;
+      background: var(--pl-color-border);
+    }
+
+    .terms {
+      margin: 0;
+      color: var(--pl-color-muted-foreground);
+      font-size: var(--pl-text-sm);
+    }
+
+    .hint + .hint,
+    form + .hint {
+      margin-block-start: var(--pl-space-4);
+    }
+
+    a {
+      color: var(--pl-color-foreground);
+      text-decoration: underline;
+    }
+
+    .actions a {
+      justify-self: center;
     }
   `;
 }
@@ -392,6 +611,37 @@ export const ErrorStates: Story = {
         code="000000"
       ></sign-in-demo>
     `),
+};
+
+/** The sign-in with a logo above the card. */
+export const WithLogo: Story = {
+  render: () => page(html`<sign-in-demo logo></sign-in-demo>`),
+};
+
+/** Provider buttons above the email and password, split by an "or" divider. */
+export const Providers: Story = {
+  render: () => page(html`<sign-in-demo providers></sign-in-demo>`),
+};
+
+/** Single sign-on: a work email and Continue hand off to the company's sign-in. */
+export const Sso: Story = {
+  render: () => page(html`<sign-in-demo mode="sso"></sign-in-demo>`),
+};
+
+/** A passkey replaces the password: one button signs in. */
+export const Passkey: Story = {
+  render: () => page(html`<sign-in-demo mode="passkey"></sign-in-demo>`),
+};
+
+/** A magic link: an email and Send link lead to the "Check your email" state. */
+export const MagicLink: Story = {
+  render: () => page(html`<sign-in-demo mode="magic"></sign-in-demo>`),
+};
+
+/** Everything together: logo, providers, email and password, remember me, forgot password, create account and terms. */
+export const Complete: Story = {
+  render: () =>
+    page(html`<sign-in-demo logo providers complete></sign-in-demo>`),
 };
 
 export const Rtl: Story = {
