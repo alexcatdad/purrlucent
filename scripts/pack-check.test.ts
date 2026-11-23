@@ -14,7 +14,7 @@ import {
 } from "node:fs";
 import { basename, join } from "node:path";
 import { chromium } from "playwright";
-import { FILES } from "./agent-skill.ts";
+import { DOCS } from "./agent-skill.ts";
 
 type Target = string | { types: string; default: string };
 
@@ -69,9 +69,12 @@ test("every export points at a file in the package", () => {
 });
 
 test("the agent skill ships with the docs it reads", () => {
-  const missing = FILES.map(
-    (file) => `dist/skills/purrlucent/${basename(file)}`,
-  ).filter((file) => !existsSync(join(installed, file)));
+  const missing = [
+    "SKILL.md",
+    ...DOCS.map((doc) => `references/${basename(doc)}`),
+  ]
+    .map((file) => `dist/skills/purrlucent/${file}`)
+    .filter((file) => !existsSync(join(installed, file)));
   expect(missing).toEqual([]);
 });
 

@@ -90,14 +90,16 @@ The package also ships `purrlucent/custom-elements.json`, the Custom Elements Ma
 
 ### Coding agents
 
-The package ships an agent skill in `node_modules/purrlucent/dist/skills/purrlucent/`: `SKILL.md`, with this guide, the React guide and the component reference beside it, all for the installed version. To load it in Claude Code, link the folder into your project's skills:
+Install the agent skill with the GitHub CLI or with `npx skills`. Replace `<version>` with the installed package version:
 
 ```sh
-mkdir -p .claude/skills
-ln -s ../../node_modules/purrlucent/dist/skills/purrlucent .claude/skills/purrlucent
+gh skill install alexcatdad/purrlucent purrlucent@v<version> --agent claude-code
+npx skills add alexcatdad/purrlucent@v<version> --skill purrlucent -a claude-code
 ```
 
-For another agent, add a line to your `AGENTS.md` that points it at `node_modules/purrlucent/dist/skills/purrlucent/SKILL.md`.
+Pin the skill to the installed version so its references match the elements in your app.
+
+The package also ships the skill in `node_modules/purrlucent/dist/skills/purrlucent/` for offline use.
 
 ## Upgrade
 
