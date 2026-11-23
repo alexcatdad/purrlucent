@@ -58,7 +58,12 @@ export async function expectNoOverflowAtTextZoom(
   const overflowing = await locator.evaluate((root) => {
     const found: string[] = [];
     const walk = (node: Element) => {
-      if (node.scrollWidth > node.clientWidth) found.push(node.localName);
+      // Inline boxes cannot scroll; Firefox still reports a scrollWidth for them.
+      if (
+        getComputedStyle(node).display !== "inline" &&
+        node.scrollWidth > node.clientWidth
+      )
+        found.push(node.localName);
       for (const child of node.shadowRoot?.children ?? []) walk(child);
       for (const child of node.children) walk(child);
     };

@@ -1,0 +1,39 @@
+- id: scroll-views/1
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: Default scrolling gestures and keyboard keys work, and scrolling is the browser's own, not a transform.
+  check: automated
+  test: src/components/scroll-area/scroll-area.e2e.ts > scrolling is native and the content is not moved by a transform
+  layer: components
+- id: scroll-views/2
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: A scrolling region can be reached and scrolled with the keyboard.
+  check: automated
+  test: src/components/scroll-area/scroll-area.e2e.ts > the keyboard scrolls the focused region
+  layer: components
+- id: scroll-views/3
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: An overflowing region without focusable content is a tab stop, and a region that fits is not.
+  check: automated
+  test: src/components/scroll-area/scroll-area.e2e.ts > an overflowing region without focusable content takes a tab stop
+  layer: components
+- id: scroll-views/4
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: Small scroll bars suit panels where space is tight.
+  check: automated
+  test: src/components/scroll-area/scroll-area.e2e.ts > the scrollbar is thin
+  layer: components
+- id: scroll-views/5
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: It is apparent when content scrolls, for example by a scroll bar or content cut at the edge.
+  check: rubric
+  layer: components
+- id: scroll-views/6
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: Scroll views with the same orientation are not nested; a horizontal one inside a vertical one is fine.
+  check: rubric
+  layer: components
+- id: scroll-views/7
+  source: https://developer.apple.com/design/human-interface-guidelines/scroll-views
+  rule: The view scrolls automatically, and only as far as needed, to bring a selection or the insertion point into view.
+  check: rubric
+  layer: components
