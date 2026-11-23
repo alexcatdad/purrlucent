@@ -44,6 +44,8 @@ export class PlContextMenu extends LitElement {
   #menu: PlMenu | null = null;
   #open = false;
   #queued = false;
+  /** What had focus when the last press began, before the press moved it. */
+  #focused: HTMLElement | null = null;
   #point = { x: 0, y: 0 };
   #press: {
     id: number;
@@ -77,6 +79,11 @@ export class PlContextMenu extends LitElement {
     this.#queued = false;
     if (this.disabled) return;
     this.#point = { x, y };
+    // A press on the region can drop focus to the page (Firefox does so on a
+    // right-click); the menu returns focus to what had it when it opened.
+    const from = this.#focused;
+    if (document.activeElement === document.body && from?.isConnected)
+      from.focus({ preventScroll: true });
     menu.showAt(x, y);
   }
 
@@ -115,6 +122,9 @@ export class PlContextMenu extends LitElement {
 
   // A long press has no event of its own: say it as the contextmenu it stands for.
   #onPointerdown = (event: PointerEvent) => {
+    this.#focused = this.#inMenu(event)
+      ? null
+      : (document.activeElement as HTMLElement | null);
     this.#cancelPress();
     if (
       event.pointerType !== "touch" ||
