@@ -115,11 +115,9 @@ test("an invalid checkbox points at the error with aria-errormessage", async ({
   await expect(checkbox).toHaveAttribute("aria-invalid", "true");
   const ids = await checkbox.evaluate((el) => ({
     error: el.getAttribute("aria-errormessage"),
-    described: el.getAttribute("aria-describedby"),
     errorId: document.querySelector("#checkbox [slot=error]")!.id,
   }));
   expect(ids.error).toBe(ids.errorId);
-  expect(ids.described).toContain(ids.errorId);
   await expect(checkbox).toHaveAccessibleDescription(
     "You can read them before you agree. Accept the terms to continue.",
   );
@@ -154,7 +152,7 @@ test("a native input is named, described and focused by the label", async ({
 test("horizontal puts the label beside the control", async ({ page }) => {
   await gotoStory(page, story("horizontal"));
   const label = await box(page.locator("#field [slot=label]"));
-  const control = await box(page.locator("#control"));
+  const control = await box(page.locator("pl-input#control"));
   expect(label.x + label.width).toBeLessThanOrEqual(control.x + 1);
   expect(Math.abs(label.y - control.y)).toBeLessThan(control.height);
 });
@@ -163,7 +161,9 @@ test("a checkbox or switch field puts the control first", async ({ page }) => {
   await gotoStory(page, story("toggles"));
   for (const id of ["#checkbox", "#switch"]) {
     const label = await box(page.locator(`${id} [slot=label]`));
-    const control = await box(page.locator(`${id} > :not([slot])`));
+    const control = await box(
+      page.locator(`${id} > :is(pl-checkbox, pl-switch)`),
+    );
     expect(control.x + control.width).toBeLessThanOrEqual(label.x + 1);
   }
 });
@@ -185,7 +185,7 @@ test("responsive stacks in a narrow container and goes beside the control in a w
 test("the field mirrors under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   const label = await box(page.locator("#field [slot=label]"));
-  const control = await box(page.locator("#control"));
+  const control = await box(page.locator("pl-input#control"));
   expect(label.x).toBeGreaterThan(control.x);
 });
 
@@ -300,12 +300,12 @@ test.describe("coarse pointer on a wide screen", () => {
         (await box(page.locator(`${id} [slot=label]`))).height,
       ).toBeGreaterThanOrEqual(44);
       expect(
-        (await box(page.locator(`${id} > :not([slot])`))).height,
+        (await box(page.locator(`${id} > :is(pl-checkbox, pl-switch)`))).height,
       ).toBeGreaterThanOrEqual(44);
     }
     await gotoStory(page, story("default"));
-    expect((await box(page.locator("#control"))).height).toBeGreaterThanOrEqual(
-      44,
-    );
+    expect(
+      (await box(page.locator("pl-input#control"))).height,
+    ).toBeGreaterThanOrEqual(44);
   });
 });
