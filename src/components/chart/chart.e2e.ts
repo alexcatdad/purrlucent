@@ -188,8 +188,8 @@ test("the table stays out of sight until show-table is set", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
+  // A strip as wide as the chart and 1px tall, so the table wraps instead of overflowing.
   const hidden = (await page.locator("#chart [part=data]").boundingBox())!;
-  expect(hidden.width).toBeLessThanOrEqual(2);
   expect(hidden.height).toBeLessThanOrEqual(2);
   await gotoStory(page, story("show-table"));
   const shown = (await page.locator("#chart table").boundingBox())!;
