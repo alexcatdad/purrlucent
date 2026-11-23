@@ -157,11 +157,15 @@ export const attachmentStyles = css`
     color: var(--_detail);
   }
 
-  /* Heard, not seen: it adds the state to the name. It keeps its natural size so nothing overflows. */
+  /* Heard, not seen: it adds the state to the name. A 1px-tall strip as wide
+     as the card, so its word wraps inside the card instead of overflowing it. */
   [part="status"] {
     position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: 1px;
+    overflow: clip;
     clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   :host([state="uploading"]) [part="title"],
