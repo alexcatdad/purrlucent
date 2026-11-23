@@ -595,6 +595,28 @@ A menu: a list of commands that opens from a trigger (the menu button pattern), 
 
 - `pl-select`: An item was activated. `detail.value` holds its value.
 
+## Menubar
+
+```ts
+import "purrlucent/menubar";
+```
+
+### `<pl-menubar>`
+
+A row of menus, as at the top of an app window: each `pl-menu` child keeps its own `trigger`, items and submenus. The bar has one tab stop. Left and Right move between the triggers with wrap, and Down, Up, Enter and Space open a menu through `pl-menu`. While a menu is open, Left and Right close it and open the neighboring menu, and Escape closes it and returns to its trigger. Arrows follow the text direction. Items activate as in `pl-menu`. Each trigger is a focusable control with text, such as a `pl-button`. The bar sets `role="menuitem"` on it.
+
+| Attribute | Type     | Default | Description                               |
+| --------- | -------- | ------- | ----------------------------------------- |
+| `label`   | `string` | `""`    | The accessible name of the bar. Required. |
+
+**Slots**
+
+- default: The `pl-menu` elements, each with a `trigger`.
+
+**Events**
+
+- `pl-select`: An item of one of the menus was activated. `detail.value` holds its value.
+
 ## Navigation menu
 
 ```ts
