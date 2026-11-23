@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
 import "./card.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Cards & Lists/Card",
@@ -52,6 +53,6 @@ export const Rtl: Story = {
 
 /** The card is a content surface, so glass leaves it solid. */
 export const Glass: Story = {
-  render: () => frame(full),
+  render: () => underGlass(frame(full)),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

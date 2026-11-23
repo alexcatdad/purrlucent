@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "./badge.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Text/Badge",
@@ -45,10 +46,12 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    html`<div style=${row}>
-      <pl-badge>Draft</pl-badge>
-      <pl-badge variant="accent">New</pl-badge>
-      <pl-badge variant="destructive">Failed</pl-badge>
-    </div>`,
+    underGlass(
+      html`<div style=${row}>
+        <pl-badge>Draft</pl-badge>
+        <pl-badge variant="accent">New</pl-badge>
+        <pl-badge variant="destructive">Failed</pl-badge>
+      </div>`,
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "./avatar.ts";
 import type { PlAvatar } from "./avatar.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Cards & Lists/Avatar",
@@ -87,9 +88,11 @@ export const Semantics: Story = {
 
 export const Glass: Story = {
   render: () =>
-    row([
-      html`<pl-avatar name="Ada Lovelace" src=${photo}></pl-avatar>`,
-      html`<pl-avatar name="Grace Hopper"></pl-avatar>`,
-    ]),
+    underGlass(
+      row([
+        html`<pl-avatar name="Ada Lovelace" src=${photo}></pl-avatar>`,
+        html`<pl-avatar name="Grace Hopper"></pl-avatar>`,
+      ]),
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

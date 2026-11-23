@@ -135,6 +135,19 @@ test("surfaces keep a visible edge under forced colors", async ({ page }) => {
   }
 });
 
+const bodyImage = (page: Page) =>
+  page.evaluate(() => getComputedStyle(document.body).backgroundImage);
+
+test("glass stories paint the backdrop", async ({ page }) => {
+  await openStory(page, "", "foundations-surfaces--glass");
+  expect(await bodyImage(page)).toContain("radial-gradient");
+});
+
+test("solid stories do not", async ({ page }) => {
+  await openStory(page);
+  expect(await bodyImage(page)).toBe("none");
+});
+
 test("aria snapshot", async ({ page }) => {
   const root = await openStory(page);
   await expect(root).toMatchAriaSnapshot(`

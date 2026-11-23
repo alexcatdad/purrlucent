@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "./progress.ts";
 import type { PlProgress } from "./progress.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Feedback/Progress",
@@ -76,9 +77,11 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    column([
-      html`<pl-progress label="Upload" value="50"></pl-progress>`,
-      html`<pl-progress label="Preparing"></pl-progress>`,
-    ]),
+    underGlass(
+      column([
+        html`<pl-progress label="Upload" value="50"></pl-progress>`,
+        html`<pl-progress label="Preparing"></pl-progress>`,
+      ]),
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

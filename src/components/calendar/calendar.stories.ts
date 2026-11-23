@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./calendar.ts";
 import type { PlCalendar } from "./calendar.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Forms/Calendar",
@@ -128,6 +129,8 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    row(html`<pl-calendar id="calendar" value="2026-11-18"></pl-calendar>`),
+    underGlass(
+      row(html`<pl-calendar id="calendar" value="2026-11-18"></pl-calendar>`),
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

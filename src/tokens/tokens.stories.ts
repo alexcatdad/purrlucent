@@ -46,4 +46,5 @@ export const Materials: Story = {
       </div>
     </div>
   `,
+  globals: { material: "glass" },
 };

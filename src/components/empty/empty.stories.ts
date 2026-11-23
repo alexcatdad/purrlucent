@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
 import "./empty.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "Feedback/Empty",
@@ -50,6 +51,6 @@ export const Rtl: Story = {
 };
 
 export const Glass: Story = {
-  render: () => full,
+  render: () => underGlass(full),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

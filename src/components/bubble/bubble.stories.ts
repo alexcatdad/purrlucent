@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "./bubble.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
   title: "AI & Chat/Bubble",
@@ -190,12 +191,14 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    column(
-      html`<pl-bubble variant="secondary" align="end"
-          >A secondary bubble</pl-bubble
-        >
-        <pl-bubble variant="outline">An outline bubble</pl-bubble>
-        <pl-bubble variant="muted">A muted bubble</pl-bubble>`,
+    underGlass(
+      column(
+        html`<pl-bubble variant="secondary" align="end"
+            >A secondary bubble</pl-bubble
+          >
+          <pl-bubble variant="outline">An outline bubble</pl-bubble>
+          <pl-bubble variant="muted">A muted bubble</pl-bubble>`,
+      ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };
