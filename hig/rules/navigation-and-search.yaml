@@ -1,0 +1,28 @@
+- id: navigation-and-search/1
+  source: https://developer.apple.com/design/human-interface-guidelines/navigation-and-search
+  rule: Navigation shows where the person is; the current page or section is marked in the navigation itself.
+  check: automated
+  test: "src/components/navigation-menu/navigation-menu.e2e.ts > the current link has aria-current page and the current section's button is marked"
+  layer: components
+- id: navigation-and-search/2
+  source: https://developer.apple.com/design/human-interface-guidelines/navigation-and-search
+  rule: Navigation destinations are reachable by keyboard in a predictable order, and a panel closes without trapping focus.
+  check: automated
+  test: src/components/navigation-menu/navigation-menu.e2e.ts > every link and button is a tab stop, and Tab enters an open panel
+  layer: components
+- id: navigation-and-search/3
+  source: https://developer.apple.com/design/human-interface-guidelines/navigation-and-search
+  rule: Navigation is a named landmark, so assistive technology can jump to it.
+  check: automated
+  test: src/components/navigation-menu/navigation-menu.e2e.ts > the menu is a navigation landmark with the given label
+  layer: components
+- id: navigation-and-search/4
+  source: https://developer.apple.com/design/human-interface-guidelines/navigation-and-search
+  rule: The hierarchy stays shallow; a navigation panel holds one level of links, not nested panels.
+  check: rubric
+  layer: components
+- id: navigation-and-search/5
+  source: https://developer.apple.com/design/human-interface-guidelines/navigation-and-search
+  rule: Navigation labels are short and name the destination, so people choose without opening every panel.
+  check: rubric
+  layer: components
