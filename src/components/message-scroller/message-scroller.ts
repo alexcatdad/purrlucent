@@ -418,7 +418,9 @@ export class PlMessageScroller extends LitElement {
     };
     this.scrollTo({ top: top(), behavior: "instant" });
     // Rows skipped by content-visibility get their real size once seen, and
-    // scroll anchoring may move the offset meanwhile; correct until it settles.
+    // scroll anchoring may move the offset meanwhile; an end or an anchor is
+    // corrected until it settles. The start never moves.
+    if (this.defaultScrollPosition === "start") return;
     this.#settle(top, () => {
       this.#measure();
       this.#sync();
