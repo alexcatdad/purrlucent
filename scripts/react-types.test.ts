@@ -14,7 +14,15 @@ const types = reactTypes({
             { fieldName: "disabled" },
             { fieldName: "_labelled" },
           ],
-          events: [{ name: "purr-change" }, { name: "name" }],
+          events: [
+            { name: "purr-change", type: { text: "CustomEvent" } },
+            {
+              name: "purr-change",
+              type: { text: "CustomEvent<{ value: string }>" },
+            },
+            { name: "purr-input" },
+            { name: "name" },
+          ],
         },
         { name: "PurrOption", tagName: "purr-option" },
         { name: "helper" },
@@ -33,20 +41,18 @@ test("each element imports its class from the emitted declarations", () => {
   expect(types).not.toContain("helper");
 });
 
-test("public attributes become props and events become on<event> props", () => {
+test("public attributes become props and typed events become on<event> props", () => {
   expect(types).toContain(
-    '"purr-select": PurrElement<PurrSelect, "value" | "disabled", "purr-change">;',
+    '"purr-select": PurrElement<PurrSelect, "value" | "disabled", { "purr-change": CustomEvent<{ value: string }>; "purr-input": CustomEvent }>;',
   );
   expect(types).not.toContain("_labelled");
   expect(types).toContain(
-    "[K in V as `on${K}`]?: (event: CustomEvent) => void;",
+    "[K in keyof V as `on${K & string}`]?: (event: V[K]) => void;",
   );
 });
 
-test("an element with no attributes or events gets never", () => {
-  expect(types).toContain(
-    '"purr-option": PurrElement<PurrOption, never, never>;',
-  );
+test("an element with no attributes or events gets none", () => {
+  expect(types).toContain('"purr-option": PurrElement<PurrOption, never, {}>;');
 });
 
 test("the types extend React's JSX namespace", () => {

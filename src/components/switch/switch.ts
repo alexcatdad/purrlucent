@@ -21,7 +21,7 @@ import { switchStyles } from "./switch.css.ts";
  * @csspart track - The groove.
  * @csspart thumb - The knob.
  * @csspart label - The wrapper around the label.
- * @fires purr-change - The user turned the switch on or off. `detail.checked` holds the new state.
+ * @fires {CustomEvent<{ checked: boolean }>} purr-change - The user turned the switch on or off. `detail.checked` holds the new state.
  * @fires input - After purr-change, as a native switch fires it.
  * @fires change - After input, as a native switch fires it.
  */

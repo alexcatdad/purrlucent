@@ -95,7 +95,7 @@ export class PurrOption extends LitElement {
  * @csspart value - The chosen label or the placeholder.
  * @csspart glyph - The up-down arrows.
  * @csspart listbox - The popup.
- * @fires purr-change - The user chose another option. `detail.value` holds its value.
+ * @fires {CustomEvent<{ value: string }>} purr-change - The user chose another option. `detail.value` holds its value.
  * @fires input - After purr-change, as a native select fires it.
  * @fires change - After input, as a native select fires it.
  */

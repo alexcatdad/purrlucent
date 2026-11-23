@@ -13,7 +13,7 @@ type Declaration = {
   name: string;
   tagName?: string;
   attributes?: { fieldName?: string }[];
-  events?: { name: string }[];
+  events?: { name: string; type?: { text: string } }[];
 };
 export type Manifest = {
   modules: { path: string; declarations?: Declaration[] }[];
@@ -40,16 +40,17 @@ export function reactTypes(manifest: Manifest): string {
         ),
       ];
       // The analyzer also lists a helper's `new CustomEvent(name)` as an event
-      // named "name"; every real event is purr-*.
-      const events = [
-        ...new Set(
-          (d.events ?? [])
-            .map((e) => e.name)
-            .filter((n) => n.startsWith("purr-")),
-        ),
-      ];
+      // named "name"; every real event is purr-*. Its type comes from the
+      // `@fires {CustomEvent<…>}` tag; an untyped one is a plain CustomEvent.
+      const events = new Map<string, string>();
+      for (const e of d.events ?? [])
+        if (e.name.startsWith("purr-") && !events.get(e.name)?.includes("<"))
+          events.set(e.name, e.type?.text || "CustomEvent");
+      const map = [...events].map(
+        ([name, type]) => `${JSON.stringify(name)}: ${type}`,
+      );
       entries.push(
-        `      "${d.tagName}": PurrElement<${d.name}, ${union(props)}, ${union(events)}>;`,
+        `      "${d.tagName}": PurrElement<${d.name}, ${union(props)}, ${map.length ? `{ ${map.join("; ")} }` : "{}"}>;`,
       );
     }
   }
@@ -59,10 +60,10 @@ export function reactTypes(manifest: Manifest): string {
 import type { HTMLAttributes, RefAttributes } from "react";
 ${[...new Set(imports)].join("\n")}
 
-type PurrElement<E, P extends keyof E, V extends string> = HTMLAttributes<E> &
+type PurrElement<E, P extends keyof E, V> = HTMLAttributes<E> &
   RefAttributes<E> &
   Partial<Pick<E, P>> & {
-    [K in V as \`on\${K}\`]?: (event: CustomEvent) => void;
+    [K in keyof V as \`on\${K & string}\`]?: (event: V[K]) => void;
   };
 
 declare module "react" {

@@ -23,7 +23,7 @@ import { popoverStyles } from "./popover.css.ts";
  * @slot trigger - The control that opens the panel.
  * @csspart panel - The floating panel.
  * @csspart arrow - The arrow pointing at the trigger.
- * @fires purr-toggle - The panel opened or closed. `detail.open` says which.
+ * @fires {CustomEvent<{ open: boolean }>} purr-toggle - The panel opened or closed. `detail.open` says which.
  */
 export class PurrPopover extends LitElement {
   static override styles = popoverStyles;

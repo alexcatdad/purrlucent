@@ -173,7 +173,7 @@ export class PurrMenuLabel extends LitElement {
  * @slot trigger - A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
  * @slot - The `purr-menu-item`, `purr-menu-separator` and `purr-menu-label` children.
  * @csspart menu - The popup.
- * @fires purr-select - An item was activated. `detail.value` holds its value.
+ * @fires {CustomEvent<{ value: string }>} purr-select - An item was activated. `detail.value` holds its value.
  */
 export class PurrMenu extends LitElement {
   static override styles = menuStyles;

@@ -7,7 +7,7 @@ import { toggleStyles } from "./toggle.css.ts";
  * svg icon work the same; an `icon` toggle needs an `aria-label`. The button's
  * `variant`, `type` and `destructive` have no use here.
  *
- * @fires purr-change - A press changed the state. `detail.pressed` holds the new one.
+ * @fires {CustomEvent<{ pressed: boolean }>} purr-change - A press changed the state. `detail.pressed` holds the new one.
  * @slot - The label, with an optional leading svg icon (filled while on).
  * @csspart label - The wrapper around the label.
  */
