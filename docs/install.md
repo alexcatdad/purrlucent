@@ -88,6 +88,17 @@ The package ships type declarations. Each import adds its elements to `HTMLEleme
 
 The package also ships `purrlucent/custom-elements.json`, the Custom Elements Manifest. Editors and frameworks can use it for typings and completion.
 
+### Coding agents
+
+The package ships an agent skill in `node_modules/purrlucent/dist/skills/purrlucent/`: `SKILL.md`, with this guide, the React guide and the component reference beside it, all for the installed version. To load it in Claude Code, link the folder into your project's skills:
+
+```sh
+mkdir -p .claude/skills
+ln -s ../../node_modules/purrlucent/dist/skills/purrlucent .claude/skills/purrlucent
+```
+
+For another agent, add a line to your `AGENTS.md` that points it at `node_modules/purrlucent/dist/skills/purrlucent/SKILL.md`.
+
 ## Upgrade
 
 The version is part of the URL. To upgrade, install again with the new version in the URL.

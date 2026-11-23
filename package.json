@@ -126,7 +126,7 @@
     "./custom-elements.json": "./dist/custom-elements.json"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json && cem analyze && bun scripts/react-types.ts",
+    "build": "vite build && tsc -p tsconfig.build.json && cem analyze && bun scripts/react-types.ts && bun scripts/agent-skill.ts",
     "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\" && bun scripts/style-check.ts",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
