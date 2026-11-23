@@ -1,0 +1,18 @@
+- id: entering-data/1
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: Information the system can supply, such as a one-time code from a message, is offered for autofill instead of being typed.
+  check: automated
+  test: src/components/input-otp/input-otp.e2e.ts > the input asks the system for a one-time code with a numeric keyboard
+  layer: components
+- id: entering-data/2
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: Pasting is supported where entry is possible, so a pasted code fills the whole field and stray spaces and dashes are ignored.
+  check: automated
+  test: src/components/input-otp/input-otp.e2e.ts > spaces and dashes in a pasted code are dropped and extra characters are cut
+  layer: components
+- id: entering-data/3
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: A field that takes only numbers rejects other characters as they are typed.
+  check: automated
+  test: src/components/input-otp/input-otp.e2e.ts > a numeric code takes digits only
+  layer: components

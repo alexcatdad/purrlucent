@@ -130,6 +130,10 @@
       "types": "./dist/types/components/input-group/input-group.d.ts",
       "default": "./dist/input-group.js"
     },
+    "./input-otp": {
+      "types": "./dist/types/components/input-otp/input-otp.d.ts",
+      "default": "./dist/input-otp.js"
+    },
     "./item": {
       "types": "./dist/types/components/item/item.d.ts",
       "default": "./dist/item.js"

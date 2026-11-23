@@ -1,0 +1,24 @@
+# HIG audit: input OTP
+
+Source: [HIG Text fields](https://developer.apple.com/design/human-interface-guidelines/text-fields) and [Entering data](https://developer.apple.com/design/human-interface-guidelines/entering-data), read 2026-11-23. Code: `src/components/input-otp/`, `hig/rules/entering-data.yaml`. Verdicts: **met**, **gap**, **deviation** (deliberate, with a reason), or **needs eyes**. The HIG has no page on one-time codes; the rows below apply its text field and data entry guidance and mark web behavior as such.
+
+## Input OTP (`pl-input-otp`)
+
+| Guideline (HIG wording, shortened)                               | Verdict   | Evidence                                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Get information from the system when possible (one-time codes).  | met       | The input carries `autocomplete="one-time-code"` and a numeric `inputmode` (`input-otp.ts`, render). E2E: "the input asks the system for a one-time code with a numeric keyboard". Rule entering-data/1.                                               |
+| Support paste.                                                   | met       | The value is cleaned of spaces and dashes and cut to `length`, so one paste fills every box. E2E: "a pasted or autofilled code fills every box at once and completes once", "spaces and dashes in a pasted code are dropped...". Rule entering-data/2. |
+| Limit a numeric field to numbers.                                | met       | `inputmode="numeric"` strips non-digits as they are typed. E2E: "a numeric code takes digits only". Rule entering-data/3.                                                                                                                              |
+| Text field: every field has a visible label.                     | met       | Slotted label, or `label` as the accessible name. E2E: "a code field without a label fails axe".                                                                                                                                                       |
+| Text field: show invalid only after interaction, with a message. | met       | `user-invalid` after blur or a blocked submit; the message names the length. E2E: "an incomplete code shows its message after a blur and describes the input with it".                                                                                 |
+| (Platform behavior) Editing keys work as in a text field.        | met       | One native input: arrows, Backspace, selection, IME. The boxes only draw it. E2E: "Backspace and the arrow keys edit as in a text field".                                                                                                              |
+| (Platform behavior) Focus is visible.                            | met       | The active box shows the ring from `--pl-color-ring`; Highlight under forced colors. E2E: "the focus ring is drawn on the active box".                                                                                                                 |
+| (Platform behavior) 44 by 44 targets on touch.                   | met       | Box size is the `--pl-size-*` token, which grows on coarse pointers; the input covers all boxes. E2E: "every box and the input keep a 44 by 44 hit area".                                                                                              |
+| (Platform behavior) Right to left.                               | deviation | The boxes stay left to right, since a code is read as a digit string in every script. The label and message follow the page. E2E: "the boxes read left to right under rtl...".                                                                         |
+| (Platform behavior) Assistive technology reads one field.        | met       | The boxes are `aria-hidden`; a single textbox holds the value. E2E: aria snapshot.                                                                                                                                                                     |
+
+## Not verified
+
+- Nothing was run in a browser; the e2e results above are read from the test files, not executed.
+- Real SMS autofill on iOS and Android was not exercised; only the attributes are checked.
+- The HIG pages were read through their published JSON; images were not viewed.
