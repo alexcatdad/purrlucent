@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
@@ -21,6 +22,8 @@ import { boxStyles, checkboxStyles } from "./checkbox.css.ts";
  * @csspart box - The drawn box.
  * @csspart label - The wrapper around the label.
  * @fires {CustomEvent<{ checked: boolean }>} purr-change - The user changed the box. `detail.checked` holds the new state.
+ * @fires input - After purr-change, as a native checkbox fires it.
+ * @fires change - After input, as a native checkbox fires it.
  */
 export class PurrCheckbox extends LitElement {
   static formAssociated = true;
@@ -42,6 +45,8 @@ export class PurrCheckbox extends LitElement {
   declare size: "md" | "lg" | "xl";
   declare required: boolean;
   declare disabled: boolean;
+  /** Always `checkbox`, as on a native checkbox, so form libraries read `checked`. */
+  readonly type = "checkbox";
 
   // :disabled also covers a disabled fieldset around the checkbox. Space
   // toggles it; Enter does not, as with a native checkbox.
@@ -70,6 +75,7 @@ export class PurrCheckbox extends LitElement {
           composed: true,
         }),
       );
+      fireNative(this, "input", "change");
     });
   }
 

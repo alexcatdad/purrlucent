@@ -5,6 +5,7 @@ import {
   syncFieldMessage,
 } from "../../behaviors/field-message.ts";
 import { labelText } from "../../behaviors/labels.ts";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { textareaStyles } from "./textarea.css.ts";
 
 /**
@@ -35,6 +36,8 @@ import { textareaStyles } from "./textarea.css.ts";
  * @csspart message - The icon and validation message below the field while it is invalid.
  * @fires {CustomEvent<{ value: string }>} purr-input - The value changed through editing. `detail.value` holds it.
  * @fires {CustomEvent<{ value: string }>} purr-change - The value was committed (blur after an edit). `detail.value` holds it.
+ * @fires input - After each purr-input, as a native textarea fires it.
+ * @fires change - After each purr-change, as a native textarea fires it.
  */
 export class PurrTextarea extends LitElement {
   static formAssociated = true;
@@ -210,6 +213,8 @@ export class PurrTextarea extends LitElement {
     this.#touched = true;
     this.#sync();
     this.#emit("purr-change");
+    // The inner textarea's change event stays in the shadow root.
+    fireNative(this, "change");
   };
 
   #onBlur = () => {

@@ -6,6 +6,7 @@ import {
 } from "../../behaviors/field-message.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { numberFieldStyles } from "./number-field.css.ts";
 import {
   PAGE_STEPS,
@@ -78,6 +79,8 @@ const optionalNumber = {
  * @csspart message - The icon and validation message below the field while it is invalid.
  * @fires {CustomEvent<{ value: number | null }>} purr-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
  * @fires {CustomEvent<{ value: number | null }>} purr-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
+ * @fires input - After each purr-input, as a native input fires it.
+ * @fires change - After each purr-change, as a native input fires it.
  */
 export class PurrNumberField extends LitElement {
   static formAssociated = true;
@@ -307,7 +310,9 @@ export class PurrNumberField extends LitElement {
     input.value = this.#text;
     this.#touched = true;
     this.#sync();
-    if (changed) this.#emit("purr-change");
+    if (!changed) return;
+    this.#emit("purr-change");
+    fireNative(this, "change");
   }
 
   /** Moves to a new value from the current text; false when nothing changed. */
@@ -319,9 +324,12 @@ export class PurrNumberField extends LitElement {
     this.value = next;
     input.value = this.#text;
     this.#sync();
+    // The inner input fires its own input event only when typed into.
     if (changed) {
       this.#emit("purr-input");
+      fireNative(this, "input");
       this.#emit("purr-change");
+      fireNative(this, "change");
     }
     return changed;
   }

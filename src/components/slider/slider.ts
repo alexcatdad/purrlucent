@@ -1,4 +1,5 @@
 import { LitElement, html, type PropertyValues } from "lit";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { sliderStyles } from "./slider.css.ts";
 import {
   currentValue,
@@ -31,6 +32,8 @@ import {
  * @csspart thumb - The knob.
  * @fires {CustomEvent<{ value: number }>} purr-input - The value changed while dragging or on a key. `detail.value` holds it.
  * @fires {CustomEvent<{ value: number }>} purr-change - The user committed a changed value, on release or on a key. `detail.value` holds it.
+ * @fires input - After each purr-input, as a native range input fires it.
+ * @fires change - After each purr-change, as a native range input fires it.
  */
 export class PurrSlider extends LitElement {
   static formAssociated = true;
@@ -127,6 +130,7 @@ export class PurrSlider extends LitElement {
         composed: true,
       }),
     );
+    fireNative(this, name === "purr-input" ? "input" : "change");
   }
 
   #set(value: number) {

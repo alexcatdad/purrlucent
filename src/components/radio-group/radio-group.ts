@@ -1,4 +1,5 @@
 import { LitElement, html, type PropertyValues } from "lit";
+import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
@@ -119,6 +120,8 @@ export class PurrRadio extends LitElement {
  * @attr {boolean} disabled - Disables every radio: no focus, no feedback, nothing submitted.
  * @slot - `purr-radio` elements.
  * @fires {CustomEvent<{ selected: string[] }>} purr-change - The user chose a radio. `detail.selected` is a one-item array of its value.
+ * @fires input - After purr-change, as a native radio fires it.
+ * @fires change - After input, as a native radio fires it.
  */
 export class PurrRadioGroup extends LitElement {
   static formAssociated = true;
@@ -169,9 +172,15 @@ export class PurrRadioGroup extends LitElement {
       if (selected !== undefined) this.value = selected;
     });
     this.addEventListener("purr-press", (event) => {
-      if (event.target instanceof PurrRadio)
-        this.#selection.select(event.target.value);
+      if (event.target instanceof PurrRadio) this.#choose(event.target.value);
     });
+  }
+
+  /** The user's choice; the native events follow purr-change, as on a native radio. */
+  #choose(value: string) {
+    const before = this.value;
+    this.#selection.select(value);
+    if (this.value !== before) fireNative(this, "input", "change");
   }
 
   get #enabled() {
@@ -220,7 +229,7 @@ export class PurrRadioGroup extends LitElement {
       enabled[(from + step + enabled.length) % enabled.length]!.focus();
     } else if (!event.defaultPrevented || !MOVES.has(event.key)) return;
     const focused = enabled.find((r) => r.matches(":focus"));
-    if (focused) this.#selection.select(focused.value);
+    if (focused) this.#choose(focused.value);
   };
 
   #onSlotChange = (event: Event) => {
