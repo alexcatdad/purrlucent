@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-item--${name}`;
+const story = (name: string) => `cards-lists-item--${name}`;
 
 test("aria snapshot of a link row", async ({ page }) => {
   const root = await gotoStory(page, story("link"));

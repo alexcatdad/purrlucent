@@ -4,7 +4,7 @@ import "../button/button.ts";
 import "./hover-card.ts";
 
 const meta = {
-  title: "Components/Hover Card",
+  title: "Dialogs/Hover Card",
   component: "pl-hover-card",
 } satisfies Meta;
 

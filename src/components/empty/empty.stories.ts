@@ -4,7 +4,7 @@ import "../button/button.ts";
 import "./empty.ts";
 
 const meta = {
-  title: "Components/Empty",
+  title: "Feedback/Empty",
   component: "pl-empty",
 } satisfies Meta;
 

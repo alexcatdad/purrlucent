@@ -6,7 +6,7 @@ import "./banner.ts";
 import type { PlBanner } from "./banner.ts";
 
 const meta = {
-  title: "Components/Banner",
+  title: "Feedback/Banner",
   component: "pl-banner",
 } satisfies Meta;
 

@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-marker--${name}`;
+const story = (name: string) => `text-marker--${name}`;
 
 const label = (page: import("@playwright/test").Page) =>
   page.locator("pl-marker [part=label]").first();

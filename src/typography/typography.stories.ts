@@ -8,7 +8,7 @@ const sheet = proseStyles.styleSheet!;
 if (!document.adoptedStyleSheets.includes(sheet))
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
-const meta = { title: "Typography" } satisfies Meta;
+const meta = { title: "Foundations/Typography" } satisfies Meta;
 
 export default meta;
 

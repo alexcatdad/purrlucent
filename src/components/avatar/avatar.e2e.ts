@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-avatar--${name}`;
+const story = (name: string) => `cards-lists-avatar--${name}`;
 
 test("aria snapshot", async ({ page }) => {
   const root = await gotoStory(page, story("default"));

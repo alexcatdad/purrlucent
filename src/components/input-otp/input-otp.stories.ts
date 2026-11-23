@@ -5,7 +5,7 @@ import "./input-otp.ts";
 import type { PlInputOtp } from "./input-otp.ts";
 
 const meta = {
-  title: "Components/Input OTP",
+  title: "Forms/Input OTP",
   component: "pl-input-otp",
 } satisfies Meta;
 

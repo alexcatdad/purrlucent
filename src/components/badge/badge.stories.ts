@@ -3,7 +3,7 @@ import { html } from "lit";
 import "./badge.ts";
 
 const meta = {
-  title: "Components/Badge",
+  title: "Text/Badge",
   component: "pl-badge",
 } satisfies Meta;
 

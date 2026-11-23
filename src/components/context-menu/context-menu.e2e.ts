@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-context-menu--${name}`;
+const story = (name: string) => `menus-context-menu--${name}`;
 
 const area = (page: Page) => page.locator("#area");
 const file = (page: Page) => page.getByRole("button", { name: "Report.pdf" });

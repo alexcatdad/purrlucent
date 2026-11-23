@@ -5,7 +5,7 @@ import "./progress.ts";
 import type { PlProgress } from "./progress.ts";
 
 const meta = {
-  title: "Components/Progress",
+  title: "Feedback/Progress",
   component: "pl-progress",
 } satisfies Meta;
 

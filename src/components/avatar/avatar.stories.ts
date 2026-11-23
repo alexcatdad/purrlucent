@@ -5,7 +5,7 @@ import "./avatar.ts";
 import type { PlAvatar } from "./avatar.ts";
 
 const meta = {
-  title: "Components/Avatar",
+  title: "Cards & Lists/Avatar",
   component: "pl-avatar",
 } satisfies Meta;
 

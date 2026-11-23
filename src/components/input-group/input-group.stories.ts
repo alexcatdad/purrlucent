@@ -8,7 +8,7 @@ import "../textarea/textarea.ts";
 import "./input-group.ts";
 
 const meta = {
-  title: "Components/Input Group",
+  title: "Forms/Input Group",
   component: "pl-input-group",
 } satisfies Meta;
 

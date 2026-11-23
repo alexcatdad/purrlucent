@@ -5,7 +5,7 @@ import "./select.ts";
 import type { PlSelect } from "./select.ts";
 
 const meta = {
-  title: "Components/Select",
+  title: "Forms/Select",
   component: "pl-select",
 } satisfies Meta;
 

@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-popover--${name}`;
+const story = (name: string) => `dialogs-popover--${name}`;
 
 const trigger = (page: Page, scope = "") =>
   page.locator(`${scope} pl-button[slot=trigger]`.trim());

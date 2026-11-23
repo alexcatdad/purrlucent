@@ -9,7 +9,7 @@ test("screen reader announces each button as a button with its label", async ({
   page,
   screenReader,
 }) => {
-  await gotoStory(page, "components-button--variants");
+  await gotoStory(page, "actions-button--variants");
   await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);

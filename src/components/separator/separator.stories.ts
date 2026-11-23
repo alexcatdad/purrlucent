@@ -5,7 +5,7 @@ import "./separator.ts";
 import type { PlSeparator } from "./separator.ts";
 
 const meta = {
-  title: "Components/Separator",
+  title: "Containers/Separator",
   component: "pl-separator",
 } satisfies Meta;
 

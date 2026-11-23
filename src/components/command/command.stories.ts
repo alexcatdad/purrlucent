@@ -8,7 +8,7 @@ import type { PlCommand } from "./command.ts";
 import type { PlDialog } from "../dialog/dialog.ts";
 
 const meta = {
-  title: "Components/Command",
+  title: "Menus/Command",
   component: "pl-command",
 } satisfies Meta;
 

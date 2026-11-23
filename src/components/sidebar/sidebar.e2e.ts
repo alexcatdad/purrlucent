@@ -19,7 +19,7 @@ const open = async (page: Page, story = "default", globals = "") => {
       ],
     });
   }
-  return gotoStory(page, `components-sidebar--${story}`, globals);
+  return gotoStory(page, `navigation-sidebar--${story}`, globals);
 };
 
 /** Shows the sidebar where it collapses on its own (600px or less). */
@@ -600,7 +600,7 @@ test("the selected item gets a stroke under increased contrast", async ({
   await open(page);
   // Set before a load: Firefox does not restyle a loaded page for it.
   await page.emulateMedia({ contrast: "more" });
-  await gotoStory(page, "components-sidebar--default");
+  await gotoStory(page, "navigation-sidebar--default");
   const edge = (id: string) =>
     page
       .locator(`#${id} a`)

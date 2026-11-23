@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-banner--${name}`;
+const story = (name: string) => `feedback-banner--${name}`;
 
 const close = (page: Page) => page.getByRole("button", { name: "Dismiss" });
 

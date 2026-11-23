@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-pagination--default";
+const story = "navigation-pagination--default";
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
@@ -52,7 +52,7 @@ test("Previous is disabled at the first page and Next at the last", async ({
     page.getByRole("button", { name: "Previous page" }),
   ).toBeDisabled();
   await expect(page.getByRole("button", { name: "Next page" })).toBeEnabled();
-  await open(page, "components-pagination--last-page");
+  await open(page, "navigation-pagination--last-page");
   await expect(page.getByRole("button", { name: "Next page" })).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Previous page" }),
@@ -60,7 +60,7 @@ test("Previous is disabled at the first page and Next at the last", async ({
 });
 
 test("a long range stays seven items wide with ellipses", async ({ page }) => {
-  await open(page, "components-pagination--many");
+  await open(page, "navigation-pagination--many");
   const control = page.locator("pl-pagination");
   await expect(control.locator(".control[part~=page]")).toHaveText([
     "1",
@@ -121,7 +121,7 @@ test("Tab reaches the pages in order and Enter activates one", async ({
 test("with href-template the pages are links with addresses", async ({
   page,
 }) => {
-  await open(page, "components-pagination--links");
+  await open(page, "navigation-pagination--links");
   const link = (name: string) => page.getByRole("link", { name, exact: true });
   await expect(link("3")).toHaveAttribute("href", "#/posts?page=3");
   await expect(link("3")).toHaveAttribute("aria-current", "page");
@@ -135,7 +135,7 @@ test("with href-template the pages are links with addresses", async ({
 });
 
 test("a link click with a modifier key changes nothing", async ({ page }) => {
-  await open(page, "components-pagination--links");
+  await open(page, "navigation-pagination--links");
   await record(page);
   await page
     .getByRole("link", { name: "5", exact: true })
@@ -165,7 +165,7 @@ test("a page out of range is clamped and the label can be changed", async ({
 });
 
 test("under rtl the first page is at the right edge", async ({ page }) => {
-  await open(page, "components-pagination--rtl");
+  await open(page, "navigation-pagination--rtl");
   const [first, last] = await Promise.all(
     ["1", "20"].map((name) => item(page, name).boundingBox()),
   );
@@ -208,13 +208,13 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
     page,
   }) => {
     await expectAccessible(
-      await open(page, "components-pagination--many", globals),
+      await open(page, "navigation-pagination--many", globals),
     );
   });
 }
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(
-    await open(page, "components-pagination--many"),
+    await open(page, "navigation-pagination--many"),
   );
 });

@@ -6,7 +6,7 @@ import {
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 import type { PlMessageScroller } from "./message-scroller.ts";
 
-const story = (name: string) => `components-message-scroller--${name}`;
+const story = (name: string) => `ai-chat-message-scroller--${name}`;
 
 const scroller = (page: Page) => page.locator("#scroller");
 

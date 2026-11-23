@@ -3,7 +3,7 @@ import { html } from "lit";
 import "./aspect-ratio.ts";
 
 const meta = {
-  title: "Components/Aspect Ratio",
+  title: "Containers/Aspect Ratio",
   component: "pl-aspect-ratio",
 } satisfies Meta;
 

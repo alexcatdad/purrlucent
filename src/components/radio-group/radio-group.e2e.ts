@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-radio-group--${name}`;
+const story = (name: string) => `forms-radio-group--${name}`;
 
 const chosen = (page: Page, id = "#control") =>
   page.locator(id).evaluate((el) => (el as HTMLInputElement).value);

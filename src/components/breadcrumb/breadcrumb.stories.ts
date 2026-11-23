@@ -4,7 +4,7 @@ import { expect } from "storybook/test";
 import "./breadcrumb.ts";
 
 const meta = {
-  title: "Components/Breadcrumb",
+  title: "Navigation/Breadcrumb",
   component: "pl-breadcrumb",
 } satisfies Meta;
 

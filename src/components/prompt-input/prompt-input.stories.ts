@@ -4,7 +4,7 @@ import "../button/button.ts";
 import "./prompt-input.ts";
 
 const meta = {
-  title: "Components/Prompt Input",
+  title: "AI & Chat/Prompt Input",
   component: "pl-prompt-input",
 } satisfies Meta;
 

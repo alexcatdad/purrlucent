@@ -4,7 +4,7 @@ import { expect, userEvent, waitFor } from "storybook/test";
 import "./pagination.ts";
 import type { PlPagination } from "./pagination.ts";
 
-const meta = { title: "Components/Pagination" } satisfies Meta;
+const meta = { title: "Navigation/Pagination" } satisfies Meta;
 
 export default meta;
 

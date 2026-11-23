@@ -4,7 +4,7 @@ import { expect, userEvent, waitFor } from "storybook/test";
 import "./collapsible.ts";
 import type { PlCollapsible } from "./collapsible.ts";
 
-const meta = { title: "Components/Collapsible" } satisfies Meta;
+const meta = { title: "Containers/Collapsible" } satisfies Meta;
 
 export default meta;
 

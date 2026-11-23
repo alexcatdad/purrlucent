@@ -6,7 +6,7 @@ import type { PlScrollArea } from "./scroll-area.ts";
 import "../button/button.ts";
 
 const meta = {
-  title: "Components/Scroll Area",
+  title: "Containers/Scroll Area",
   component: "pl-scroll-area",
 } satisfies Meta;
 

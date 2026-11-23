@@ -5,7 +5,7 @@ import "../avatar/avatar.ts";
 import "./skeleton.ts";
 
 const meta = {
-  title: "Components/Skeleton",
+  title: "Feedback/Skeleton",
   component: "pl-skeleton",
 } satisfies Meta;
 

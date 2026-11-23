@@ -5,7 +5,7 @@ import "./input.ts";
 import type { PlInput } from "./input.ts";
 
 const meta = {
-  title: "Components/Input",
+  title: "Forms/Input",
   component: "pl-input",
 } satisfies Meta;
 

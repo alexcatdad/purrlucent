@@ -5,7 +5,7 @@ import "./switch.ts";
 import type { PlSwitch } from "./switch.ts";
 
 const meta = {
-  title: "Components/Switch",
+  title: "Forms/Switch",
   component: "pl-switch",
 } satisfies Meta;
 

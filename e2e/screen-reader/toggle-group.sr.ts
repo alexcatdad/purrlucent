@@ -9,7 +9,7 @@ test("screen reader speaks each segment and the selected one", async ({
   page,
   screenReader,
 }) => {
-  await gotoStory(page, "components-toggle-group--default");
+  await gotoStory(page, "actions-toggle-group--default");
   await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);

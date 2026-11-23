@@ -39,7 +39,7 @@ const openMaterials = async (
 ) => {
   if (test.info().project.name === "chromium")
     await emulateTransparency(page, "no-preference");
-  await gotoStory(page, "tokens--materials", `theme:${theme}`);
+  await gotoStory(page, "foundations-tokens--materials", `theme:${theme}`);
   // The preview decorator resets the attribute on render; set ours after it.
   await page.locator("#bar").waitFor();
   await page.evaluate(
@@ -217,7 +217,7 @@ test("every text role meets 4.5:1 against background in all four color schemes",
   page,
   browserName,
 }) => {
-  await gotoStory(page, "tokens--palette");
+  await gotoStory(page, "foundations-tokens--palette");
   for (const scheme of colorSchemes) {
     const more = scheme.contrast === "more";
     // FIREFOX_CONTRAST_BUG: Firefox would check the default values again.
@@ -264,7 +264,7 @@ test("the Storybook theme global switches token colors while the OS stays light"
 }) => {
   await page.emulateMedia({ colorScheme: "light" });
   const barBackground = async (theme: string) => {
-    await gotoStory(page, "tokens--materials", `theme:${theme}`);
+    await gotoStory(page, "foundations-tokens--materials", `theme:${theme}`);
     return page
       .locator("#bar")
       .evaluate((el) => getComputedStyle(el).backgroundColor);

@@ -5,7 +5,7 @@ import "../button/button.ts";
 import "./carousel.ts";
 import type { PlCarousel } from "./carousel.ts";
 
-const meta = { title: "Components/Carousel" } satisfies Meta;
+const meta = { title: "Containers/Carousel" } satisfies Meta;
 
 export default meta;
 

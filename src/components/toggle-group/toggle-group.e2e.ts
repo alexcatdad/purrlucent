@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-toggle-group--default";
+const story = "actions-toggle-group--default";
 
 const selectedValue = (page: Page) =>
   page.locator("#control").evaluate((el) => (el as HTMLInputElement).value);
@@ -30,7 +30,7 @@ test("aria snapshot", async ({ page }) => {
 test("Tab enters on the selected segment, arrows move and select", async ({
   page,
 }) => {
-  await open(page, "components-toggle-group--preselected");
+  await open(page, "actions-toggle-group--preselected");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("radio", { name: "Month" })).toBeFocused();
   await page.keyboard.press("ArrowRight"); // wraps to the first
@@ -125,7 +125,7 @@ test("a selection is required: the selected segment cannot be cleared", async ({
   await expect.poll(() => selectedValue(page)).toBe("day");
 });
 
-const formId = "components-toggle-group--in-form";
+const formId = "actions-toggle-group--in-form";
 
 const submitted = (page: Page) =>
   page
@@ -179,7 +179,7 @@ test("a disabled fieldset disables the group and submits nothing", async ({
 test("a disabled group has no tab stop and fires no pl-change", async ({
   page,
 }) => {
-  await open(page, "components-toggle-group--disabled");
+  await open(page, "actions-toggle-group--disabled");
   const changes = await page.locator("#control").evaluate(async (el) => {
     let count = 0;
     el.addEventListener("pl-change", () => count++);
@@ -202,7 +202,7 @@ test("a disabled group has no tab stop and fires no pl-change", async ({
 test("a disabled segment is skipped by arrows and ignores clicks", async ({
   page,
 }) => {
-  await open(page, "components-toggle-group--disabled-item");
+  await open(page, "actions-toggle-group--disabled-item");
   const week = page.getByRole("radio", { name: "Week" });
   await expect(week).toBeDisabled();
   await page.keyboard.press("Tab");
@@ -273,7 +273,7 @@ test("a programmatic value change moves the selection without pl-change", async 
 test("under rtl, ArrowLeft selects the next segment and ArrowRight the previous", async ({
   page,
 }) => {
-  await open(page, "components-toggle-group--rtl");
+  await open(page, "actions-toggle-group--rtl");
   await page.keyboard.press("Tab");
   await page.keyboard.press("ArrowLeft");
   expect(await selectedValue(page)).toBe("week");
@@ -314,7 +314,7 @@ test("the selected segment stays visible under forced colors", async ({
 test("under forced colors a disabled selected segment still differs from the others", async ({
   page,
 }) => {
-  await open(page, "components-toggle-group--disabled");
+  await open(page, "actions-toggle-group--disabled");
   await page.emulateMedia({ forcedColors: "active" });
   const face = (name: string) =>
     page
@@ -360,7 +360,7 @@ test("a one-character segment keeps the per-size minimum width", async ({
 test("an icon-only segment is named by aria-label and fills its column", async ({
   page,
 }) => {
-  const root = await open(page, "components-toggle-group--icons");
+  const root = await open(page, "actions-toggle-group--icons");
   await expect(root).toMatchAriaSnapshot(`
     - radiogroup "Text alignment":
       - radio "Align left" [checked]

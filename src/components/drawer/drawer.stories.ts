@@ -6,7 +6,7 @@ import "./drawer.ts";
 import type { PlDrawer } from "./drawer.ts";
 
 const meta = {
-  title: "Components/Drawer",
+  title: "Dialogs/Drawer",
   component: "pl-drawer",
 } satisfies Meta;
 

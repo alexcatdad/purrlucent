@@ -6,7 +6,7 @@ import "./popover.ts";
 import type { PlPopover } from "./popover.ts";
 
 const meta = {
-  title: "Components/Popover",
+  title: "Dialogs/Popover",
   component: "pl-popover",
 } satisfies Meta;
 

@@ -5,7 +5,7 @@ import "./toggle.ts";
 import type { PlToggle } from "./toggle.ts";
 
 const meta = {
-  title: "Components/Toggle",
+  title: "Actions/Toggle",
   component: "pl-toggle",
 } satisfies Meta;
 

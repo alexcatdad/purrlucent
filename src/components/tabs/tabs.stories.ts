@@ -4,7 +4,7 @@ import { expect, userEvent } from "storybook/test";
 import "./tabs.ts";
 import type { PlTabs } from "./tabs.ts";
 
-const meta = { title: "Components/Tabs" } satisfies Meta;
+const meta = { title: "Navigation/Tabs" } satisfies Meta;
 
 export default meta;
 

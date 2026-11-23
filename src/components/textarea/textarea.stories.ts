@@ -5,7 +5,7 @@ import "./textarea.ts";
 import type { PlTextarea } from "./textarea.ts";
 
 const meta = {
-  title: "Components/Text area",
+  title: "Forms/Text Area",
   component: "pl-textarea",
 } satisfies Meta;
 

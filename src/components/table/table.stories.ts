@@ -4,7 +4,7 @@ import { expect, waitFor } from "storybook/test";
 import "./table.ts";
 import type { PlTable } from "./table.ts";
 
-const meta = { title: "Components/Table" } satisfies Meta;
+const meta = { title: "Data/Table" } satisfies Meta;
 
 export default meta;
 

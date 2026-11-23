@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-table--default";
+const story = "data-table--default";
 
 const open = async (page: import("@playwright/test").Page, id = story) => {
   const root = await gotoStory(page, id);
@@ -63,7 +63,7 @@ test("a table that fits has no tab stop", async ({ page }) => {
 test("an overflowing table is a named region the keyboard reaches and scrolls", async ({
   page,
 }) => {
-  await open(page, "components-table--overflow");
+  await open(page, "data-table--overflow");
   const scroller = page.getByRole("region", { name: "Pioneers" });
   await expect(scroller).toHaveAttribute("tabindex", "0");
   await page.keyboard.press("Tab");
@@ -77,14 +77,14 @@ test("an overflowing table is a named region the keyboard reaches and scrolls", 
 test("label names the scroll area when there is no caption", async ({
   page,
 }) => {
-  await open(page, "components-table--labelled");
+  await open(page, "data-table--labelled");
   await expect(page.getByRole("region", { name: "Pioneers" })).toBeVisible();
 });
 
 test("the sticky header stays at the top of the scroll area", async ({
   page,
 }) => {
-  await open(page, "components-table--sticky-header");
+  await open(page, "data-table--sticky-header");
   const scroller = page.getByRole("region", { name: "Pioneers" });
   await scroller.evaluate((el) => (el.scrollTop = 40));
   const header = page.getByRole("columnheader", { name: "Name" });
@@ -96,7 +96,7 @@ test("the sticky header stays at the top of the scroll area", async ({
 });
 
 test("under rtl the first column is on the right", async ({ page }) => {
-  await open(page, "components-table--rtl");
+  await open(page, "data-table--rtl");
   const [name, role] = await Promise.all(
     ["Name", "Role"].map((n) =>
       page.getByRole("columnheader", { name: n }).boundingBox(),
@@ -138,7 +138,7 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
 }
 
 test("axe finds no violations in an overflowing table", async ({ page }) => {
-  await expectAccessible(await open(page, "components-table--overflow"));
+  await expectAccessible(await open(page, "data-table--overflow"));
 });
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {

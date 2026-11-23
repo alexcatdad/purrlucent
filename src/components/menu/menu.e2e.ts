@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-menu--${name}`;
+const story = (name: string) => `menus-menu--${name}`;
 
 const trigger = (page: Page, name = "Edit") =>
   page.getByRole("button", { name });

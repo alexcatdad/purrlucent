@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-command--${name}`;
+const story = (name: string) => `menus-command--${name}`;
 
 const search = (page: Page) => page.getByRole("combobox", { name: "Commands" });
 const item = (page: Page, value: string) =>

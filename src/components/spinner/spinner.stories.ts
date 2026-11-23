@@ -6,7 +6,7 @@ import "./spinner.ts";
 import type { PlSpinner } from "./spinner.ts";
 
 const meta = {
-  title: "Components/Spinner",
+  title: "Feedback/Spinner",
   component: "pl-spinner",
 } satisfies Meta;
 

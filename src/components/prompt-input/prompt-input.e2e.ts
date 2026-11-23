@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-prompt-input--${name}`;
+const story = (name: string) => `ai-chat-prompt-input--${name}`;
 
 const field = (root: Locator) => root.getByRole("textbox", { name: "Message" });
 

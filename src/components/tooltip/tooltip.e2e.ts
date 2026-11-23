@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-tooltip--${name}`;
+const story = (name: string) => `dialogs-tooltip--${name}`;
 
 const target = (page: Page, scope = "") =>
   page.locator(`${scope} pl-button`.trim());

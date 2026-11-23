@@ -30,7 +30,7 @@ class PlInteractionHost extends LitElement {
 
 customElements.define("pl-interaction-host", PlInteractionHost);
 
-const meta = { title: "Behaviors/Interaction" } satisfies Meta;
+const meta = { title: "Foundations/Interaction" } satisfies Meta;
 
 export default meta;
 

@@ -3,7 +3,7 @@ import { html } from "lit";
 import "./bubble.ts";
 
 const meta = {
-  title: "Components/Bubble",
+  title: "AI & Chat/Bubble",
   component: "pl-bubble",
 } satisfies Meta;
 

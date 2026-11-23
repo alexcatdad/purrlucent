@@ -3,7 +3,7 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "./sidebar.ts";
 
-const meta = { title: "Components/Sidebar" } satisfies Meta;
+const meta = { title: "Navigation/Sidebar" } satisfies Meta;
 
 export default meta;
 
