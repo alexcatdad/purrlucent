@@ -78,6 +78,10 @@
       "types": "./dist/types/components/card/card.d.ts",
       "default": "./dist/card.js"
     },
+    "./chart": {
+      "types": "./dist/types/components/chart/chart.d.ts",
+      "default": "./dist/chart.js"
+    },
     "./checkbox": {
       "types": "./dist/types/components/checkbox/checkbox.d.ts",
       "default": "./dist/checkbox.js"

@@ -1,0 +1,80 @@
+- id: charts/1
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: A chart has an accessible name, and the drawing and its container carry the same one.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > the chart is a figure named by its label, and its drawing carries the same name
+  layer: components
+- id: charts/2
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: A chart without a name is reported to the developer, because its purpose cannot be understood without one.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > a chart without a label warns in the console
+  layer: components
+- id: charts/3
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: A chart can carry a longer description of what it shows, available to assistive technology.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > a description becomes the drawing's accessible description
+  layer: components
+- id: charts/4
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: "Critical information never needs interaction: every value is also in a native table in the page."
+  check: automated
+  test: src/components/chart/chart.e2e.ts > a native table of the same values is in the page for assistive technology
+  layer: components
+- id: charts/5
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: An interactive chart is a single tab stop and its points can be walked with the arrow keys, each one shown in the tooltip.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > the arrow keys move through the points and the tooltip follows
+  layer: components
+- id: charts/6
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: The whole plot area is the hit target, so pointing anywhere over a category selects it.
+  check: rubric
+  layer: components
+- id: charts/7
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Changes in the data are animated only when motion is allowed, and are also in the table and the tooltip.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > under reduced motion new data is drawn at once
+  layer: components
+- id: charts/8
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: "Color is not the only cue: lines carry point markers, series are named in a legend, and the values are in a table."
+  check: rubric
+  layer: components
+- id: charts/9
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Adjacent color areas are separated, such as the gap line between donut slices.
+  check: rubric
+  layer: components
+- id: charts/10
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Series colors come from the palette tokens and agree with the legend, in every color scheme.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > the legend colors are the colors of the drawing, line for line
+  layer: components
+- id: charts/11
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Series colors follow light and dark appearance and are redrawn from tokens, never fixed colors.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > the palette follows the color scheme
+  layer: components
+- id: charts/12
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Under forced colors the series use system colors and the focus ring stays visible.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > under forced colors the series use system colors and keep their focus ring
+  layer: components
+- id: charts/13
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Axis ticks use familiar rounded steps, and grid lines are light enough that the data stays the most prominent part.
+  check: rubric
+  layer: components
+- id: charts/14
+  source: https://developer.apple.com/design/human-interface-guidelines/charts
+  rule: Bar, line, area and donut marks are chosen by what is compared, and a chart's text follows the reading direction.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > under rtl the legend and the table read from the right
+  layer: components

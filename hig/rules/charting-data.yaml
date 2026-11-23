@@ -1,0 +1,34 @@
+- id: charting-data/1
+  source: https://developer.apple.com/design/human-interface-guidelines/charting-data
+  rule: "Every chart is accessible: its values are in a native table and its drawing is named."
+  check: automated
+  test: src/components/chart/chart.e2e.ts > every kind of chart passes axe
+  layer: components
+- id: charting-data/2
+  source: https://developer.apple.com/design/human-interface-guidelines/charting-data
+  rule: When people only need to read the data, not analyze it, a table is offered instead of, or beside, the chart.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > the table stays out of sight until show-table is set
+  layer: components
+- id: charting-data/3
+  source: https://developer.apple.com/design/human-interface-guidelines/charting-data
+  rule: Common chart types come first, and a chart stays simple rather than packing in all the data.
+  check: rubric
+  layer: components
+- id: charting-data/4
+  source: https://developer.apple.com/design/human-interface-guidelines/charting-data
+  rule: Descriptive text states what the chart shows, and it does not replace the accessible name or description.
+  check: rubric
+  layer: components
+- id: charting-data/5
+  source: https://developer.apple.com/design/human-interface-guidelines/charting-data
+  rule: Charts of the same data keep one palette, so a series has the same color wherever it appears.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > series colors come from the palette tokens, not from TanStack's defaults
+  layer: components
+- id: charting-data/6
+  source: https://developer.apple.com/design/human-interface-guidelines/charting-data
+  rule: A chart's text stays readable and does not overflow when text size grows.
+  check: automated
+  test: src/components/chart/chart.e2e.ts > no horizontal overflow at 200% text zoom
+  layer: components
