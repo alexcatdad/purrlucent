@@ -360,6 +360,30 @@ test("under rtl the legend and the table read from the right", async ({
   expect(head.x).toBeGreaterThan(tail.x);
 });
 
+test("chart rtl: January is rightmost", async ({ page }) => {
+  await gotoStory(page, story("rtl"));
+  const centers = await svg(page).evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    const center = (node: Element) => {
+      const r = node.getBoundingClientRect();
+      return r.left + r.width / 2;
+    };
+    const texts = [...el.querySelectorAll("text")];
+    const at = (pattern: RegExp) =>
+      texts.filter((t) => pattern.test(t.textContent!.trim())).map(center);
+    return {
+      jan: at(/^Jan$/)[0],
+      jun: at(/^Jun$/)[0],
+      values: at(/^[\d,.]+$/),
+      middle: box.left + box.width / 2,
+    };
+  });
+  expect(centers.jan).toBeGreaterThan(centers.jun!);
+  // The value axis sits on the right: its labels are right of the middle.
+  expect(centers.values.length).toBeGreaterThan(0);
+  for (const x of centers.values) expect(x).toBeGreaterThan(centers.middle);
+});
+
 test("every kind of chart passes axe", async ({ page }) => {
   for (const name of [
     "default",

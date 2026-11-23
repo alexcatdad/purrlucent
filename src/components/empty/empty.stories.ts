@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
 import "./empty.ts";
+import { isolate } from "../../../.storybook/isolate.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
@@ -19,18 +20,22 @@ const folder = html`<svg slot="icon" viewBox="0 0 24 24" aria-hidden="true">
   />
 </svg>`;
 
-const full = html`<pl-empty>
-  ${folder}
-  <strong slot="title">No projects</strong>
-  <span slot="description"
-    >Projects you create appear here. Create one to get started.</span
-  >
-  <pl-button slot="action" variant="primary" size="lg"
-    >Create project</pl-button
-  >
-</pl-empty>`;
+const full = (rtl = false) =>
+  html`<pl-empty>
+    ${folder}
+    <strong slot="title">No projects</strong>
+    <span slot="description"
+      >${isolate(
+        rtl,
+        "Projects you create appear here. Create one to get started.",
+      )}</span
+    >
+    <pl-button slot="action" variant="primary" size="lg"
+      >Create project</pl-button
+    >
+  </pl-empty>`;
 
-export const Default: Story = { render: () => full };
+export const Default: Story = { render: () => full() };
 
 export const TitleOnly: Story = {
   render: () =>
@@ -46,11 +51,11 @@ export const WithoutIcon: Story = {
 };
 
 export const Rtl: Story = {
-  render: () => full,
+  render: () => full(true),
   globals: { dir: "rtl" },
 };
 
 export const Glass: Story = {
-  render: () => underGlass(full),
+  render: () => underGlass(full()),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

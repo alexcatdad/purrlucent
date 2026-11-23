@@ -28,6 +28,9 @@ export const kbdStyles = css`
     color: var(--pl-color-foreground);
     font: 500 var(--pl-text-xs) / 1 var(--pl-font-sans);
     white-space: nowrap;
+    /* Keys read left to right in every language: ⌘K stays ⌘K. */
+    direction: ltr;
+    unicode-bidi: isolate;
     user-select: none;
   }
 

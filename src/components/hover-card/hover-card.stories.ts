@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "../button/button.ts";
 import "./hover-card.ts";
 
@@ -12,11 +13,12 @@ export default meta;
 
 type Story = StoryObj;
 
-const content = html`<strong style="display:block">Purrlucent</strong>
-  <p style="margin:var(--pl-space-1) 0 var(--pl-space-3)">
-    A Lit component library of elements for the web.
-  </p>
-  <pl-button size="md">View repository</pl-button>`;
+const content = (rtl: boolean) =>
+  html`<strong style="display:block">Purrlucent</strong>
+    <p style="margin:var(--pl-space-1) 0 var(--pl-space-3)">
+      ${isolate(rtl, "A Lit component library of elements for the web.")}
+    </p>
+    <pl-button size="md">View repository</pl-button>`;
 
 // Room on every side, so a card opens where it was asked to.
 const stage = (inner: unknown) =>
@@ -31,6 +33,7 @@ const card = (attrs: {
   placement?: string;
   open?: boolean;
   label?: string;
+  rtl?: boolean;
 }) =>
   html`<pl-hover-card
     id=${attrs.id ?? "card"}
@@ -39,7 +42,7 @@ const card = (attrs: {
     ?open=${attrs.open ?? false}
   >
     <pl-button slot="trigger" variant="tinted">purrlucent</pl-button>
-    ${content}
+    ${content(attrs.rtl ?? false)}
   </pl-hover-card>`;
 
 // Stories that other tests open as they are have no play function.
@@ -82,7 +85,7 @@ export const Placements: Story = {
 };
 
 export const Rtl: Story = {
-  render: () => stage(card({ placement: "start", open: true })),
+  render: () => stage(card({ placement: "start", open: true, rtl: true })),
   globals: { dir: "rtl" },
 };
 

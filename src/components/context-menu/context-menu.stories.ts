@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, waitFor } from "storybook/test";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "../button/button.ts";
 import "../menu/menu.ts";
 import "./context-menu.ts";
@@ -23,14 +24,16 @@ const stage = (inner: unknown) =>
     ${inner}
   </div>`;
 
-const region = (disabled = false) => html`
+const region = (disabled = false, rtl = false) => html`
   <pl-context-menu id="context" ?disabled=${disabled}>
     <div
       id="area"
       style="box-sizing:border-box;display:grid;justify-items:start;gap:var(--pl-space-3);inline-size:min(100%, calc(var(--pl-spacing) * 90));padding:var(--pl-space-4);border:1px dashed var(--pl-color-muted-foreground);border-radius:var(--pl-radius);color:var(--pl-color-foreground);font:var(--pl-text-sm) var(--pl-font-sans)"
     >
       <pl-button>Report.pdf</pl-button>
-      <span>Right-click, long-press or press Shift+F10.</span>
+      <span
+        >${isolate(rtl, "Right-click, long-press or press Shift+F10.")}</span
+      >
     </div>
     <pl-menu slot="menu" label="File actions">
       <pl-menu-item>Open</pl-menu-item>
@@ -97,7 +100,7 @@ export const Open: Story = {
 export const Disabled: Story = { render: () => stage(region(true)) };
 
 export const Rtl: Story = {
-  render: () => stage(region()),
+  render: () => stage(region(false, true)),
   globals: { dir: "rtl" },
   play: async ({ canvasElement }) => {
     await openMenu(canvasElement);

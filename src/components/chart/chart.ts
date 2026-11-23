@@ -143,6 +143,7 @@ export class PlChart extends LitElement {
       yLabel: this.yLabel || undefined,
       format: this.format,
       fontSize: Number.parseFloat(getComputedStyle(this).fontSize) || undefined,
+      rtl: this.matches(":dir(rtl)"),
       reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
     };
   }
