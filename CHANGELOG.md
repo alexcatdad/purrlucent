@@ -1,5 +1,46 @@
 # purrlucent
 
+## 0.8.0
+
+### Minor Changes
+
+- 660370d: New `pl-accordion` and `pl-accordion-item`: stacked disclosure sections, each a heading with a button that shows and hides its panel. One section is open at a time unless `multiple` is set. Enter and Space toggle a section, and Up, Down, Home and End move between headers. `level` sets the heading level, and `pl-toggle` reports `{ value, open }`.
+- 8fff177: The package ships an agent skill in `dist/skills/purrlucent/`, with the install guide, the React guide and the component reference beside it, so a coding agent in your app uses the elements as documented for the installed version. The install guide shows how to load it.
+- 1cc6b94: `pl-avatar` shows a round picture of a person, with their initials from `name` when there is no `src` or the image fails to load. It comes in `sm`, `md`, `lg` and `xl`.
+
+  `pl-skeleton` is a placeholder for content that is still loading, in a rectangle or a circle, with an optional shimmer that stops under reduced motion. It is hidden from assistive technology; put `aria-busy` on the loading region.
+
+- b6ff2bf: Add `pl-breadcrumb` and `pl-breadcrumb-item`: a navigation landmark with an ordered list of steps. The last step is the current page, the separators are hidden from assistive technology, and long names shrink to an ellipsis with their full text as the title.
+- 750b9fe: Add `pl-button-group`: related `pl-button` elements joined into one shape, with a `label` for its accessible name and a horizontal or vertical `orientation`. It holds no selection; use `pl-toggle-group` for one choice from a set.
+- 07f6811: New `pl-calendar`, a month calendar for choosing one day, as an accessible date grid. Arrow keys, Home, End, Page Up and Page Down move through the days, and Enter or Space selects. `min`, `max` and `disabled-dates` (or a `disabledDates` function) limit the choice. Month and weekday names, the first weekday and the direction follow the locale. The value is an ISO day, `yyyy-mm-dd`, and a change fires `pl-change` with `{ value }`.
+- af949a1: Add `pl-collapsible`, a single disclosure: a trigger button with `aria-expanded` and `aria-controls` shows and hides its content, which animates in height and shows at once under reduced motion. `open` reflects and `pl-toggle` reports `{ open }`.
+- 1c01e73: New `pl-command`, `pl-command-item` and `pl-command-group`: a command palette with a search field above an always-visible list. Typing hides the items that do not match, and groups left empty; Down, Up, Home and End move the active item, Enter or a click fires `pl-select` with `{ value }`, and Escape clears the text. It works inside `pl-dialog`.
+- 07f6811: New `pl-date-picker`, a form field for one day. The text entry reads the day as the locale writes it or as an ISO day, and a button opens a `pl-calendar` in a popover; choosing a day fills the field and returns focus to the button. The value is an ISO day, `yyyy-mm-dd`. The field takes `min`, `max`, `disabled-dates` and `required`, reports an invalid entry below itself, and fires `pl-input` and `pl-change` with the native `input` and `change`.
+- b93d7e8: Adds `pl-aspect-ratio`, which keeps slotted media at a `ratio` such as `16/9`.
+
+  Adds `pl-scroll-area`, a natively scrolling region with a thin scrollbar, a `label`, and keyboard focus when it overflows and holds nothing focusable.
+
+  Adds the `purrlucent/typography` export with `proseStyles`, which styles headings, paragraphs, lists, quotes, inline code and tables inside a `.pl-prose` container.
+
+- 10f7b77: Add `pl-card`, a grouped content surface with header, content and footer slots. It stays solid and is not interactive.
+
+  Add `pl-item`, a list row with media, title, description and actions slots. An `href` makes the whole row a link while buttons in the row stay separate.
+
+  Add `pl-empty`, an empty state with icon, title, description and action slots.
+
+- 2d2e315: New `pl-input-group` wraps a `pl-input` or `pl-textarea` with addons before and after it, as `slot="start"` and `slot="end"`: text, an svg icon or a `pl-button`. The field and its addons share one border and one focus ring, and the field keeps its own label, name, value, validation and events. Text in an addon can describe the field when the field's `aria-describedby` names the addon's `id`.
+- 28bb666: Add `pl-menubar`, a row of `pl-menu` elements with one tab stop. Left and Right move between the triggers, Down, Enter and Space open a menu, and with a menu open Left and Right switch to the neighboring menu.
+- 2cc24a7: Add `pl-navigation-menu` and `pl-navigation-item`: site navigation with links and disclosure buttons that open panels of links, following the disclosure navigation pattern. Escape and a press outside close a panel and return focus to its button.
+- f74506b: Add `pl-pagination`: a navigation landmark with Previous and Next, numbered pages and ellipses for the pages left out. Set `page` and `total`; `href-template` turns the pages into links; `pl-change` reports `{ page }`.
+- 3654ed9: New `pl-resizable` split view with `pl-resizable-panel` and `pl-resizable-handle`. Panels sit side by side or stacked, with sizes in percent held within each panel's `min` and `max`. People drag the dividers, or use the arrow, Home, End and Enter keys on them, following the window splitter pattern. Enter collapses a `collapsible` panel and restores it, and the `collapsed` attribute does the same from your own controls. `pl-resize` reports the sizes.
+- 48d19bb: Adds `pl-separator`, a horizontal or vertical hairline that is decoration by default and a `separator` role with `semantic`.
+
+  Adds `pl-kbd`, a keycap for a key or shortcut, and `pl-badge`, a small label for a count or status with `neutral`, `accent` and `destructive` variants.
+
+- de11d04: The agent skill installs with `gh skill install alexcatdad/purrlucent purrlucent@v<version>` or `npx skills add alexcatdad/purrlucent@v<version> --skill purrlucent`. The skill folder is self-contained: the component reference, the React guide and the install guide are in its `references/` folder. The package still ships the skill in `dist/skills/purrlucent/`.
+- a468e09: Adds `pl-table`, which styles a native `<table>` you slot into it and scrolls it, with a tab stop, when it overflows, and `pl-data-table`, which draws a native table from `columns` and `rows` with sortable headings and row selection.
+- 630371f: Add `pl-tabs`, `pl-tab` and `pl-tab-panel`: tabs that switch between panels of content, horizontal or vertical. Arrow keys move and select, `value` selects a tab, and `pl-change` reports the user's choice as `{ value }`.
+
 ## 0.7.0
 
 ### Minor Changes
