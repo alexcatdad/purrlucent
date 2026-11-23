@@ -6,7 +6,7 @@ Web components for apps: buttons, form controls, menus, dialogs and navigation, 
 - **Accessible.** Every component follows the matching WAI-ARIA pattern, works with a keyboard, supports right-to-left text, increased contrast, forced colors and reduced motion, and has 44 by 44 px targets with a coarse pointer.
 - **Themeable.** Five palette colors and one spacing base; every other color and size is calculated from them. Light and dark follow the page's `color-scheme`.
 - **Forms.** The input controls take part in forms like native ones: value, reset, validation and disabled fieldsets.
-- **Typed.** The package ships type declarations and a Custom Elements Manifest.
+- **Typed.** The package ships type declarations, a Custom Elements Manifest and React 19 JSX types with typed events.
 
 ## Components
 
@@ -29,7 +29,11 @@ import "purrlucent/switch";
 </form>
 ```
 
-Purrlucent is published as a GitHub Release, not on the npm registry. The [install guide](docs/install.md) covers installing, the page background, fonts, light and dark, glass mode and theming.
+Purrlucent is published as a GitHub Release, not on the npm registry. The [install guide](docs/install.md) covers installing, the page background, fonts, light and dark, glass mode and theming. For a React app, see [Use with React](docs/react.md).
+
+## Security
+
+See [SECURITY.md](SECURITY.md) to report a vulnerability.
 
 ## Browser support
 
