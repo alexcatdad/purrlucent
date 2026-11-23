@@ -306,6 +306,44 @@ A card: a grouped content surface with an optional header, content and footer. I
 - `content`: The content section.
 - `footer`: The footer section.
 
+## Chart
+
+```ts
+import "purrlucent/chart";
+```
+
+### `<pl-chart>`
+
+A chart that is named, themed and keyboard-operable by default, drawn by TanStack Charts (an optional peer dependency: install `@tanstack/charts`). It is not part of `import "purrlucent"`; import `purrlucent/chart`. For the common cases give it a `type`, `data` and the keys to read: `<pl-chart label="Visits by month" type="line" x="month" y="visits">` with `chart.data = [...]`. For anything else pass a TanStack `definition`; it is drawn with the same palette, fonts and tooltip. Either way a native table of the same values is in the page for assistive technology; `show-table` shows it. The tooltip and the arrow keys (the chart is one tab stop) are on by default. Series colors come from `--pl-chart-1` to `--pl-chart-6`, which you can set on the element. `label` is required: it is the chart's accessible name. Say what is measured, for whom, over which period and in which unit.
+
+| Attribute      | Type                     | Default | Description                                                                                                                              |
+| -------------- | ------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`        | `string \| undefined`    |         | The accessible name. Required; without it the chart warns in the console.                                                                |
+| `description`  | `string \| undefined`    |         | Context a reader needs that is not already nearby, such as how gaps are drawn. It becomes the chart's accessible description.            |
+| `type`         | `ChartType \| undefined` |         | `bar`, `line`, `area` or `donut`. Not needed when `definition` is set.                                                                   |
+| `x`            | `string \| undefined`    |         | The key of the category in each row.                                                                                                     |
+| `y`            | `string \| undefined`    |         | The key of the value in each row. A comma-separated list (`desktop,mobile`) draws one series per key, for rows that hold several values. |
+| `series`       | `string \| undefined`    |         | The key that names the series, for rows with one value each.                                                                             |
+| `x-label`      | `string \| undefined`    |         | The name of the categories: an axis title and the table's first column heading.                                                          |
+| `y-label`      | `string \| undefined`    |         | The name and unit of the values: an axis title and the heading of a single series.                                                       |
+| `aspect-ratio` | `number \| undefined`    |         | Width over height. Defaults to 16/9, and 1 for a donut.                                                                                  |
+| `legend`       | `boolean`                | `false` | Lists the series, or a donut's slices, with their colors under the chart.                                                                |
+| `show-table`   | `boolean`                | `false` | Shows the table of values under the chart. It is always in the page for assistive technology.                                            |
+
+**Parts**
+
+- `legend`: The list of series.
+- `swatch`: A series' color chip in the legend.
+- `data`: The wrapper of the table of values.
+
+**CSS properties**
+
+- `--pl-chart-1`: The first series color. Up to `--pl-chart-6`.
+
+**Events**
+
+- `pl-select`: A point was activated with a click, Enter or Space. `detail.datum` is the row it came from.
+
 ## Checkbox
 
 ```ts

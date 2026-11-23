@@ -78,6 +78,10 @@
       "types": "./dist/types/components/card/card.d.ts",
       "default": "./dist/card.js"
     },
+    "./chart": {
+      "types": "./dist/types/components/chart/chart.d.ts",
+      "default": "./dist/chart.js"
+    },
     "./checkbox": {
       "types": "./dist/types/components/checkbox/checkbox.d.ts",
       "default": "./dist/checkbox.js"
@@ -258,6 +262,7 @@
     "@storybook/addon-docs": "10.6.8",
     "@storybook/addon-vitest": "10.6.8",
     "@storybook/web-components-vite": "10.6.8",
+    "@tanstack/charts": "1.5.0",
     "@types/bun": "1.4.5",
     "@types/react": "19.3.0",
     "@typescript/native": "npm:typescript@7.0.2",
@@ -276,5 +281,13 @@
   },
   "dependencies": {
     "lit": "3.3.3"
+  },
+  "peerDependencies": {
+    "@tanstack/charts": "^1.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/charts": {
+      "optional": true
+    }
   }
 }
