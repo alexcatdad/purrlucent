@@ -1,0 +1,184 @@
+import { expect, test, type Page } from "@playwright/test";
+import {
+  expectAccessible,
+  expectNoOverflowAtTextZoom,
+} from "../../../e2e/helpers/a11y.ts";
+import { gotoStory } from "../../../e2e/helpers/story.ts";
+
+const story = "components-collapsible--default";
+
+const open = async (page: Page, id = story, globals = "") => {
+  const root = await gotoStory(page, id, globals);
+  await expect(page.locator("pl-collapsible")).toHaveCount(1);
+  return root;
+};
+
+const trigger = (page: Page) =>
+  page.getByRole("button", { name: "Shipping details" });
+
+test("aria snapshot", async ({ page }) => {
+  const root = await open(page);
+  await expect(root).toMatchAriaSnapshot(`
+    - button "Shipping details"
+  `);
+});
+
+test("the trigger is a button with aria-expanded and aria-controls", async ({
+  page,
+}) => {
+  await open(page);
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "false");
+  await expect(trigger(page)).toHaveAttribute("aria-controls", "content");
+  await trigger(page).click();
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("pl-collapsible")).toHaveAttribute("open", "");
+  await expect(page.locator("#body")).toBeVisible();
+});
+
+test("closed content is hidden and takes no space", async ({ page }) => {
+  await open(page);
+  await expect(page.locator("#body")).toBeHidden();
+  const height = await page
+    .locator("pl-collapsible")
+    .evaluate(
+      (el) =>
+        el.shadowRoot!.querySelector(".panel")!.getBoundingClientRect().height,
+    );
+  expect(height).toBe(0);
+});
+
+test("a collapsible with open starts showing its content and fires no event", async ({
+  page,
+}) => {
+  await open(page, "components-collapsible--open");
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#body")).toBeVisible();
+});
+
+test("Enter and Space toggle the content", async ({ page }) => {
+  await open(page);
+  await page.keyboard.press("Tab");
+  await expect(trigger(page)).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("pl-collapsible")).toHaveAttribute("open", "");
+  await page.keyboard.press("Space");
+  await expect(page.locator("pl-collapsible")).not.toHaveAttribute("open");
+});
+
+test("pl-toggle fires once per change with the new state", async ({ page }) => {
+  await open(page);
+  await page.locator("#control").evaluate((el) => {
+    (window as unknown as { toggles: unknown[] }).toggles = [];
+    el.addEventListener("pl-toggle", (e) =>
+      (window as unknown as { toggles: unknown[] }).toggles.push(
+        (e as CustomEvent).detail,
+      ),
+    );
+  });
+  await trigger(page).click();
+  await trigger(page).click();
+  await page.locator("#control").evaluate(async (el) => {
+    (el as HTMLElement & { open: boolean }).open = true;
+    await (el as unknown as { updateComplete: Promise<boolean> })
+      .updateComplete;
+  });
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { toggles: unknown[] }).toggles,
+    ),
+  ).toEqual([{ open: true }, { open: false }, { open: true }]);
+});
+
+test("the height animates with the duration token", async ({ page }) => {
+  await open(page);
+  const result = await page.locator("#control").evaluate(async (el) => {
+    const panel = el.shadowRoot!.querySelector(".panel")!;
+    const probe = document.body.appendChild(document.createElement("div"));
+    probe.style.transitionDuration = "var(--pl-duration)";
+    const token = getComputedStyle(probe).transitionDuration;
+    probe.remove();
+    const duration = getComputedStyle(panel).transitionDuration;
+    (el as HTMLElement & { open: boolean }).open = true;
+    await (el as unknown as { updateComplete: Promise<boolean> })
+      .updateComplete;
+    return { token, duration };
+  });
+  expect(result.duration.split(", ")[0]).toBe(result.token);
+  await expect(page.locator("#body")).toBeVisible();
+});
+
+test("under reduced motion the content shows at once", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await open(page);
+  const durations = await page
+    .locator("#control")
+    .evaluate((el) =>
+      [".panel", ".chevron"].map(
+        (s) =>
+          getComputedStyle(el.shadowRoot!.querySelector(s)!).transitionDuration,
+      ),
+    );
+  for (const d of durations) expect(d).toMatch(/^0s(, 0s)*$/);
+  await trigger(page).click();
+  await expect(page.locator("#body")).toBeVisible();
+});
+
+test("closing keeps the content out of the tab order", async ({ page }) => {
+  await open(page, "components-collapsible--open");
+  await trigger(page).click();
+  await expect(page.locator("#body")).toBeHidden();
+});
+
+test("under rtl the chevron mirrors and the content keeps the label's edge", async ({
+  page,
+}) => {
+  await open(page, "components-collapsible--rtl");
+  await expect(page.locator("#control")).toHaveCSS("direction", "rtl");
+  const transform = await page
+    .locator("#control")
+    .evaluate(
+      (el) =>
+        getComputedStyle(el.shadowRoot!.querySelector(".chevron")!).transform,
+    );
+  expect(transform).toBe("matrix(-1, 0, 0, 1, 0, 0)");
+});
+
+test("the trigger stays visible and focusable under forced colors", async ({
+  page,
+}) => {
+  await open(page);
+  await page.emulateMedia({ forcedColors: "active" });
+  await page.keyboard.press("Tab");
+  await expect(trigger(page)).toBeFocused();
+  expect(
+    await trigger(page).evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).toBe("solid");
+});
+
+test.describe("coarse pointer on a wide screen", () => {
+  test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
+
+  test("a coarse pointer keeps the trigger at least 44 high", async ({
+    page,
+  }) => {
+    await open(page);
+    const box = await trigger(page).boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+  });
+});
+
+for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
+  test(`axe finds no WCAG 2.2 AA violations (${globals || "default"})`, async ({
+    page,
+  }) => {
+    await expectAccessible(await open(page, story, globals));
+  });
+}
+
+test("axe finds no violations when open", async ({ page }) => {
+  await expectAccessible(await open(page, "components-collapsible--open"));
+});
+
+test("no horizontal overflow at 200% text zoom", async ({ page }) => {
+  await expectNoOverflowAtTextZoom(await open(page));
+});

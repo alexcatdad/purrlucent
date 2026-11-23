@@ -26,3 +26,15 @@
   check: automated
   test: src/components/accordion/accordion.e2e.ts > a click opens a section and the next click closes it; pl-toggle carries value and open
   layer: components
+- id: disclosure-controls/6
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A disclosure control's state is visible and exposed to assistive technology.
+  check: automated
+  test: src/components/collapsible/collapsible.e2e.ts > the trigger is a button with aria-expanded and aria-controls
+  layer: components
+- id: disclosure-controls/7
+  source: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls
+  rule: A standalone disclosure arrow sits at the leading edge, points toward the reading direction when closed and turns down when open.
+  check: automated
+  test: src/components/collapsible/collapsible.e2e.ts > under rtl the chevron mirrors and the content keeps the label's edge
+  layer: components
