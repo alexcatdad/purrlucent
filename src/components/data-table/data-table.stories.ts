@@ -2,7 +2,13 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
 import "./data-table.ts";
-import type { PlDataTable, PlDataTableColumn } from "./data-table.ts";
+import type {
+  PlDataTable,
+  PlDataTableColumn,
+  PlDataTableModel,
+  PlModelCell,
+  PlModelColumn,
+} from "./data-table.ts";
 
 const meta = { title: "Data/Data Table" } satisfies Meta;
 
@@ -121,6 +127,214 @@ export const Paginated: Story = {
       .rows=${roster}
     ></pl-data-table>
   `,
+};
+
+type Person = {
+  id: string;
+  name: string;
+  role: string;
+  city: string;
+  salary: number;
+  score: number;
+};
+
+const team: Record<string, { name: string; members: Person[] }> = {
+  eng: {
+    name: "Engineering",
+    members: [
+      {
+        id: "ada",
+        name: "Ada Lovelace",
+        role: "Mathematician",
+        city: "London",
+        salary: 96,
+        score: 9.1,
+      },
+      {
+        id: "grace",
+        name: "Grace Hopper",
+        role: "Rear admiral",
+        city: "New York",
+        salary: 104,
+        score: 8.7,
+      },
+      {
+        id: "margaret",
+        name: "Margaret Hamilton",
+        role: "Lead engineer",
+        city: "Boston",
+        salary: 112,
+        score: 9.4,
+      },
+    ],
+  },
+  design: {
+    name: "Design",
+    members: [
+      {
+        id: "hedy",
+        name: "Hedy Lamarr",
+        role: "Inventor",
+        city: "Vienna",
+        salary: 88,
+        score: 8.2,
+      },
+      {
+        id: "radia",
+        name: "Radia Perlman",
+        role: "Network designer",
+        city: "Seattle",
+        salary: 92,
+        score: 8.9,
+      },
+    ],
+  },
+};
+
+const modelColumns: PlModelColumn[] = [
+  {
+    key: "name",
+    label: "Name",
+    visible: true,
+    canHide: false,
+    pinned: "start",
+    width: 200,
+  },
+  { key: "role", label: "Role", visible: true, canHide: true, width: 200 },
+  { key: "city", label: "City", visible: true, canHide: true, width: 160 },
+  {
+    key: "salary",
+    label: "Salary (k)",
+    visible: true,
+    canHide: true,
+    width: 140,
+  },
+  {
+    key: "score",
+    label: "Score",
+    visible: true,
+    canHide: false,
+    pinned: "end",
+    width: 120,
+  },
+];
+
+const pins = { name: "start", score: "end" } as const;
+
+const rowCells = (
+  id: string,
+  values: Record<string, unknown>,
+  aggregate = false,
+): PlModelCell[] =>
+  modelColumns.map(({ key }) => ({
+    id: `${id}-${key}`,
+    column: key,
+    value: values[key] ?? "",
+    aggregate: aggregate && key !== "name" && values[key] !== undefined,
+    pinned: pins[key as keyof typeof pins],
+  }));
+
+const mean = (values: number[]) =>
+  values.reduce((sum, value) => sum + value, 0) / values.length;
+
+/** A hand-written model: spans, groups with aggregates, a pinned row and two pinned columns. */
+const groupedModel = (open: ReadonlySet<string>): PlDataTableModel => {
+  const everyone = Object.values(team).flatMap((t) => t.members);
+  return {
+    columns: modelColumns,
+    headerGroups: [
+      [
+        { id: "h-person", label: "Person", colSpan: 3 },
+        { id: "h-numbers", label: "Numbers", colSpan: 2 },
+      ],
+      modelColumns.map((c) => ({
+        id: `h-${c.key}`,
+        column: c.key,
+        label: c.label,
+        colSpan: 1,
+        sortable: c.key === "salary",
+        sort: c.key === "name" ? ("ascending" as const) : undefined,
+        pinned: c.pinned,
+        width: c.width,
+      })),
+    ],
+    rows: [
+      {
+        id: "katherine",
+        depth: 0,
+        pinned: "top",
+        cells: rowCells("katherine", {
+          name: "Katherine Johnson",
+          role: "Mathematician",
+          city: "Hampton",
+          salary: 99,
+          score: 9.6,
+        }),
+      },
+      ...Object.entries(team).flatMap(([id, { name, members }]) => [
+        {
+          id,
+          depth: 0,
+          expandable: true,
+          expanded: open.has(id),
+          group: { column: "team", value: name, count: members.length },
+          cells: rowCells(
+            id,
+            {
+              salary: Math.round(mean(members.map((m) => m.salary))),
+              score: mean(members.map((m) => m.score)).toFixed(1),
+            },
+            true,
+          ),
+        },
+        ...(open.has(id) ? members : []).map((person) => ({
+          id: person.id,
+          depth: 1,
+          cells: rowCells(person.id, person),
+        })),
+      ]),
+    ],
+    footer: [
+      { id: "f-label", column: "name", value: "Average", colSpan: 3 },
+      {
+        id: "f-salary",
+        column: "salary",
+        value: Math.round(mean(everyone.map((p) => p.salary))),
+      },
+      {
+        id: "f-score",
+        column: "score",
+        value: mean(everyone.map((p) => p.score)).toFixed(1),
+        pinned: "end",
+      },
+    ],
+  };
+};
+
+const modelGrouped = () => {
+  const open = new Set(["eng"]);
+  return html`
+    <pl-data-table
+      id="control"
+      caption="Teams"
+      style="max-inline-size: calc(var(--pl-spacing) * 120)"
+      .model=${groupedModel(open)}
+      @pl-expand=${(e: CustomEvent<{ row: string; expanded: boolean }>) => {
+        if (e.detail.expanded) open.add(e.detail.row);
+        else open.delete(e.detail.row);
+        (e.currentTarget as PlDataTable).model = groupedModel(open);
+      }}
+    ></pl-data-table>
+  `;
+};
+
+/** The table draws a supplied model: header groups, group rows, aggregates, a pinned row and pinned columns. */
+export const ModelGrouped: Story = { render: modelGrouped };
+
+/** In a right-to-left page the start column pins to the right edge. */
+export const ModelGroupedRtl: Story = {
+  render: modelGrouped,
+  globals: { dir: "rtl" },
 };
 
 /** With no rows, the empty slot replaces the body. */

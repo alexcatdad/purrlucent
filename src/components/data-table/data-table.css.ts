@@ -93,7 +93,155 @@ export const dataTableStyles = css`
     text-align: center;
   }
 
+  /*
+   * Model mode. Widths come from the model, so the layout is fixed; a pinned
+   * cell sticks to a logical edge at the offset the component computed and
+   * paints solid so the cells scrolling under it do not show through.
+   */
+  table.model {
+    table-layout: fixed;
+  }
+
+  table.model [data-pin] {
+    position: sticky;
+    z-index: 1;
+    background-color: var(--pl-color-background);
+  }
+
+  table.model [data-pin="start"] {
+    inset-inline-start: var(--pin, 0px);
+  }
+
+  table.model [data-pin="end"] {
+    inset-inline-end: var(--pin, 0px);
+  }
+
+  /* A pinned row sticks below the heading rows, or to the bottom edge. */
+  table.model tr[data-row-pin] > :is(td, th) {
+    position: sticky;
+    z-index: 1;
+    background-color: var(--pl-color-background);
+  }
+
+  table.model tr[data-row-pin="top"] > :is(td, th) {
+    inset-block-start: var(--row-pin, 0px);
+  }
+
+  table.model tr[data-row-pin="bottom"] > :is(td, th) {
+    inset-block-end: var(--row-pin, 0px);
+  }
+
+  table.model tr[data-row-pin] > [data-pin] {
+    z-index: 2;
+  }
+
+  table.model thead :is(th, td) {
+    background-color: var(--pl-color-background);
+  }
+
+  pl-table[sticky-header] table.model thead :is(th, td) {
+    position: sticky;
+    inset-block-start: var(--head-pin, 0px);
+    z-index: 3;
+  }
+
+  table.model thead [data-pin],
+  pl-table[sticky-header] table.model thead [data-pin] {
+    z-index: 4;
+  }
+
+  /* A group row and a selected row are opaque too, for the pinned cells in them. */
+  table.model tr.group > :is(td, th) {
+    background-color: color-mix(
+      in srgb,
+      var(--pl-color-foreground) 6%,
+      var(--pl-color-background)
+    );
+    font-weight: 600;
+  }
+
+  table.model tr[data-selected] > :is(td, th),
+  table.model td[data-selected] {
+    background-color: color-mix(
+      in srgb,
+      var(--pl-color-selected) 16%,
+      var(--pl-color-background)
+    );
+  }
+
+  table.model td.aggregate {
+    font-variant-numeric: tabular-nums;
+  }
+
+  table.model tfoot td {
+    border-block-start: 1px solid var(--pl-color-border);
+    border-block-end: 0;
+    font-weight: 600;
+  }
+
+  /* The first cell holds the indent, the disclosure button and the text. */
+  .lead {
+    display: flex;
+    align-items: center;
+    gap: var(--pl-gap-icon);
+    padding-inline-start: calc(var(--depth, 0) * var(--pl-space-4));
+  }
+
+  .expand {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--pl-size-hit-min);
+    block-size: var(--pl-size-hit-min);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--pl-radius);
+    background: none;
+    color: inherit;
+    cursor: default;
+  }
+
+  button.expand:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
+  .expand svg {
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* A collapsed disclosure points toward the row's text, so it mirrors. */
+  button.expand[aria-expanded="false"]:dir(rtl) svg {
+    transform: scaleX(-1);
+  }
+
+  .count {
+    margin-inline-start: var(--pl-space-2);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+
   @media (forced-colors: active) {
+    table.model [data-pin],
+    table.model tr[data-row-pin] > :is(td, th),
+    table.model thead :is(th, td),
+    table.model tr.group > :is(td, th),
+    table.model tr[data-selected] > :is(td, th),
+    table.model td[data-selected] {
+      background-color: Canvas;
+    }
+
+    button.expand:focus-visible {
+      outline-color: Highlight;
+    }
+
     th button {
       transition: none;
     }
