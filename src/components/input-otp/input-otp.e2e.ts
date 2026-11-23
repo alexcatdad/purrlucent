@@ -4,8 +4,14 @@ import {
   expectNoOverflowAtTextZoom,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
 const story = (name: string) => `forms-input-otp--${name}`;
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-input-otp");
+});
 
 /** What the form would submit, as [name, value] pairs. */
 const submitted = (page: Page) =>

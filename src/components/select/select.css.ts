@@ -17,7 +17,7 @@ export const selectStyles = css`
     display: inline-grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pl-gap-form);
-    inline-size: calc(var(--pl-spacing) * 30);
+    inline-size: calc(var(--pl-spacing) * 40);
     vertical-align: middle;
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

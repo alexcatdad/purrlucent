@@ -3,6 +3,7 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./combobox.ts";
 import type { PlCombobox } from "./combobox.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
   title: "Forms/Combobox",
@@ -60,6 +61,20 @@ export const Placeholder: Story = {
       html`<pl-combobox label="Apple variety" placeholder="Search varieties"
         >${apples}</pl-combobox
       >`,
+    ),
+};
+
+/** The width is the host's `inline-size`: small, medium, large and full. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-combobox
+          style=${style}
+          label=${label}
+          placeholder="Search varieties"
+          >${apples}</pl-combobox
+        >`,
     ),
 };
 

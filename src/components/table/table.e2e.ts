@@ -60,6 +60,41 @@ test("a table that fits has no tab stop", async ({ page }) => {
   );
 });
 
+test("grouped headers keep their column spans", async ({ page }) => {
+  const root = await open(page, "data-table--grouped-headers");
+  const spans = await page.locator("pl-table thead th").evaluateAll((cells) =>
+    cells.map((cell) => {
+      const { colSpan, rowSpan } = cell as HTMLTableCellElement;
+      return [colSpan, rowSpan];
+    }),
+  );
+  expect(spans).toEqual([
+    [1, 2],
+    [2, 1],
+    [2, 1],
+    [1, 1],
+    [1, 1],
+    [1, 1],
+    [1, 1],
+  ]);
+  await expectAccessible(root);
+});
+
+test("merged cells keep their spans", async ({ page }) => {
+  const root = await open(page, "data-table--merged-cells");
+  const spans = await page
+    .locator("pl-table tbody th")
+    .evaluateAll((cells) =>
+      cells.map((cell) => (cell as HTMLTableCellElement).rowSpan),
+    );
+  expect(spans).toEqual([2, 2]);
+  // The second row of a merged group has one cell fewer than the first.
+  const rows = page.locator("pl-table tbody tr");
+  await expect(rows.nth(0).locator("th, td")).toHaveCount(3);
+  await expect(rows.nth(1).locator("th, td")).toHaveCount(2);
+  await expectAccessible(root);
+});
+
 test("an overflowing table is a named region the keyboard reaches and scrolls", async ({
   page,
 }) => {

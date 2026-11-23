@@ -14,7 +14,7 @@ export const fieldStyles = css`
     display: inline-grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pl-gap-form);
-    inline-size: calc(var(--pl-spacing) * 30);
+    inline-size: calc(var(--pl-spacing) * 40);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
@@ -186,7 +186,7 @@ export const inputStyles = [
     /* Room for about five characters beside the glyph and the clear button. */
     :host(:state(search)) {
       inline-size: max(
-        calc(var(--pl-spacing) * 30),
+        calc(var(--pl-spacing) * 40),
         calc(
           var(--_pad) + var(--pl-icon-lg) + var(--pl-gap-icon) * 2 +
             var(--pl-size-hit-min) + var(--pl-spacing) * 12
