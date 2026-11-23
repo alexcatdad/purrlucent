@@ -159,16 +159,15 @@ export const chartStyles = css`
 
   /* The table is the chart's other form, for assistive technology and for
      anyone who wants the numbers. Without show-table it is only clipped, not
-     removed: a 1px box that clips, so nothing in it can overflow. */
+     removed: a 1px-tall strip as wide as the chart, so the table wraps as it
+     does when shown and nothing overflows sideways. */
   :host(:not([show-table])) [part="data"] {
     position: absolute;
     inset-block-start: 0;
-    inset-inline-start: 0;
-    inline-size: 1px;
+    inset-inline: 0;
     block-size: 1px;
     overflow: clip;
     clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   :host([show-table]) [part="data"] {
