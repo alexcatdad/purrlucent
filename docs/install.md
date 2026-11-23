@@ -43,7 +43,7 @@ import "purrlucent/button";
 <purr-button>Save</purr-button>
 ```
 
-`import "purrlucent"` loads every component at once. The [component reference](./components.md) lists each element with its attributes, slots, parts and events.
+`import "purrlucent"` loads every component at once. The [component reference](./components.md) lists each element with its attributes, slots, parts and events. For a React app, see [Use with React](./react.md).
 
 ### Page background and text
 
