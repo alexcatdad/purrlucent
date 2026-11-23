@@ -241,6 +241,35 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 - `input`: After pl-change, as a native checkbox fires it.
 - `change`: After input, as a native checkbox fires it.
 
+## Collapsible
+
+```ts
+import "purrlucent/collapsible";
+```
+
+### `<pl-collapsible>`
+
+A single disclosure: a trigger that shows and hides a block of content. The trigger is a button named by the text in the `trigger` slot; it carries `aria-expanded` and `aria-controls`. Space and Enter toggle it, as on any button. The content grows and shrinks in height with `--pl-duration`; under reduced motion it shows and hides at once. Closed content is hidden from focus and assistive technology. For several disclosures that open one at a time, handle `pl-toggle` in the app.
+
+| Attribute | Type      | Default | Description                                                                 |
+| --------- | --------- | ------- | --------------------------------------------------------------------------- |
+| `open`    | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses. |
+
+**Slots**
+
+- default: The content the trigger shows and hides.
+- `trigger`: The trigger's label: short text, optionally with an svg. Required: without it the button has no name.
+
+**Parts**
+
+- `trigger`: The button.
+- `chevron`: The disclosure arrow.
+- `content`: The wrapper around the content.
+
+**Events**
+
+- `pl-toggle`: The content opened or closed, by the user or by setting `open`. `detail.open` says which. It does not fire for the starting state.
+
 ## Combobox
 
 ```ts

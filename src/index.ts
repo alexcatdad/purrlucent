@@ -9,6 +9,7 @@ export * from "./components/banner/banner.ts";
 export * from "./components/button/button.ts";
 export * from "./components/card/card.ts";
 export * from "./components/checkbox/checkbox.ts";
+export * from "./components/collapsible/collapsible.ts";
 export * from "./components/combobox/combobox.ts";
 export * from "./components/dialog/dialog.ts";
 export * from "./components/empty/empty.ts";
