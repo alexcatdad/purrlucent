@@ -13,6 +13,7 @@ export * from "./components/card/card.ts";
 export * from "./components/checkbox/checkbox.ts";
 export * from "./components/collapsible/collapsible.ts";
 export * from "./components/combobox/combobox.ts";
+export * from "./components/command/command.ts";
 export * from "./components/dialog/dialog.ts";
 export * from "./components/empty/empty.ts";
 export * from "./components/input/input.ts";

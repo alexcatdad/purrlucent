@@ -86,6 +86,10 @@
       "types": "./dist/types/components/combobox/combobox.d.ts",
       "default": "./dist/combobox.js"
     },
+    "./command": {
+      "types": "./dist/types/components/command/command.d.ts",
+      "default": "./dist/command.js"
+    },
     "./dialog": {
       "types": "./dist/types/components/dialog/dialog.d.ts",
       "default": "./dist/dialog.js"
