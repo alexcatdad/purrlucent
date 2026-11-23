@@ -46,6 +46,10 @@
       "types": "./dist/types/components/aspect-ratio/aspect-ratio.d.ts",
       "default": "./dist/aspect-ratio.js"
     },
+    "./attachment": {
+      "types": "./dist/types/components/attachment/attachment.d.ts",
+      "default": "./dist/attachment.js"
+    },
     "./avatar": {
       "types": "./dist/types/components/avatar/avatar.d.ts",
       "default": "./dist/avatar.js"
