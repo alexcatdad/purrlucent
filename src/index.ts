@@ -18,6 +18,7 @@ export * from "./components/checkbox/checkbox.ts";
 export * from "./components/collapsible/collapsible.ts";
 export * from "./components/combobox/combobox.ts";
 export * from "./components/command/command.ts";
+export * from "./components/context-menu/context-menu.ts";
 export * from "./components/data-table/data-table.ts";
 export * from "./components/date-picker/date-picker.ts";
 export * from "./components/dialog/dialog.ts";

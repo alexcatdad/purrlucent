@@ -690,6 +690,32 @@ A command palette: a search field above a list of commands that is always showin
 - `pl-select`: An item was activated. `detail.value` holds its value.
 - `input`: After each pl-input, as a native input fires it.
 
+## Context menu
+
+```ts
+import "purrlucent/context-menu";
+```
+
+### `<pl-context-menu>`
+
+A region with a context menu. The default slot is the region. A `pl-menu` in the `menu` slot is the menu: it opens with its corner at the pointer on a right-click or Control-click, at the finger after a long press, and from the keyboard with Shift+F10 or the Context Menu key while the region or something in it has focus, at the start edge below the focused element. It flips to stay in the viewport. Escape and a press outside close it and focus returns to where it came from. The items, separators, labels, submenus, keys and `pl-select` are `pl-menu`'s. The browser's own menu is suppressed only while this one handles the event: not when `disabled`, when there is no menu, or inside an inner element that already handled it (a nested `pl-context-menu` wins). A long press sends a `contextmenu` event to the pressed element, so a listener sees every way in through one event. Keep the menu short and list only commands that also exist elsewhere in the interface: a context menu is a shortcut, never the only way. Give the `pl-menu` a `label`; it names the menu for assistive technology.
+
+| Attribute  | Type      | Default | Description                                                                            |
+| ---------- | --------- | ------- | -------------------------------------------------------------------------------------- |
+| `disabled` | `boolean` | `false` | The region has no context menu: the browser's own menu shows, and an open menu closes. |
+
+**Slots**
+
+- default: The region.
+- `menu`: A `pl-menu` without a trigger.
+
+**Events**
+
+- :
+- `pl-open`: The menu opened. `detail.x` and `detail.y` are the viewport point it opened at.
+- `pl-close`: The menu closed, whether by Escape, a press outside, a choice, `disabled` or script.
+- `pl-select`: An item of the menu was activated. It bubbles from the `pl-menu`; `detail.value` holds its value.
+
 ## Data table
 
 ```ts
