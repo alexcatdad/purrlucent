@@ -162,6 +162,10 @@
       "types": "./dist/types/components/menubar/menubar.d.ts",
       "default": "./dist/menubar.js"
     },
+    "./message": {
+      "types": "./dist/types/components/message/message.d.ts",
+      "default": "./dist/message.js"
+    },
     "./navigation-menu": {
       "types": "./dist/types/components/navigation-menu/navigation-menu.d.ts",
       "default": "./dist/navigation-menu.js"

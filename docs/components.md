@@ -1163,6 +1163,46 @@ A row of menus, as at the top of an app window: each `pl-menu` child keeps its o
 
 - `pl-select`: An item of one of the menus was activated. `detail.value` holds its value.
 
+## Message
+
+```ts
+import "purrlucent/message";
+```
+
+### `<pl-message>`
+
+One row of a conversation: an optional avatar beside the content, with a header above and a footer below. It is presentational and has no role of its own. Compose the content from bubbles, markers and attachments; the element never parses or renders markdown. `align="end"` is the person's own message: the row mirrors, so the avatar and the content sit at the inline end. The avatar sits level with the bottom of the content and moves up above the footer when there is one. The header stays start-aligned; the footer follows the message side. Icon-only controls in the `footer` (copy, retry, rate) need an accessible name each: give the `pl-button` an `aria-label`.
+
+| Attribute | Type               | Default   | Description                 |
+| --------- | ------------------ | --------- | --------------------------- |
+| `align`   | `"start" \| "end"` | `"start"` | `start` (default) or `end`. |
+
+**Slots**
+
+- `avatar`: A `pl-avatar`. Give it a `name` so it is named, or leave it decorative.
+- `header`: A sender name or a time, above the content.
+- default: The content: bubbles, markers and attachments, stacked.
+- `footer`: Status or actions below the content.
+
+**Parts**
+
+- `avatar`: The avatar's wrapper.
+- `header`: The header's wrapper.
+- `content`: The stack that holds the content.
+- `footer`: The footer's wrapper.
+
+### `<pl-message-group>`
+
+Consecutive messages from one sender, stacked tightly. Only the last message shows its avatar; the earlier ones keep the space, so every bubble lines up. The host is a `group`: set `label` (or `aria-label`) to the sender's name so the group is named.
+
+| Attribute | Type     | Default | Description                       |
+| --------- | -------- | ------- | --------------------------------- |
+| `label`   | `string` | `""`    | The accessible name of the group. |
+
+**Slots**
+
+- default: `pl-message` elements from the same sender, with the same `align`.
+
 ## Navigation menu
 
 ```ts
