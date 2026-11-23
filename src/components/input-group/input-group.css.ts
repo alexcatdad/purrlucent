@@ -16,7 +16,14 @@ export const inputGroupStyles = css`
     position: relative;
     isolation: isolate;
     display: inline-grid;
-    grid-template-columns: auto minmax(calc(var(--pl-spacing) * 20), 1fr) auto;
+    /*
+     * The addon columns take their content's full width: Firefox counts a
+     * button label's overflow-wrap: anywhere in an auto column's minimum
+     * despite nowrap, and would squeeze the button below its text.
+     */
+    grid-template-columns:
+      max-content minmax(calc(var(--pl-spacing) * 20), 1fr)
+      max-content;
     inline-size: calc(var(--pl-spacing) * 30);
     /* Wide addons or large text grow the group instead of squeezing the field. */
     min-inline-size: min-content;
@@ -106,13 +113,8 @@ export const inputGroupStyles = css`
   }
 
   /* A button fills its end of the field and brings its own padding and face. */
-  /*
-   * Firefox counts the label's overflow-wrap: anywhere in the button's minimum
-   * width despite nowrap, so the grid would squeeze the button below its text.
-   */
   ::slotted(pl-button[slot]) {
     padding-block: 0;
-    min-inline-size: max-content;
   }
 
   ::slotted(pl-button[slot="start"]) {
