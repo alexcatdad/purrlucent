@@ -16,6 +16,19 @@ export const dataTableStyles = css`
     max-block-size: inherit;
   }
 
+  .filter {
+    display: grid;
+    margin-block-end: var(--pl-space-3);
+  }
+
+  /* Pagination sits at the trailing edge, below the table. */
+  .pages {
+    inline-size: fit-content;
+    max-inline-size: 100%;
+    margin-block-start: var(--pl-space-3);
+    margin-inline-start: auto;
+  }
+
   /* A sortable heading is a button in the cell; the cell keeps its th role. */
   th button {
     display: inline-flex;

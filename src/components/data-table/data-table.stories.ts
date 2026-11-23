@@ -86,6 +86,43 @@ export const Selectable: Story = {
   `,
 };
 
+const roster = [
+  ...rows,
+  { id: "mary", name: "Mary Jackson", role: "Engineer", age: 76 },
+  { id: "hedy", name: "Hedy Lamarr", role: "Inventor", age: 85 },
+  { id: "annie", name: "Annie Easley", role: "Computer scientist", age: 72 },
+  { id: "radia", name: "Radia Perlman", role: "Network engineer", age: 74 },
+  { id: "rene", name: "René Descartes", role: "Philosopher", age: 53 },
+];
+
+/** The search field keeps the rows that match any column, ignoring case and accents. */
+export const Filterable: Story = {
+  render: () => html`
+    <pl-data-table
+      id="control"
+      caption="Pioneers"
+      filterable
+      .columns=${columns}
+      .rows=${roster}
+    >
+      <span slot="empty">Nobody matches this filter.</span>
+    </pl-data-table>
+  `,
+};
+
+/** With a page size the rows are paged and pagination moves through them. */
+export const Paginated: Story = {
+  render: () => html`
+    <pl-data-table
+      id="control"
+      caption="Pioneers"
+      page-size="4"
+      .columns=${columns}
+      .rows=${roster}
+    ></pl-data-table>
+  `,
+};
+
 /** With no rows, the empty slot replaces the body. */
 export const Empty: Story = {
   render: () => html`
