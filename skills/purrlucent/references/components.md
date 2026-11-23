@@ -382,6 +382,82 @@ A text field with a list of suggestions. It follows the editable combobox patter
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change.
 
+## Command
+
+```ts
+import "purrlucent/command";
+```
+
+### `<pl-command-item>`
+
+One command in a `pl-command`. Its text is the label, and the search matches against it. The command marks the active item with `data-active`; this element does nothing alone.
+
+| Attribute  | Type      | Default | Description                                               |
+| ---------- | --------- | ------- | --------------------------------------------------------- |
+| `value`    | `string`  | `""`    | What `pl-select` reports. Defaults to the label.          |
+| `disabled` | `boolean` | `false` | Skipped by the keyboard and cannot be activated.          |
+| `detail`   | `string`  | `""`    | Trailing text such as a shortcut. The `detail` slot wins. |
+
+**Slots**
+
+- default: The label.
+- `icon`: A leading svg.
+- `detail`: Trailing content, such as a shortcut.
+
+**Parts**
+
+- `label`: The label wrapper.
+- `detail`: The trailing text wrapper.
+
+### `<pl-command-group>`
+
+A labelled run of `pl-command-item` children. The group hides while the search leaves none of its items showing.
+
+| Attribute | Type     | Default | Description                                   |
+| --------- | -------- | ------- | --------------------------------------------- |
+| `label`   | `string` | `""`    | The heading, and the group's accessible name. |
+
+**Slots**
+
+- default: The `pl-command-item` children.
+
+**Parts**
+
+- `heading`: The visible heading.
+
+### `<pl-command>`
+
+A command palette: a search field above a list of commands that is always showing. It follows the editable combobox pattern with list autocomplete: a native input does the editing and keeps focus, the `pl-command-item` children (loose or inside `pl-command-group`) are the options, and the active one is the input's active descendant. Typing hides the items whose label does not contain the text, case-insensitively, and groups left empty; the first item that remains becomes active, and a "No results" row shows when none does. Down and Up move the active item with wrap and skip disabled ones, Home and End jump to the first and last, Enter activates it, and Escape clears the text. Escape with no text is left to the page, so inside a `pl-dialog` it closes the dialog. Activating an item, with Enter or a click, fires `pl-select`. It does not close or reset anything itself. Put `autofocus` on it to focus the search field when a dialog opens.
+
+| Attribute     | Type                    | Default        | Description                                                            |
+| ------------- | ----------------------- | -------------- | ---------------------------------------------------------------------- |
+| `label`       | `string`                | `"Commands"`   | The accessible name of the field and the list. Defaults to "Commands". |
+| `placeholder` | `string`                | `"Search"`     | Hint shown while the field is empty. Defaults to "Search".             |
+| `query`       | `string`                | `""`           | The text in the search field.                                          |
+| `empty-label` | `string`                | `"No results"` | The text shown when no item matches. Defaults to "No results".         |
+| `clear-label` | `string`                | `"Clear"`      | The clear button's accessible name. Defaults to "Clear".               |
+| `_active`     | `PlCommandItem \| null` | `null`         |                                                                        |
+
+**Slots**
+
+- default: The `pl-command-item` and `pl-command-group` children.
+
+**Parts**
+
+- `field`: The shell around the search input.
+- `glyph`: The magnifier.
+- `control`: The native input.
+- `clear`: The clear button.
+- `list`: The list of items.
+- `empty`: The "no results" row.
+
+**Events**
+
+- `name`:
+- `pl-input`: The search text changed through typing, Escape or the clear button. `detail.query` holds it.
+- `pl-select`: An item was activated. `detail.value` holds its value.
+- `input`: After each pl-input, as a native input fires it.
+
 ## Dialog
 
 ```ts
