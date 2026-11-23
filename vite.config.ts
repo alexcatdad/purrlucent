@@ -46,7 +46,8 @@ export default defineConfig({
       fileName: (_format, entryName) => `${entryName}.js`,
     },
     rolldownOptions: {
-      external: [/^lit(\/|$)/],
+      // @tanstack/charts is an optional peer, installed by apps that use the chart.
+      external: [/^lit(\/|$)/, /^@tanstack\/charts(\/|$)/],
     },
   },
 });
