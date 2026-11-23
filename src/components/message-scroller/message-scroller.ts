@@ -410,10 +410,20 @@ export class PlMessageScroller extends LitElement {
         this.#jump(Math.min(target, this.#max()));
         return;
       }
+      // The reply filled the view: from here the view follows the end.
       this.#hold = null;
+      this.#seeking = true;
     }
-    if (this.autoScroll && this.#atEnd && !this.#selecting())
+    if (
+      this.autoScroll &&
+      (this.#atEnd || this.#seeking) &&
+      !this.#selecting()
+    ) {
+      // Content can grow again before this jump's scroll event arrives; it is
+      // still a move to the end, not the reader leaving it.
+      this.#seeking = true;
       this.#jump(this.#max());
+    }
   }
 
   #onSlot() {
