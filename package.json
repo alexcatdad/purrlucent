@@ -190,6 +190,10 @@
       "types": "./dist/types/components/progress/progress.d.ts",
       "default": "./dist/progress.js"
     },
+    "./prompt-input": {
+      "types": "./dist/types/components/prompt-input/prompt-input.d.ts",
+      "default": "./dist/prompt-input.js"
+    },
     "./radio-group": {
       "types": "./dist/types/components/radio-group/radio-group.d.ts",
       "default": "./dist/radio-group.js"
