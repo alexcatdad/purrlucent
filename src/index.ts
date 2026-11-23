@@ -19,6 +19,7 @@ export * from "./components/item/item.ts";
 export * from "./components/kbd/kbd.ts";
 export * from "./components/menu/menu.ts";
 export * from "./components/number-field/number-field.ts";
+export * from "./components/pagination/pagination.ts";
 export * from "./components/popover/popover.ts";
 export * from "./components/progress/progress.ts";
 export * from "./components/radio-group/radio-group.ts";
