@@ -78,6 +78,10 @@
       "types": "./dist/types/components/card/card.d.ts",
       "default": "./dist/card.js"
     },
+    "./carousel": {
+      "types": "./dist/types/components/carousel/carousel.d.ts",
+      "default": "./dist/carousel.js"
+    },
     "./chart": {
       "types": "./dist/types/components/chart/chart.d.ts",
       "default": "./dist/chart.js"
