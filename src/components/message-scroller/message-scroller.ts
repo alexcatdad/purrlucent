@@ -128,9 +128,18 @@ export class PlMessageScroller extends LitElement {
   declare buttonLabel: string;
 
   #resize = new ResizeObserver(() => {
+    // Rows above the view that change size (a skipped row getting its real
+    // size, say) would move what the reader sees; keep it in place, unless the
+    // view follows the end or holds an anchor, which place it themselves.
+    const following = !this.#released && this.autoScroll && this.#atEnd;
+    if (!this.#hold && !following) this.#keep();
     this.#follow();
     this.#sync();
+    this.#remember();
   });
+  // The first row in view and its distance from the top of the view.
+  #anchorRow: Element | null = null;
+  #anchorTop = 0;
   #rows = new Set<Element>();
   #head: Element | null = null;
   #headOffset = 0;
@@ -168,6 +177,7 @@ export class PlMessageScroller extends LitElement {
       this.#top = this.scrollTop;
       this.#measure();
       this.#sync();
+      this.#remember();
     });
     // Every way the reader scrolls by hand lets go of the content. Letting go
     // is undone at the next frames if the reader is still at the end.
@@ -308,6 +318,34 @@ export class PlMessageScroller extends LitElement {
     );
   }
 
+  /** The top of the view, in viewport coordinates. */
+  #viewTop() {
+    return this.getBoundingClientRect().top + this.clientTop;
+  }
+
+  /** Remembers the first row in view and where it sits. */
+  #remember() {
+    const top = this.#viewTop();
+    const row =
+      this.#children().find((el) => el.getBoundingClientRect().bottom > top) ??
+      null;
+    this.#anchorRow = row;
+    this.#anchorTop = row ? row.getBoundingClientRect().top - top : 0;
+  }
+
+  /**
+   * Puts the remembered row back where it was, as the browser's scroll
+   * anchoring would; that anchoring is off, as it also moved the view when
+   * rows were added below it.
+   */
+  #keep() {
+    const row = this.#anchorRow;
+    if (!row || !this.contains(row)) return;
+    const shift =
+      row.getBoundingClientRect().top - this.#viewTop() - this.#anchorTop;
+    if (Math.abs(shift) > 0.5) this.scrollTop += shift;
+  }
+
   /** Records whether the content is at its end, from where the scroll is now. */
   #measure() {
     const atEnd = this.#max() - this.scrollTop <= EDGE;
@@ -402,6 +440,7 @@ export class PlMessageScroller extends LitElement {
     this.#top = this.scrollTop;
     this.#measure();
     this.#sync();
+    this.#remember();
   }
 
   /** The default scroll position, applied once, then again after the rows' own sizes settle. */
