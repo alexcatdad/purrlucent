@@ -172,8 +172,8 @@ test.describe("delete account", () => {
     const root = await gotoStory(page, story("default"));
     await tab(root, "Privacy").click();
     await ask(root).click();
-    await root
-      .getByRole("alertdialog")
+    // The buttons are slotted into pl-dialog, not inside its shadow <dialog>.
+    await dialog(root)
       .getByRole("button", { name: "Delete", exact: true })
       .click();
     await expect(dialog(root)).not.toHaveAttribute("open");
