@@ -16,8 +16,10 @@ export const inputGroupStyles = css`
     position: relative;
     isolation: isolate;
     display: inline-grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(calc(var(--pl-spacing) * 20), 1fr) auto;
     inline-size: calc(var(--pl-spacing) * 30);
+    /* Wide addons or large text grow the group instead of squeezing the field. */
+    min-inline-size: min-content;
     max-inline-size: 100%;
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

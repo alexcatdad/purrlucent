@@ -153,14 +153,13 @@ export class PlNavigationItem extends LitElement {
 }
 
 /**
- * Site navigation: a `nav` landmark holding `pl-navigation-item` children in a
+ * Site navigation: the host is the `navigation` landmark, holding `pl-navigation-item` children in a
  * row. Each item is a link or a disclosure button that opens a panel of links
  * (the APG disclosure navigation pattern, not a menu). Every link and button is
  * a tab stop. One panel is open at a time: opening one closes the others.
  *
  * @attr {string} label - The accessible name of the navigation landmark. Required.
  * @slot - `pl-navigation-item` children.
- * @csspart nav - The navigation landmark.
  * @csspart list - The row that lays out the items.
  */
 export class PlNavigationMenu extends LitElement {
@@ -182,15 +181,22 @@ export class PlNavigationMenu extends LitElement {
       if (other !== item) other.open = false;
   };
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setAttribute("role", "navigation");
+  }
+
   protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("label") && !this.label)
+    if (!changed.has("label")) return;
+    if (this.label) this.setAttribute("aria-label", this.label);
+    else {
+      this.removeAttribute("aria-label");
       console.warn("pl-navigation-menu needs a label.");
+    }
   }
 
   override render() {
-    return html`<nav part="nav" aria-label=${this.label || nothing}>
-      <div part="list"><slot></slot></div>
-    </nav>`;
+    return html`<div part="list"><slot></slot></div>`;
   }
 }
 
