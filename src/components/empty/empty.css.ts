@@ -40,12 +40,11 @@ export const emptyStyles = css`
   }
 
   /* Wrappers show only when something is slotted, so the gap stays even. */
-  [part="icon"],
-  [part="action"] {
-    display: none;
+  [hidden] {
+    display: none !important;
   }
 
-  :host(:has(> [slot="icon"])) [part="icon"] {
+  [part="icon"] {
     display: contents;
   }
 
@@ -64,7 +63,7 @@ export const emptyStyles = css`
     stroke-linejoin: round;
   }
 
-  :host(:has(> [slot="action"])) [part="action"] {
+  [part="action"] {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

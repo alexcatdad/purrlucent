@@ -1,4 +1,5 @@
 import { LitElement, html, nothing } from "lit";
+import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { itemStyles } from "./item.css.ts";
 
 /**
@@ -54,18 +55,9 @@ export class PlItem extends LitElement {
         <slot name="description"></slot>
       </div>
       <div part="actions" hidden>
-        <slot name="actions" @slotchange=${this.#syncActions}></slot>
+        <slot name="actions" @slotchange=${hideWhenEmpty}></slot>
       </div>`;
   }
-
-  // Without actions the wrapper is hidden, so it adds no trailing gap.
-  #syncActions = (event: Event) => {
-    const slot = event.target as HTMLSlotElement;
-    slot.parentElement?.toggleAttribute(
-      "hidden",
-      slot.assignedElements({ flatten: true }).length === 0,
-    );
-  };
 }
 
 customElements.define("pl-item", PlItem);

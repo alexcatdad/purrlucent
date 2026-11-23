@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { emptyStyles } from "./empty.css.ts";
 
 /**
@@ -18,12 +19,16 @@ export class PlEmpty extends LitElement {
   static override styles = emptyStyles;
 
   override render() {
-    return html`<div part="icon"><slot name="icon"></slot></div>
+    return html`<div part="icon" hidden>
+        <slot name="icon" @slotchange=${hideWhenEmpty}></slot>
+      </div>
       <div part="text">
         <div part="title"><slot name="title"></slot></div>
         <slot name="description"></slot>
       </div>
-      <div part="action"><slot name="action"></slot></div>`;
+      <div part="action" hidden>
+        <slot name="action" @slotchange=${hideWhenEmpty}></slot>
+      </div>`;
   }
 }
 
