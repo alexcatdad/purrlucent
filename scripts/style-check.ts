@@ -2,7 +2,7 @@
 //
 // 1. Component styles hold no typed-in lengths and no raw colors: every value
 //    is a token or a calc() from tokens.
-// 2. Every --purr-* token that is read is defined, in tokens.css or in src.
+// 2. Every --pl-* token that is read is defined, in tokens.css or in src.
 // 3. No Apple trademark or design-kit wording in src.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -31,18 +31,17 @@ export function count(css: string): { lengths: number; colors: number } {
   return { lengths, colors: body.match(COLOR)?.length ?? 0 };
 }
 
-/** --purr-* tokens that are read somewhere but defined nowhere. */
+/** --pl-* tokens that are read somewhere but defined nowhere. */
 export function undefinedTokens(sources: Record<string, string>): string[] {
   const assigned = new Set<string>();
   for (const source of Object.values(sources))
-    for (const m of source.matchAll(/--purr-([\w-]+)\s*:/g))
-      assigned.add(m[1]!);
+    for (const m of source.matchAll(/--pl-([\w-]+)\s*:/g)) assigned.add(m[1]!);
   const missing = new Set<string>();
   for (const [file, source] of Object.entries(sources))
     // A name that ends in "-" is completed by a template value; it cannot be checked here.
-    for (const m of source.matchAll(/var\(\s*--purr-([\w-]+)/g))
+    for (const m of source.matchAll(/var\(\s*--pl-([\w-]+)/g))
       if (!m[1]!.endsWith("-") && !assigned.has(m[1]!))
-        missing.add(`${file}: --purr-${m[1]} is read but never defined`);
+        missing.add(`${file}: --pl-${m[1]} is read but never defined`);
   return [...missing].sort();
 }
 

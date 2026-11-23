@@ -1,10 +1,10 @@
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
-import { PurrSidebarItem } from "./sidebar-item.ts";
-import { PurrSidebarSection } from "./sidebar-section.ts";
+import { PlSidebarItem } from "./sidebar-item.ts";
+import { PlSidebarSection } from "./sidebar-section.ts";
 import { sidebarStyles } from "./sidebar.css.ts";
 
-export { PurrSidebarItem, PurrSidebarSection };
+export { PlSidebarItem, PlSidebarSection };
 
 const TOGGLE_LABEL = "Sidebar";
 
@@ -12,8 +12,8 @@ const TOGGLE_LABEL = "Sidebar";
 const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9.5 4v16M13 10l1-2 1.5 1 1.5-1 1 2" /></svg>`;
 
 /**
- * A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children,
- * loose or grouped under `purr-sidebar-section` headings (at most two levels,
+ * A navigation sidebar: a `nav` landmark holding `pl-sidebar-item` children,
+ * loose or grouped under `pl-sidebar-section` headings (at most two levels,
  * and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a
  * disclosure button that shows and hides them; with an `href` it stays a link
  * that selects, and the disclosure button sits before it. Every button and visible link is
@@ -23,16 +23,16 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * button. On a narrow screen (600px or less) the sidebar collapses on its own;
  * shown again, it fills the width. A collapse it made itself is undone when
  * the screen widens; read the first state from `collapsed`, because
- * `purr-collapse` can fire before a listener is attached.
+ * `pl-collapse` can fire before a listener is attached.
  *
  * @attr {string} toggle-label - The toggle button's accessible name. Defaults to "Sidebar", which becomes "<label> sidebar" when `label` is set.
- * @slot - `purr-sidebar-item` and `purr-sidebar-section` children.
+ * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
- * @fires {CustomEvent<{ selected: PurrSidebarItem[] }>} purr-change - The selected item changed. `detail.selected` is an array holding the new item.
- * @fires {CustomEvent<{ collapsed: boolean }>} purr-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
+ * @fires {CustomEvent<{ selected: PlSidebarItem[] }>} pl-change - The selected item changed. `detail.selected` is an array holding the new item.
+ * @fires {CustomEvent<{ collapsed: boolean }>} pl-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
  */
-export class PurrSidebar extends LitElement {
+export class PlSidebar extends LitElement {
   static override styles = sidebarStyles;
   static override properties = {
     label: { type: String },
@@ -71,15 +71,15 @@ export class PurrSidebar extends LitElement {
   /** The items in document order, loose or inside a section. */
   #items() {
     return [
-      ...this.querySelectorAll<PurrSidebarItem>(
-        ":scope > purr-sidebar-item, :scope > purr-sidebar-section > purr-sidebar-item",
+      ...this.querySelectorAll<PlSidebarItem>(
+        ":scope > pl-sidebar-item, :scope > pl-sidebar-section > pl-sidebar-item",
       ),
     ];
   }
 
   /** Derives each item's disclosure and visibility from the levels in order. */
   #sync(reveal = false) {
-    let parent: PurrSidebarItem | undefined;
+    let parent: PlSidebarItem | undefined;
     const items = this.#items();
     items.forEach((item, i) => {
       // A group of level 2 items never reaches across a section boundary.
@@ -108,7 +108,7 @@ export class PurrSidebar extends LitElement {
     // A parent link selects; its disclosure button, like any group button, does not.
     const origin = event.composedPath()[0];
     if (
-      !(item instanceof PurrSidebarItem) ||
+      !(item instanceof PlSidebarItem) ||
       (item.expandable &&
         (!item.href ||
           (origin instanceof Element && origin.closest("button")))) ||
@@ -124,7 +124,7 @@ export class PurrSidebar extends LitElement {
       return;
     for (const other of this.#items()) other.selected = other === item;
     this.dispatchEvent(
-      new CustomEvent("purr-change", {
+      new CustomEvent("pl-change", {
         detail: { selected: [item] },
         bubbles: true,
         composed: true,
@@ -134,7 +134,7 @@ export class PurrSidebar extends LitElement {
 
   #onKeydown = (event: KeyboardEvent) => {
     const item = event.target;
-    if (!(item instanceof PurrSidebarItem)) return;
+    if (!(item instanceof PlSidebarItem)) return;
     const origin = event.composedPath()[0];
     if (event.key === " " && origin instanceof HTMLAnchorElement) {
       // Native links ignore Space; APG selects and activates the link.
@@ -156,7 +156,7 @@ export class PurrSidebar extends LitElement {
             )
         : item;
     if (!parent?.expandable || !parent.expanded) return;
-    // The button's own handler closes it and fires purr-toggle.
+    // The button's own handler closes it and fires pl-toggle.
     parent.renderRoot.querySelector("button")?.click();
     parent.focus();
   };
@@ -213,7 +213,7 @@ export class PurrSidebar extends LitElement {
     this.#autoCollapsed = auto;
     this.collapsed = collapsed;
     this.dispatchEvent(
-      new CustomEvent("purr-collapse", {
+      new CustomEvent("pl-collapse", {
         detail: { collapsed: this.collapsed },
         bubbles: true,
         composed: true,
@@ -244,7 +244,7 @@ export class PurrSidebar extends LitElement {
         aria-label=${this.label || nothing}
         @click=${this.#onClick}
         @keydown=${this.#onKeydown}
-        @purr-toggle=${() => this.#sync()}
+        @pl-toggle=${() => this.#sync()}
       >
         <slot @slotchange=${this.#onSlotchange}></slot>
       </nav>
@@ -252,10 +252,10 @@ export class PurrSidebar extends LitElement {
   }
 }
 
-customElements.define("purr-sidebar", PurrSidebar);
+customElements.define("pl-sidebar", PlSidebar);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-sidebar": PurrSidebar;
+    "pl-sidebar": PlSidebar;
   }
 }

@@ -7,31 +7,31 @@ import { css } from "lit";
  */
 export const toggleStyles = css`
   :host {
-    --_face: var(--purr-color-muted-3);
-    --_face-pressed: var(--purr-color-muted-1);
-    --_face-disabled: var(--purr-color-muted-5);
+    --_face: var(--pl-color-muted-3);
+    --_face-pressed: var(--pl-color-muted-1);
+    --_face-disabled: var(--pl-color-muted-5);
   }
 
   :host([pressed]) {
     --_face: color-mix(
       in srgb,
-      var(--purr-color-selected) 97%,
-      var(--purr-color-shade)
+      var(--pl-color-selected) 97%,
+      var(--pl-color-shade)
     );
     --_face-pressed: color-mix(
       in srgb,
-      var(--purr-color-selected) 85%,
-      var(--purr-color-shade)
+      var(--pl-color-selected) 85%,
+      var(--pl-color-shade)
     );
     --_face-disabled: color-mix(
       in srgb,
-      var(--purr-color-selected) 45%,
+      var(--pl-color-selected) 45%,
       transparent
     );
-    --_fg: var(--purr-color-selected-foreground);
+    --_fg: var(--pl-color-selected-foreground);
     --_fg-disabled: color-mix(
       in srgb,
-      var(--purr-color-selected-foreground) 50%,
+      var(--pl-color-selected-foreground) 50%,
       transparent
     );
   }
@@ -43,9 +43,9 @@ export const toggleStyles = css`
   /* The on state is told by Highlight, not by a tint that forced colors drop. */
   @media (forced-colors: active) {
     :host([pressed]:not(:is([disabled], :disabled))) {
-      --purr-face: Highlight;
-      --purr-face-hover: Highlight;
-      --purr-face-pressed: Highlight;
+      --pl-face: Highlight;
+      --pl-face-hover: Highlight;
+      --pl-face-pressed: Highlight;
 
       color: HighlightText;
       forced-color-adjust: none;

@@ -15,25 +15,23 @@ const render = ({
   open = false,
   child = false,
 }: { collapsed?: boolean; open?: boolean; child?: boolean } = {}) => html`
-  <purr-sidebar id="sidebar" label="Library" ?collapsed=${collapsed}>
-    <purr-sidebar-item id="home" href="#home" ?selected=${!child}
-      >Home</purr-sidebar-item
+  <pl-sidebar id="sidebar" label="Library" ?collapsed=${collapsed}>
+    <pl-sidebar-item id="home" href="#home" ?selected=${!child}
+      >Home</pl-sidebar-item
     >
-    <purr-sidebar-item id="albums" ?expanded=${open}>Albums</purr-sidebar-item>
-    <purr-sidebar-item id="recent" level="2" href="#recent"
-      >Recently added</purr-sidebar-item
+    <pl-sidebar-item id="albums" ?expanded=${open}>Albums</pl-sidebar-item>
+    <pl-sidebar-item id="recent" level="2" href="#recent"
+      >Recently added</pl-sidebar-item
     >
-    <purr-sidebar-item
+    <pl-sidebar-item
       id="favorites"
       level="2"
       href="#favorites"
       ?selected=${child}
-      >Favorites</purr-sidebar-item
+      >Favorites</pl-sidebar-item
     >
-    <purr-sidebar-item id="settings" href="#settings"
-      >Settings</purr-sidebar-item
-    >
-  </purr-sidebar>
+    <pl-sidebar-item id="settings" href="#settings">Settings</pl-sidebar-item>
+  </pl-sidebar>
 `;
 
 /** A selected top-level item and a closed group. */
@@ -54,21 +52,17 @@ export const ChildSelected: Story = {
 /** A parent row with an href is a link that selects, with its own disclosure button. */
 export const ParentLink: Story = {
   render: () => html`
-    <purr-sidebar id="sidebar" label="Library">
-      <purr-sidebar-item id="home" href="#home" selected
-        >Home</purr-sidebar-item
+    <pl-sidebar id="sidebar" label="Library">
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+      <pl-sidebar-item id="albums" href="#albums">Albums</pl-sidebar-item>
+      <pl-sidebar-item id="recent" level="2" href="#recent"
+        >Recently added</pl-sidebar-item
       >
-      <purr-sidebar-item id="albums" href="#albums">Albums</purr-sidebar-item>
-      <purr-sidebar-item id="recent" level="2" href="#recent"
-        >Recently added</purr-sidebar-item
+      <pl-sidebar-item id="favorites" level="2" href="#favorites"
+        >Favorites</pl-sidebar-item
       >
-      <purr-sidebar-item id="favorites" level="2" href="#favorites"
-        >Favorites</purr-sidebar-item
-      >
-      <purr-sidebar-item id="settings" href="#settings"
-        >Settings</purr-sidebar-item
-      >
-    </purr-sidebar>
+      <pl-sidebar-item id="settings" href="#settings">Settings</pl-sidebar-item>
+    </pl-sidebar>
   `,
   play: async ({ canvasElement }) => {
     const albums = canvasElement.querySelector("#albums");
@@ -109,33 +103,33 @@ const inbox = html`<svg
 </svg>`;
 
 const folders = ({ size = "md" }: { size?: "md" | "lg" } = {}) => html`
-  <purr-sidebar id="sidebar" label="Library" size=${size}>
-    <purr-sidebar-section id="library" label="Library">
-      <purr-sidebar-item id="inbox" href="#inbox" selected
-        >${inbox}Inbox<span slot="detail">Detail</span></purr-sidebar-item
+  <pl-sidebar id="sidebar" label="Library" size=${size}>
+    <pl-sidebar-section id="library" label="Library">
+      <pl-sidebar-item id="inbox" href="#inbox" selected
+        >${inbox}Inbox<span slot="detail">Detail</span></pl-sidebar-item
       >
-      <purr-sidebar-item id="today" href="#today"
-        >${inbox}Today<span slot="detail">12</span></purr-sidebar-item
+      <pl-sidebar-item id="today" href="#today"
+        >${inbox}Today<span slot="detail">12</span></pl-sidebar-item
       >
-      <purr-sidebar-item id="plain" href="#plain">Plain</purr-sidebar-item>
-    </purr-sidebar-section>
-    <purr-sidebar-section id="folders" label="Folders">
-      <purr-sidebar-item id="work" expanded>${inbox}Work</purr-sidebar-item>
-      <purr-sidebar-item id="reports" level="2" href="#reports"
-        >${inbox}Reports</purr-sidebar-item
+      <pl-sidebar-item id="plain" href="#plain">Plain</pl-sidebar-item>
+    </pl-sidebar-section>
+    <pl-sidebar-section id="folders" label="Folders">
+      <pl-sidebar-item id="work" expanded>${inbox}Work</pl-sidebar-item>
+      <pl-sidebar-item id="reports" level="2" href="#reports"
+        >${inbox}Reports</pl-sidebar-item
       >
-      <purr-sidebar-item id="archive" href="#archive"
-        >${inbox}Archive<span slot="detail">3</span></purr-sidebar-item
+      <pl-sidebar-item id="archive" href="#archive"
+        >${inbox}Archive<span slot="detail">3</span></pl-sidebar-item
       >
-    </purr-sidebar-section>
-  </purr-sidebar>
+    </pl-sidebar-section>
+  </pl-sidebar>
 `;
 
 /** Sections with headings, a leading icon and trailing detail text. */
 export const Sections: Story = {
   render: () => folders(),
   play: async ({ canvasElement }) => {
-    const groups = canvasElement.querySelectorAll("purr-sidebar-section");
+    const groups = canvasElement.querySelectorAll("pl-sidebar-section");
     await expect(
       [...groups].map((group) => group.getAttribute("aria-label")),
     ).toEqual(["Library", "Folders"]);

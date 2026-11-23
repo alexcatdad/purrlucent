@@ -9,15 +9,15 @@ test("one section per component folder, one entry per element", () => {
         path: "src/components/toggle-group/toggle-group.ts",
         declarations: [
           {
-            name: "PurrToggleGroup",
-            tagName: "purr-toggle-group",
+            name: "PlToggleGroup",
+            tagName: "pl-toggle-group",
             description: "A row of\nitems.",
             attributes: [
               { name: "size", type: { text: '"md" | "lg"' }, default: '"md"' },
             ],
             slots: [{ name: "", description: "The items." }],
-            cssProperties: [{ name: "--purr-gap", description: "The gap." }],
-            events: [{ name: "purr-change", description: "Changed." }],
+            cssProperties: [{ name: "--pl-gap", description: "The gap." }],
+            events: [{ name: "pl-change", description: "Changed." }],
           },
           { name: "helper" },
         ],
@@ -28,11 +28,11 @@ test("one section per component folder, one entry per element", () => {
   expect(page).toContain(
     '## Toggle group\n\n```ts\nimport "purrlucent/toggle-group";',
   );
-  expect(page).toContain("### `<purr-toggle-group>`\n\nA row of items.");
+  expect(page).toContain("### `<pl-toggle-group>`\n\nA row of items.");
   expect(page).toContain('| `size` | `"md" \\| "lg"` | `"md"` |  |');
   expect(page).toContain("- default: The items.");
-  expect(page).toContain("**CSS properties**\n\n- `--purr-gap`: The gap.");
-  expect(page).toContain("- `purr-change`: Changed.");
+  expect(page).toContain("**CSS properties**\n\n- `--pl-gap`: The gap.");
+  expect(page).toContain("- `pl-change`: Changed.");
   expect(page).not.toContain("pressable");
 });
 

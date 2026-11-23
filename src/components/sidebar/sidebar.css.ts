@@ -27,9 +27,9 @@ const face = css`
     position: absolute;
     inset: 0;
     z-index: -1;
-    border-radius: var(--purr-radius);
+    border-radius: var(--pl-radius);
     background-color: var(--_face, transparent);
-    transition: background-color var(--purr-duration-fast) var(--purr-ease-out);
+    transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   @media (hover: hover) {
@@ -55,8 +55,8 @@ const face = css`
   .control:focus-visible::before,
   .disclosure:focus-visible::before,
   .toggle:focus-visible::before {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   @media (forced-colors: active) {
@@ -79,10 +79,10 @@ export const sidebarStyles = [
   face,
   css`
     :host {
-      inline-size: calc(var(--purr-spacing) * 64);
+      inline-size: calc(var(--pl-spacing) * 64);
       max-inline-size: 100%;
-      padding: 0 var(--purr-space-3) var(--purr-space-4);
-      font: 400 var(--_text) / var(--_leading) var(--purr-font-sans);
+      padding: 0 var(--pl-space-3) var(--pl-space-4);
+      font: 400 var(--_text) / var(--_leading) var(--pl-font-sans);
     }
 
     :host([hidden]) {
@@ -91,23 +91,23 @@ export const sidebarStyles = [
 
     /* Row and heading metrics; the items and sections inherit them. */
     :host {
-      --_text: var(--purr-text-sm);
-      --_leading: var(--purr-leading-normal);
-      --_row: max(calc(var(--purr-spacing) * 8), var(--purr-size-hit-min));
-      --_glyph: var(--purr-icon-md);
-      --_head: calc(var(--purr-spacing) * 4.5);
-      --_head-text: var(--purr-text-xs);
-      --_head-leading: var(--purr-leading-tight);
+      --_text: var(--pl-text-sm);
+      --_leading: var(--pl-leading-normal);
+      --_row: max(calc(var(--pl-spacing) * 8), var(--pl-size-hit-min));
+      --_glyph: var(--pl-icon-md);
+      --_head: calc(var(--pl-spacing) * 4.5);
+      --_head-text: var(--pl-text-xs);
+      --_head-leading: var(--pl-leading-tight);
     }
 
     :host([size="lg"]) {
-      --_text: var(--purr-text-lg);
-      --_leading: var(--purr-leading-loose);
-      --_row: max(calc(var(--purr-spacing) * 10), var(--purr-size-hit-min));
-      --_glyph: calc(var(--purr-spacing) * 4.5);
-      --_head: var(--purr-icon-lg);
-      --_head-text: var(--purr-text-sm);
-      --_head-leading: var(--purr-leading-normal);
+      --_text: var(--pl-text-lg);
+      --_leading: var(--pl-leading-loose);
+      --_row: max(calc(var(--pl-spacing) * 10), var(--pl-size-hit-min));
+      --_glyph: calc(var(--pl-spacing) * 4.5);
+      --_head: var(--pl-icon-lg);
+      --_head-text: var(--pl-text-sm);
+      --_head-leading: var(--pl-leading-normal);
     }
 
     :host([collapsed]) {
@@ -123,26 +123,26 @@ export const sidebarStyles = [
        the two line up side by side. Its round face is smaller than its hit
        region. */
     .toggle {
-      --_face-hover: var(--purr-color-muted-3);
-      --_face-pressed: var(--purr-color-muted-1);
+      --_face-hover: var(--pl-color-muted-3);
+      --_face-pressed: var(--pl-color-muted-1);
 
       display: grid;
       place-items: center;
-      inline-size: var(--purr-size-xl);
-      block-size: var(--purr-size-xl);
-      margin-block: calc((var(--purr-size-bar) - var(--purr-size-xl)) / 2);
+      inline-size: var(--pl-size-xl);
+      block-size: var(--pl-size-xl);
+      margin-block: calc((var(--pl-size-bar) - var(--pl-size-xl)) / 2);
       margin-inline-start: auto;
       padding: 0;
     }
 
     .toggle::before {
-      inset: calc((100% - var(--purr-visual-lg)) / 2);
-      border-radius: var(--purr-radius-full);
+      inset: calc((100% - var(--pl-visual-lg)) / 2);
+      border-radius: var(--pl-radius-full);
     }
 
     .toggle svg {
-      inline-size: var(--purr-icon-md);
-      block-size: var(--purr-icon-md);
+      inline-size: var(--pl-icon-md);
+      block-size: var(--pl-icon-md);
     }
 
     /* Narrow screen, any pointer: the sidebar starts collapsed (see
@@ -172,18 +172,18 @@ export const itemStyles = [
        edge; level 2 indents one step. Hover is half the selected fill. */
     .control,
     .disclosure {
-      --_fill: var(--purr-color-muted-3);
+      --_fill: var(--pl-color-muted-3);
       --_face-hover: color-mix(in srgb, var(--_fill) 50%, transparent);
       --_face-pressed: var(--_fill);
 
       display: grid;
       grid-template-columns:
-        calc(var(--purr-icon-md) + var(--purr-space-1)) auto minmax(0, 1fr)
+        calc(var(--pl-icon-md) + var(--pl-space-1)) auto minmax(0, 1fr)
         auto;
       align-items: center;
       inline-size: 100%;
       min-block-size: var(--_row);
-      padding: var(--purr-space-1) var(--purr-pad-item);
+      padding: var(--pl-space-1) var(--pl-pad-item);
       text-align: start;
       text-decoration: none;
     }
@@ -206,12 +206,12 @@ export const itemStyles = [
       display: flex;
       align-items: center;
       inline-size: auto;
-      min-inline-size: var(--purr-size-hit-min);
-      padding-inline: var(--purr-pad-item) var(--purr-space-1);
+      min-inline-size: var(--pl-size-hit-min);
+      padding-inline: var(--pl-pad-item) var(--pl-space-1);
     }
 
     :host([level="2"]) .control {
-      padding-inline-start: calc(var(--purr-pad-item) + var(--purr-indent));
+      padding-inline-start: calc(var(--pl-pad-item) + var(--pl-indent));
     }
 
     .label {
@@ -224,15 +224,15 @@ export const itemStyles = [
       grid-column: 2;
       inline-size: var(--_glyph);
       block-size: var(--_glyph);
-      margin-inline-end: var(--purr-gap-icon);
-      color: var(--purr-color-accent-text);
+      margin-inline-end: var(--pl-gap-icon);
+      color: var(--pl-color-accent-text);
     }
 
     ::slotted([slot="detail"]) {
       grid-column: 4;
-      margin-inline-start: var(--purr-space-2);
+      margin-inline-start: var(--pl-space-2);
       font-weight: 400;
-      color: var(--purr-color-muted-foreground);
+      color: var(--pl-color-muted-foreground);
     }
 
     :host([selected]) .control {
@@ -243,10 +243,10 @@ export const itemStyles = [
     /* Points inline-end, mirrored in RTL, and turns toward block-end when open. */
     .chevron {
       grid-column: 1;
-      inline-size: var(--purr-icon-md);
-      block-size: var(--purr-icon-md);
-      color: var(--purr-color-muted-foreground);
-      transition: transform var(--purr-duration) var(--purr-ease-out);
+      inline-size: var(--pl-icon-md);
+      block-size: var(--pl-icon-md);
+      color: var(--pl-color-muted-foreground);
+      transition: transform var(--pl-duration) var(--pl-ease-out);
     }
 
     :host([expanded]) .chevron {
@@ -264,7 +264,7 @@ export const itemStyles = [
     /* The fill alone is faint, so increased contrast adds a stroke. */
     @media (prefers-contrast: more) {
       :host([selected]) .control::before {
-        box-shadow: inset 0 0 0 1px var(--purr-color-input-border);
+        box-shadow: inset 0 0 0 1px var(--pl-color-input-border);
       }
     }
 
@@ -307,15 +307,15 @@ export const sectionStyles = css`
   }
 
   :host(:not(:first-child)) {
-    margin-block-start: var(--purr-space-3);
+    margin-block-start: var(--pl-space-3);
   }
 
   .heading {
     display: flex;
     align-items: center;
     min-block-size: var(--_head);
-    padding-inline: var(--purr-pad-item);
-    color: var(--purr-color-muted-foreground);
-    font: 700 var(--_head-text) / var(--_head-leading) var(--purr-font-sans);
+    padding-inline: var(--pl-pad-item);
+    color: var(--pl-color-muted-foreground);
+    font: 700 var(--_head-text) / var(--_head-leading) var(--pl-font-sans);
   }
 `;

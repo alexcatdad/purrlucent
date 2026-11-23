@@ -7,21 +7,20 @@ import { css } from "lit";
  */
 export const selectStyles = css`
   :host {
-    --_size: var(--purr-size-md);
-    --_pad: var(--purr-pad-control);
-    --_glyph: var(--purr-icon-md);
-    --_face: var(--purr-color-secondary);
-    --_face-pressed: var(--purr-color-secondary-pressed);
+    --_size: var(--pl-size-md);
+    --_pad: var(--pl-pad-control);
+    --_glyph: var(--pl-icon-md);
+    --_face: var(--pl-color-secondary);
+    --_face-pressed: var(--pl-color-secondary-pressed);
     --_face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
 
     display: inline-grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--purr-gap-form);
-    inline-size: calc(var(--purr-spacing) * 30);
+    gap: var(--pl-gap-form);
+    inline-size: calc(var(--pl-spacing) * 30);
     vertical-align: middle;
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
 
   :host([hidden]) {
@@ -29,12 +28,12 @@ export const selectStyles = css`
   }
 
   :host([size="lg"]) {
-    --_size: var(--purr-size-lg);
+    --_size: var(--pl-size-lg);
   }
 
   :host([size="xl"]) {
-    --_size: var(--purr-size-xl);
-    --_pad: var(--purr-pad-control-xl);
+    --_size: var(--pl-size-xl);
+    --_pad: var(--pl-pad-control-xl);
   }
 
   [part="label"] {
@@ -54,19 +53,18 @@ export const selectStyles = css`
     block-size: var(--_size);
     margin: 0;
     border: 0;
-    border-radius: var(--purr-radius);
+    border-radius: var(--pl-radius);
     padding: 0;
     padding-inline-start: var(--_pad);
     background: var(--_face);
-    box-shadow: var(--purr-boundary);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    box-shadow: var(--pl-boundary);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: start;
     cursor: default;
     transition:
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      color var(--purr-duration-fast) var(--purr-ease-out);
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   @media (hover: hover) {
@@ -81,13 +79,13 @@ export const selectStyles = css`
   }
 
   [part="trigger"][aria-disabled="true"] {
-    background: var(--purr-color-secondary-disabled);
-    color: var(--purr-color-disabled-foreground);
+    background: var(--pl-color-secondary-disabled);
+    color: var(--pl-color-disabled-foreground);
   }
 
   [part="trigger"]:focus-visible {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: var(--purr-ring-offset);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
   }
 
   [part="value"] {
@@ -99,7 +97,7 @@ export const selectStyles = css`
   }
 
   [part="value"].placeholder {
-    color: var(--purr-color-muted-foreground);
+    color: var(--pl-color-muted-foreground);
   }
 
   [part="trigger"][aria-disabled="true"] [part="value"].placeholder {
@@ -153,24 +151,23 @@ export const listboxStyles = css`
     overflow-y: auto;
     overscroll-behavior: contain;
     max-block-size: min(
-      calc(var(--purr-size-hit-min) * 8),
-      calc(100dvh - var(--purr-space-4))
+      calc(var(--pl-size-hit-min) * 8),
+      calc(100dvh - var(--pl-space-4))
     );
     min-inline-size: var(--_min-inline-size);
     inline-size: max-content;
-    max-inline-size: calc(100vw - var(--purr-space-4));
+    max-inline-size: calc(100vw - var(--pl-space-4));
     inset: auto;
-    margin: var(--purr-space-1) 0;
+    margin: var(--pl-space-1) 0;
     border: 0;
-    border-radius: var(--purr-radius-lg);
-    padding: var(--purr-pad-surface);
-    background: var(--purr-material-panel);
-    backdrop-filter: var(--purr-material-panel-filter);
-    box-shadow: var(--purr-material-edge), var(--purr-elevation-panel);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
-    transition: opacity var(--purr-duration) var(--purr-ease-out);
+    border-radius: var(--pl-radius-lg);
+    padding: var(--pl-pad-surface);
+    background: var(--pl-material-panel);
+    backdrop-filter: var(--pl-material-panel-filter);
+    box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
+    transition: opacity var(--pl-duration) var(--pl-ease-out);
   }
 
   /* Entry only: nothing waits for an exit animation to end. */
@@ -192,31 +189,29 @@ export const listboxStyles = css`
 
 export const optionStyles = css`
   :host {
-    --_label: calc(
-      var(--purr-pad-item) + var(--purr-icon-sm) + var(--purr-gap-icon)
-    );
+    --_label: calc(var(--pl-pad-item) + var(--pl-icon-sm) + var(--pl-gap-icon));
 
     position: relative;
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--purr-size-hit-min);
-    border-radius: var(--purr-radius);
-    padding-inline: var(--_label) var(--purr-pad-item);
+    min-block-size: var(--pl-size-hit-min);
+    border-radius: var(--pl-radius);
+    padding-inline: var(--_label) var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
     cursor: default;
     transition:
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      color var(--purr-duration-fast) var(--purr-ease-out);
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   [part="check"] {
     position: absolute;
-    inset-inline-start: var(--purr-pad-item);
-    inset-block-start: calc(50% - var(--purr-icon-sm) / 2);
-    inline-size: var(--purr-icon-sm);
-    block-size: var(--purr-icon-sm);
+    inset-inline-start: var(--pl-pad-item);
+    inset-block-start: calc(50% - var(--pl-icon-sm) / 2);
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -232,30 +227,30 @@ export const optionStyles = css`
   /* [data-active]: the option a combobox points at while focus stays in its field. */
   :host(:not([aria-disabled="true"]):focus),
   :host(:not([aria-disabled="true"])[data-active]) {
-    background: var(--purr-color-selected);
-    color: var(--purr-color-selected-foreground);
+    background: var(--pl-color-selected);
+    color: var(--pl-color-selected-foreground);
   }
 
   @media (hover: hover) {
     :host(:not([aria-disabled="true"]):hover) {
-      background: var(--purr-color-selected);
-      color: var(--purr-color-selected-foreground);
+      background: var(--pl-color-selected);
+      color: var(--pl-color-selected-foreground);
     }
   }
 
   /* Inset, so the popup does not clip it. */
   :host(:focus-visible) {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   :host([aria-disabled="true"]) {
-    color: var(--purr-color-disabled-foreground);
+    color: var(--pl-color-disabled-foreground);
   }
 
   /* The ring's own color matches the selection fill it sits on. */
   :host(:not([aria-disabled="true"]):focus-visible) {
-    outline-color: var(--purr-color-selected-foreground);
+    outline-color: var(--pl-color-selected-foreground);
   }
 
   @media (forced-colors: active) {

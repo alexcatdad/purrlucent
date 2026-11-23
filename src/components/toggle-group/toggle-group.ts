@@ -8,7 +8,7 @@ import { pickValue } from "./pick-value.ts";
 import { groupStyles, itemStyles } from "./toggle-group.css.ts";
 
 /**
- * One choice in a `purr-toggle-group`. The slot holds a text label or an svg
+ * One choice in a `pl-toggle-group`. The slot holds a text label or an svg
  * icon. An icon-only item needs an `aria-label` to be named; mark the svg
  * `aria-hidden="true"`. Use text or icons in one control, not both.
  *
@@ -18,7 +18,7 @@ import { groupStyles, itemStyles } from "./toggle-group.css.ts";
  * @slot - The item's text label or svg icon.
  * @csspart label - The wrapper around the label.
  */
-export class PurrToggleGroupItem extends LitElement {
+export class PlToggleGroupItem extends LitElement {
   static override styles = [interactionStyles, itemStyles];
   static override properties = {
     value: { type: String, reflect: true },
@@ -43,7 +43,7 @@ export class PurrToggleGroupItem extends LitElement {
 
   /** Disabled on its own or through its group. */
   get #off(): boolean {
-    const group = this.closest("purr-toggle-group");
+    const group = this.closest("pl-toggle-group");
     return (
       this.disabled ||
       (group?.disabled ?? false) ||
@@ -67,7 +67,7 @@ export class PurrToggleGroupItem extends LitElement {
     else this.pressable.internals.states.delete("disabled");
     // The group picks the tab stop among the enabled items.
     if (changed.has("disabled"))
-      this.closest("purr-toggle-group")?.requestUpdate();
+      this.closest("pl-toggle-group")?.requestUpdate();
   }
 
   override render() {
@@ -90,12 +90,12 @@ export class PurrToggleGroupItem extends LitElement {
  * @attr {string} label - The accessible name of the group.
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
- * @slot - `purr-toggle-group-item` elements.
- * @fires {CustomEvent<{ selected: string[] }>} purr-change - The selection changed by the user. `detail.selected` is a one-item array.
- * @fires input - After purr-change, as a native radio fires it.
+ * @slot - `pl-toggle-group-item` elements.
+ * @fires {CustomEvent<{ selected: string[] }>} pl-change - The selection changed by the user. `detail.selected` is a one-item array.
+ * @fires input - After pl-change, as a native radio fires it.
  * @fires change - After input, as a native radio fires it.
  */
-export class PurrToggleGroup extends LitElement {
+export class PlToggleGroup extends LitElement {
   static formAssociated = true;
   static override styles = [groupStyles];
   static override properties = {
@@ -121,7 +121,7 @@ export class PurrToggleGroup extends LitElement {
     orientation: "horizontal",
     wrap: true,
   });
-  #items: PurrToggleGroupItem[] = [];
+  #items: PlToggleGroupItem[] = [];
   /** True while the selection is synced from `value`: not a user change. */
   #syncing = false;
   /** The selection a form reset returns to: the first one the group settled on. */
@@ -136,19 +136,19 @@ export class PurrToggleGroup extends LitElement {
     this.label = "";
     this.size = "md";
     this.disabled = false;
-    this.addEventListener("purr-change", (event) => {
+    this.addEventListener("pl-change", (event) => {
       if (this.#syncing) return event.stopImmediatePropagation();
       const [selected] = (event as CustomEvent<{ selected: string[] }>).detail
         .selected;
       if (selected !== undefined) this.value = selected;
     });
-    this.addEventListener("purr-press", (event) => {
-      if (!this.#off && event.target instanceof PurrToggleGroupItem)
+    this.addEventListener("pl-press", (event) => {
+      if (!this.#off && event.target instanceof PlToggleGroupItem)
         this.#choose(event.target.value);
     });
   }
 
-  /** The user's choice; the native events follow purr-change, as on a native radio. */
+  /** The user's choice; the native events follow pl-change, as on a native radio. */
   #choose(value: string) {
     const before = this.value;
     this.#selection.select(value);
@@ -203,7 +203,7 @@ export class PurrToggleGroup extends LitElement {
     const enabled = this.#enabled;
     const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
     if (step && !(event.altKey || event.ctrlKey || event.metaKey)) {
-      const from = enabled.indexOf(event.target as PurrToggleGroupItem);
+      const from = enabled.indexOf(event.target as PlToggleGroupItem);
       if (from < 0) return;
       event.preventDefault();
       enabled[(from + step + enabled.length) % enabled.length]!.focus();
@@ -215,9 +215,7 @@ export class PurrToggleGroup extends LitElement {
   #onSlotChange = (event: Event) => {
     this.#items = (event.target as HTMLSlotElement)
       .assignedElements()
-      .filter(
-        (el): el is PurrToggleGroupItem => el instanceof PurrToggleGroupItem,
-      );
+      .filter((el): el is PlToggleGroupItem => el instanceof PlToggleGroupItem);
     this.requestUpdate();
   };
 
@@ -262,12 +260,12 @@ export class PurrToggleGroup extends LitElement {
   }
 }
 
-customElements.define("purr-toggle-group-item", PurrToggleGroupItem);
-customElements.define("purr-toggle-group", PurrToggleGroup);
+customElements.define("pl-toggle-group-item", PlToggleGroupItem);
+customElements.define("pl-toggle-group", PlToggleGroup);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-toggle-group-item": PurrToggleGroupItem;
-    "purr-toggle-group": PurrToggleGroup;
+    "pl-toggle-group-item": PlToggleGroupItem;
+    "pl-toggle-group": PlToggleGroup;
   }
 }

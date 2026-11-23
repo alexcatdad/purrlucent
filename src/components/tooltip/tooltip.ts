@@ -23,7 +23,7 @@ let count = 0;
  * @csspart bubble - The floating box. Invisible: its padding is the gap to the target.
  * @csspart face - The visible bubble.
  */
-export class PurrTooltip extends LitElement {
+export class PlTooltip extends LitElement {
   static override styles = tooltipStyles;
   static override properties = {
     text: { reflect: true },
@@ -52,7 +52,7 @@ export class PurrTooltip extends LitElement {
     this.shown = false;
     this.#tip.slot = "tip";
     this.#tip.role = "tooltip";
-    this.#tip.id = `purr-tooltip-${++count}`;
+    this.#tip.id = `pl-tooltip-${++count}`;
     new DismissController(this, {
       enabled: () => this.shown,
       onDismiss: () => this.#hide(),
@@ -143,10 +143,10 @@ export class PurrTooltip extends LitElement {
   }
 }
 
-customElements.define("purr-tooltip", PurrTooltip);
+customElements.define("pl-tooltip", PlTooltip);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-tooltip": PurrTooltip;
+    "pl-tooltip": PlTooltip;
   }
 }

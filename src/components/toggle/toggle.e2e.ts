@@ -8,12 +8,12 @@ import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `components-toggle--${name}`;
 
-/** Counts the purr-change events of `#toggle`, with the states they carry. */
+/** Counts the pl-change events of `#toggle`, with the states they carry. */
 const listen = (page: Page) =>
   page.locator("#toggle").evaluate((el) => {
     const seen: boolean[] = [];
     (window as unknown as { seen: boolean[] }).seen = seen;
-    el.addEventListener("purr-change", (event) =>
+    el.addEventListener("pl-change", (event) =>
       seen.push((event as CustomEvent<{ pressed: boolean }>).detail.pressed),
     );
   });
@@ -31,7 +31,7 @@ test("aria snapshot", async ({ page }) => {
   `);
 });
 
-test("a click, Enter and Space flip the state and fire purr-change", async ({
+test("a click, Enter and Space flip the state and fire pl-change", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
@@ -48,7 +48,7 @@ test("a click, Enter and Space flip the state and fire purr-change", async ({
   expect(await changes(page)).toEqual([true, false, true]);
 });
 
-test("setting pressed from script fires no purr-change", async ({ page }) => {
+test("setting pressed from script fires no pl-change", async ({ page }) => {
   await gotoStory(page, story("default"));
   await listen(page);
   await page
@@ -99,7 +99,7 @@ test("the on state differs from the off state in face, text and icon fill", asyn
   await gotoStory(page, story("states"));
   const look = (i: number) =>
     page
-      .locator("purr-toggle")
+      .locator("pl-toggle")
       .nth(i)
       .evaluate((el) => ({
         face: getComputedStyle(el, "::before").backgroundColor,
@@ -117,7 +117,7 @@ test("the on state differs from the off state in face, text and icon fill", asyn
 
 test("an icon toggle is round and as wide as it is tall", async ({ page }) => {
   await gotoStory(page, story("sizes"));
-  for (const toggle of await page.locator("purr-toggle[icon]").all()) {
+  for (const toggle of await page.locator("pl-toggle[icon]").all()) {
     const box = (await toggle.boundingBox())!;
     expect(box.width).toBeCloseTo(box.height, 0);
   }
@@ -130,7 +130,7 @@ test("a pressed toggle shows Highlight under forced colors", async ({
   await page.emulateMedia({ forcedColors: "active" });
   const face = (i: number) =>
     page
-      .locator("purr-toggle")
+      .locator("pl-toggle")
       .nth(i)
       .evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   expect(await face(1)).not.toBe(await face(0));
@@ -151,7 +151,7 @@ test("the focus ring stays visible under forced colors", async ({ page }) => {
 test("under rtl the label and icon swap sides", async ({ page }) => {
   await gotoStory(page, story("states"), "dir:rtl");
   const side = await page
-    .locator("purr-toggle")
+    .locator("pl-toggle")
     .first()
     .evaluate((el) => {
       const box = el.getBoundingClientRect();
@@ -164,7 +164,7 @@ test("under rtl the label and icon swap sides", async ({ page }) => {
 test("an icon toggle without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-toggle");
+    const bare = document.createElement("pl-toggle");
     bare.setAttribute("icon", "");
     el.append(bare);
   });
@@ -188,7 +188,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every toggle keeps a 44 by 44 hit area", async ({ page }) => {
     await gotoStory(page, story("sizes"));
-    for (const toggle of await page.locator("purr-toggle").all()) {
+    for (const toggle of await page.locator("pl-toggle").all()) {
       const box = (await toggle.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);

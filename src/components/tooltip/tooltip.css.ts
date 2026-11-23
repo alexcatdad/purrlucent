@@ -7,7 +7,7 @@ import { css } from "lit";
  */
 export const tooltipStyles = css`
   :host {
-    --_gap: var(--purr-space-1-5);
+    --_gap: var(--pl-space-1-5);
 
     display: inline-block;
     /* Read by the element, not used: its computed value is the hover delay. A fixed time, not a motion token: the delay is behaviour and must survive reduced motion. */
@@ -20,7 +20,7 @@ export const tooltipStyles = css`
 
   [part="bubble"] {
     box-sizing: border-box;
-    max-inline-size: calc(100vw - var(--purr-space-4));
+    max-inline-size: calc(100vw - var(--pl-space-4));
     inset: auto;
     margin: 0;
     border: 0;
@@ -28,7 +28,7 @@ export const tooltipStyles = css`
     overflow: visible;
     background: none;
     color: inherit;
-    transition: opacity var(--purr-duration-slow) var(--purr-ease-out);
+    transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
 
   /* Entry only: nothing waits for an exit animation to end. */
@@ -41,17 +41,16 @@ export const tooltipStyles = css`
   [part="face"] {
     inline-size: max-content;
     max-inline-size: 100%;
-    border-radius: var(--purr-radius);
-    padding: var(--purr-space-1) var(--purr-space-1-5);
-    background: var(--purr-material-panel);
-    backdrop-filter: var(--purr-material-panel-filter);
+    border-radius: var(--pl-radius);
+    padding: var(--pl-space-1) var(--pl-space-1-5);
+    background: var(--pl-material-panel);
+    backdrop-filter: var(--pl-material-panel-filter);
     overflow-wrap: anywhere;
     box-shadow:
-      inset 0 0 0 1px var(--purr-color-edge),
-      var(--purr-elevation-panel);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-xs) / var(--purr-leading-tight)
-      var(--purr-font-sans);
+      inset 0 0 0 1px var(--pl-color-edge),
+      var(--pl-elevation-panel);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-xs) / var(--pl-leading-tight) var(--pl-font-sans);
   }
 
   /* A block, not the inline span it is made as: Firefox reports an inline box's text as overflow. */

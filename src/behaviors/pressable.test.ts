@@ -33,7 +33,7 @@ beforeEach(() => {
     { disabled: () => disabled },
   );
   controller.hostConnected();
-  host.addEventListener("purr-press", () => presses++);
+  host.addEventListener("pl-press", () => presses++);
 });
 
 const key = (type: "keydown" | "keyup", value: string) =>
@@ -44,12 +44,12 @@ const pointer = (type: string, inside = true) => {
   host.ownerDocument.dispatchEvent(new Event(type));
 };
 
-test("Enter fires purr-press once", () => {
+test("Enter fires pl-press once", () => {
   key("keydown", "Enter");
   expect(presses).toBe(1);
 });
 
-test("Space fires purr-press once", () => {
+test("Space fires pl-press once", () => {
   key("keydown", " ");
   key("keyup", " ");
   expect(presses).toBe(1);
@@ -76,7 +76,7 @@ test("disabled hosts fire nothing", () => {
   expect(host.states.has("pressed")).toBe(false);
 });
 
-test("a click fires purr-press", () => {
+test("a click fires pl-press", () => {
   pointer("pointerdown");
   pointer("pointerup");
   pointer("click");
@@ -146,7 +146,7 @@ test("with enter: false, Enter fires nothing and Space still does", () => {
     other as unknown as ReactiveControllerHost & HTMLElement,
     { disabled: () => false, enter: false },
   ).hostConnected();
-  other.addEventListener("purr-press", () => count++);
+  other.addEventListener("pl-press", () => count++);
   const press = (type: "keydown" | "keyup", value: string) =>
     other.dispatchEvent(Object.assign(new Event(type), { key: value }));
   press("keydown", "Enter");

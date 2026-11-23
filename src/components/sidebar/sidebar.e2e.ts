@@ -58,7 +58,7 @@ test("is a navigation landmark named by its label", async ({ page }) => {
 test("toggle-label names the toggle button", async ({ page }) => {
   await open(page, "default");
   await page
-    .locator("purr-sidebar")
+    .locator("pl-sidebar")
     .evaluate((el) => el.setAttribute("toggle-label", "Barre latérale"));
   await expect(
     page.getByRole("button", { name: "Barre latérale" }),
@@ -98,13 +98,13 @@ test("the selected item is marked current and stays highlighted", async ({
   expect(await fill("settings")).not.toBe(await fill("home"));
 });
 
-test("selecting an item fires purr-change once", async ({ page }) => {
+test("selecting an item fires pl-change once", async ({ page }) => {
   await open(page);
   const changes = await page.evaluate(async () => {
     let count = 0;
     document
       .querySelector("#sidebar")
-      ?.addEventListener("purr-change", () => count++);
+      ?.addEventListener("pl-change", () => count++);
     document
       .querySelector<HTMLElement>("#settings")
       ?.shadowRoot?.querySelector("a")
@@ -237,7 +237,7 @@ test("Escape on an open group button closes it", async ({ page }) => {
   expect(await focusedId(page)).toBe("albums");
 });
 
-test("selecting the already selected item fires no purr-change", async ({
+test("selecting the already selected item fires no pl-change", async ({
   page,
 }) => {
   await open(page);
@@ -245,7 +245,7 @@ test("selecting the already selected item fires no purr-change", async ({
     let count = 0;
     document
       .querySelector("#sidebar")
-      ?.addEventListener("purr-change", () => count++);
+      ?.addEventListener("pl-change", () => count++);
     document
       .querySelector<HTMLElement>("#home")
       ?.shadowRoot?.querySelector("a")
@@ -468,14 +468,14 @@ test("a section heading that wraps grows instead of overflowing", async ({
     .toBeGreaterThan(before);
 });
 
-test("closing a group with Escape fires purr-toggle", async ({ page }) => {
+test("closing a group with Escape fires pl-toggle", async ({ page }) => {
   await open(page, "group-open");
   await page.evaluate(() => {
     const events: boolean[] = [];
     (window as unknown as { toggles: boolean[] }).toggles = events;
     document
       .querySelector("#sidebar")
-      ?.addEventListener("purr-toggle", (e) =>
+      ?.addEventListener("pl-toggle", (e) =>
         events.push((e as CustomEvent).detail.expanded),
       );
   });
@@ -501,7 +501,7 @@ test("an item without href is a focusable control that arrows reach", async ({
     .evaluate((el) =>
       el.insertAdjacentHTML(
         "afterend",
-        '<purr-sidebar-item id="plain">Plain</purr-sidebar-item>',
+        '<pl-sidebar-item id="plain">Plain</pl-sidebar-item>',
       ),
     );
   await page.locator("#home a").focus();
@@ -509,7 +509,7 @@ test("an item without href is a focusable control that arrows reach", async ({
   expect(await focusedId(page)).toBe("plain");
 });
 
-test("clicking a row without href selects it and fires purr-change", async ({
+test("clicking a row without href selects it and fires pl-change", async ({
   page,
 }) => {
   await open(page);
@@ -518,7 +518,7 @@ test("clicking a row without href selects it and fires purr-change", async ({
     .evaluate((el) =>
       el.insertAdjacentHTML(
         "afterend",
-        '<purr-sidebar-item id="plain">Plain</purr-sidebar-item>',
+        '<pl-sidebar-item id="plain">Plain</pl-sidebar-item>',
       ),
     );
   await page.evaluate(() => {
@@ -526,7 +526,7 @@ test("clicking a row without href selects it and fires purr-change", async ({
     w.changes = [];
     document
       .querySelector("#sidebar")
-      ?.addEventListener("purr-change", (e) =>
+      ?.addEventListener("pl-change", (e) =>
         w.changes.push(
           (e as CustomEvent<{ selected: Element[] }>).detail.selected[0]!.id,
         ),
@@ -551,7 +551,7 @@ test("a modified click does not select", async ({ page }) => {
     let count = 0;
     document
       .querySelector("#sidebar")
-      ?.addEventListener("purr-change", () => count++);
+      ?.addEventListener("pl-change", () => count++);
     const link = document
       .querySelector("#settings")!
       .shadowRoot!.querySelector("a")!;
@@ -569,7 +569,7 @@ test("a modified click does not select", async ({ page }) => {
   expect(result).toEqual({ count: 0, current: false });
 });
 
-test("purr-change fires again after the app moved the selection", async ({
+test("pl-change fires again after the app moved the selection", async ({
   page,
 }) => {
   await open(page);
@@ -583,7 +583,7 @@ test("purr-change fires again after the app moved the selection", async ({
     let count = 0;
     document
       .querySelector("#sidebar")
-      ?.addEventListener("purr-change", () => count++);
+      ?.addEventListener("pl-change", () => count++);
     await new Promise((done) => requestAnimationFrame(done));
     document
       .querySelector("#settings")!
@@ -815,10 +815,10 @@ test("an item icon takes the accent text color and the icon size token", async (
   await open(page, "sections");
   const icon = "#inbox svg";
   expect(await style(page, icon, "color")).toBe(
-    await resolve(page, "color", "var(--purr-color-accent-text)"),
+    await resolve(page, "color", "var(--pl-color-accent-text)"),
   );
   expect(await style(page, icon, "width")).toBe(
-    await resolve(page, "width", "var(--purr-icon-md)"),
+    await resolve(page, "width", "var(--pl-icon-md)"),
   );
 });
 
@@ -828,7 +828,7 @@ test("item detail text is muted and sits at the trailing end", async ({
   await open(page, "sections");
   const detail = "#today [slot=detail]";
   expect(await style(page, detail, "color")).toBe(
-    await resolve(page, "color", "var(--purr-color-muted-foreground)"),
+    await resolve(page, "color", "var(--pl-color-muted-foreground)"),
   );
   const [row, text] = await Promise.all([
     page.locator("#today a").boundingBox(),
@@ -916,7 +916,7 @@ test("a level 2 item added to a section makes the item before it a group", async
     .evaluate((el) =>
       el.insertAdjacentHTML(
         "afterend",
-        '<purr-sidebar-item id="child" level="2" href="#child">Child</purr-sidebar-item>',
+        '<pl-sidebar-item id="child" level="2" href="#child">Child</pl-sidebar-item>',
       ),
     );
   await expect(page.locator("#plain button[aria-expanded]")).toHaveCount(1);
@@ -932,7 +932,7 @@ test("a level 2 item first in a section does not join the section before it", as
     .evaluate((el) =>
       el.insertAdjacentHTML(
         "afterbegin",
-        '<purr-sidebar-item id="orphan" level="2" href="#orphan">Orphan</purr-sidebar-item>',
+        '<pl-sidebar-item id="orphan" level="2" href="#orphan">Orphan</pl-sidebar-item>',
       ),
     );
   await expect(page.locator("#orphan")).toBeVisible();

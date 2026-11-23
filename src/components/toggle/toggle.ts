@@ -1,20 +1,20 @@
-import { PurrButton } from "../button/button.ts";
+import { PlButton } from "../button/button.ts";
 import { toggleStyles } from "./toggle.css.ts";
 
 /**
  * A button that holds an on or off state, announced as `aria-pressed`. It is a
- * `purr-button`, so size, `icon`, `disabled`, the slotted label and the leading
+ * `pl-button`, so size, `icon`, `disabled`, the slotted label and the leading
  * svg icon work the same; an `icon` toggle needs an `aria-label`. The button's
  * `variant`, `type` and `destructive` have no use here.
  *
- * @fires {CustomEvent<{ pressed: boolean }>} purr-change - A press changed the state. `detail.pressed` holds the new one.
+ * @fires {CustomEvent<{ pressed: boolean }>} pl-change - A press changed the state. `detail.pressed` holds the new one.
  * @slot - The label, with an optional leading svg icon (filled while on).
  * @csspart label - The wrapper around the label.
  */
-export class PurrToggle extends PurrButton {
-  static override styles = [...PurrButton.styles, toggleStyles];
+export class PlToggle extends PlButton {
+  static override styles = [...PlButton.styles, toggleStyles];
   static override properties = {
-    ...PurrButton.properties,
+    ...PlButton.properties,
     pressed: { type: Boolean, reflect: true },
   };
 
@@ -23,10 +23,10 @@ export class PurrToggle extends PurrButton {
   constructor() {
     super();
     this.pressed = false;
-    this.addEventListener("purr-press", () => {
+    this.addEventListener("pl-press", () => {
       this.pressed = !this.pressed;
       this.dispatchEvent(
-        new CustomEvent("purr-change", {
+        new CustomEvent("pl-change", {
           detail: { pressed: this.pressed },
           bubbles: true,
           composed: true,
@@ -41,10 +41,10 @@ export class PurrToggle extends PurrButton {
   }
 }
 
-customElements.define("purr-toggle", PurrToggle);
+customElements.define("pl-toggle", PlToggle);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-toggle": PurrToggle;
+    "pl-toggle": PlToggle;
   }
 }

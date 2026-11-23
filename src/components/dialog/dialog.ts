@@ -6,7 +6,7 @@ let locks = 0;
 let savedOverflow = "";
 
 // A second sheet over an open one is warned about; an alert over a sheet is not.
-const openSheets = new Set<PurrDialog>();
+const openSheets = new Set<PlDialog>();
 
 const lockScroll = () => {
   if (locks++ === 0) {
@@ -30,7 +30,7 @@ const unlockScroll = () => {
  * description.
  *
  * Initial focus goes to the element with `autofocus`, otherwise the default
- * action (a `purr-button` with `default`, unless destructive), the cancel
+ * action (a `pl-button` with `default`, unless destructive), the cancel
  * action (`cancel`) or the first action. Return clicks the default action,
  * except in a multi-line text field or on a focused button; Escape and
  * Command-Period click the cancel action, and without one Escape closes the
@@ -46,21 +46,21 @@ const unlockScroll = () => {
  * @attr {string} variant - `sheet` (default) or `alert`.
  * @attr {string} label - The accessible name when there is no slotted title.
  * @attr {boolean} dismissible - A sheet also closes when the backdrop is pressed. An alert never does.
- * @cssprop --purr-dialog-width - The width of a sheet. Defaults to 390px (97.5 spacing units) and is capped at the viewport width minus the page margin. An alert ignores it.
+ * @cssprop --pl-dialog-width - The width of a sheet. Defaults to 390px (97.5 spacing units) and is capped at the viewport width minus the page margin. An alert ignores it.
  * @slot icon - An `svg` shown as a tile.
  * @slot title - The heading.
  * @slot description - A short explanation under the sheet's title.
  * @slot - The alert's message, or the sheet's scrolling body.
- * @slot actions - `purr-button` elements, in the order they are shown.
+ * @slot actions - `pl-button` elements, in the order they are shown.
  * @csspart dialog - The native dialog.
  * @csspart surface - The padded panel inside it.
  * @csspart header - The icon and title.
  * @csspart body - The scrolling content.
  * @csspart actions - The row or column of actions.
- * @fires purr-cancel - Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
- * @fires {CustomEvent<{ returnValue: string }>} purr-close - The dialog closed. `detail.returnValue` holds the value it closed with.
+ * @fires pl-cancel - Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
+ * @fires {CustomEvent<{ returnValue: string }>} pl-close - The dialog closed. `detail.returnValue` holds the value it closed with.
  */
-export class PurrDialog extends LitElement {
+export class PlDialog extends LitElement {
   static override styles = dialogStyles;
   static override properties = {
     open: { type: Boolean, reflect: true },
@@ -112,7 +112,7 @@ export class PurrDialog extends LitElement {
     this.open = true;
   }
 
-  /** Closes the dialog. `returnValue` is reported by `purr-close`. */
+  /** Closes the dialog. `returnValue` is reported by `pl-close`. */
   close(returnValue = "") {
     this.#dialog?.close(returnValue);
     this.open = false;
@@ -179,16 +179,16 @@ export class PurrDialog extends LitElement {
 
   async #focusInitial() {
     if (this.querySelector(":scope > [slot=actions][default][destructive]"))
-      console.warn("purr-dialog: a destructive button cannot be the default.");
+      console.warn("pl-dialog: a destructive button cannot be the default.");
     if (
       this.variant === "alert" &&
       this.querySelectorAll(":scope > [slot=actions]").length > 3
     )
-      console.warn("purr-dialog: an alert takes at most three buttons.");
+      console.warn("pl-dialog: an alert takes at most three buttons.");
     if (this.variant === "sheet") {
       if (openSheets.size)
         console.warn(
-          "purr-dialog: show one sheet at a time; close the open sheet first.",
+          "pl-dialog: show one sheet at a time; close the open sheet first.",
         );
       openSheets.add(this);
     }
@@ -199,7 +199,7 @@ export class PurrDialog extends LitElement {
       this.shadowRoot!.querySelector<HTMLSlotElement>(
         "slot[name=actions]",
       )!.assignedElements()[0];
-    // A purr-button gets its tabindex when it first updates.
+    // A pl-button gets its tabindex when it first updates.
     await (target as Partial<LitElement> | undefined)?.updateComplete;
     (target as HTMLElement | undefined)?.focus();
   }
@@ -216,7 +216,7 @@ export class PurrDialog extends LitElement {
   }
 
   #onCancel = (event: Event) => {
-    if (!this.#emit("purr-cancel", undefined, event.cancelable))
+    if (!this.#emit("pl-cancel", undefined, event.cancelable))
       event.preventDefault();
   };
 
@@ -227,7 +227,7 @@ export class PurrDialog extends LitElement {
     this.open = false;
     this.#unlock();
     this.#returnValue = this.#dialog!.returnValue;
-    this.#emit("purr-close", { returnValue: this.#returnValue });
+    this.#emit("pl-close", { returnValue: this.#returnValue });
   };
 
   // The panel fills the native dialog, so a press on the dialog itself is a
@@ -243,14 +243,14 @@ export class PurrDialog extends LitElement {
       this.#pressedBackdrop &&
       this.variant === "sheet" &&
       this.dismissible &&
-      this.#emit("purr-cancel", undefined, true)
+      this.#emit("pl-cancel", undefined, true)
     )
       this.close();
   };
 
   #onActivate = (event: Event) => {
     const closer = (event.target as Element).closest?.("[data-close]");
-    if (closer?.closest("purr-dialog") === this && !closer.matches(":disabled"))
+    if (closer?.closest("pl-dialog") === this && !closer.matches(":disabled"))
       this.close(closer.getAttribute("data-close") ?? "");
   };
 
@@ -266,7 +266,7 @@ export class PurrDialog extends LitElement {
           (el) =>
             el instanceof Element &&
             el.matches(
-              "textarea, [contenteditable]:not([contenteditable=false]), purr-button",
+              "textarea, [contenteditable]:not([contenteditable=false]), pl-button",
             ),
         )
         ? null
@@ -332,10 +332,10 @@ export class PurrDialog extends LitElement {
   }
 }
 
-customElements.define("purr-dialog", PurrDialog);
+customElements.define("pl-dialog", PlDialog);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-dialog": PurrDialog;
+    "pl-dialog": PlDialog;
   }
 }

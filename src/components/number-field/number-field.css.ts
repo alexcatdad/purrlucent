@@ -11,32 +11,32 @@ export const numberFieldStyles = [
   fieldStyles,
   css`
     :host {
-      --_sw: calc(var(--purr-spacing) * 5);
-      --_stw: max(var(--_sw), var(--purr-size-hit-min));
+      --_sw: calc(var(--pl-spacing) * 5);
+      --_stw: max(var(--_sw), var(--pl-size-hit-min));
       --_gap: calc(var(--_stw) - var(--_sw));
-      --_btn: var(--purr-color-secondary);
+      --_btn: var(--pl-color-secondary);
 
       inline-size: auto;
       justify-items: start;
     }
 
     :host([size="lg"]) {
-      --_sw: calc(var(--purr-spacing) * 5.75);
+      --_sw: calc(var(--pl-spacing) * 5.75);
     }
 
     :host([size="xl"]) {
-      --_sw: calc(var(--purr-spacing) * 7.5);
+      --_sw: calc(var(--pl-spacing) * 7.5);
     }
 
     [part="group"] {
       position: relative;
       display: inline-flex;
-      gap: var(--purr-gap-controls);
+      gap: var(--pl-gap-controls);
       block-size: var(--_h);
     }
 
     [part="field"] {
-      inline-size: calc(var(--purr-spacing) * 16 + var(--_stw));
+      inline-size: calc(var(--pl-spacing) * 16 + var(--_stw));
       padding-inline-end: calc(var(--_stw) + var(--_pad));
     }
 
@@ -52,7 +52,7 @@ export const numberFieldStyles = [
     }
 
     :host([stepper="outside"]) [part="field"] {
-      inline-size: calc(var(--purr-spacing) * 15);
+      inline-size: calc(var(--pl-spacing) * 15);
       padding-inline-end: var(--_pad);
     }
 
@@ -64,7 +64,7 @@ export const numberFieldStyles = [
 
     /* Outside, the drawn halves sit against the field and the hit area extends away from it. */
     :host([stepper="outside"]) [part="stepper"]::after {
-      inset-inline: var(--purr-space-1) calc(var(--_gap) + var(--purr-space-1));
+      inset-inline: var(--pl-space-1) calc(var(--_gap) + var(--pl-space-1));
     }
 
     :host([stepper="outside"]) [part="stepper"] button {
@@ -79,10 +79,10 @@ export const numberFieldStyles = [
       content: "";
       position: absolute;
       inset-block-start: calc(50% - 0.5px);
-      inset-inline: calc(var(--_gap) + var(--purr-space-1)) var(--purr-space-1);
+      inset-inline: calc(var(--_gap) + var(--pl-space-1)) var(--pl-space-1);
       block-size: 1px;
-      border-radius: var(--purr-radius-full);
-      background: var(--purr-color-muted-1);
+      border-radius: var(--pl-radius-full);
+      background: var(--pl-color-muted-1);
       pointer-events: none;
     }
 
@@ -93,19 +93,19 @@ export const numberFieldStyles = [
       justify-items: center;
       box-sizing: border-box;
       inline-size: var(--_stw);
-      block-size: var(--purr-size-hit-min);
+      block-size: var(--pl-size-hit-min);
       margin: 0;
       padding: 0;
       padding-inline-start: var(--_gap);
       border: 0;
       background: none;
-      color: var(--purr-color-foreground);
-      font-size: var(--purr-text-sm);
+      color: var(--pl-color-foreground);
+      font-size: var(--pl-text-sm);
       outline: 0;
       isolation: isolate;
       cursor: default;
       touch-action: manipulation;
-      transition: color var(--purr-duration-fast) var(--purr-ease-out);
+      transition: color var(--pl-duration-fast) var(--pl-ease-out);
     }
 
     [part="stepper"] button::before {
@@ -116,8 +116,7 @@ export const numberFieldStyles = [
       block-size: calc(var(--_h) / 2);
       background-color: var(--_btn);
       z-index: -1;
-      transition: background-color var(--purr-duration-fast)
-        var(--purr-ease-out);
+      transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
     }
 
     /* The glyph is centred in the drawn half, not in the hit square. */
@@ -129,8 +128,8 @@ export const numberFieldStyles = [
 
     [part="increment"]::before {
       inset-block-end: 0;
-      border-start-start-radius: var(--purr-radius);
-      border-start-end-radius: var(--purr-radius);
+      border-start-start-radius: var(--pl-radius);
+      border-start-end-radius: var(--pl-radius);
     }
 
     [part="stepper"] [part="decrement"] {
@@ -141,8 +140,8 @@ export const numberFieldStyles = [
 
     [part="decrement"]::before {
       inset-block-start: 0;
-      border-end-start-radius: var(--purr-radius);
-      border-end-end-radius: var(--purr-radius);
+      border-end-start-radius: var(--pl-radius);
+      border-end-end-radius: var(--pl-radius);
     }
 
     /* Inside, the start side meets the field and stays square. */
@@ -166,21 +165,21 @@ export const numberFieldStyles = [
         background-color: color-mix(
           in srgb,
           var(--_btn),
-          var(--purr-color-secondary-pressed) 50%
+          var(--pl-color-secondary-pressed) 50%
         );
       }
     }
 
     [part="stepper"] button:enabled:active::before {
-      background-color: var(--purr-color-secondary-pressed);
+      background-color: var(--pl-color-secondary-pressed);
     }
 
     [part="stepper"] button:disabled {
-      color: var(--purr-color-disabled-foreground);
+      color: var(--pl-color-disabled-foreground);
     }
 
     [part="stepper"] button:disabled::before {
-      background-color: var(--purr-color-secondary-disabled);
+      background-color: var(--pl-color-secondary-disabled);
     }
 
     @media (forced-colors: active) {

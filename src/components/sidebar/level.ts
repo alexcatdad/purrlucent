@@ -20,7 +20,7 @@ export function parseLevel(value: unknown): SidebarLevel {
   if (value === 1 || value === 2) return value;
   if (!isProduction())
     throw new RangeError(
-      `purr-sidebar-item: level must be 1 or 2, received ${String(value)}`,
+      `pl-sidebar-item: level must be 1 or 2, received ${String(value)}`,
     );
   return 2;
 }

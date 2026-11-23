@@ -30,12 +30,12 @@ import {
  * @csspart fill - The part of the groove up to the thumb.
  * @csspart ticks - The tick marks.
  * @csspart thumb - The knob.
- * @fires {CustomEvent<{ value: number }>} purr-input - The value changed while dragging or on a key. `detail.value` holds it.
- * @fires {CustomEvent<{ value: number }>} purr-change - The user committed a changed value, on release or on a key. `detail.value` holds it.
- * @fires input - After each purr-input, as a native range input fires it.
- * @fires change - After each purr-change, as a native range input fires it.
+ * @fires {CustomEvent<{ value: number }>} pl-input - The value changed while dragging or on a key. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: number }>} pl-change - The user committed a changed value, on release or on a key. `detail.value` holds it.
+ * @fires input - After each pl-input, as a native range input fires it.
+ * @fires change - After each pl-change, as a native range input fires it.
  */
-export class PurrSlider extends LitElement {
+export class PlSlider extends LitElement {
   static formAssociated = true;
   static override styles = sliderStyles;
   static override properties = {
@@ -122,7 +122,7 @@ export class PurrSlider extends LitElement {
     return getComputedStyle(this).direction === "rtl";
   }
 
-  #emit(name: "purr-input" | "purr-change") {
+  #emit(name: "pl-input" | "pl-change") {
     this.dispatchEvent(
       new CustomEvent(name, {
         detail: { value: this.value },
@@ -130,13 +130,13 @@ export class PurrSlider extends LitElement {
         composed: true,
       }),
     );
-    fireNative(this, name === "purr-input" ? "input" : "change");
+    fireNative(this, name === "pl-input" ? "input" : "change");
   }
 
   #set(value: number) {
     if (value === this.#current) return;
     this.value = value;
-    this.#emit("purr-input");
+    this.#emit("pl-input");
   }
 
   #onKeyDown = (event: KeyboardEvent) => {
@@ -158,7 +158,7 @@ export class PurrSlider extends LitElement {
     event.preventDefault();
     const before = this.#current;
     this.#set(next);
-    if (this.#current !== before) this.#emit("purr-change");
+    if (this.#current !== before) this.#emit("pl-change");
   };
 
   #setFromPointer(event: PointerEvent) {
@@ -204,7 +204,7 @@ export class PurrSlider extends LitElement {
   #onPointerEnd = () => {
     if (this.#startValue === undefined) return;
     this.#internals.states.delete("dragging");
-    if (this.#current !== this.#startValue) this.#emit("purr-change");
+    if (this.#current !== this.#startValue) this.#emit("pl-change");
     this.#startValue = undefined;
   };
 
@@ -241,10 +241,10 @@ export class PurrSlider extends LitElement {
   }
 }
 
-customElements.define("purr-slider", PurrSlider);
+customElements.define("pl-slider", PlSlider);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-slider": PurrSlider;
+    "pl-slider": PlSlider;
   }
 }

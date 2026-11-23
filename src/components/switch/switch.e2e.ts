@@ -92,7 +92,7 @@ test("a click on a disabled switch does not focus it", async ({ page }) => {
   );
 });
 
-test("purr-change fires after the form value, validity and aria-checked are updated", async ({
+test("pl-change fires after the form value, validity and aria-checked are updated", async ({
   page,
 }) => {
   await gotoStory(page, story("in-form"));
@@ -100,7 +100,7 @@ test("purr-change fires after the form value, validity and aria-checked are upda
     (el) =>
       new Promise<unknown>((resolve) => {
         const form = (el as HTMLElement).closest("form")!;
-        el.addEventListener("purr-change", () =>
+        el.addEventListener("pl-change", () =>
           resolve({
             data: new FormData(form).get("sync"),
             valid: form.checkValidity(),
@@ -136,7 +136,7 @@ test("a label filled in later by editing its text node shows", async ({
 }) => {
   const root = await gotoStory(page, story("default"));
   const labelled = await root.evaluate(async (el) => {
-    const bare = document.createElement("purr-switch");
+    const bare = document.createElement("pl-switch");
     const text = document.createTextNode("");
     bare.append(text);
     el.append(bare);
@@ -181,7 +181,7 @@ test.describe("forced colors", () => {
 
   test("a disabled switch differs from an enabled one", async ({ page }) => {
     await gotoStory(page, story("states"));
-    const nth = (i: number) => colors(page, `purr-switch:nth-of-type(${i})`);
+    const nth = (i: number) => colors(page, `pl-switch:nth-of-type(${i})`);
     const [off, on, disabled, disabledOn] = [
       await nth(1),
       await nth(2),
@@ -260,7 +260,7 @@ test("the thumb moves to the other end when on, and mirrors under rtl", async ({
   const offset = async (name: string) => {
     await gotoStory(page, story(name));
     return page
-      .locator("purr-switch")
+      .locator("pl-switch")
       .first()
       .evaluate((el) => {
         const part = (name: string) =>
@@ -301,7 +301,7 @@ test("the track keeps its focus ring under forced colors", async ({ page }) => {
 test("a switch without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-switch");
+    const bare = document.createElement("pl-switch");
     bare.id = "bare";
     el.append(bare);
   });
@@ -327,7 +327,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every switch keeps a 44 by 44 hit area", async ({ page }) => {
     await gotoStory(page, story("states"));
-    for (const control of await page.locator("purr-switch").all()) {
+    for (const control of await page.locator("pl-switch").all()) {
       const box = (await control.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);

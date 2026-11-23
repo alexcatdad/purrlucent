@@ -8,48 +8,47 @@ import { css } from "lit";
  */
 export const buttonStyles = css`
   :host {
-    --_tone: var(--purr-color-accent);
-    --_tone-text: var(--purr-color-accent-text);
-    --_face: var(--purr-color-secondary);
-    --_face-pressed: var(--purr-color-secondary-pressed);
-    --_face-disabled: var(--purr-color-secondary-disabled);
-    --_fg: var(--purr-color-foreground);
-    --_fg-disabled: var(--purr-color-disabled-foreground);
-    --_size: var(--purr-size-md);
-    --purr-face: var(--_face);
-    --purr-face-pressed: var(--_face-pressed);
-    --purr-face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
+    --_tone: var(--pl-color-accent);
+    --_tone-text: var(--pl-color-accent-text);
+    --_face: var(--pl-color-secondary);
+    --_face-pressed: var(--pl-color-secondary-pressed);
+    --_face-disabled: var(--pl-color-secondary-disabled);
+    --_fg: var(--pl-color-foreground);
+    --_fg-disabled: var(--pl-color-disabled-foreground);
+    --_size: var(--pl-size-md);
+    --pl-face: var(--_face);
+    --pl-face-pressed: var(--_face-pressed);
+    --pl-face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
 
     min-block-size: var(--_size);
-    padding: var(--purr-space-1) var(--purr-pad-control);
-    border-radius: var(--purr-radius);
+    padding: var(--pl-space-1) var(--pl-pad-control);
+    border-radius: var(--pl-radius);
     color: var(--_fg);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: center;
     cursor: default;
     user-select: none;
-    transition: color var(--purr-duration-fast) var(--purr-ease-out);
+    transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   [part="label"] {
     display: inline-flex;
     align-items: center;
-    gap: var(--purr-gap-icon);
+    gap: var(--pl-gap-icon);
     overflow-wrap: anywhere;
   }
 
   ::slotted(svg),
-  purr-spinner {
+  pl-spinner {
     flex: none;
-    inline-size: var(--purr-icon-md);
-    block-size: var(--purr-icon-md);
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
   }
 
   /* The busy spinner follows the label colour on every variant. */
-  purr-spinner {
-    --purr-color-selected: currentColor;
-    --purr-color-track: color-mix(in srgb, currentColor 25%, transparent);
+  pl-spinner {
+    --pl-color-selected: currentColor;
+    --pl-color-track: color-mix(in srgb, currentColor 25%, transparent);
   }
 
   /* The spinner takes the icon's place, so an icon button keeps its size. */
@@ -58,45 +57,45 @@ export const buttonStyles = css`
   }
 
   :host([size="lg"]) {
-    --_size: var(--purr-size-lg);
+    --_size: var(--pl-size-lg);
   }
 
   :host([size="xl"]) {
-    --_size: var(--purr-size-xl);
+    --_size: var(--pl-size-xl);
 
-    padding-inline: var(--purr-pad-control-xl);
+    padding-inline: var(--pl-pad-control-xl);
   }
 
   /* A round button that holds one icon. It needs an aria-label. */
   :host([icon]) {
     inline-size: var(--_size);
     padding: 0;
-    border-radius: var(--purr-radius-full);
+    border-radius: var(--pl-radius-full);
   }
 
   /* Increased contrast outlines every face but the label-only ghost. */
   :host(:not([variant="ghost"]))::before {
-    box-shadow: var(--purr-boundary);
+    box-shadow: var(--pl-boundary);
   }
 
   /* The preferred action; a default button without a variant of its own. */
   :host([variant="primary"]),
   :host([default][variant="secondary"]) {
-    --_face: var(--purr-color-accent);
+    --_face: var(--pl-color-accent);
     --_face-pressed: color-mix(
       in srgb,
-      var(--purr-color-accent),
-      var(--purr-color-shade) 10%
+      var(--pl-color-accent),
+      var(--pl-color-shade) 10%
     );
     --_face-disabled: color-mix(
       in srgb,
-      var(--purr-color-accent) 40%,
+      var(--pl-color-accent) 40%,
       transparent
     );
-    --_fg: var(--purr-color-accent-foreground);
+    --_fg: var(--pl-color-accent-foreground);
     --_fg-disabled: color-mix(
       in srgb,
-      var(--purr-color-accent-foreground) 50%,
+      var(--pl-color-accent-foreground) 50%,
       transparent
     );
   }
@@ -107,21 +106,21 @@ export const buttonStyles = css`
     --_face-disabled: transparent;
     --_fg: var(--_tone-text);
     --_fg-disabled: color-mix(in srgb, var(--_tone-text) 50%, transparent);
-    --purr-face-hover: var(--purr-color-muted-3);
+    --pl-face-hover: var(--pl-color-muted-3);
   }
 
   :host([variant="ghost"]:state(pressed)) {
     color: color-mix(
       in srgb,
       var(--_tone-text),
-      var(--purr-color-foreground) 25%
+      var(--pl-color-foreground) 25%
     );
   }
 
   /* A destructive button takes the tinted look in red, never the filled one. */
   :host([destructive]) {
-    --_tone: var(--purr-color-destructive);
-    --_tone-text: var(--purr-color-destructive-text);
+    --_tone: var(--pl-color-destructive);
+    --_tone-text: var(--pl-color-destructive-text);
   }
 
   :host([variant="tinted"]),
@@ -134,16 +133,16 @@ export const buttonStyles = css`
   }
 
   :host(:is([disabled], :disabled)) {
-    --purr-face: var(--_face-disabled);
+    --pl-face: var(--_face-disabled);
 
     color: var(--_fg-disabled);
   }
 
   @media (forced-colors: active) {
     :host {
-      --purr-face: ButtonFace;
-      --purr-face-hover: ButtonFace;
-      --purr-face-pressed: ButtonFace;
+      --pl-face: ButtonFace;
+      --pl-face-hover: ButtonFace;
+      --pl-face-pressed: ButtonFace;
 
       color: ButtonText;
     }

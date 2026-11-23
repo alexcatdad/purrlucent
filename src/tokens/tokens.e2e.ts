@@ -43,7 +43,7 @@ const openMaterials = async (
   // The preview decorator resets the attribute on render; set ours after it.
   await page.locator("#bar").waitFor();
   await page.evaluate(
-    (value) => document.documentElement.setAttribute("purr-material", value),
+    (value) => document.documentElement.setAttribute("pl-material", value),
     material,
   );
 };
@@ -82,8 +82,8 @@ const expectSolidAndLegible = async (page: Page) => {
   expect(filter).toBe("none");
   expect(alpha).toBe(1);
   const colors = await resolveColors(page, {
-    label: "var(--purr-color-foreground)",
-    bar: "var(--purr-material-bar)",
+    label: "var(--pl-color-foreground)",
+    bar: "var(--pl-material-bar)",
   });
   expect(contrast(colors.label!, colors.bar!)).toBeGreaterThanOrEqual(4.5);
 };
@@ -126,13 +126,13 @@ const unsupportedFallback = async (page: Page, theme: "light" | "dark") => {
   const shipped = readFileSync(`${import.meta.dirname}/tokens.css`, "utf8");
   const unsupported = shipped.replaceAll(
     "backdrop-filter: blur(1px)",
-    "purr-unsupported-property: 1",
+    "pl-unsupported-property: 1",
   );
   expect(unsupported).not.toBe(shipped);
   await page.evaluate((css) => {
     // Storybook's build rewrites the tokens, so retire its copy first.
     for (const sheet of document.styleSheets)
-      if ([...sheet.cssRules].some((r) => r.cssText.includes("purr.tokens")))
+      if ([...sheet.cssRules].some((r) => r.cssText.includes("pl.tokens")))
         sheet.disabled = true;
     document.head.append(
       Object.assign(document.createElement("style"), { textContent: css }),
@@ -230,13 +230,13 @@ test("every text role meets 4.5:1 against background in all four color schemes",
       Object.fromEntries(
         [...roles]
           .filter((role) => !role.includes("/"))
-          .map((role) => [role, `var(--purr-color-${role})`]),
+          .map((role) => [role, `var(--pl-color-${role})`]),
       ),
     );
     const pageColor = `rgb(${colors.background!.join(" ")})`;
     for (const role of translucent)
       (
-        await compositeOver(page, `var(--purr-color-${role})`, [
+        await compositeOver(page, `var(--pl-color-${role})`, [
           ...backdrops,
           pageColor,
         ])
@@ -246,7 +246,7 @@ test("every text role meets 4.5:1 against background in all four color schemes",
       for (const fg of foregrounds) {
         const shown = await compositeOver(
           page,
-          `var(--purr-color-${fg})`,
+          `var(--pl-color-${fg})`,
           under.map((bg) => `rgb(${colors[bg]!.join(" ")})`),
         );
         under.forEach((bg, i) =>

@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [
     {
       // Ships the generated tokens as the purrlucent/tokens.css export.
-      name: "purr-tokens-css",
+      name: "pl-tokens-css",
       generateBundle() {
         // Storybook reuses this config for its own build; only the library ships tokens.css.
         if (!this.environment.config.build.lib) return;

@@ -90,8 +90,8 @@ test("a TypeScript app type-checks against the package", async () => {
   writeFileSync(
     join(app, "consumer.ts"),
     `${modules.map((m) => `import "${m}";`).join("\n")}
-import type { PurrButton } from "purrlucent/button";
-const button: PurrButton = document.createElement("purr-button");
+import type { PlButton } from "purrlucent/button";
+const button: PlButton = document.createElement("pl-button");
 button.variant = "primary";
 `,
   );
@@ -122,25 +122,25 @@ test("a React 19 app type-checks against purrlucent/react", async () => {
   writeFileSync(
     join(dir, "app.tsx"),
     `import type {} from "purrlucent/react";
-import type { PurrDialog } from "purrlucent/dialog";
+import type { PlDialog } from "purrlucent/dialog";
 import { useRef } from "react";
 
 export function App() {
-  const dialog = useRef<PurrDialog>(null);
+  const dialog = useRef<PlDialog>(null);
   return (
     <>
-      <purr-button variant="primary" disabled={false} onpurr-press={() => dialog.current?.show()}>
+      <pl-button variant="primary" disabled={false} onpl-press={() => dialog.current?.show()}>
         Save
-      </purr-button>
-      <purr-select value="a" onpurr-change={(e) => e.detail.value satisfies string}>
+      </pl-button>
+      <pl-select value="a" onpl-change={(e) => e.detail.value satisfies string}>
         <span slot="label">Fruit</span>
-        <purr-option value="a">A</purr-option>
-      </purr-select>
-      <purr-dialog ref={dialog} variant="alert" className="x" />
-      {/* @ts-expect-error not a prop of purr-button */}
-      <purr-button notAProp />
-      {/* @ts-expect-error the detail of a select's purr-change has no text */}
-      <purr-select onpurr-change={(e) => e.detail.text} />
+        <pl-option value="a">A</pl-option>
+      </pl-select>
+      <pl-dialog ref={dialog} variant="alert" className="x" />
+      {/* @ts-expect-error not a prop of pl-button */}
+      <pl-button notAProp />
+      {/* @ts-expect-error the detail of a select's pl-change has no text */}
+      <pl-select onpl-change={(e) => e.detail.text} />
     </>
   );
 }
@@ -214,7 +214,7 @@ ${all.map((tag) => `<${tag}>${tag}</${tag}>`).join("\n")}
               !document.querySelector(tag)?.shadowRoot,
           ),
           spacing: getComputedStyle(document.documentElement).getPropertyValue(
-            "--purr-spacing",
+            "--pl-spacing",
           ),
         }),
         all,

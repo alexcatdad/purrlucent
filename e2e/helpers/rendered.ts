@@ -95,7 +95,7 @@ export async function lowContrastText(page: Page): Promise<string[]> {
     // Hide the text everywhere, shadow roots included, until the pixels are read.
     for (const root of roots) {
       const style = document.createElement("style");
-      style.dataset.purrProbe = "";
+      style.dataset.plProbe = "";
       style.textContent = css;
       (root instanceof Document ? root.head : root).append(style);
     }
@@ -113,7 +113,7 @@ export async function lowContrastText(page: Page): Promise<string[]> {
         for (const el of roots[i]!.querySelectorAll("*"))
           if (el.shadowRoot) roots.push(el.shadowRoot);
       for (const root of roots)
-        for (const s of root.querySelectorAll("style[data-purr-probe]"))
+        for (const s of root.querySelectorAll("style[data-pl-probe]"))
           s.remove();
 
       const image = new Image();
@@ -174,7 +174,7 @@ export async function lowContrastText(page: Page): Promise<string[]> {
  * Components that ignore the spacing base.
  *
  * Every size in a component is a token or a calc() from tokens, so doubling
- * --purr-spacing must change every purr element, or an element inside it.
+ * --pl-spacing must change every pl-* element, or an element inside it.
  * One that stays the same has a typed-in size somewhere.
  */
 export async function ignoresSpacing(page: Page): Promise<string[]> {
@@ -183,7 +183,7 @@ export async function ignoresSpacing(page: Page): Promise<string[]> {
       const all: Element[] = [];
       const visit = (root: Document | ShadowRoot) => {
         for (const el of root.querySelectorAll("*")) {
-          if (el.localName.startsWith("purr-")) all.push(el);
+          if (el.localName.startsWith("pl-")) all.push(el);
           if (el.shadowRoot) visit(el.shadowRoot);
         }
       };
@@ -206,13 +206,13 @@ export async function ignoresSpacing(page: Page): Promise<string[]> {
     });
   const before = await measure();
   await page.evaluate(() => {
-    document.documentElement.style.setProperty("--purr-spacing", "0.5rem");
+    document.documentElement.style.setProperty("--pl-spacing", "0.5rem");
   });
   const after = await measure();
   await page.evaluate(() => {
-    document.documentElement.style.removeProperty("--purr-spacing");
+    document.documentElement.style.removeProperty("--pl-spacing");
   });
   return before
     .filter((b, i) => b.shown && after[i]?.size === b.size)
-    .map((b) => `<${b.tag}> did not change when --purr-spacing doubled`);
+    .map((b) => `<${b.tag}> did not change when --pl-spacing doubled`);
 }

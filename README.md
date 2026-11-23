@@ -24,8 +24,8 @@ import "purrlucent/switch";
 
 ```html
 <form>
-  <purr-switch name="wifi" checked>Wi-Fi</purr-switch>
-  <purr-button type="submit" variant="primary">Save</purr-button>
+  <pl-switch name="wifi" checked>Wi-Fi</pl-switch>
+  <pl-button type="submit" variant="primary">Save</pl-button>
 </form>
 ```
 

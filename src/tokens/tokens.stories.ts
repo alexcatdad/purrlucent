@@ -17,12 +17,12 @@ const textRoles = [
 export const Palette: Story = {
   render: () => html`
     <div
-      style="background: var(--purr-color-background); padding: var(--purr-space-4); font-family: var(--purr-font-sans);"
+      style="background: var(--pl-color-background); padding: var(--pl-space-4); font-family: var(--pl-font-sans);"
     >
       ${textRoles.map(
         (role) => html`
           <p
-            style="margin: 0 0 var(--purr-space-2); font: 400 var(--purr-text-sm) / var(--purr-leading-normal) var(--purr-font-sans); color: var(--purr-color-${role});"
+            style="margin: 0 0 var(--pl-space-2); font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans); color: var(--pl-color-${role});"
           >
             ${role}
           </p>
@@ -36,11 +36,11 @@ export const Palette: Story = {
 export const Materials: Story = {
   render: () => html`
     <div
-      style="padding: var(--purr-space-4); background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 16px 16px;"
+      style="padding: var(--pl-space-4); background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 16px 16px;"
     >
       <div
         id="bar"
-        style="padding: var(--purr-space-3); font-family: var(--purr-font-sans); color: var(--purr-color-foreground); background: var(--purr-material-bar); backdrop-filter: var(--purr-material-bar-filter); box-shadow: var(--purr-material-edge);"
+        style="padding: var(--pl-space-3); font-family: var(--pl-font-sans); color: var(--pl-color-foreground); background: var(--pl-material-bar); backdrop-filter: var(--pl-material-bar-filter); box-shadow: var(--pl-material-edge);"
       >
         Toolbar
       </div>

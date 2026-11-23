@@ -9,10 +9,10 @@ import { css } from "lit";
  */
 export const boxStyles = css`
   :host {
-    --_h: var(--purr-size-md);
-    --_box: var(--purr-icon-md);
-    --_gap: var(--purr-space-1);
-    --_off: var(--purr-color-muted-1);
+    --_h: var(--pl-size-md);
+    --_box: var(--pl-icon-md);
+    --_gap: var(--pl-space-1);
+    --_off: var(--pl-color-muted-1);
     --_tint: transparent;
 
     /* A label that wraps grows the row downwards: the box stays beside its first
@@ -23,10 +23,9 @@ export const boxStyles = css`
     box-sizing: border-box;
     min-block-size: var(--_h);
     padding-block: max(0px, calc((var(--_h) - 1lh) / 2));
-    min-inline-size: var(--purr-size-hit-min);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    min-inline-size: var(--pl-size-hit-min);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     cursor: default;
     user-select: none;
   }
@@ -36,14 +35,14 @@ export const boxStyles = css`
   }
 
   :host([size="lg"]) {
-    --_h: var(--purr-size-lg);
-    --_box: var(--purr-icon-lg);
+    --_h: var(--pl-size-lg);
+    --_box: var(--pl-icon-lg);
   }
 
   :host([size="xl"]) {
-    --_h: var(--purr-size-xl);
-    --_box: calc(var(--purr-spacing) * 6);
-    --_gap: var(--purr-space-2);
+    --_h: var(--pl-size-xl);
+    --_box: calc(var(--pl-spacing) * 6);
+    --_gap: var(--pl-space-2);
   }
 
   [part="box"] {
@@ -57,11 +56,11 @@ export const boxStyles = css`
     margin-block-start: calc((1lh - var(--_box)) / 2);
     border-radius: var(--_r);
     background-color: var(--_off);
-    box-shadow: var(--purr-boundary);
-    color: var(--purr-color-selected-foreground);
+    box-shadow: var(--pl-boundary);
+    color: var(--pl-color-selected-foreground);
     transition:
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      opacity var(--purr-duration-fast) var(--purr-ease-out);
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      opacity var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   svg {
@@ -73,7 +72,7 @@ export const boxStyles = css`
     stroke-linejoin: round;
     stroke-width: 3;
     transform: scale(0);
-    transition: transform var(--purr-duration) var(--purr-ease-out);
+    transition: transform var(--pl-duration) var(--pl-ease-out);
   }
 
   .dot {
@@ -96,7 +95,7 @@ export const boxStyles = css`
   }
 
   :host(:is(:state(checked), :state(indeterminate))) {
-    --_off: var(--purr-color-selected);
+    --_off: var(--pl-color-selected);
   }
 
   :host(:is(:state(checked), :state(indeterminate))) [part="box"] {
@@ -122,36 +121,36 @@ export const boxStyles = css`
   /* Hover and pressed darken a filled box and deepen an empty one. */
   @media (hover: hover) {
     :host(:hover:not(:state(disabled))) {
-      --_tint: color-mix(in srgb, var(--purr-color-shade) 8%, transparent);
+      --_tint: color-mix(in srgb, var(--pl-color-shade) 8%, transparent);
     }
 
     :host(
       :hover:not(:state(disabled), :state(checked), :state(indeterminate))
     ) {
-      --_off: color-mix(in srgb, var(--purr-color-foreground) 15%, transparent);
+      --_off: color-mix(in srgb, var(--pl-color-foreground) 15%, transparent);
     }
   }
 
   /* :not(:state(disabled)) matches the hover rules' specificity, so the later press wins. */
   :host(:state(pressed):not(:state(disabled))) {
-    --_tint: color-mix(in srgb, var(--purr-color-shade) 16%, transparent);
+    --_tint: color-mix(in srgb, var(--pl-color-shade) 16%, transparent);
   }
 
   :host(:state(pressed):not(:state(checked), :state(indeterminate))) {
-    --_off: color-mix(in srgb, var(--purr-color-foreground) 19%, transparent);
+    --_off: color-mix(in srgb, var(--pl-color-foreground) 19%, transparent);
   }
 
   :host(:state(disabled)) {
-    color: var(--purr-color-disabled-foreground);
+    color: var(--pl-color-disabled-foreground);
   }
 
   :host(:state(disabled)) [part="box"] {
-    --_off: var(--purr-color-muted-3);
+    --_off: var(--pl-color-muted-3);
   }
 
   :host(:state(disabled):is(:state(checked), :state(indeterminate)))
     [part="box"] {
-    --_off: var(--purr-color-selected);
+    --_off: var(--pl-color-selected);
 
     opacity: 0.45;
   }
@@ -162,8 +161,8 @@ export const boxStyles = css`
   }
 
   :host(:focus-visible) [part="box"] {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: var(--purr-ring-offset);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
   }
 
   @media (forced-colors: active) {
@@ -205,6 +204,6 @@ export const boxStyles = css`
 
 export const checkboxStyles = css`
   :host {
-    --_r: calc(var(--purr-radius) / 2);
+    --_r: calc(var(--pl-radius) / 2);
   }
 `;

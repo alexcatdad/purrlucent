@@ -9,27 +9,25 @@ import { css } from "lit";
  */
 export const comboboxStyles = css`
   :host {
-    --_glyph: var(--purr-icon-sm);
-    --_button: var(--purr-visual-md);
-    --_inset: var(--purr-space-0-5);
-    --_face: var(--purr-color-secondary);
-    --_face-pressed: var(--purr-color-secondary-pressed);
+    --_glyph: var(--pl-icon-sm);
+    --_button: var(--pl-visual-md);
+    --_inset: var(--pl-space-0-5);
+    --_face: var(--pl-color-secondary);
+    --_face-pressed: var(--pl-color-secondary-pressed);
     --_face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
-    --_label: calc(
-      var(--purr-pad-item) + var(--purr-icon-sm) + var(--purr-gap-icon)
-    );
+    --_label: calc(var(--pl-pad-item) + var(--pl-icon-sm) + var(--pl-gap-icon));
 
     vertical-align: middle;
   }
 
   :host([size="lg"]) {
-    --_glyph: var(--purr-icon-md);
+    --_glyph: var(--pl-icon-md);
   }
 
   :host([size="xl"]) {
-    --_glyph: var(--purr-icon-md);
-    --_button: calc(var(--purr-spacing) * 7.5);
-    --_inset: var(--purr-space-1);
+    --_glyph: var(--pl-icon-md);
+    --_button: calc(var(--pl-spacing) * 7.5);
+    --_inset: var(--pl-space-1);
   }
 
   [part="field"] {
@@ -48,9 +46,9 @@ export const comboboxStyles = css`
   }
 
   /* A long option wraps; the padding keeps a one-line row the hit height. */
-  ::slotted(purr-option),
+  ::slotted(pl-option),
   [part="empty"] {
-    padding-block: max(0px, calc((var(--purr-size-hit-min) - 1lh) / 2));
+    padding-block: max(0px, calc((var(--pl-size-hit-min) - 1lh) / 2));
     white-space: normal;
     overflow-wrap: anywhere;
   }
@@ -60,12 +58,12 @@ export const comboboxStyles = css`
     flex: none;
     inline-size: max(
       calc(var(--_button) + 2 * var(--_inset)),
-      var(--purr-size-hit-min)
+      var(--pl-size-hit-min)
     );
     block-size: 100%;
     margin: 0;
     border: 0;
-    border-radius: var(--purr-radius);
+    border-radius: var(--pl-radius);
     padding: 0;
     background: none;
     color: inherit;
@@ -76,9 +74,9 @@ export const comboboxStyles = css`
     content: "";
     position: absolute;
     inset: var(--_inset);
-    border-radius: var(--purr-radius);
+    border-radius: var(--pl-radius);
     background: var(--_face);
-    transition: background-color var(--purr-duration-fast) var(--purr-ease-out);
+    transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   @media (hover: hover) {
@@ -93,8 +91,8 @@ export const comboboxStyles = css`
   }
 
   [part="button"]:focus-visible {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   [part="button"] svg {
@@ -111,20 +109,20 @@ export const comboboxStyles = css`
   }
 
   :host(:disabled) [part="button"] {
-    color: var(--purr-color-disabled-foreground);
+    color: var(--pl-color-disabled-foreground);
   }
 
   :host(:disabled) [part="button"]::before {
-    background: var(--purr-color-secondary-disabled);
+    background: var(--pl-color-secondary-disabled);
   }
 
   [part="empty"] {
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--purr-size-hit-min);
-    padding-inline: var(--_label) var(--purr-pad-item);
-    color: var(--purr-color-muted-foreground);
+    min-block-size: var(--pl-size-hit-min);
+    padding-inline: var(--_label) var(--pl-pad-item);
+    color: var(--pl-color-muted-foreground);
   }
 
   @media (forced-colors: active) {

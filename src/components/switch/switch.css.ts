@@ -10,25 +10,24 @@ import { css } from "lit";
  */
 export const switchStyles = css`
   :host {
-    --_w: calc(var(--purr-spacing) * 13.5);
-    --_h: var(--purr-visual-md);
-    --_in: var(--purr-space-0-5);
+    --_w: calc(var(--pl-spacing) * 13.5);
+    --_h: var(--pl-visual-md);
+    --_in: var(--pl-space-0-5);
     --_kh: calc(var(--_h) - var(--_in) * 2);
     --_kw: calc(var(--_h) * 4 / 3);
     --_grow: calc((var(--_w) * 0.92 - var(--_kw)) / 2);
     --_x: var(--_in);
-    --_hit: max(var(--_h), var(--purr-size-hit-min));
+    --_hit: max(var(--_h), var(--pl-size-hit-min));
     --_row: max(var(--_h), 1lh);
 
     display: inline-flex;
     align-items: flex-start;
-    gap: var(--purr-gap-form);
+    gap: var(--pl-gap-form);
     box-sizing: border-box;
     min-block-size: var(--_hit);
     padding-block: max(0px, calc((var(--_hit) - var(--_row)) / 2));
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     cursor: default;
     user-select: none;
   }
@@ -38,14 +37,14 @@ export const switchStyles = css`
   }
 
   :host([size="lg"]) {
-    --_w: calc(var(--purr-spacing) * 16);
-    --_h: var(--purr-visual-lg);
+    --_w: calc(var(--pl-spacing) * 16);
+    --_h: var(--pl-visual-lg);
   }
 
   :host([size="xl"]) {
-    --_w: calc(var(--purr-spacing) * 20);
-    --_h: var(--purr-visual-xl);
-    --_in: calc(var(--purr-spacing) * 0.75);
+    --_w: calc(var(--pl-spacing) * 20);
+    --_h: var(--pl-visual-xl);
+    --_in: calc(var(--pl-spacing) * 0.75);
   }
 
   :host(:state(checked)) {
@@ -58,10 +57,10 @@ export const switchStyles = css`
     inline-size: var(--_w);
     block-size: var(--_h);
     margin-block-start: calc((var(--_row) - var(--_h)) / 2);
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-track);
-    box-shadow: var(--purr-boundary);
-    transition: background-color var(--purr-duration-fast) var(--purr-ease-out);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-track);
+    box-shadow: var(--pl-boundary);
+    transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   [part="thumb"] {
@@ -70,16 +69,16 @@ export const switchStyles = css`
     inset-inline-start: var(--_x);
     inline-size: var(--_kw);
     block-size: var(--_kh);
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-thumb);
-    box-shadow: 0 calc(var(--purr-spacing) * 0.75) calc(var(--purr-spacing) * 9)
-      color-mix(in srgb, var(--purr-color-shade) 5%, transparent);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-thumb);
+    box-shadow: 0 calc(var(--pl-spacing) * 0.75) calc(var(--pl-spacing) * 9)
+      color-mix(in srgb, var(--pl-color-shade) 5%, transparent);
     transition:
-      inset var(--purr-duration) var(--purr-ease-out),
-      inline-size var(--purr-duration) var(--purr-ease-out),
-      block-size var(--purr-duration) var(--purr-ease-out),
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      box-shadow var(--purr-duration-fast) var(--purr-ease-out);
+      inset var(--pl-duration) var(--pl-ease-out),
+      inline-size var(--pl-duration) var(--pl-ease-out),
+      block-size var(--pl-duration) var(--pl-ease-out),
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      box-shadow var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   [part="label"] {
@@ -93,17 +92,17 @@ export const switchStyles = css`
   }
 
   :host(:state(checked)) [part="track"] {
-    background-color: var(--purr-color-selected);
+    background-color: var(--pl-color-selected);
   }
 
   :host(:state(checked)) [part="thumb"] {
-    background-color: var(--purr-color-selected-foreground);
+    background-color: var(--pl-color-selected-foreground);
   }
 
   :host(:state(pressed)) [part="track"] {
     background-image: linear-gradient(
-      var(--purr-color-muted-2),
-      var(--purr-color-muted-2)
+      var(--pl-color-muted-2),
+      var(--pl-color-muted-2)
     );
   }
 
@@ -116,18 +115,17 @@ export const switchStyles = css`
     block-size: var(--_ch);
     background-color: color-mix(
       in srgb,
-      var(--purr-color-thumb) 12%,
+      var(--pl-color-thumb) 12%,
       transparent
     );
     box-shadow:
-      0 0 0 1px var(--purr-color-border),
-      0 0 0 1.5px color-mix(in srgb, var(--purr-color-thumb) 45%, transparent),
-      inset 0 1px 1px
-        color-mix(in srgb, var(--purr-color-thumb) 60%, transparent),
+      0 0 0 1px var(--pl-color-border),
+      0 0 0 1.5px color-mix(in srgb, var(--pl-color-thumb) 45%, transparent),
+      inset 0 1px 1px color-mix(in srgb, var(--pl-color-thumb) 60%, transparent),
       inset 0 -1px 1px
-        color-mix(in srgb, var(--purr-color-shade) 10%, transparent),
-      0 calc(var(--purr-spacing) * 2.25) calc(var(--purr-spacing) * 3)
-        color-mix(in srgb, var(--purr-color-shade) 10%, transparent);
+        color-mix(in srgb, var(--pl-color-shade) 10%, transparent),
+      0 calc(var(--pl-spacing) * 2.25) calc(var(--pl-spacing) * 3)
+        color-mix(in srgb, var(--pl-color-shade) 10%, transparent);
   }
 
   :host(:disabled) {
@@ -140,8 +138,8 @@ export const switchStyles = css`
   }
 
   :host(:focus-visible) [part="track"] {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: var(--purr-ring-offset);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
   }
 
   @media (forced-colors: active) {

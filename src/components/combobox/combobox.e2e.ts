@@ -18,7 +18,7 @@ const chevron = (page: Page, name = "Apple variety") =>
 
 /** The names of the options the list shows, in order. */
 const listed = (page: Page) =>
-  page.locator("purr-combobox").evaluate((el) =>
+  page.locator("pl-combobox").evaluate((el) =>
     el
       .shadowRoot!.querySelector<HTMLSlotElement>("slot:not([name])")!
       .assignedElements()
@@ -36,8 +36,8 @@ const submitted = (page: Page) =>
       ]),
     );
 
-/** Records the detail of a purr-input or purr-change event on #combo in window.log. */
-const record = (page: Page, type: "purr-input" | "purr-change") =>
+/** Records the detail of a pl-input or pl-change event on #combo in window.log. */
+const record = (page: Page, type: "pl-input" | "pl-change") =>
   page.evaluate((type) => {
     const log: unknown[] = [];
     document
@@ -97,7 +97,7 @@ test("toggle-label and empty-label replace the built-in strings", async ({
   page,
 }) => {
   await gotoStory(page, story("no-results"));
-  await page.locator("purr-combobox").evaluate((el) => {
+  await page.locator("pl-combobox").evaluate((el) => {
     el.setAttribute("toggle-label", "Afficher");
     el.setAttribute("empty-label", "Aucun résultat");
   });
@@ -183,11 +183,11 @@ test("opening a field with a choice marks that choice active", async ({
   expect(await listed(page)).toHaveLength(6);
 });
 
-test("Enter chooses the active option, closes and fires purr-change", async ({
+test("Enter chooses the active option, closes and fires pl-change", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  await record(page, "purr-change");
+  await record(page, "pl-change");
   await combo(page).focus();
   await page.keyboard.type("gr");
   await page.keyboard.press("ArrowDown");
@@ -206,7 +206,7 @@ test("Escape closes the list, a second Escape clears the text", async ({
   page,
 }) => {
   await gotoStory(page, story("preselected"));
-  await record(page, "purr-change");
+  await record(page, "pl-change");
   await combo(page).focus();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Escape");
@@ -255,9 +255,9 @@ test("Home and End are left to the text caret and keep the active option", async
   expect(await activeDescendant(page)).toBe("Granny Smith");
 });
 
-test("purr-input reports the text while typing", async ({ page }) => {
+test("pl-input reports the text while typing", async ({ page }) => {
   await gotoStory(page, story("default"));
-  await record(page, "purr-input");
+  await record(page, "pl-input");
   await combo(page).focus();
   await page.keyboard.type("ga");
   expect(await recorded(page)).toEqual([{ text: "g" }, { text: "ga" }]);
@@ -270,7 +270,7 @@ test("the chevron toggles the list, is not a tab stop and keeps focus in the fie
   await page.evaluate(() => {
     const next = document.createElement("input");
     next.id = "next";
-    document.querySelector("purr-combobox")!.after(next);
+    document.querySelector("pl-combobox")!.after(next);
   });
   await chevron(page).click();
   await expect(listbox(page)).toBeVisible();
@@ -286,7 +286,7 @@ test("clicking an option chooses it, closes the list and keeps focus in the fiel
   page,
 }) => {
   await gotoStory(page, story("default"));
-  await record(page, "purr-change");
+  await record(page, "pl-change");
   await chevron(page).click();
   await option(page, "Gala").click();
   await expect(listbox(page)).toBeHidden();
@@ -327,7 +327,7 @@ test("leaving unmatched text restores the last chosen label", async ({
   page,
 }) => {
   await gotoStory(page, story("preselected"));
-  await record(page, "purr-change");
+  await record(page, "pl-change");
   await combo(page).fill("Fu");
   await page.keyboard.type("x");
   await page.keyboard.press("Tab");
@@ -337,7 +337,7 @@ test("leaving unmatched text restores the last chosen label", async ({
 
 test("text that is exactly a label is chosen on leaving", async ({ page }) => {
   await gotoStory(page, story("default"));
-  await record(page, "purr-change");
+  await record(page, "pl-change");
   await combo(page).fill("gala");
   await page.keyboard.press("Tab");
   await expect(combo(page)).toHaveValue("Gala");
@@ -348,7 +348,7 @@ test("with allow-custom, unmatched text is kept as the value", async ({
   page,
 }) => {
   await gotoStory(page, story("allow-custom"));
-  await record(page, "purr-change");
+  await record(page, "pl-change");
   await combo(page).fill("Pink Lady");
   await page.keyboard.press("Enter");
   await expect(listbox(page)).toBeHidden();
@@ -525,7 +525,7 @@ test("the popup is as wide as the field and a long option wraps", async ({
   await gotoStory(page, story("default"));
   const host = page.locator("#combo");
   await host.evaluate((el, label) => {
-    const option = document.createElement("purr-option");
+    const option = document.createElement("pl-option");
     option.textContent = label;
     el.append(option);
   }, long);
@@ -555,7 +555,7 @@ test("under rtl the popup aligns to the field's start edge", async ({
   await chevron(page).click();
   const list = (await listbox(page).boundingBox())!;
   const field = (await page
-    .locator("purr-combobox")
+    .locator("pl-combobox")
     .evaluate((el) =>
       el
         .shadowRoot!.querySelector("[part=field]")!
@@ -575,7 +575,7 @@ test("the focus ring and the active option stay visible under forced colors", as
   await page.keyboard.press("Tab");
   await expect(combo(page)).toBeFocused();
   const ring = await page
-    .locator("purr-combobox")
+    .locator("pl-combobox")
     .evaluate(
       (el) =>
         getComputedStyle(el.shadowRoot!.querySelector("[part=field]")!)
@@ -599,9 +599,9 @@ const mount = (page: Page, markup: string) =>
   }, markup);
 
 const abc = `
-  <purr-option value="a">Alpha</purr-option>
-  <purr-option value="b">Beta</purr-option>
-  <purr-option value="c">Gamma</purr-option>`;
+  <pl-option value="a">Alpha</pl-option>
+  <pl-option value="b">Beta</pl-option>
+  <pl-option value="c">Gamma</pl-option>`;
 
 test("a form reset returns a combobox to its starting value attribute", async ({
   page,
@@ -609,7 +609,7 @@ test("a form reset returns a combobox to its starting value attribute", async ({
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<form id="probe"><purr-combobox label="Probe" value="b">${abc}</purr-combobox></form>`,
+    `<form id="probe"><pl-combobox label="Probe" value="b">${abc}</pl-combobox></form>`,
   );
   await expect(combo(page, "Probe")).toHaveValue("Beta");
   await combo(page, "Probe").fill("Gamma");
@@ -624,11 +624,11 @@ test("opening scrolls a long list to the chosen option", async ({ page }) => {
   await gotoStory(page, story("default"));
   const items = Array.from(
     { length: 30 },
-    (_, i) => `<purr-option value="o${i}">Item ${i}</purr-option>`,
+    (_, i) => `<pl-option value="o${i}">Item ${i}</pl-option>`,
   ).join("");
   await mount(
     page,
-    `<purr-combobox id="probe" label="Probe" value="o25">${items}</purr-combobox>`,
+    `<pl-combobox id="probe" label="Probe" value="o25">${items}</pl-combobox>`,
   );
   await combo(page, "Probe").focus();
   await page.keyboard.press("ArrowDown");
@@ -653,14 +653,14 @@ test("leaving the field untouched keeps a value that has no visible text", async
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<purr-combobox id="probe" label="Probe">${abc}</purr-combobox>`,
+    `<pl-combobox id="probe" label="Probe">${abc}</pl-combobox>`,
   );
   await page.evaluate(() => {
     const el = document.querySelector<HTMLElement & { value: string }>(
       "#probe",
     )!;
     (window as unknown as { log: unknown[] }).log = [];
-    el.addEventListener("purr-change", (e) =>
+    el.addEventListener("pl-change", (e) =>
       (window as unknown as { log: unknown[] }).log.push(
         (e as CustomEvent).detail,
       ),
@@ -695,7 +695,7 @@ test("the chevron changes its border when open under forced colors", async ({
 test("in dark mode the field stands out from the page", async ({ page }) => {
   await gotoStory(page, story("default"), "theme:dark");
   const { field, page: canvas } = await page
-    .locator("purr-combobox")
+    .locator("pl-combobox")
     .evaluate((el) => {
       const shell = getComputedStyle(
         el.shadowRoot!.querySelector("[part=field]")!,
@@ -741,7 +741,7 @@ test("a slotted label names the field and wins over the label attribute", async 
   await expect(page.locator("[slot=label]")).toBeVisible();
   await mount(
     page,
-    `<purr-combobox label="Ignored"><span slot="label">Shown</span>${abc}</purr-combobox>`,
+    `<pl-combobox label="Ignored"><span slot="label">Shown</span>${abc}</pl-combobox>`,
   );
   await expect(combo(page, "Shown")).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Ignored" })).toHaveCount(0);
@@ -752,9 +752,9 @@ test("the label attribute names the field when nothing is slotted", async ({
 }) => {
   await gotoStory(page, story("default"));
   await expect(combo(page)).toBeVisible();
-  await expect(page.locator("purr-combobox [slot=label]")).toHaveCount(0);
+  await expect(page.locator("pl-combobox [slot=label]")).toHaveCount(0);
   await expect(
-    page.locator("purr-combobox").locator("[part=label]"),
+    page.locator("pl-combobox").locator("[part=label]"),
   ).toBeHidden();
 });
 
@@ -764,7 +764,7 @@ test("an external label names the field, even one added later", async ({
   await gotoStory(page, story("default"));
   await mount(
     page,
-    `<label for="ext">City</label><purr-combobox id="ext">${abc}</purr-combobox><purr-combobox id="late">${abc}</purr-combobox>`,
+    `<label for="ext">City</label><pl-combobox id="ext">${abc}</pl-combobox><pl-combobox id="late">${abc}</pl-combobox>`,
   );
   await expect(combo(page, "City")).toBeVisible();
   await page.evaluate(() =>
@@ -780,8 +780,8 @@ test("an external label names the field, even one added later", async ({
 test("a combobox without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-combobox");
-    bare.innerHTML = "<purr-option>One</purr-option>";
+    const bare = document.createElement("pl-combobox");
+    bare.innerHTML = "<pl-option>One</pl-option>";
     el.append(bare);
   });
   await expect(expectAccessible(root)).rejects.toThrow();

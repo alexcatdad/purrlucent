@@ -3,11 +3,11 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "../button/button.ts";
 import "./popover.ts";
-import type { PurrPopover } from "./popover.ts";
+import type { PlPopover } from "./popover.ts";
 
 const meta = {
   title: "Components/Popover",
-  component: "purr-popover",
+  component: "pl-popover",
 } satisfies Meta;
 
 export default meta;
@@ -15,15 +15,15 @@ export default meta;
 type Story = StoryObj;
 
 const content = html`<strong style="display:block">Sharing</strong>
-  <p style="margin:var(--purr-space-1) 0 var(--purr-space-3)">
+  <p style="margin:var(--pl-space-1) 0 var(--pl-space-3)">
     Anyone with the link can view.
   </p>
-  <purr-button size="md">Copy link</purr-button>`;
+  <pl-button size="md">Copy link</pl-button>`;
 
 // Room on every side, so a panel opens where it was asked to.
 const stage = (inner: unknown) =>
   html`<div
-    style="display:grid;justify-items:center;padding:calc(var(--purr-spacing) * 45) var(--purr-space-10)"
+    style="display:grid;justify-items:center;padding:calc(var(--pl-spacing) * 45) var(--pl-space-10)"
   >
     ${inner}
   </div>`;
@@ -34,15 +34,15 @@ const popover = (attrs: {
   open?: boolean;
   label?: string;
 }) =>
-  html`<purr-popover
+  html`<pl-popover
     id=${attrs.id ?? "popover"}
     label=${attrs.label ?? "Sharing"}
     placement=${attrs.placement ?? "bottom"}
     ?open=${attrs.open ?? false}
   >
-    <purr-button slot="trigger">Show popover</purr-button>
+    <pl-button slot="trigger">Show popover</pl-button>
     ${content}
-  </purr-popover>`;
+  </pl-popover>`;
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {
@@ -53,9 +53,9 @@ export const Default: Story = {
 const opened = (placement: string): Story => ({
   render: () => stage(popover({ placement })),
   play: async ({ canvasElement }) => {
-    const el = canvasElement.querySelector<PurrPopover>("#popover")!;
+    const el = canvasElement.querySelector<PlPopover>("#popover")!;
     await el.updateComplete;
-    await userEvent.click(el.querySelector("purr-button")!);
+    await userEvent.click(el.querySelector("pl-button")!);
     await el.updateComplete;
     expect(el.open).toBe(true);
   },
@@ -78,7 +78,7 @@ export const Placements: Story = {
   render: () =>
     stage(
       html`<div
-        style="display:grid;grid-template-columns:repeat(2,max-content);gap:calc(var(--purr-spacing) * 60) calc(var(--purr-spacing) * 70);justify-content:center"
+        style="display:grid;grid-template-columns:repeat(2,max-content);gap:calc(var(--pl-spacing) * 60) calc(var(--pl-spacing) * 70);justify-content:center"
       >
         ${(["top", "bottom", "start", "end"] as const).map((placement) =>
           popover({

@@ -153,7 +153,7 @@ test("the indeterminate segment is drawn under forced colors", async ({
 test("a progress bar without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-progress");
+    const bare = document.createElement("pl-progress");
     bare.id = "bare";
     el.append(bare);
   });

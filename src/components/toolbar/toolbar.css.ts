@@ -7,51 +7,50 @@ import { css } from "lit";
  */
 export const toolbarStyles = css`
   :host {
-    --_ctl: var(--purr-size-xl);
-    --_bar: var(--purr-size-bar);
-    --_bar-face: var(--purr-visual-lg);
-    --_rule: calc(var(--purr-spacing) * 5.5);
+    --_ctl: var(--pl-size-xl);
+    --_bar: var(--pl-size-bar);
+    --_bar-face: var(--pl-visual-lg);
+    --_rule: calc(var(--pl-spacing) * 5.5);
     --_stack: column;
     --_stack-align: flex-start;
-    --_stack-gap: var(--purr-space-0-5);
+    --_stack-gap: var(--pl-space-0-5);
 
     position: relative;
     min-block-size: var(--_bar);
-    padding: calc((var(--_bar) - var(--_ctl)) / 2) var(--purr-space-3);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
+    padding: calc((var(--_bar) - var(--_ctl)) / 2) var(--pl-space-3);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
 
   :host([size="md"]) {
-    --_ctl: var(--purr-size-md);
+    --_ctl: var(--pl-size-md);
     --_bar: max(
-      calc(var(--purr-spacing) * 10),
-      calc(var(--purr-size-md) + var(--purr-space-4))
+      calc(var(--pl-spacing) * 10),
+      calc(var(--pl-size-md) + var(--pl-space-4))
     );
-    --_bar-face: var(--purr-icon-lg);
-    --_rule: var(--purr-icon-md);
+    --_bar-face: var(--pl-icon-lg);
+    --_rule: var(--pl-icon-md);
     --_stack: row;
     --_stack-align: baseline;
-    --_stack-gap: var(--purr-gap-icon);
+    --_stack-gap: var(--pl-gap-icon);
   }
 
   /* A search field takes the capsule material of the group beside it. */
-  ::slotted(purr-input[type="search"]) {
-    --purr-color-input: var(--purr-color-overlay);
-    --purr-color-input-border: var(--purr-color-overlay-border);
+  ::slotted(pl-input[type="search"]) {
+    --pl-color-input: var(--pl-color-overlay);
+    --pl-color-input-border: var(--pl-color-overlay-border);
 
-    inline-size: calc(var(--purr-spacing) * 39.75);
+    inline-size: calc(var(--pl-spacing) * 39.75);
   }
 
-  :host([size="md"]) ::slotted(purr-input[type="search"]) {
-    inline-size: calc(var(--purr-spacing) * 37.25);
+  :host([size="md"]) ::slotted(pl-input[type="search"]) {
+    inline-size: calc(var(--pl-spacing) * 37.25);
   }
 
   [part="items"] {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--purr-gap-controls);
+    gap: var(--pl-gap-controls);
   }
 
   /* The one emphasized item sits at the trailing end. */
@@ -65,15 +64,15 @@ export const toolbarStyles = css`
     position: absolute;
     inset-inline: 0;
     inset-block-start: 100%;
-    block-size: var(--purr-space-2);
-    background: linear-gradient(var(--purr-material-bar), transparent);
+    block-size: var(--pl-space-2);
+    background: linear-gradient(var(--pl-material-bar), transparent);
     pointer-events: none;
   }
 
   /* Increased contrast already draws the control-boundary edge. */
   @media (prefers-reduced-transparency: reduce) and (not (prefers-contrast: more)) {
     :host([scrolled]) {
-      box-shadow: inset 0 -1px 0 var(--purr-color-border);
+      box-shadow: inset 0 -1px 0 var(--pl-color-border);
     }
   }
 
@@ -90,8 +89,8 @@ export const toolbarSeparatorStyles = css`
     flex: none;
     inline-size: 1px;
     block-size: var(--_rule);
-    margin-inline: calc((var(--purr-gap-controls) + 1px) / -2);
-    background: var(--purr-color-muted-3);
+    margin-inline: calc((var(--pl-gap-controls) + 1px) / -2);
+    background: var(--pl-color-muted-3);
   }
 
   @media (forced-colors: active) {
@@ -127,7 +126,7 @@ export const toolbarTitleStyles = css`
 
   /* The padding keeps descenders inside the clip box; the margin takes it back. */
   [part="title"] {
-    --_clip: var(--purr-space-1);
+    --_clip: var(--pl-space-1);
 
     flex-shrink: 0;
     min-inline-size: 0;
@@ -136,7 +135,7 @@ export const toolbarTitleStyles = css`
     margin-block: calc(var(--_clip) * -1);
     overflow: hidden;
     text-overflow: ellipsis;
-    font: 700 var(--purr-text-lg) / var(--purr-text-lg) var(--purr-font-sans);
+    font: 700 var(--pl-text-lg) / var(--pl-text-lg) var(--pl-font-sans);
   }
 
   /* Primary label color: the subtitle sits over scrolling content, where the
@@ -145,9 +144,8 @@ export const toolbarTitleStyles = css`
     min-inline-size: 0;
     max-inline-size: 100%;
     overflow: hidden;
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-xs) / var(--purr-leading-tight)
-      var(--purr-font-sans);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-xs) / var(--pl-leading-tight) var(--pl-font-sans);
   }
 
   /* A block box reports its own width in every engine; an inline one does not. */
@@ -170,35 +168,35 @@ export const toolbarTitleStyles = css`
  */
 export const toolbarGroupStyles = css`
   :host {
-    --_tool: max(var(--_bar-face), var(--purr-size-hit-min));
+    --_tool: max(var(--_bar-face), var(--pl-size-hit-min));
     --_pad: calc((var(--_ctl) - var(--_tool)) / 2);
-    --_gap: calc(var(--purr-gap-controls) / 2);
+    --_gap: calc(var(--pl-gap-controls) / 2);
 
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
     min-block-size: var(--_ctl);
     padding: var(--_pad) max(0px, calc(var(--_pad) - var(--_gap)));
-    border-radius: var(--purr-radius);
-    background-color: var(--purr-color-overlay);
-    box-shadow: 0 0 0 1px var(--purr-color-overlay-border);
+    border-radius: var(--pl-radius);
+    background-color: var(--pl-color-overlay);
+    box-shadow: 0 0 0 1px var(--pl-color-overlay-border);
   }
 
   ::slotted(*) {
-    --purr-face: transparent;
-    --purr-face-hover: var(--purr-color-muted-3);
-    --purr-face-pressed: var(--purr-color-muted-1);
-    --purr-face-inset: 0 var(--_gap);
+    --pl-face: transparent;
+    --pl-face-hover: var(--pl-color-muted-3);
+    --pl-face-pressed: var(--pl-color-muted-1);
+    --pl-face-inset: 0 var(--_gap);
 
     inline-size: calc(var(--_tool) + 2 * var(--_gap));
     min-block-size: var(--_tool);
     padding: 0;
-    border-radius: var(--purr-radius-full);
-    color: var(--purr-color-foreground);
+    border-radius: var(--pl-radius-full);
+    color: var(--pl-color-foreground);
   }
 
   /* The hit regions of the neighbors already touch it, so it takes no gap. */
-  ::slotted(purr-toolbar-separator) {
+  ::slotted(pl-toolbar-separator) {
     inline-size: 1px;
     min-block-size: 0;
     margin-inline: 0;
@@ -206,15 +204,15 @@ export const toolbarGroupStyles = css`
   }
 
   ::slotted([disabled]) {
-    color: var(--purr-color-disabled-foreground);
+    color: var(--pl-color-disabled-foreground);
   }
 
   @media (forced-colors: active) {
     /* The item's own forced-colors face and border take over. */
     ::slotted(*) {
-      --purr-face: ButtonFace;
-      --purr-face-hover: ButtonFace;
-      --purr-face-pressed: ButtonFace;
+      --pl-face: ButtonFace;
+      --pl-face-hover: ButtonFace;
+      --pl-face-pressed: ButtonFace;
 
       color: ButtonText;
     }

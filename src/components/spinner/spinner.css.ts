@@ -7,7 +7,7 @@ import { css } from "lit";
  */
 export const spinnerStyles = css`
   :host {
-    --_s: calc(var(--purr-spacing) * 8);
+    --_s: calc(var(--pl-spacing) * 8);
 
     display: inline-block;
     inline-size: var(--_s);
@@ -20,15 +20,15 @@ export const spinnerStyles = css`
   }
 
   :host([size="sm"]) {
-    --_s: calc(var(--purr-spacing) * 4);
+    --_s: calc(var(--pl-spacing) * 4);
   }
 
   :host([size="lg"]) {
-    --_s: calc(var(--purr-spacing) * 10);
+    --_s: calc(var(--pl-spacing) * 10);
   }
 
   :host([size="xl"]) {
-    --_s: calc(var(--purr-spacing) * 12);
+    --_s: calc(var(--pl-spacing) * 12);
   }
 
   svg {
@@ -40,21 +40,21 @@ export const spinnerStyles = css`
   }
 
   .track {
-    stroke: var(--purr-color-track);
+    stroke: var(--pl-color-track);
   }
 
   .arc {
-    stroke: var(--purr-color-selected);
+    stroke: var(--pl-color-selected);
     stroke-linecap: round;
     stroke-dasharray: 28 72;
 
     /* Only the arc turns, so the host has nothing to overflow. */
     transform-origin: center;
     transform-box: fill-box;
-    animation: purr-spinner-turn calc(var(--purr-duration) * 4) linear infinite;
+    animation: pl-spinner-turn calc(var(--pl-duration) * 4) linear infinite;
   }
 
-  @keyframes purr-spinner-turn {
+  @keyframes pl-spinner-turn {
     to {
       rotate: 1turn;
     }
@@ -69,7 +69,7 @@ export const spinnerStyles = css`
     stroke-dasharray: var(--_dash);
     rotate: -0.25turn;
     animation: none;
-    transition: stroke-dasharray var(--purr-duration) var(--purr-ease-out);
+    transition: stroke-dasharray var(--pl-duration) var(--pl-ease-out);
   }
 
   :host(:state(empty)) .arc {

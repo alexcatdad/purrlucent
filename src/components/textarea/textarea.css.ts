@@ -9,9 +9,9 @@ export const textareaStyles = [
   fieldStyles,
   css`
     :host {
-      --_rows-h: calc(var(--purr-spacing) * 18);
+      --_rows-h: calc(var(--pl-spacing) * 18);
 
-      inline-size: calc(var(--purr-spacing) * 60);
+      inline-size: calc(var(--pl-spacing) * 60);
       max-inline-size: 100%;
     }
 
@@ -27,7 +27,7 @@ export const textareaStyles = [
       box-sizing: border-box;
       block-size: var(--_rows-h);
       min-block-size: var(--_h);
-      padding: var(--purr-space-1) var(--_pad);
+      padding: var(--pl-space-1) var(--_pad);
       resize: vertical;
       cursor: inherit;
     }

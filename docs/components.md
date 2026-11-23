@@ -8,9 +8,9 @@ This page is generated from the code by `bun scripts/component-docs.ts`. Each co
 import "purrlucent/banner";
 ```
 
-### `<purr-banner>`
+### `<pl-banner>`
 
-A notification banner: an icon, a title, a message, optional actions and a close button. It is a live region (`status`, or `alert` for the destructive tone) and never takes focus when it appears. The close button hides the banner and fires `purr-close`.
+A notification banner: an icon, a title, a message, optional actions and a close button. It is a live region (`status`, or `alert` for the destructive tone) and never takes focus when it appears. The close button hides the banner and fires `pl-close`.
 
 | Attribute     | Type                      | Default     | Description                                                |
 | ------------- | ------------------------- | ----------- | ---------------------------------------------------------- |
@@ -32,7 +32,7 @@ A notification banner: an icon, a title, a message, optional actions and a close
 
 **Events**
 
-- `purr-close`: The user closed the banner.
+- `pl-close`: The user closed the banner.
 
 ## Button
 
@@ -40,7 +40,7 @@ A notification banner: an icon, a title, a message, optional actions and a close
 import "purrlucent/button";
 ```
 
-### `<purr-button>`
+### `<pl-button>`
 
 A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
 
@@ -49,9 +49,9 @@ A button. The label is the slotted text and is required for an accessible name; 
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                          |
+| `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
-| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                          |
+| `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
@@ -66,7 +66,7 @@ A button. The label is the slotted text and is required for an accessible name; 
 
 **Events**
 
-- `purr-press`: When the button is activated by pointer, Enter or Space.
+- `pl-press`: When the button is activated by pointer, Enter or Space.
 
 ## Checkbox
 
@@ -74,7 +74,7 @@ A button. The label is the slotted text and is required for an accessible name; 
 import "purrlucent/checkbox";
 ```
 
-### `<purr-checkbox>`
+### `<pl-checkbox>`
 
 A checkbox: a choice that is on, off or mixed. The slotted text is its label and accessible name; without it, set `aria-label`. It takes part in forms like a native checkbox: when checked it submits `name` with `value`, a form reset returns it to its `checked` and `indeterminate` attributes, and a disabled fieldset disables it. A click turns it on or off and clears mixed.
 
@@ -99,8 +99,8 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 
 **Events**
 
-- `purr-change`: The user changed the box. `detail.checked` holds the new state.
-- `input`: After purr-change, as a native checkbox fires it.
+- `pl-change`: The user changed the box. `detail.checked` holds the new state.
+- `input`: After pl-change, as a native checkbox fires it.
 - `change`: After input, as a native checkbox fires it.
 
 ## Combobox
@@ -109,9 +109,9 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 import "purrlucent/combobox";
 ```
 
-### `<purr-combobox>`
+### `<pl-combobox>`
 
-A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `purr-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `purr-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis.
+A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `pl-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `pl-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis.
 
 | Attribute      | Type                   | Default        | Description                                                                                                                         |
 | -------------- | ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -127,12 +127,12 @@ A text field with a list of suggestions. It follows the editable combobox patter
 | `open`         | `boolean`              | `false`        | The list is showing.                                                                                                                |
 | `toggle-label` | `string`               | `TOGGLE_LABEL` | The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when the field has a label. |
 | `empty-label`  | `string`               | `"No results"` | The text shown when no option matches. Defaults to "No results".                                                                    |
-| `_active`      | `PurrOption \| null`   | `null`         |                                                                                                                                     |
+| `_active`      | `PlOption \| null`     | `null`         |                                                                                                                                     |
 | `_labelled`    | `boolean`              | `false`        |                                                                                                                                     |
 
 **Slots**
 
-- default: The `purr-option` children.
+- default: The `pl-option` children.
 - `label`: The visible label.
 
 **Parts**
@@ -148,10 +148,10 @@ A text field with a list of suggestions. It follows the editable combobox patter
 **Events**
 
 - `name`:
-- `purr-input`: The text changed through typing or Escape. `detail.text` holds it.
-- `purr-change`: The value changed. `detail.value` holds it.
-- `input`: After each purr-input, as a native input fires it.
-- `change`: After each purr-change.
+- `pl-input`: The text changed through typing or Escape. `detail.text` holds it.
+- `pl-change`: The value changed. `detail.value` holds it.
+- `input`: After each pl-input, as a native input fires it.
+- `change`: After each pl-change.
 
 ## Dialog
 
@@ -159,9 +159,9 @@ A text field with a list of suggestions. It follows the editable combobox patter
 import "purrlucent/dialog";
 ```
 
-### `<purr-dialog>`
+### `<pl-dialog>`
 
-A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `purr-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. A sheet opened while another sheet is open is warned about and still shows; an alert over a sheet is not. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
+A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `pl-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. A sheet opened while another sheet is open is warned about and still shows; an alert over a sheet is not. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
 
 | Attribute     | Type                 | Default   | Description                                                            |
 | ------------- | -------------------- | --------- | ---------------------------------------------------------------------- |
@@ -178,7 +178,7 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 - `title`: The heading.
 - `description`: A short explanation under the sheet's title.
 - default: The alert's message, or the sheet's scrolling body.
-- `actions`: `purr-button` elements, in the order they are shown.
+- `actions`: `pl-button` elements, in the order they are shown.
 
 **Parts**
 
@@ -190,13 +190,13 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 
 **CSS properties**
 
-- `--purr-dialog-width`: The width of a sheet. Defaults to 390px (97.5 spacing units) and is capped at the viewport width minus the page margin. An alert ignores it.
+- `--pl-dialog-width`: The width of a sheet. Defaults to 390px (97.5 spacing units) and is capped at the viewport width minus the page margin. An alert ignores it.
 
 **Events**
 
 - `name`:
-- `purr-cancel`: Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
-- `purr-close`: The dialog closed. `detail.returnValue` holds the value it closed with.
+- `pl-cancel`: Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
+- `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with.
 
 ## Input
 
@@ -204,7 +204,7 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 import "purrlucent/input";
 ```
 
-### `<purr-input>`
+### `<pl-input>`
 
 A single-line text field. A native input inside does the editing, so typing, selection, IME, autofill and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the input's accessible name, and without both a native `<label for>` names it. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `pattern`, `type=email`...) is the element's validity. Enter submits the form.
 
@@ -246,10 +246,10 @@ A single-line text field. A native input inside does the editing, so typing, sel
 **Events**
 
 - `name`:
-- `purr-input`: The value changed through editing or the clear button. `detail.value` holds it.
-- `purr-change`: The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
-- `input`: After each purr-input, as a native input fires it.
-- `change`: After each purr-change, as a native input fires it.
+- `pl-input`: The value changed through editing or the clear button. `detail.value` holds it.
+- `pl-change`: The value was committed (blur or Enter after an edit) or cleared. `detail.value` holds it.
+- `input`: After each pl-input, as a native input fires it.
+- `change`: After each pl-change, as a native input fires it.
 
 ## Menu
 
@@ -257,13 +257,13 @@ A single-line text field. A native input inside does the editing, so typing, sel
 import "purrlucent/menu";
 ```
 
-### `<purr-menu-item>`
+### `<pl-menu-item>`
 
-One command in a `purr-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `purr-menu` in the `submenu` slot makes it open a submenu.
+One command in a `pl-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `pl-menu` in the `submenu` slot makes it open a submenu.
 
 | Attribute     | Type                          | Default | Description                                               |
 | ------------- | ----------------------------- | ------- | --------------------------------------------------------- |
-| `value`       | `string`                      | `""`    | What `purr-select` reports. Defaults to the label.        |
+| `value`       | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.          |
 | `type`        | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.         |
 | `checked`     | `boolean`                     | `false` | Checked, for a checkbox or radio item.                    |
 | `disabled`    | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.          |
@@ -277,7 +277,7 @@ One command in a `purr-menu`. Its text is the label. With `type` it becomes a ch
 - default: The label.
 - `icon`: A leading svg.
 - `detail`: Trailing content, such as a shortcut.
-- `submenu`: A nested `purr-menu`.
+- `submenu`: A nested `pl-menu`.
 
 **Parts**
 
@@ -286,17 +286,17 @@ One command in a `purr-menu`. Its text is the label. With `type` it becomes a ch
 - `detail`: The trailing text wrapper.
 - `chevron`: The submenu arrow.
 
-### `<purr-menu-separator>`
+### `<pl-menu-separator>`
 
 A thin rule between groups of items.
 
-### `<purr-menu-label>`
+### `<pl-menu-label>`
 
-A section header inside a `purr-menu`. Its text is the heading.
+A section header inside a `pl-menu`. Its text is the heading.
 
-### `<purr-menu>`
+### `<pl-menu>`
 
-A menu: a list of commands that opens from a trigger (the menu button pattern), at a point (a context menu, see `showAt`) or from a parent item (a submenu, `slot="submenu"`). The items are the light-DOM children, so focus moves to them while the menu is open and returns to the trigger on close. Arrow keys move with wrap, Home and End jump, typing jumps to a label, Enter and Space activate, Escape closes one level, Tab closes all of them. Activating an item closes every level and fires `purr-select`.
+A menu: a list of commands that opens from a trigger (the menu button pattern), at a point (a context menu, see `showAt`) or from a parent item (a submenu, `slot="submenu"`). The items are the light-DOM children, so focus moves to them while the menu is open and returns to the trigger on close. Arrow keys move with wrap, Home and End jump, typing jumps to a label, Enter and Space activate, Escape closes one level, Tab closes all of them. Activating an item closes every level and fires `pl-select`.
 
 | Attribute | Type      | Default | Description                      |
 | --------- | --------- | ------- | -------------------------------- |
@@ -306,7 +306,7 @@ A menu: a list of commands that opens from a trigger (the menu button pattern), 
 **Slots**
 
 - `trigger`: A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
-- default: The `purr-menu-item`, `purr-menu-separator` and `purr-menu-label` children.
+- default: The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
 
 **Parts**
 
@@ -314,7 +314,7 @@ A menu: a list of commands that opens from a trigger (the menu button pattern), 
 
 **Events**
 
-- `purr-select`: An item was activated. `detail.value` holds its value.
+- `pl-select`: An item was activated. `detail.value` holds its value.
 
 ## Number field
 
@@ -322,7 +322,7 @@ A menu: a list of commands that opens from a trigger (the menu button pattern), 
 import "purrlucent/number-field";
 ```
 
-### `<purr-number-field>`
+### `<pl-number-field>`
 
 A numeric field with up and down stepper buttons, following the WAI-ARIA spinbutton pattern. ArrowUp and ArrowDown step, PageUp and PageDown step ten times, Home and End go to `min` and `max` when they are set. Shift-click on a stepper button also steps ten times, held or not. A typed number is clamped to the range and snapped to the step grid when it is committed (blur or Enter). The stepper buttons are not tab stops, repeat while held and disable at the limits. The slotted text is a visible label; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute and a disabled fieldset disables it. The field reads the locale from the closest `lang` attribute (else the document's, else the browser's). Its decimal separator is accepted when a number is typed or pasted and is shown in the committed value, so "1,5" under `lang="de"` is 1.5. Characters that cannot be part of a number there are not inserted: only digits, one separator and a leading minus. The form value and the `value` property stay plain numbers.
 
@@ -361,10 +361,10 @@ A numeric field with up and down stepper buttons, following the WAI-ARIA spinbut
 **Events**
 
 - `name`:
-- `purr-input`: The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
-- `purr-change`: The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
-- `input`: After each purr-input, as a native input fires it.
-- `change`: After each purr-change, as a native input fires it.
+- `pl-input`: The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
+- `pl-change`: The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
+- `input`: After each pl-input, as a native input fires it.
+- `change`: After each pl-change, as a native input fires it.
 
 ## Popover
 
@@ -372,9 +372,9 @@ A numeric field with up and down stepper buttons, following the WAI-ARIA spinbut
 import "purrlucent/popover";
 ```
 
-### `<purr-popover>`
+### `<pl-popover>`
 
-A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger. The panel is as wide as its content, from a minimum that keeps the arrow clear of the corners up to a maximum of `calc(var(--purr-spacing) * 45)`, and never wider than the viewport; longer content wraps.
+A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger. The panel is as wide as its content, from a minimum that keeps the arrow clear of the corners up to a maximum of `calc(var(--pl-spacing) * 45)`, and never wider than the viewport; longer content wraps.
 
 | Attribute   | Type                                    | Default    | Description                                                                                                                                     |
 | ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -394,7 +394,7 @@ A non-modal floating panel anchored to a trigger. The trigger is any focusable c
 
 **Events**
 
-- `purr-toggle`: The panel opened or closed. `detail.open` says which.
+- `pl-toggle`: The panel opened or closed. `detail.open` says which.
 
 ## Progress
 
@@ -402,7 +402,7 @@ A non-modal floating panel anchored to a trigger. The trigger is any focusable c
 import "purrlucent/progress";
 ```
 
-### `<purr-progress>`
+### `<pl-progress>`
 
 A progress bar. With a `value` it shows how far along the work is; without one it shows that work is going on. Name it with `label`.
 
@@ -422,9 +422,9 @@ A progress bar. With a `value` it shows how far along the work is; without one i
 import "purrlucent/radio-group";
 ```
 
-### `<purr-radio>`
+### `<pl-radio>`
 
-One choice in a `purr-radio-group`. The slotted text is its label and accessible name.
+One choice in a `pl-radio-group`. The slotted text is its label and accessible name.
 
 | Attribute  | Type                   | Default | Description                                                                              |
 | ---------- | ---------------------- | ------- | ---------------------------------------------------------------------------------------- |
@@ -442,7 +442,7 @@ One choice in a `purr-radio-group`. The slotted text is its label and accessible
 - `box`: The drawn circle.
 - `label`: The wrapper around the label.
 
-### `<purr-radio-group>`
+### `<pl-radio-group>`
 
 A set of radios that offers one choice, as a native radio group does. Tab enters on the chosen radio, else on the first enabled one. Arrow keys move focus and choose, wrap, and follow the visual direction under `dir="rtl"`; Space chooses the focused radio. The group is the form control: it submits `name` with the chosen `value`, a form reset returns to the radio marked `checked`, and a disabled fieldset disables it. Always set `label`: without it the group has no accessible name.
 
@@ -457,12 +457,12 @@ A set of radios that offers one choice, as a native radio group does. Tab enters
 
 **Slots**
 
-- default: `purr-radio` elements.
+- default: `pl-radio` elements.
 
 **Events**
 
-- `purr-change`: The user chose a radio. `detail.selected` is a one-item array of its value.
-- `input`: After purr-change, as a native radio fires it.
+- `pl-change`: The user chose a radio. `detail.selected` is a one-item array of its value.
+- `input`: After pl-change, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
 ## Select
@@ -471,9 +471,9 @@ A set of radios that offers one choice, as a native radio group does. Tab enters
 import "purrlucent/select";
 ```
 
-### `<purr-option>`
+### `<pl-option>`
 
-One choice in a `purr-select`. Its text is the label. The select marks the chosen option with `aria-selected`; this element does nothing alone.
+One choice in a `pl-select`. Its text is the label. The select marks the chosen option with `aria-selected`; this element does nothing alone.
 
 | Attribute  | Type      | Default | Description                                                                |
 | ---------- | --------- | ------- | -------------------------------------------------------------------------- |
@@ -490,7 +490,7 @@ One choice in a `purr-select`. Its text is the label. The select marks the chose
 
 - `check`: The check mark shown on the chosen option.
 
-### `<purr-select>`
+### `<pl-select>`
 
 A pop-up button: shows the chosen option and opens a list to choose another. It follows the select-only combobox pattern: the trigger is a combobox and the options are real light-DOM children, so focus moves to the options while the list is open and returns to the trigger on close. It takes part in forms: it submits `name` with the chosen value, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the trigger; without it, `label` becomes the accessible name, and without both a native `<label for>` names it.
 
@@ -508,7 +508,7 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 
 **Slots**
 
-- default: The `purr-option` children.
+- default: The `pl-option` children.
 - `label`: The visible label.
 
 **Parts**
@@ -521,8 +521,8 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 
 **Events**
 
-- `purr-change`: The user chose another option. `detail.value` holds its value.
-- `input`: After purr-change, as a native select fires it.
+- `pl-change`: The user chose another option. `detail.value` holds its value.
+- `input`: After pl-change, as a native select fires it.
 - `change`: After input, as a native select fires it.
 
 ## Sidebar
@@ -531,9 +531,9 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 import "purrlucent/sidebar";
 ```
 
-### `<purr-sidebar-item>`
+### `<pl-sidebar-item>`
 
-One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. An expandable item with an `href` keeps its link, which selects like any other, and gets a separate disclosure button before it. Without an `href` an item renders a plain button; clicking it selects it, so an app can also handle the click itself.
+One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. An expandable item with an `href` keeps its link, which selects like any other, and gets a separate disclosure button before it. Without an `href` an item renders a plain button; clicking it selects it, so an app can also handle the click itself.
 
 | Attribute      | Type                  | Default | Description                                                                                                    |
 | -------------- | --------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
@@ -558,11 +558,11 @@ One entry of a `purr-sidebar`. It renders a link, or, when `expandable` is set b
 
 **Events**
 
-- `purr-toggle`: A disclosure button opened or closed. `detail.expanded` holds the new state.
+- `pl-toggle`: A disclosure button opened or closed. `detail.expanded` holds the new state.
 
-### `<purr-sidebar-section>`
+### `<pl-sidebar-section>`
 
-A titled group of `purr-sidebar-item` children inside a `purr-sidebar`. The group is exposed to assistive technology under its `label`, so the visible heading is not read a second time.
+A titled group of `pl-sidebar-item` children inside a `pl-sidebar`. The group is exposed to assistive technology under its `label`, so the visible heading is not read a second time.
 
 | Attribute | Type     | Default | Description                                       |
 | --------- | -------- | ------- | ------------------------------------------------- |
@@ -570,15 +570,15 @@ A titled group of `purr-sidebar-item` children inside a `purr-sidebar`. The grou
 
 **Slots**
 
-- default: `purr-sidebar-item` children.
+- default: `pl-sidebar-item` children.
 
 **Parts**
 
 - `heading`: The visible heading.
 
-### `<purr-sidebar>`
+### `<pl-sidebar>`
 
-A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children, loose or grouped under `purr-sidebar-section` headings (at most two levels, and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a disclosure button that shows and hides them; with an `href` it stays a link that selects, and the disclosure button sits before it. Every button and visible link is a tab stop. As an extra, Up and Down arrows, Home and End move among all visible items (Left and Right are not used). Space or Enter on a link selects it; Escape on a group button or inside its group closes it and focuses the button. On a narrow screen (600px or less) the sidebar collapses on its own; shown again, it fills the width. A collapse it made itself is undone when the screen widens; read the first state from `collapsed`, because `purr-collapse` can fire before a listener is attached.
+A navigation sidebar: a `nav` landmark holding `pl-sidebar-item` children, loose or grouped under `pl-sidebar-section` headings (at most two levels, and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a disclosure button that shows and hides them; with an `href` it stays a link that selects, and the disclosure button sits before it. Every button and visible link is a tab stop. As an extra, Up and Down arrows, Home and End move among all visible items (Left and Right are not used). Space or Enter on a link selects it; Escape on a group button or inside its group closes it and focuses the button. On a narrow screen (600px or less) the sidebar collapses on its own; shown again, it fills the width. A collapse it made itself is undone when the screen widens; read the first state from `collapsed`, because `pl-collapse` can fire before a listener is attached.
 
 | Attribute      | Type           | Default        | Description                                                                                                      |
 | -------------- | -------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -589,7 +589,7 @@ A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children, loo
 
 **Slots**
 
-- default: `purr-sidebar-item` and `purr-sidebar-section` children.
+- default: `pl-sidebar-item` and `pl-sidebar-section` children.
 
 **Parts**
 
@@ -598,8 +598,8 @@ A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children, loo
 
 **Events**
 
-- `purr-collapse`: The sidebar was hidden or shown. `detail.collapsed` holds the new state.
-- `purr-change`: The selected item changed. `detail.selected` is an array holding the new item.
+- `pl-collapse`: The sidebar was hidden or shown. `detail.collapsed` holds the new state.
+- `pl-change`: The selected item changed. `detail.selected` is an array holding the new item.
 
 ## Slider
 
@@ -607,7 +607,7 @@ A navigation sidebar: a `nav` landmark holding `purr-sidebar-item` children, loo
 import "purrlucent/slider";
 ```
 
-### `<purr-slider>`
+### `<pl-slider>`
 
 A slider: one value chosen on a track, following the WAI-ARIA slider pattern. The host is the slider and its hit region. Name it with `label`. It takes part in forms: it submits `name` with its value, a form reset returns it to its `value` attribute (0 without one), and a disabled fieldset disables it.
 
@@ -633,10 +633,10 @@ A slider: one value chosen on a track, following the WAI-ARIA slider pattern. Th
 **Events**
 
 - `name`:
-- `purr-input`: The value changed while dragging or on a key. `detail.value` holds it.
-- `purr-change`: The user committed a changed value, on release or on a key. `detail.value` holds it.
-- `input`: After each purr-input, as a native range input fires it.
-- `change`: After each purr-change, as a native range input fires it.
+- `pl-input`: The value changed while dragging or on a key. `detail.value` holds it.
+- `pl-change`: The user committed a changed value, on release or on a key. `detail.value` holds it.
+- `input`: After each pl-input, as a native range input fires it.
+- `change`: After each pl-change, as a native range input fires it.
 
 ## Spinner
 
@@ -644,7 +644,7 @@ A slider: one value chosen on a track, following the WAI-ARIA slider pattern. Th
 import "purrlucent/spinner";
 ```
 
-### `<purr-spinner>`
+### `<pl-spinner>`
 
 A spinner. Without a `value` it shows that work is going on, with no way to tell how far along. With a `value` it draws a clockwise arc for how much is done and stops turning. Always give it a `label` so it has an accessible name.
 
@@ -665,7 +665,7 @@ A spinner. Without a `value` it shows that work is going on, with no way to tell
 import "purrlucent/switch";
 ```
 
-### `<purr-switch>`
+### `<pl-switch>`
 
 A switch: an on/off setting that takes effect at once. The slotted text is its label and accessible name; without it, set `aria-label`. It takes part in forms like a checkbox: when on it submits `name` with `value`, a form reset returns it to its `checked` attribute, and a disabled fieldset disables it.
 
@@ -690,8 +690,8 @@ A switch: an on/off setting that takes effect at once. The slotted text is its l
 
 **Events**
 
-- `purr-change`: The user turned the switch on or off. `detail.checked` holds the new state.
-- `input`: After purr-change, as a native switch fires it.
+- `pl-change`: The user turned the switch on or off. `detail.checked` holds the new state.
+- `input`: After pl-change, as a native switch fires it.
 - `change`: After input, as a native switch fires it.
 
 ## Textarea
@@ -700,7 +700,7 @@ A switch: an on/off setting that takes effect at once. The slotted text is its l
 import "purrlucent/textarea";
 ```
 
-### `<purr-textarea>`
+### `<pl-textarea>`
 
 A multi-line text field. A native textarea inside does the editing, so typing, selection, IME and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the textarea's accessible name, and without both a native `<label for>` names it. It takes part in forms like a native textarea: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `minlength`, `maxlength`) is the element's validity.
 
@@ -734,10 +734,10 @@ A multi-line text field. A native textarea inside does the editing, so typing, s
 **Events**
 
 - `name`:
-- `purr-input`: The value changed through editing. `detail.value` holds it.
-- `purr-change`: The value was committed (blur after an edit). `detail.value` holds it.
-- `input`: After each purr-input, as a native textarea fires it.
-- `change`: After each purr-change, as a native textarea fires it.
+- `pl-input`: The value changed through editing. `detail.value` holds it.
+- `pl-change`: The value was committed (blur after an edit). `detail.value` holds it.
+- `input`: After each pl-input, as a native textarea fires it.
+- `change`: After each pl-change, as a native textarea fires it.
 
 ## Toggle
 
@@ -745,9 +745,9 @@ A multi-line text field. A native textarea inside does the editing, so typing, s
 import "purrlucent/toggle";
 ```
 
-### `<purr-toggle>`
+### `<pl-toggle>`
 
-A button that holds an on or off state, announced as `aria-pressed`. It is a `purr-button`, so size, `icon`, `disabled`, the slotted label and the leading svg icon work the same; an `icon` toggle needs an `aria-label`. The button's `variant`, `type` and `destructive` have no use here.
+A button that holds an on or off state, announced as `aria-pressed`. It is a `pl-button`, so size, `icon`, `disabled`, the slotted label and the leading svg icon work the same; an `icon` toggle needs an `aria-label`. The button's `variant`, `type` and `destructive` have no use here.
 
 | Attribute     | Type                              | Default       | Description                                                                                              |
 | ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
@@ -755,9 +755,9 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pu
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
-| `variant`     | `PurrButtonVariant`               | `"secondary"` |                                                                                                          |
+| `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
-| `size`        | `PurrButtonSize`                  | `"md"`        |                                                                                                          |
+| `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
@@ -772,8 +772,8 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pu
 
 **Events**
 
-- `purr-change`: A press changed the state. `detail.pressed` holds the new one.
-- `purr-press`: When the button is activated by pointer, Enter or Space.
+- `pl-change`: A press changed the state. `detail.pressed` holds the new one.
+- `pl-press`: When the button is activated by pointer, Enter or Space.
 
 ## Toggle group
 
@@ -781,9 +781,9 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pu
 import "purrlucent/toggle-group";
 ```
 
-### `<purr-toggle-group-item>`
+### `<pl-toggle-group-item>`
 
-One choice in a `purr-toggle-group`. The slot holds a text label or an svg icon. An icon-only item needs an `aria-label` to be named; mark the svg `aria-hidden="true"`. Use text or icons in one control, not both.
+One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. An icon-only item needs an `aria-label` to be named; mark the svg `aria-hidden="true"`. Use text or icons in one control, not both.
 
 | Attribute  | Type      | Default | Description                                                                     |
 | ---------- | --------- | ------- | ------------------------------------------------------------------------------- |
@@ -799,7 +799,7 @@ One choice in a `purr-toggle-group`. The slot holds a text label or an svg icon.
 
 - `label`: The wrapper around the label.
 
-### `<purr-toggle-group>`
+### `<pl-toggle-group>`
 
 A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
@@ -813,12 +813,12 @@ A row of equal-width items that offers one required choice, as a radio group. Ar
 
 **Slots**
 
-- default: `purr-toggle-group-item` elements.
+- default: `pl-toggle-group-item` elements.
 
 **Events**
 
-- `purr-change`: The selection changed by the user. `detail.selected` is a one-item array.
-- `input`: After purr-change, as a native radio fires it.
+- `pl-change`: The selection changed by the user. `detail.selected` is a one-item array.
+- `input`: After pl-change, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
 ## Toolbar
@@ -827,15 +827,15 @@ A row of equal-width items that offers one required choice, as a radio group. Ar
 import "purrlucent/toolbar";
 ```
 
-### `<purr-toolbar-separator>`
+### `<pl-toolbar-separator>`
 
 A thin rule between related controls. It is not a tab stop.
 
-### `<purr-toolbar-spacer>`
+### `<pl-toolbar-spacer>`
 
 Free space between items. Items before it stay at the leading edge and items after it move to the trailing edge; two spacers leave a center area. It is not a tab stop and is hidden from assistive technology.
 
-### `<purr-toolbar-title>`
+### `<pl-toolbar-title>`
 
 The title of the window or document a toolbar belongs to, with an optional subtitle. It is text, not a control, and not a tab stop. A long title shrinks to at most half the bar and ends in an ellipsis; its full text is still the accessible name.
 
@@ -848,7 +848,7 @@ The title of the window or document a toolbar belongs to, with an optional subti
 - default: The title.
 - `subtitle`: Secondary text under the title; beside it in a compact toolbar.
 
-### `<purr-toolbar-group>`
+### `<pl-toolbar-group>`
 
 Related symbol items, such as icon-only buttons with an `aria-label`, on one shared face.
 
@@ -856,9 +856,9 @@ Related symbol items, such as icon-only buttons with an `aria-label`, on one sha
 
 - default: The items.
 
-### `<purr-toolbar>`
+### `<pl-toolbar>`
 
-A bar of controls with one tab stop and arrow-key navigation. A `<purr-input type="search">` takes the toolbar's material; give it the `size` of the toolbar. Inside it the caret keys edit the text, and an arrow at the edge of the text moves on to the next item. For a Back or Close item, import `backGlyph` or `closeGlyph` from `purrlucent` and slot it into an icon `purr-button` with an `aria-label`. The Back chevron points left; mirror it with `scaleX(-1)` under right-to-left.
+A bar of controls with one tab stop and arrow-key navigation. A `<pl-input type="search">` takes the toolbar's material; give it the `size` of the toolbar. Inside it the caret keys edit the text, and an arrow at the edge of the text moves on to the next item. For a Back or Close item, import `backGlyph` or `closeGlyph` from `purrlucent` and slot it into an icon `pl-button` with an `aria-label`. The Back chevron points left; mirror it with `scaleX(-1)` under right-to-left.
 
 | Attribute  | Type           | Default | Description                                                            |
 | ---------- | -------------- | ------- | ---------------------------------------------------------------------- |
@@ -868,7 +868,7 @@ A bar of controls with one tab stop and arrow-key navigation. A `<purr-input typ
 
 **Slots**
 
-- default: Controls, `purr-toolbar-group`s, `purr-toolbar-separator`s, `purr-toolbar-spacer`s and a `purr-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
+- default: Controls, `pl-toolbar-group`s, `pl-toolbar-separator`s, `pl-toolbar-spacer`s and a `pl-toolbar-title`. At most one control may be prominent (`variant="primary"`), and it goes last.
 
 **Parts**
 
@@ -880,7 +880,7 @@ A bar of controls with one tab stop and arrow-key navigation. A `<purr-input typ
 import "purrlucent/tooltip";
 ```
 
-### `<purr-tooltip>`
+### `<pl-tooltip>`
 
 Shows `text` in a small bubble beside its content (the target): after a delay on hover, at once on keyboard focus. It hides on pointer leave, blur, Escape and a press, and the pointer can move onto the bubble without hiding it. It never shows for touch, so a tap always reaches the target. The bubble is a `role="tooltip"` element that the tooltip adds to its own children, so the target can name it in `aria-describedby`: an id reference cannot reach into a shadow root.
 

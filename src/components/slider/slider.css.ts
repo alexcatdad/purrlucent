@@ -9,11 +9,11 @@ import { css } from "lit";
  */
 export const sliderStyles = css`
   :host {
-    --_len: calc(var(--purr-spacing) * 30);
-    --_h: var(--purr-size-md);
-    --_t: calc(var(--purr-spacing) * 1.5);
-    --_kw: calc(var(--purr-spacing) * 5);
-    --_kh: calc(var(--purr-spacing) * 4);
+    --_len: calc(var(--pl-spacing) * 30);
+    --_h: var(--pl-size-md);
+    --_t: calc(var(--pl-spacing) * 1.5);
+    --_kw: calc(var(--pl-spacing) * 5);
+    --_kh: calc(var(--pl-spacing) * 4);
     --_tick: 2px;
     --_p: 0;
 
@@ -21,8 +21,8 @@ export const sliderStyles = css`
     display: inline-block;
     box-sizing: border-box;
     inline-size: var(--_len);
-    min-inline-size: var(--purr-size-hit-min);
-    block-size: max(var(--_h), var(--purr-size-hit-min));
+    min-inline-size: var(--pl-size-hit-min);
+    block-size: max(var(--_h), var(--pl-size-hit-min));
     vertical-align: middle;
     touch-action: pan-y;
     cursor: default;
@@ -34,15 +34,15 @@ export const sliderStyles = css`
   }
 
   :host([size="lg"]) {
-    --_h: var(--purr-size-lg);
-    --_kw: calc(var(--purr-spacing) * 6);
-    --_kh: calc(var(--purr-spacing) * 5);
+    --_h: var(--pl-size-lg);
+    --_kw: calc(var(--pl-spacing) * 6);
+    --_kh: calc(var(--pl-spacing) * 5);
   }
 
   :host([size="xl"]) {
-    --_h: var(--purr-size-xl);
-    --_kw: calc(var(--purr-spacing) * 6);
-    --_kh: calc(var(--purr-spacing) * 5);
+    --_h: var(--pl-size-xl);
+    --_kw: calc(var(--pl-spacing) * 6);
+    --_kh: calc(var(--pl-spacing) * 5);
   }
 
   [part="track"] {
@@ -51,28 +51,28 @@ export const sliderStyles = css`
     inset-block-start: calc(50% - var(--_t) / 2);
     block-size: var(--_t);
     overflow: hidden;
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-track);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-track);
   }
 
   [part="fill"] {
     display: block;
     block-size: 100%;
     inline-size: calc(var(--_kw) / 2 + var(--_p) * (100% - var(--_kw)));
-    border-radius: var(--purr-radius-full);
-    background-color: var(--_fill, var(--purr-color-selected));
+    border-radius: var(--pl-radius-full);
+    background-color: var(--_fill, var(--pl-color-selected));
   }
 
   [part="ticks"] > span {
     position: absolute;
-    inset-block-start: calc(50% + var(--_t) / 2 + var(--purr-spacing) * 0.75);
+    inset-block-start: calc(50% + var(--_t) / 2 + var(--pl-spacing) * 0.75);
     inset-inline-start: calc(
       var(--_kw) / 2 - var(--_tick) / 2 + var(--_i) * (100% - var(--_kw))
     );
     inline-size: var(--_tick);
     block-size: var(--_tick);
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-disabled-foreground);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-disabled-foreground);
   }
 
   [part="thumb"] {
@@ -81,21 +81,21 @@ export const sliderStyles = css`
     inset-inline-start: calc(var(--_p) * (100% - var(--_kw)));
     inline-size: var(--_kw);
     block-size: var(--_kh);
-    border-radius: var(--purr-radius-full);
-    background-color: var(--purr-color-thumb);
-    box-shadow: 0 0.5px calc(var(--purr-spacing) * 1.5)
-      color-mix(in srgb, var(--purr-color-shade) 12%, transparent);
+    border-radius: var(--pl-radius-full);
+    background-color: var(--pl-color-thumb);
+    box-shadow: 0 0.5px calc(var(--pl-spacing) * 1.5)
+      color-mix(in srgb, var(--pl-color-shade) 12%, transparent);
     transition:
-      scale var(--purr-duration) var(--purr-ease-out),
-      background-color var(--purr-duration-fast) var(--purr-ease-out),
-      box-shadow var(--purr-duration-fast) var(--purr-ease-out);
+      scale var(--pl-duration) var(--pl-ease-out),
+      background-color var(--pl-duration-fast) var(--pl-ease-out),
+      box-shadow var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   :host(:state(dragging)) {
     --_fill: color-mix(
       in srgb,
-      var(--purr-color-selected),
-      var(--purr-color-shade) 12%
+      var(--pl-color-selected),
+      var(--pl-color-shade) 12%
     );
   }
 
@@ -103,24 +103,23 @@ export const sliderStyles = css`
     scale: 1.25;
     background-color: color-mix(
       in srgb,
-      var(--purr-color-thumb) 25%,
+      var(--pl-color-thumb) 25%,
       transparent
     );
     box-shadow:
-      0 0 0 1px var(--purr-color-border),
-      inset 0 1px 1px
-        color-mix(in srgb, var(--purr-color-thumb) 70%, transparent),
-      0 calc(var(--purr-spacing) * 0.75) calc(var(--purr-spacing) * 1.5)
-        color-mix(in srgb, var(--purr-color-shade) 12%, transparent);
+      0 0 0 1px var(--pl-color-border),
+      inset 0 1px 1px color-mix(in srgb, var(--pl-color-thumb) 70%, transparent),
+      0 calc(var(--pl-spacing) * 0.75) calc(var(--pl-spacing) * 1.5)
+        color-mix(in srgb, var(--pl-color-shade) 12%, transparent);
   }
 
   /* The thumb stays as it is idle; only the fill and the ticks go muted. */
   :host(:disabled) {
-    --_fill: light-dark(var(--purr-color-muted-5), var(--purr-color-muted-4));
+    --_fill: light-dark(var(--pl-color-muted-5), var(--pl-color-muted-4));
   }
 
   :host(:disabled) [part="ticks"] > span {
-    background-color: var(--purr-color-foreground-faint);
+    background-color: var(--pl-color-foreground-faint);
   }
 
   /* The ring follows the thumb, not the whole hit region. */
@@ -129,8 +128,8 @@ export const sliderStyles = css`
   }
 
   :host(:focus-visible) [part="thumb"] {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: var(--purr-ring-offset);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
   }
 
   @media (forced-colors: active) {

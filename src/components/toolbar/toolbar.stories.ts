@@ -8,7 +8,7 @@ import "./toolbar.ts";
 
 const meta = {
   title: "Components/Toolbar",
-  component: "purr-toolbar",
+  component: "pl-toolbar",
 } satisfies Meta;
 
 export default meta;
@@ -52,7 +52,7 @@ const render = ({
   const first = grouped.indexOf(true);
   const parts = items.map(
     (item, i) =>
-      html`<purr-button
+      html`<pl-button
         aria-label=${ifDefined(item.icon ? item.label : undefined)}
         variant=${prominent.includes(i) ? "primary" : "ghost"}
         size=${item.icon ? "md" : "xl"}
@@ -60,24 +60,22 @@ const render = ({
         ?disabled=${disabled.includes(i)}
       >
         ${item.icon ? icon(item.icon) : item.label}
-      </purr-button>`,
+      </pl-button>`,
   );
   return html`<style>
-      purr-toolbar svg {
+      pl-toolbar svg {
         display: block;
       }
     </style>
-    <purr-toolbar
+    <pl-toolbar
       id="toolbar"
       label=${ifDefined(label || undefined)}
       ?scrolled=${scrolled}
     >
       ${parts.filter((_, i) => i < first)}
-      <purr-toolbar-group
-        >${parts.filter((_, i) => grouped[i])}</purr-toolbar-group
-      >
+      <pl-toolbar-group>${parts.filter((_, i) => grouped[i])}</pl-toolbar-group>
       ${parts.filter((_, i) => i > first && !grouped[i])}
-    </purr-toolbar>`;
+    </pl-toolbar>`;
 };
 
 export const Default: Story = { render: () => render() };
@@ -123,47 +121,47 @@ export const GlassDark = matrix({ material: "glass", theme: "dark" });
 const forward = svg`<path d="m9.5 5.5 6 6.5-6 6.5" />`;
 
 const iconButton = (label: string, paths: SVGTemplateResult) =>
-  html`<purr-button aria-label=${label} variant="ghost" icon
-    >${icon(paths)}</purr-button
+  html`<pl-button aria-label=${label} variant="ghost" icon
+    >${icon(paths)}</pl-button
   >`;
 
 // Every part of a window toolbar; `size` is the toolbar's and its controls'.
 const chrome = (size: "md" | "xl") =>
   html`<style>
-      purr-toolbar svg {
+      pl-toolbar svg {
         display: block;
       }
       /* Back points toward the start of the line and Forward toward the end. */
-      purr-toolbar:dir(rtl) [aria-label="Back"] svg,
-      purr-toolbar:dir(rtl) [aria-label="Forward"] svg {
+      pl-toolbar:dir(rtl) [aria-label="Back"] svg,
+      pl-toolbar:dir(rtl) [aria-label="Forward"] svg {
         transform: scaleX(-1);
       }
     </style>
-    <purr-toolbar id="toolbar" label="Window" size=${size}>
-      <purr-toolbar-group>
-        <purr-button aria-label="Back" variant="ghost" icon
-          >${backGlyph}</purr-button
+    <pl-toolbar id="toolbar" label="Window" size=${size}>
+      <pl-toolbar-group>
+        <pl-button aria-label="Back" variant="ghost" icon
+          >${backGlyph}</pl-button
         >${iconButton("Forward", forward)}
-      </purr-toolbar-group>
-      <purr-toolbar-title
+      </pl-toolbar-group>
+      <pl-toolbar-title
         >Window Title<span slot="subtitle"
           >Subtitle, edited</span
-        ></purr-toolbar-title
+        ></pl-toolbar-title
       >
-      <purr-toolbar-group>
+      <pl-toolbar-group>
         ${iconButton("Add", plus)}
-        <purr-toolbar-separator></purr-toolbar-separator>
+        <pl-toolbar-separator></pl-toolbar-separator>
         ${iconButton("More", more)}
-      </purr-toolbar-group>
-      <purr-input
+      </pl-toolbar-group>
+      <pl-input
         id="search"
         type="search"
         size=${size}
         label="Search"
         placeholder="Search"
-      ></purr-input>
-      <purr-button variant="primary" size=${size}>Done</purr-button>
-    </purr-toolbar>`;
+      ></pl-input>
+      <pl-button variant="primary" size=${size}>Done</pl-button>
+    </pl-toolbar>`;
 
 /** A title with a subtitle, groups, a separator, a search field and the prominent item. */
 export const Chrome: Story = { render: () => chrome("xl") };
@@ -175,38 +173,38 @@ export const Compact: Story = { render: () => chrome("md") };
 export const Spacers: Story = {
   render: () =>
     html`<style>
-        purr-toolbar svg {
+        pl-toolbar svg {
           display: block;
         }
-        purr-toolbar:dir(rtl) [aria-label="Back"] svg {
+        pl-toolbar:dir(rtl) [aria-label="Back"] svg {
           transform: scaleX(-1);
         }
       </style>
-      <purr-toolbar id="toolbar" label="Window">
-        <purr-button aria-label="Back" variant="ghost" icon
-          >${backGlyph}</purr-button
+      <pl-toolbar id="toolbar" label="Window">
+        <pl-button aria-label="Back" variant="ghost" icon
+          >${backGlyph}</pl-button
         >
-        <purr-toolbar-spacer></purr-toolbar-spacer>
-        <purr-toolbar-title>Window Title</purr-toolbar-title>
-        <purr-toolbar-spacer></purr-toolbar-spacer>
-        <purr-button aria-label="Close" variant="ghost" icon
-          >${closeGlyph}</purr-button
+        <pl-toolbar-spacer></pl-toolbar-spacer>
+        <pl-toolbar-title>Window Title</pl-toolbar-title>
+        <pl-toolbar-spacer></pl-toolbar-spacer>
+        <pl-button aria-label="Close" variant="ghost" icon
+          >${closeGlyph}</pl-button
         >
-        <purr-button variant="primary" size="xl">Done</purr-button>
-      </purr-toolbar>`,
+        <pl-button variant="primary" size="xl">Done</pl-button>
+      </pl-toolbar>`,
 };
 
 /** A title too long for the bar ends in an ellipsis and keeps its full text as its name. */
 export const LongTitle: Story = {
   render: () =>
     html`<div style="inline-size: 20rem">
-      <purr-toolbar id="toolbar" label="Window">
-        <purr-toolbar-title
+      <pl-toolbar id="toolbar" label="Window">
+        <pl-toolbar-title
           >A document title much too long to fit beside the other
-          items</purr-toolbar-title
+          items</pl-toolbar-title
         >
-        <purr-button variant="primary" size="xl">Done</purr-button>
-      </purr-toolbar>
+        <pl-button variant="primary" size="xl">Done</pl-button>
+      </pl-toolbar>
     </div>`,
 };
 
@@ -218,18 +216,18 @@ export const ChromeGlassDarkRtl: Story = {
 /** A search field takes the toolbar's capsule material and is one stop. */
 export const SearchField: Story = {
   render: () =>
-    html`<purr-toolbar id="toolbar" label="Find">
-      <purr-input
+    html`<pl-toolbar id="toolbar" label="Find">
+      <pl-input
         id="search"
         type="search"
         size="xl"
         label="Search"
         placeholder="Search"
         value="Search term"
-      ></purr-input>
-      <purr-toolbar-separator></purr-toolbar-separator>
-      <purr-button size="xl" variant="primary">Done</purr-button>
-    </purr-toolbar>`,
+      ></pl-input>
+      <pl-toolbar-separator></pl-toolbar-separator>
+      <pl-button size="xl" variant="primary">Done</pl-button>
+    </pl-toolbar>`,
 };
 
 export const Glass: Story = {

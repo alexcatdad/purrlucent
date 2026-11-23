@@ -5,11 +5,11 @@ import "../button/button.ts";
 import "../input/input.ts";
 import "../select/select.ts";
 import "./dialog.ts";
-import type { PurrDialog } from "./dialog.ts";
+import type { PlDialog } from "./dialog.ts";
 
 const meta = {
   title: "Components/Dialog",
-  component: "purr-dialog",
+  component: "pl-dialog",
 } satisfies Meta;
 
 export default meta;
@@ -32,45 +32,41 @@ const file = html`<svg slot="icon" viewBox="0 0 24 24" aria-hidden="true">
 
 /** A button that opens the dialog after it, and a dialog that starts closed. */
 const scene = (label: string, dialog: unknown) =>
-  html`<div style="padding:var(--purr-space-4)">
-    <purr-button
+  html`<div style="padding:var(--pl-space-4)">
+    <pl-button
       id="trigger"
       @click=${(event: Event) =>
         (
-          (event.currentTarget as HTMLElement).nextElementSibling as PurrDialog
+          (event.currentTarget as HTMLElement).nextElementSibling as PlDialog
         ).show()}
-      >${label}</purr-button
+      >${label}</pl-button
     >${dialog}
   </div>`;
 
 const draft = (stacked = false) =>
-  html`<purr-dialog id="dialog" variant="alert">
+  html`<pl-dialog id="dialog" variant="alert">
     <h2 slot="title">Save this message as a draft?</h2>
     This message has not been sent and contains unsaved changes. You can save it
     as a draft to work on later.
     ${
       stacked
-        ? html`<purr-button slot="actions" size="lg" default data-close="save"
-              >Save</purr-button
+        ? html`<pl-button slot="actions" size="lg" default data-close="save"
+              >Save</pl-button
             >
-            <purr-button
-              slot="actions"
-              size="lg"
-              destructive
-              data-close="discard"
-              >Don’t Save</purr-button
+            <pl-button slot="actions" size="lg" destructive data-close="discard"
+              >Don’t Save</pl-button
             >
-            <purr-button slot="actions" size="lg" cancel data-close="cancel"
-              >Cancel</purr-button
+            <pl-button slot="actions" size="lg" cancel data-close="cancel"
+              >Cancel</pl-button
             >`
-        : html`<purr-button slot="actions" size="lg" cancel data-close="cancel"
-              >Cancel</purr-button
+        : html`<pl-button slot="actions" size="lg" cancel data-close="cancel"
+              >Cancel</pl-button
             >
-            <purr-button slot="actions" size="lg" default data-close="save"
-              >Save</purr-button
+            <pl-button slot="actions" size="lg" default data-close="save"
+              >Save</pl-button
             >`
     }
-  </purr-dialog>`;
+  </pl-dialog>`;
 
 /*
  * Form rows: a label and its control share a row. The row is a two-column
@@ -80,41 +76,41 @@ const draft = (stacked = false) =>
 const rows = html`<style>
     .rows {
       display: grid;
-      gap: var(--purr-gap-form);
+      gap: var(--pl-gap-form);
     }
     .row {
       display: grid;
-      grid-template-columns: calc(var(--purr-spacing) * 23) minmax(0, 1fr);
-      gap: var(--purr-gap-form);
+      grid-template-columns: calc(var(--pl-spacing) * 23) minmax(0, 1fr);
+      gap: var(--pl-gap-form);
       align-items: center;
     }
     .row > span {
-      color: var(--purr-color-muted-foreground);
+      color: var(--pl-color-muted-foreground);
       text-align: end;
     }
-    .row > :is(purr-input, purr-select) {
+    .row > :is(pl-input, pl-select) {
       inline-size: 100%;
     }
   </style>
   <div class="rows">
     <div class="row">
       <span aria-hidden="true">Save As:</span>
-      <purr-input label="Save as" value="Untitled" autofocus></purr-input>
+      <pl-input label="Save as" value="Untitled" autofocus></pl-input>
     </div>
     <div class="row">
       <span aria-hidden="true">Tags:</span>
-      <purr-input label="Tags"></purr-input>
+      <pl-input label="Tags"></pl-input>
     </div>
     <div class="row">
       <span aria-hidden="true">File Format:</span>
-      <purr-select label="File format" value="Rich Text Document">
-        <purr-option>Rich Text Document</purr-option>
-        <purr-option>Plain Text</purr-option>
-      </purr-select>
+      <pl-select label="File format" value="Rich Text Document">
+        <pl-option>Rich Text Document</pl-option>
+        <pl-option>Plain Text</pl-option>
+      </pl-select>
     </div>
   </div>`;
 
-const save = html`<purr-dialog id="dialog" variant="sheet">
+const save = html`<pl-dialog id="dialog" variant="sheet">
   ${file}
   <h2 slot="title">Do you want to keep this new document “Untitled”?</h2>
   <p slot="description" style="margin:0">
@@ -122,31 +118,29 @@ const save = html`<purr-dialog id="dialog" variant="sheet">
     You can’t undo this action.
   </p>
   ${rows}
-  <purr-button slot="actions" destructive data-close="delete"
-    >Delete</purr-button
-  >
-  <purr-button slot="actions" cancel data-close="cancel">Cancel</purr-button>
-  <purr-button slot="actions" default data-close="save">Save</purr-button>
-</purr-dialog>`;
+  <pl-button slot="actions" destructive data-close="delete">Delete</pl-button>
+  <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+  <pl-button slot="actions" default data-close="save">Save</pl-button>
+</pl-dialog>`;
 
-const long = html`<purr-dialog id="dialog" variant="sheet" dismissible>
+const long = html`<pl-dialog id="dialog" variant="sheet" dismissible>
   <h2 slot="title">Terms of use</h2>
   ${Array.from(
     { length: 24 },
     (_, i) =>
-      html`<p style="margin:0 0 var(--purr-space-3)">
+      html`<p style="margin:0 0 var(--pl-space-3)">
         ${i + 1}. The content of this section is long enough that the body of
         the dialog has to scroll while the title and the actions stay in view.
       </p>`,
   )}
-  <purr-button slot="actions" cancel data-close="decline">Decline</purr-button>
-  <purr-button slot="actions" default data-close="accept">Accept</purr-button>
-</purr-dialog>`;
+  <pl-button slot="actions" cancel data-close="decline">Decline</pl-button>
+  <pl-button slot="actions" default data-close="accept">Accept</pl-button>
+</pl-dialog>`;
 
 /** Opens the dialog with a real click, as a person would. */
 const open = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
   await userEvent.click(canvasElement.querySelector("#trigger")!);
-  const el = canvasElement.querySelector<PurrDialog>("#dialog")!;
+  const el = canvasElement.querySelector<PlDialog>("#dialog")!;
   await el.updateComplete;
   expect(el.open).toBe(true);
 };
@@ -165,17 +159,17 @@ export const OpenAlertWithIcon: Story = {
   render: () =>
     scene(
       "Show alert",
-      html`<purr-dialog id="dialog" variant="alert">
+      html`<pl-dialog id="dialog" variant="alert">
         ${mail}
         <h2 slot="title">Delete this draft?</h2>
         The draft will be removed from all devices.
-        <purr-button slot="actions" size="lg" destructive data-close="delete"
-          >Delete</purr-button
+        <pl-button slot="actions" size="lg" destructive data-close="delete"
+          >Delete</pl-button
         >
-        <purr-button slot="actions" size="lg" cancel data-close="cancel"
-          >Cancel</purr-button
+        <pl-button slot="actions" size="lg" cancel data-close="cancel"
+          >Cancel</pl-button
         >
-      </purr-dialog>`,
+      </pl-dialog>`,
     ),
   play: open,
 };

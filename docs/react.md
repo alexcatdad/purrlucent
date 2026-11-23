@@ -16,7 +16,7 @@ Add the page background, text color and font from the install guide to your glob
 
 ## Types
 
-`purrlucent/react` adds every `purr-*` element to React's JSX types, with its props and its events. Load it once, for example in `src/vite-env.d.ts`:
+`purrlucent/react` adds every `pl-*` element to React's JSX types, with its props and its events. Load it once, for example in `src/vite-env.d.ts`:
 
 ```ts
 import type {} from "purrlucent/react";
@@ -29,9 +29,9 @@ The types are generated from the components on every release, so they match the 
 Write the elements as JSX tags. Props are set as properties, so booleans, numbers and strings all work:
 
 ```tsx
-<purr-button variant="primary" disabled={saving}>
+<pl-button variant="primary" disabled={saving}>
   Save
-</purr-button>
+</pl-button>
 ```
 
 Listen to an event with `on` followed by its exact name. The event's `detail` holds its data and is typed, so `e.detail.value` below is a `string`; the [component reference](./components.md) lists each element's events:
@@ -39,20 +39,20 @@ Listen to an event with `on` followed by its exact name. The event's `detail` ho
 ```tsx
 const [fruit, setFruit] = useState("apple");
 
-<purr-select value={fruit} onpurr-change={(e) => setFruit(e.detail.value)}>
+<pl-select value={fruit} onpl-change={(e) => setFruit(e.detail.value)}>
   <span slot="label">Fruit</span>
-  <purr-option value="apple">Apple</purr-option>
-  <purr-option value="pear">Pear</purr-option>
-</purr-select>;
+  <pl-option value="apple">Apple</pl-option>
+  <pl-option value="pear">Pear</pl-option>
+</pl-select>;
 ```
 
 Call an element's methods through a ref:
 
 ```tsx
-const dialog = useRef<PurrDialog>(null);
-// import type { PurrDialog } from "purrlucent/dialog";
+const dialog = useRef<PlDialog>(null);
+// import type { PlDialog } from "purrlucent/dialog";
 
-<purr-button onpurr-press={() => dialog.current?.show()}>Delete…</purr-button>;
+<pl-button onpl-press={() => dialog.current?.show()}>Delete…</pl-button>;
 ```
 
 Use `className`, `slot`, `id` and the other usual attributes as on any element.
@@ -61,44 +61,44 @@ Use `className`, `slot`, `id` and the other usual attributes as on any element.
 
 The form controls take part in a native `<form>` like built-in inputs: they submit their `name` and value, reset with the form, and report validity. Read them with `FormData` in a submit handler.
 
-They also fire the native `input` and `change` events after their own `purr-input` and `purr-change`, so `onInput` and `onChange` work as on a built-in input. Read the new state from the element:
+They also fire the native `input` and `change` events after their own `pl-input` and `pl-change`, so `onInput` and `onChange` work as on a built-in input. Read the new state from the element:
 
 ```tsx
-<purr-switch checked={wifi} onChange={(e) => setWifi(e.currentTarget.checked)}>
+<pl-switch checked={wifi} onChange={(e) => setWifi(e.currentTarget.checked)}>
   Wi-Fi
-</purr-switch>
+</pl-switch>
 ```
 
-`onChange` fires when the user commits a change: when a text field loses focus after an edit, on Enter in a single-line field, and at once for a choice such as a switch, a select or a stepper button. `onInput` fires on each edit. While someone types in `purr-number-field` or `purr-combobox`, their `value` stays the last committed one; read the text being typed from the `purr-input` event's `detail`.
+`onChange` fires when the user commits a change: when a text field loses focus after an edit, on Enter in a single-line field, and at once for a choice such as a switch, a select or a stepper button. `onInput` fires on each edit. While someone types in `pl-number-field` or `pl-combobox`, their `value` stays the last committed one; read the text being typed from the `pl-input` event's `detail`.
 
 Changing `value` or `checked` from code fires no event, as with a built-in input.
 
 ### react-hook-form
 
-Spread `register` onto a control as onto a built-in input. `purr-checkbox` and `purr-switch` have a `type` of `checkbox`, so their field is a boolean:
+Spread `register` onto a control as onto a built-in input. `pl-checkbox` and `pl-switch` have a `type` of `checkbox`, so their field is a boolean:
 
 ```tsx
 const { register, handleSubmit } = useForm<{ name: string; news: boolean }>();
 
 <form onSubmit={handleSubmit(save)}>
-  <purr-input label="Name" {...register("name", { required: true })} />
-  <purr-checkbox {...register("news")}>Newsletter</purr-checkbox>
-  <purr-button type="submit" variant="primary">
+  <pl-input label="Name" {...register("name", { required: true })} />
+  <pl-checkbox {...register("news")}>Newsletter</pl-checkbox>
+  <pl-button type="submit" variant="primary">
     Save
-  </purr-button>
+  </pl-button>
 </form>;
 ```
 
 ## Styling
 
-Change the look with tokens first: every `--purr-*` custom property reaches inside the elements. Set them in your global CSS or on any element. For one part of an element, use `::part()`; the [component reference](./components.md) lists each element's parts:
+Change the look with tokens first: every `--pl-*` custom property reaches inside the elements. Set them in your global CSS or on any element. For one part of an element, use `::part()`; the [component reference](./components.md) lists each element's parts:
 
 ```css
 :root {
-  --purr-color-accent: oklch(51% 0.17 250deg);
+  --pl-color-accent: oklch(51% 0.17 250deg);
 }
 
-purr-button::part(label) {
+pl-button::part(label) {
   letter-spacing: 0.02em;
 }
 ```
@@ -112,7 +112,7 @@ Test components that use purrlucent in a real browser, for example with [Vitest 
 In a test, wait for an element to render before reading it, and find its inner parts through its shadow root:
 
 ```ts
-const select = document.querySelector("purr-select")!;
+const select = document.querySelector("pl-select")!;
 await select.updateComplete;
 select.shadowRoot!.querySelector('[part="listbox"]');
 ```

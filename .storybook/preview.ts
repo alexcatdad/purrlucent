@@ -7,13 +7,13 @@ const toolbar = (description: string, items: string[]) => ({
 });
 
 // Each global becomes an attribute on the document root. The tokens layer reads
-// purr-material. Theme "light" or "dark" sets an inline color-scheme on <html>,
+// pl-material. Theme "light" or "dark" sets an inline color-scheme on <html>,
 // where the tokens' light-dark() values resolve; "system" leaves the shipped
 // behavior (follow the OS). Storybook only: shipped tokens are unchanged. The
 // tokens offer no hook for contrast (it follows prefers-contrast), so the
 // contrast global stays inert.
 const attributes = {
-  material: "purr-material",
+  material: "pl-material",
   theme: "data-theme",
   contrast: "data-contrast",
   dir: "dir",
@@ -48,7 +48,7 @@ const preview: Preview = {
         globals.theme === "system" ? "" : globals.theme;
       // Control fills are translucent and tint whatever is behind them, so the
       // page paints the background token, as an app does.
-      document.body.style.background = "var(--purr-color-background)";
+      document.body.style.background = "var(--pl-color-background)";
       return story();
     },
   ],

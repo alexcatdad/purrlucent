@@ -197,7 +197,7 @@ async function review(base: string, head = "HEAD"): Promise<number> {
   const diff = await run(["git", "diff", range, "--", "src"]);
   if (diff.length > MAX_DIFF)
     throw new Error(`diff is over ${MAX_DIFF} characters; split the change`);
-  const dir = mkdtempSync(join(tmpdir(), "purr-rubric-"));
+  const dir = mkdtempSync(join(tmpdir(), "pl-rubric-"));
   writeFileSync(join(dir, "schema.json"), JSON.stringify(schema));
   const last = join(dir, "last-message.json");
   console.log(`rubric: Codex is reviewing ${rules.length} rules…`);

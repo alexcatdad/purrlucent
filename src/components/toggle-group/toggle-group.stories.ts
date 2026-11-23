@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./toggle-group.ts";
-import type { PurrToggleGroup } from "./toggle-group.ts";
+import type { PlToggleGroup } from "./toggle-group.ts";
 
 const meta = { title: "Components/Toggle group" } satisfies Meta;
 
@@ -11,15 +11,15 @@ export default meta;
 type Story = StoryObj;
 
 const render = () => html`
-  <purr-toggle-group id="control" label="Calendar range">
-    <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
-    <purr-toggle-group-item value="week">Week</purr-toggle-group-item>
-    <purr-toggle-group-item value="month">Month</purr-toggle-group-item>
-  </purr-toggle-group>
+  <pl-toggle-group id="control" label="Calendar range">
+    <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
+    <pl-toggle-group-item value="week">Week</pl-toggle-group-item>
+    <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
+  </pl-toggle-group>
 `;
 
 const control = async (canvasElement: HTMLElement) => {
-  const el = canvasElement.querySelector<PurrToggleGroup>("#control")!;
+  const el = canvasElement.querySelector<PlToggleGroup>("#control")!;
   await el.updateComplete;
   return el;
 };
@@ -31,13 +31,11 @@ export const Default: Story = { render };
 /** A segment marked `selected` is the starting selection. */
 export const Preselected: Story = {
   render: () => html`
-    <purr-toggle-group id="control" label="Calendar range">
-      <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
-      <purr-toggle-group-item value="week">Week</purr-toggle-group-item>
-      <purr-toggle-group-item value="month" selected
-        >Month</purr-toggle-group-item
-      >
-    </purr-toggle-group>
+    <pl-toggle-group id="control" label="Calendar range">
+      <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
+      <pl-toggle-group-item value="week">Week</pl-toggle-group-item>
+      <pl-toggle-group-item value="month" selected>Month</pl-toggle-group-item>
+    </pl-toggle-group>
   `,
 };
 
@@ -55,41 +53,37 @@ export const MoreContrast: Story = { render, globals: { contrast: "more" } };
 /** A disabled control keeps its selection visible and gives no feedback. */
 export const Disabled: Story = {
   render: () => html`
-    <purr-toggle-group id="control" label="Calendar range" disabled>
-      <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
-      <purr-toggle-group-item value="week" selected
-        >Week</purr-toggle-group-item
-      >
-      <purr-toggle-group-item value="month">Month</purr-toggle-group-item>
-    </purr-toggle-group>
+    <pl-toggle-group id="control" label="Calendar range" disabled>
+      <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
+      <pl-toggle-group-item value="week" selected>Week</pl-toggle-group-item>
+      <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
+    </pl-toggle-group>
   `,
 };
 
 /** One segment is unavailable: it takes no focus and cannot be selected. */
 export const DisabledItem: Story = {
   render: () => html`
-    <purr-toggle-group id="control" label="Calendar range">
-      <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
-      <purr-toggle-group-item value="week" disabled
-        >Week</purr-toggle-group-item
-      >
-      <purr-toggle-group-item value="month">Month</purr-toggle-group-item>
-    </purr-toggle-group>
+    <pl-toggle-group id="control" label="Calendar range">
+      <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
+      <pl-toggle-group-item value="week" disabled>Week</pl-toggle-group-item>
+      <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
+    </pl-toggle-group>
   `,
 };
 
 /** In a form the group submits its value and follows reset and fieldset. */
 export const InForm: Story = {
   render: () => html`
-    <form id="form" style="padding:var(--purr-space-4)">
+    <form id="form" style="padding:var(--pl-space-4)">
       <fieldset id="fieldset" style="border:0;padding:0;margin:0">
-        <purr-toggle-group id="control" name="range" label="Calendar range">
-          <purr-toggle-group-item value="day">Day</purr-toggle-group-item>
-          <purr-toggle-group-item value="week" selected
-            >Week</purr-toggle-group-item
+        <pl-toggle-group id="control" name="range" label="Calendar range">
+          <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
+          <pl-toggle-group-item value="week" selected
+            >Week</pl-toggle-group-item
           >
-          <purr-toggle-group-item value="month">Month</purr-toggle-group-item>
-        </purr-toggle-group>
+          <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
+        </pl-toggle-group>
       </fieldset>
     </form>
   `,
@@ -110,17 +104,17 @@ const icon = (path: string) =>
 /** Icon-only segments: each item has an `aria-label`, and the svg is hidden. */
 export const Icons: Story = {
   render: () => html`
-    <purr-toggle-group id="control" label="Text alignment">
-      <purr-toggle-group-item value="left" aria-label="Align left"
-        >${icon("M4 6h16M4 12h10M4 18h14")}</purr-toggle-group-item
+    <pl-toggle-group id="control" label="Text alignment">
+      <pl-toggle-group-item value="left" aria-label="Align left"
+        >${icon("M4 6h16M4 12h10M4 18h14")}</pl-toggle-group-item
       >
-      <purr-toggle-group-item value="center" aria-label="Align center"
-        >${icon("M4 6h16M7 12h10M5 18h14")}</purr-toggle-group-item
+      <pl-toggle-group-item value="center" aria-label="Align center"
+        >${icon("M4 6h16M7 12h10M5 18h14")}</pl-toggle-group-item
       >
-      <purr-toggle-group-item value="right" aria-label="Align right"
-        >${icon("M4 6h16M10 12h10M6 18h14")}</purr-toggle-group-item
+      <pl-toggle-group-item value="right" aria-label="Align right"
+        >${icon("M4 6h16M10 12h10M6 18h14")}</pl-toggle-group-item
       >
-    </purr-toggle-group>
+    </pl-toggle-group>
   `,
 };
 

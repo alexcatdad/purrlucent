@@ -72,9 +72,9 @@ test("keeps rules from pages that are not a component", () => {
 });
 
 test("the prompt lists every rule id and the diff", () => {
-  const prompt = buildPrompt(rules, "+<purr-button prominent>");
+  const prompt = buildPrompt(rules, "+<pl-button prominent>");
   for (const r of rules) expect(prompt).toContain(r.id);
-  expect(prompt).toContain("+<purr-button prominent>");
+  expect(prompt).toContain("+<pl-button prominent>");
 });
 
 const ids = ["buttons/3", "layout/1"];

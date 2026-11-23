@@ -41,13 +41,13 @@ test("a slotted label names the textarea and a click on it focuses the field", a
   await gotoStory(page, story("labelled"));
   const field = page.getByRole("textbox", { name: "Message" });
   await expect(field).toHaveValue("Hello");
-  await page.locator("purr-textarea label").click();
+  await page.locator("pl-textarea label").click();
   await expect(field).toBeFocused();
 });
 
 test("focusing the host focuses the textarea", async ({ page }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-textarea").focus();
+  await page.locator("pl-textarea").focus();
   await expect(page.getByRole("textbox", { name: "Message" })).toBeFocused();
 });
 
@@ -55,10 +55,10 @@ test("typing edits the value, Enter adds a line, and the events fire", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  await page.locator("purr-textarea").evaluate((el) => {
+  await page.locator("pl-textarea").evaluate((el) => {
     const log: string[] = [];
     (window as unknown as { log: string[] }).log = log;
-    for (const name of ["purr-input", "purr-change"])
+    for (const name of ["pl-input", "pl-change"])
       el.addEventListener(name, (event) =>
         log.push(
           `${name}:${JSON.stringify((event as CustomEvent<{ value: string }>).detail.value)}`,
@@ -72,7 +72,7 @@ test("typing edits the value, Enter adds a line, and the events fire", async ({
   await page.keyboard.press("Tab");
   expect(
     await page.evaluate(() => (window as unknown as { log: string[] }).log),
-  ).toEqual(['purr-input:"a"', 'purr-input:"a\\n"', 'purr-change:"a\\n"']);
+  ).toEqual(['pl-input:"a"', 'pl-input:"a\\n"', 'pl-change:"a\\n"']);
 });
 
 test("the focus ring is drawn on the shell", async ({ page }) => {
@@ -81,7 +81,7 @@ test("the focus ring is drawn on the shell", async ({ page }) => {
   await expect
     .poll(() =>
       page
-        .locator("purr-textarea")
+        .locator("pl-textarea")
         .evaluate(
           (el) =>
             getComputedStyle(el.shadowRoot!.querySelector('[part="field"]')!)
@@ -95,7 +95,7 @@ test("resize is vertical by default and none on request", async ({ page }) => {
   await gotoStory(page, story("resize"));
   const resize = (i: number) =>
     page
-      .locator("purr-textarea")
+      .locator("pl-textarea")
       .nth(i)
       .evaluate(
         (el) =>
@@ -109,7 +109,7 @@ test("rows sets the height in lines", async ({ page }) => {
   await gotoStory(page, story("resize"));
   const height = (i: number) =>
     page
-      .locator("purr-textarea")
+      .locator("pl-textarea")
       .nth(i)
       .evaluate(
         (el) =>
@@ -126,7 +126,7 @@ test("a disabled field takes no focus and a read-only one keeps its value", asyn
   await gotoStory(page, story("states"));
   const disabled = page.getByRole("textbox", { name: "Disabled" });
   await expect(disabled).toBeDisabled();
-  await page.locator("purr-textarea").nth(2).click({ force: true });
+  await page.locator("pl-textarea").nth(2).click({ force: true });
   await expect(disabled).not.toBeFocused();
   const readonly = page.getByRole("textbox", { name: "Read only" });
   await readonly.focus();
@@ -260,7 +260,7 @@ test("a label whose text arrives later replaces the aria-label", async ({
   await root.evaluate((el) => {
     el.insertAdjacentHTML(
       "beforeend",
-      '<purr-textarea id="late" label="Fallback"><span id="t"> </span></purr-textarea>',
+      '<pl-textarea id="late" label="Fallback"><span id="t"> </span></pl-textarea>',
     );
   });
   const control = page.locator("#late").locator("textarea");
@@ -275,7 +275,7 @@ test("the field keeps a border under forced colors and a ring on focus", async (
   await gotoStory(page, story("default"));
   await page.emulateMedia({ forcedColors: "active" });
   await page.keyboard.press("Tab");
-  const style = await page.locator("purr-textarea").evaluate((el) => {
+  const style = await page.locator("pl-textarea").evaluate((el) => {
     const css = getComputedStyle(
       el.shadowRoot!.querySelector('[part="field"]')!,
     );
@@ -289,7 +289,7 @@ test("a custom validity set before the first render is kept", async ({
 }) => {
   const root = await gotoStory(page, story("default"));
   const result = await root.evaluate(async (el) => {
-    const field = document.createElement("purr-textarea") as HTMLElement & {
+    const field = document.createElement("pl-textarea") as HTMLElement & {
       setCustomValidity(message: string): void;
       validity: ValidityState;
       validationMessage: string;
@@ -308,7 +308,7 @@ test("the field shrinks to a narrow container", async ({ page }) => {
   const width = await root.evaluate((el) => {
     const box = document.createElement("div");
     box.style.inlineSize = "100px";
-    box.innerHTML = '<purr-textarea label="Narrow"></purr-textarea>';
+    box.innerHTML = '<pl-textarea label="Narrow"></pl-textarea>';
     el.append(box);
     return box.firstElementChild!.getBoundingClientRect().width;
   });
@@ -322,7 +322,7 @@ test("an external label names the textarea, even one added later", async ({
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      '<label for="ext">Bio</label><purr-textarea id="ext"></purr-textarea><purr-textarea id="late"></purr-textarea>',
+      '<label for="ext">Bio</label><pl-textarea id="ext"></pl-textarea><pl-textarea id="late"></pl-textarea>',
     ),
   );
   await expect(page.getByRole("textbox", { name: "Bio" })).toBeVisible();
@@ -335,7 +335,7 @@ test("an external label names the textarea, even one added later", async ({
 
 test("the text is padded from the start edge under rtl", async ({ page }) => {
   await gotoStory(page, story("rtl"));
-  const padding = await page.locator("purr-textarea").evaluate((el) => {
+  const padding = await page.locator("pl-textarea").evaluate((el) => {
     const css = getComputedStyle(el.shadowRoot!.querySelector("textarea")!);
     return [css.direction, css.paddingRight, css.paddingLeft];
   });
@@ -346,7 +346,7 @@ test("the text is padded from the start edge under rtl", async ({ page }) => {
 test("a text area without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-textarea");
+    const bare = document.createElement("pl-textarea");
     bare.id = "bare";
     el.append(bare);
   });
@@ -370,7 +370,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every field keeps a 44 px minimum height", async ({ page }) => {
     await gotoStory(page, story("sizes"));
-    for (const control of await page.locator("purr-textarea").all()) {
+    for (const control of await page.locator("pl-textarea").all()) {
       const box = (await control.boundingBox())!;
       expect(box.height).toBeGreaterThanOrEqual(44);
     }

@@ -114,7 +114,7 @@ test('step="any" gives a continuous value', async ({ page }) => {
   expect(Number(await now(control))).toBeCloseTo(5.1);
 });
 
-test("purr-input fires while dragging and purr-change once on release", async ({
+test("pl-input fires while dragging and pl-change once on release", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
@@ -122,7 +122,7 @@ test("purr-input fires while dragging and purr-change once on release", async ({
   await control.evaluate((el) => {
     const log: string[] = [];
     (window as unknown as { log: string[] }).log = log;
-    for (const type of ["purr-input", "purr-change"]) {
+    for (const type of ["pl-input", "pl-change"]) {
       el.addEventListener(type, (event) =>
         log.push(
           `${type}:${(event as CustomEvent<{ value: number }>).detail.value}`,
@@ -139,11 +139,9 @@ test("purr-input fires while dragging and purr-change once on release", async ({
   const log = await page.evaluate(
     () => (window as unknown as { log: string[] }).log,
   );
-  expect(log.filter((e) => e.startsWith("purr-input")).length).toBeGreaterThan(
-    1,
-  );
-  expect(log.filter((e) => e.startsWith("purr-change"))).toHaveLength(1);
-  expect(log.at(-1)).toMatch(/^purr-change:/);
+  expect(log.filter((e) => e.startsWith("pl-input")).length).toBeGreaterThan(1);
+  expect(log.filter((e) => e.startsWith("pl-change"))).toHaveLength(1);
+  expect(log.at(-1)).toMatch(/^pl-change:/);
 });
 
 /** Counts the events a slider fires from now on, into `window.log`. */
@@ -151,7 +149,7 @@ const logEvents = (control: Locator) =>
   control.evaluate((el) => {
     const log: string[] = [];
     (window as unknown as { log: string[] }).log = log;
-    for (const type of ["purr-input", "purr-change"]) {
+    for (const type of ["pl-input", "pl-change"]) {
       el.addEventListener(type, () => log.push(type));
     }
   });
@@ -327,7 +325,7 @@ test("under rtl the minimum is at the right and the keys swap", async ({
 test("tick marks are drawn from the ticks attribute", async ({ page }) => {
   await gotoStory(page, story("ticks"));
   const marks = page
-    .locator("purr-slider")
+    .locator("pl-slider")
     .first()
     .locator('[part="ticks"] > span');
   await expect(marks).toHaveCount(5);
@@ -351,7 +349,7 @@ test("the thumb keeps its focus ring under forced colors", async ({ page }) => {
 test("a slider without a label fails axe", async ({ page }) => {
   const root = await gotoStory(page, story("default"));
   await root.evaluate((el) => {
-    const bare = document.createElement("purr-slider");
+    const bare = document.createElement("pl-slider");
     bare.id = "bare";
     el.append(bare);
   });
@@ -378,7 +376,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every slider keeps a 44 by 44 hit area", async ({ page }) => {
     await gotoStory(page, story("states"));
-    for (const control of await page.locator("purr-slider").all()) {
+    for (const control of await page.locator("pl-slider").all()) {
       const box = (await control.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);

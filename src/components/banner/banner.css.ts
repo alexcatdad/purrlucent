@@ -7,19 +7,18 @@ import { css } from "lit";
  */
 export const bannerStyles = css`
   :host {
-    --_tone: var(--purr-color-accent);
-    --_title: var(--purr-color-foreground);
-    --_tile: calc(var(--purr-spacing) * 8);
+    --_tone: var(--pl-color-accent);
+    --_title: var(--pl-color-foreground);
+    --_tile: calc(var(--pl-spacing) * 8);
 
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
       "icon text close"
       ". actions actions";
-    max-inline-size: calc(var(--purr-spacing) * 86);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
-    transition: opacity var(--purr-duration-slow) var(--purr-ease-out);
+    max-inline-size: calc(var(--pl-spacing) * 86);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
+    transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
 
   :host(:not([open])) {
@@ -33,25 +32,25 @@ export const bannerStyles = css`
   }
 
   :host([tone="destructive"]) {
-    --_tone: var(--purr-color-destructive);
-    --_title: var(--purr-color-destructive-text);
+    --_tone: var(--pl-color-destructive);
+    --_title: var(--pl-color-destructive-text);
   }
 
   /* A slotted icon, or the tone's own in the slot's fallback. */
   ::slotted([slot="icon"]),
   slot[name="icon"] > svg {
     grid-area: icon;
-    margin-inline-end: var(--purr-space-3);
+    margin-inline-end: var(--pl-space-3);
     box-sizing: border-box;
     inline-size: var(--_tile);
     block-size: var(--_tile);
     padding: calc(var(--_tile) / 4);
-    border-radius: var(--purr-radius);
+    border-radius: var(--pl-radius);
     background: linear-gradient(
-      color-mix(in srgb, var(--_tone), var(--purr-color-honeydew) 25%),
+      color-mix(in srgb, var(--_tone), var(--pl-color-honeydew) 25%),
       var(--_tone)
     );
-    color: var(--purr-color-accent-foreground);
+    color: var(--pl-color-accent-foreground);
     fill: none;
     stroke: currentColor;
     stroke-width: 1.5;
@@ -61,7 +60,7 @@ export const bannerStyles = css`
 
   [part="text"] {
     grid-area: text;
-    margin-inline-end: var(--purr-space-3);
+    margin-inline-end: var(--pl-space-3);
     min-inline-size: 0;
     overflow-wrap: anywhere;
   }
@@ -84,36 +83,36 @@ export const bannerStyles = css`
     grid-area: close;
     place-items: center;
     align-self: start;
-    inline-size: var(--purr-size-hit-min);
-    block-size: var(--purr-size-hit-min);
-    margin: calc((var(--purr-size-hit-min) - var(--purr-icon-md)) / -2);
+    inline-size: var(--pl-size-hit-min);
+    block-size: var(--pl-size-hit-min);
+    margin: calc((var(--pl-size-hit-min) - var(--pl-icon-md)) / -2);
     padding: 0;
     border: 0;
-    border-radius: var(--purr-radius-full);
+    border-radius: var(--pl-radius-full);
     background: none;
-    color: var(--purr-color-muted-foreground);
+    color: var(--pl-color-muted-foreground);
     cursor: default;
-    transition: color var(--purr-duration-fast) var(--purr-ease-out);
+    transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
   @media (hover: hover) {
     [part="close"]:hover {
-      color: var(--purr-color-foreground);
+      color: var(--pl-color-foreground);
     }
   }
 
   [part="close"]:active {
-    color: var(--purr-color-foreground);
+    color: var(--pl-color-foreground);
   }
 
   [part="close"]:focus-visible {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: calc(var(--purr-ring-width) * -1);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
   [part="close"] svg {
-    inline-size: var(--purr-icon-md);
-    block-size: var(--purr-icon-md);
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -124,11 +123,11 @@ export const bannerStyles = css`
     display: flex;
     flex-wrap: wrap;
     grid-area: actions;
-    gap: var(--purr-gap-controls);
+    gap: var(--pl-gap-controls);
   }
 
   ::slotted([slot="actions"]) {
-    margin-block-start: var(--purr-space-2);
+    margin-block-start: var(--pl-space-2);
   }
 
   @media (forced-colors: active) {

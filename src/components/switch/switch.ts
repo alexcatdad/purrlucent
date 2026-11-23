@@ -21,11 +21,11 @@ import { switchStyles } from "./switch.css.ts";
  * @csspart track - The groove.
  * @csspart thumb - The knob.
  * @csspart label - The wrapper around the label.
- * @fires {CustomEvent<{ checked: boolean }>} purr-change - The user turned the switch on or off. `detail.checked` holds the new state.
- * @fires input - After purr-change, as a native switch fires it.
+ * @fires {CustomEvent<{ checked: boolean }>} pl-change - The user turned the switch on or off. `detail.checked` holds the new state.
+ * @fires input - After pl-change, as a native switch fires it.
  * @fires change - After input, as a native switch fires it.
  */
-export class PurrSwitch extends LitElement {
+export class PlSwitch extends LitElement {
   static formAssociated = true;
   static override styles = switchStyles;
   static override properties = {
@@ -62,12 +62,12 @@ export class PurrSwitch extends LitElement {
     this.size = "md";
     this.required = false;
     this.disabled = false;
-    this.addEventListener("purr-press", () => {
+    this.addEventListener("pl-press", () => {
       this.checked = !this.checked;
-      // Now, not in updated(): a purr-change listener reads form value and validity.
+      // Now, not in updated(): a pl-change listener reads form value and validity.
       this.#syncChecked();
       this.dispatchEvent(
-        new CustomEvent("purr-change", {
+        new CustomEvent("pl-change", {
           detail: { checked: this.checked },
           bubbles: true,
           composed: true,
@@ -147,10 +147,10 @@ export class PurrSwitch extends LitElement {
   }
 }
 
-customElements.define("purr-switch", PurrSwitch);
+customElements.define("pl-switch", PlSwitch);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-switch": PurrSwitch;
+    "pl-switch": PlSwitch;
   }
 }

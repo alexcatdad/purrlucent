@@ -13,7 +13,7 @@ import { popoverStyles } from "./popover.css.ts";
  * itself), and closes on Escape (focus returns to the trigger), on a press
  * outside and when focus leaves it. An arrow points at the trigger. The panel
  * is as wide as its content, from a minimum that keeps the arrow clear of the
- * corners up to a maximum of `calc(var(--purr-spacing) * 45)`, and never wider
+ * corners up to a maximum of `calc(var(--pl-spacing) * 45)`, and never wider
  * than the viewport; longer content wraps.
  *
  * @attr {string} label - The panel's accessible name. Required.
@@ -23,9 +23,9 @@ import { popoverStyles } from "./popover.css.ts";
  * @slot trigger - The control that opens the panel.
  * @csspart panel - The floating panel.
  * @csspart arrow - The arrow pointing at the trigger.
- * @fires {CustomEvent<{ open: boolean }>} purr-toggle - The panel opened or closed. `detail.open` says which.
+ * @fires {CustomEvent<{ open: boolean }>} pl-toggle - The panel opened or closed. `detail.open` says which.
  */
-export class PurrPopover extends LitElement {
+export class PlPopover extends LitElement {
   static override styles = popoverStyles;
   static override properties = {
     label: { reflect: true },
@@ -82,7 +82,7 @@ export class PurrPopover extends LitElement {
   // One popover shows at a time. A popover nested in this one, or holding it, stays as it is.
   #closeOthers() {
     const root = this.getRootNode() as Document | ShadowRoot;
-    for (const other of root.querySelectorAll("purr-popover")) {
+    for (const other of root.querySelectorAll("pl-popover")) {
       if (other.open && !other.contains(this) && !this.contains(other)) {
         other.open = false;
       }
@@ -159,7 +159,7 @@ export class PurrPopover extends LitElement {
     }
     if (!started) {
       this.dispatchEvent(
-        new CustomEvent("purr-toggle", {
+        new CustomEvent("pl-toggle", {
           detail: { open: this.open },
           bubbles: true,
           composed: true,
@@ -194,10 +194,10 @@ export class PurrPopover extends LitElement {
   }
 }
 
-customElements.define("purr-popover", PurrPopover);
+customElements.define("pl-popover", PlPopover);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-popover": PurrPopover;
+    "pl-popover": PlPopover;
   }
 }

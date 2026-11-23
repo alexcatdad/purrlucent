@@ -1,7 +1,7 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 
 /**
- * Press behavior for a custom control: fires `purr-press` on a click (a pointer
+ * Press behavior for a custom control: fires `pl-press` on a click (a pointer
  * click, a label, `click()` or assistive technology). Enter and Space click the
  * host, so `click` listeners run for the keyboard too (Space on key release, as
  * a native button does). `enter: false` leaves Enter alone, as a native
@@ -75,7 +75,7 @@ export class PressableController implements ReactiveController {
 
   #press() {
     this.#host.dispatchEvent(
-      new CustomEvent("purr-press", { bubbles: true, composed: true }),
+      new CustomEvent("pl-press", { bubbles: true, composed: true }),
     );
   }
 

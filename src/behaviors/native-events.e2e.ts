@@ -1,10 +1,10 @@
 // Each form control fires the native input and change events after its own
-// purr-* events, with its value already updated, so React's onInput and
+// pl-* events, with its value already updated, so React's onInput and
 // onChange and form libraries see the edit.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
-/** Logs the purr-* and native events fired on the host, each with the host's state at that moment. */
+/** Logs the pl-* and native events fired on the host, each with the host's state at that moment. */
 const listen = (host: Locator) =>
   host.evaluate((el) => {
     const log: string[] = [];
@@ -14,7 +14,7 @@ const listen = (host: Locator) =>
       checked?: boolean;
       type?: string;
     };
-    for (const type of ["purr-input", "input", "purr-change", "change"])
+    for (const type of ["pl-input", "input", "pl-change", "change"])
       el.addEventListener(type, (event) => {
         if (event.target !== el) return;
         const state =
@@ -28,7 +28,7 @@ const logged = (page: Page) =>
 
 /** The events of one change to `state`, in the order a control fires them. */
 const changed = (state: string) => [
-  `purr-change:${state}`,
+  `pl-change:${state}`,
   `input:${state}`,
   `change:${state}`,
 ];
@@ -69,9 +69,9 @@ test("clearing a combobox fires change, then input", async ({ page }) => {
   await page.keyboard.press("Escape");
   await page.keyboard.press("Escape");
   expect(await logged(page)).toEqual([
-    "purr-change:",
+    "pl-change:",
     "change:",
-    "purr-input:",
+    "pl-input:",
     "input:",
   ]);
 });
@@ -109,9 +109,9 @@ test("a key on a slider fires input, then change", async ({ page }) => {
   );
   expect(value).not.toBe("50");
   expect(await logged(page)).toEqual([
-    `purr-input:${value}`,
+    `pl-input:${value}`,
     `input:${value}`,
-    `purr-change:${value}`,
+    `pl-change:${value}`,
     `change:${value}`,
   ]);
 });
@@ -120,15 +120,15 @@ test("typing in an input fires one input per edit and change on commit", async (
   page,
 }) => {
   await gotoStory(page, "components-input--default");
-  await listen(page.locator("purr-input"));
+  await listen(page.locator("pl-input"));
   await page.getByRole("textbox", { name: "Name" }).pressSequentially("ab");
   await page.keyboard.press("Tab");
   expect(await logged(page)).toEqual([
-    "purr-input:a",
+    "pl-input:a",
     "input:a",
-    "purr-input:ab",
+    "pl-input:ab",
     "input:ab",
-    "purr-change:ab",
+    "pl-change:ab",
     "change:ab",
   ]);
 });
@@ -137,13 +137,13 @@ test("the clear button of a search field fires input and change", async ({
   page,
 }) => {
   await gotoStory(page, "components-input--search");
-  const host = page.locator("purr-input").nth(1);
+  const host = page.locator("pl-input").nth(1);
   await listen(host);
   await host.getByRole("button", { name: "Clear" }).click();
   expect(await logged(page)).toEqual([
-    "purr-input:",
+    "pl-input:",
     "input:",
-    "purr-change:",
+    "pl-change:",
     "change:",
   ]);
 });
@@ -154,22 +154,22 @@ test("typing in a text area fires input and change", async ({ page }) => {
   await page.getByRole("textbox", { name: "Message" }).pressSequentially("a");
   await page.keyboard.press("Tab");
   expect(await logged(page)).toEqual([
-    "purr-input:a",
+    "pl-input:a",
     "input:a",
-    "purr-change:a",
+    "pl-change:a",
     "change:a",
   ]);
 });
 
 test("a key on a number field fires input and change", async ({ page }) => {
   await gotoStory(page, "components-number-field--steps");
-  await listen(page.locator("purr-number-field"));
+  await listen(page.locator("pl-number-field"));
   await page.getByRole("spinbutton").focus();
   await page.keyboard.press("ArrowUp");
   expect(await logged(page)).toEqual([
-    "purr-input:6",
+    "pl-input:6",
     "input:6",
-    "purr-change:6",
+    "pl-change:6",
     "change:6",
   ]);
 });

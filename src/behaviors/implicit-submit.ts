@@ -1,5 +1,5 @@
 const textFields =
-  "purr-input, purr-number-field, purr-combobox, input:is(:not([type]), [type=text], [type=search], [type=email], [type=url], [type=tel], [type=password], [type=number])";
+  "pl-input, pl-number-field, pl-combobox, input:is(:not([type]), [type=text], [type=search], [type=email], [type=url], [type=tel], [type=password], [type=number])";
 
 /**
  * Native implicit submission: press the form's default button, or submit

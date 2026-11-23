@@ -77,12 +77,12 @@ const optionalNumber = {
  * @csspart increment - The up button.
  * @csspart decrement - The down button.
  * @csspart message - The icon and validation message below the field while it is invalid.
- * @fires {CustomEvent<{ value: number | null }>} purr-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
- * @fires {CustomEvent<{ value: number | null }>} purr-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
- * @fires input - After each purr-input, as a native input fires it.
- * @fires change - After each purr-change, as a native input fires it.
+ * @fires {CustomEvent<{ value: number | null }>} pl-input - The value changed through typing, keys or the buttons. `detail.value` holds the number, or null while the field is empty.
+ * @fires {CustomEvent<{ value: number | null }>} pl-change - The value was committed (blur, Enter, keys or buttons). `detail.value` holds it.
+ * @fires input - After each pl-input, as a native input fires it.
+ * @fires change - After each pl-change, as a native input fires it.
  */
-export class PurrNumberField extends LitElement {
+export class PlNumberField extends LitElement {
   static formAssociated = true;
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -263,7 +263,7 @@ export class PurrNumberField extends LitElement {
     syncFieldMessage(this.renderRoot as ShadowRoot, input, invalid);
   }
 
-  #emit(name: "purr-input" | "purr-change", value = this.value) {
+  #emit(name: "pl-input" | "pl-change", value = this.value) {
     this.dispatchEvent(
       new CustomEvent(name, {
         detail: { value },
@@ -311,7 +311,7 @@ export class PurrNumberField extends LitElement {
     this.#touched = true;
     this.#sync();
     if (!changed) return;
-    this.#emit("purr-change");
+    this.#emit("pl-change");
     fireNative(this, "change");
   }
 
@@ -326,9 +326,9 @@ export class PurrNumberField extends LitElement {
     this.#sync();
     // The inner input fires its own input event only when typed into.
     if (changed) {
-      this.#emit("purr-input");
+      this.#emit("pl-input");
       fireNative(this, "input");
-      this.#emit("purr-change");
+      this.#emit("pl-change");
       fireNative(this, "change");
     }
     return changed;
@@ -401,7 +401,7 @@ export class PurrNumberField extends LitElement {
     if (typed !== null && !Number.isFinite(typed)) return;
     // The form already sees what a commit would make of the typed text.
     this.#sync(typed === null ? null : snap(typed, this.#bounds));
-    this.#emit("purr-input", typed);
+    this.#emit("pl-input", typed);
   };
 
   #onKeydown = (event: KeyboardEvent) => {
@@ -501,10 +501,10 @@ export class PurrNumberField extends LitElement {
   }
 }
 
-customElements.define("purr-number-field", PurrNumberField);
+customElements.define("pl-number-field", PlNumberField);
 
 declare global {
   interface HTMLElementTagNameMap {
-    "purr-number-field": PurrNumberField;
+    "pl-number-field": PlNumberField;
   }
 }

@@ -8,10 +8,10 @@ import { css } from "lit";
  */
 export const popoverStyles = css`
   :host {
-    --_arrow-w: calc(var(--purr-spacing) * 5);
-    --_arrow-h: calc(var(--purr-spacing) * 2.5);
+    --_arrow-w: calc(var(--pl-spacing) * 5);
+    --_arrow-h: calc(var(--pl-spacing) * 2.5);
     /* The arrow stays this far from a corner, so it never rides the rounding. */
-    --_corner: calc(var(--purr-radius-lg) + var(--_arrow-w) / 2);
+    --_corner: calc(var(--pl-radius-lg) + var(--_arrow-w) / 2);
 
     display: inline-block;
   }
@@ -26,25 +26,24 @@ export const popoverStyles = css`
     inline-size: fit-content;
     min-inline-size: calc(var(--_corner) * 2);
     max-inline-size: min(
-      calc(var(--purr-spacing) * 45),
-      calc(100vw - var(--purr-space-4))
+      calc(var(--pl-spacing) * 45),
+      calc(100vw - var(--pl-space-4))
     );
     inset: auto;
-    margin: calc(var(--_arrow-h) + var(--purr-space-1));
+    margin: calc(var(--_arrow-h) + var(--pl-space-1));
     border: 0;
-    border-radius: var(--purr-radius-lg);
-    padding: var(--purr-pad-panel);
+    border-radius: var(--pl-radius-lg);
+    padding: var(--pl-pad-panel);
     overflow: visible;
-    background: var(--purr-material-panel);
-    backdrop-filter: var(--purr-material-panel-filter);
+    background: var(--pl-material-panel);
+    backdrop-filter: var(--pl-material-panel-filter);
     overflow-wrap: anywhere;
     box-shadow:
-      inset 0 0 0 1px var(--purr-color-edge),
-      var(--purr-elevation-panel);
-    color: var(--purr-color-foreground);
-    font: 400 var(--purr-text-sm) / var(--purr-leading-normal)
-      var(--purr-font-sans);
-    transition: opacity var(--purr-duration-slow) var(--purr-ease-out);
+      inset 0 0 0 1px var(--pl-color-edge),
+      var(--pl-elevation-panel);
+    color: var(--pl-color-foreground);
+    font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
+    transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
 
   /* Entry only: nothing waits for an exit animation to end. */
@@ -55,16 +54,16 @@ export const popoverStyles = css`
   }
 
   [part="panel"]:focus-visible {
-    outline: var(--purr-ring-width) solid var(--purr-color-ring);
-    outline-offset: var(--purr-ring-offset);
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
   }
 
   [part="arrow"] {
     position: absolute;
     inline-size: var(--_arrow-w);
     block-size: var(--_arrow-h);
-    fill: var(--purr-material-panel);
-    stroke: var(--purr-color-edge);
+    fill: var(--pl-material-panel);
+    stroke: var(--pl-color-edge);
     overflow: visible;
     stroke-width: 1px;
     stroke-linejoin: round;
