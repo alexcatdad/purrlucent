@@ -106,6 +106,10 @@
       "types": "./dist/types/components/menu/menu.d.ts",
       "default": "./dist/menu.js"
     },
+    "./menubar": {
+      "types": "./dist/types/components/menubar/menubar.d.ts",
+      "default": "./dist/menubar.js"
+    },
     "./navigation-menu": {
       "types": "./dist/types/components/navigation-menu/navigation-menu.d.ts",
       "default": "./dist/navigation-menu.js"
