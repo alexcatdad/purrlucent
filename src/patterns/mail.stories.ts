@@ -750,11 +750,6 @@ export const Default: Story = {
   render: () => page(html`<mail-demo selected="m2"></mail-demo>`),
 };
 
-/** Compose opens a side drawer with To, Subject and Body. */
-export const Compose: Story = {
-  render: () => page(html`<mail-demo selected="m2" composing></mail-demo>`),
-};
-
 /** On a narrow screen one pane shows at a time: the list, then the opened message with a Back button. */
 export const Narrow: Story = {
   render: () =>

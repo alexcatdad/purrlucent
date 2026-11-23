@@ -20,7 +20,7 @@ const toolbarButton = (root: Locator, name: string) =>
     .getByRole("button", { name, exact: true });
 const toast = (root: Locator) => root.locator("pl-toast");
 
-for (const name of ["default", "compose", "narrow", "rtl", "glass"])
+for (const name of ["default", "narrow", "rtl", "glass"])
   test(`axe finds no WCAG 2.2 AA violations in ${name}`, async ({ page }) => {
     await expectAccessible(await gotoStory(page, story(name)));
   });
@@ -42,7 +42,8 @@ test("the default shows folders, the message list and a message", async ({
   await expect(root.locator("pl-item.unread")).toHaveCount(3);
   for (const row of await root.locator("pl-item.unread").all())
     await expect(row).toContainText("Unread");
-  await expect(root.locator("pl-item.read")).not.toContainText("Unread");
+  for (const row of await root.locator("pl-item.read").all())
+    await expect(row).not.toContainText("Unread");
   await expect(root.locator("pl-sidebar-item#inbox pl-badge")).toHaveText("3");
 });
 
@@ -93,14 +94,10 @@ test.describe("keyboard", () => {
   });
 });
 
-test("the Compose story opens with the drawer showing", async ({ page }) => {
-  const root = await gotoStory(page, story("compose"));
-  await expect(root.locator("pl-drawer")).toHaveAttribute("open", "");
-  await expect(root.getByRole("textbox", { name: "To" })).toBeFocused();
-});
-
 test("Send closes the drawer and shows a toast", async ({ page }) => {
-  const root = await gotoStory(page, story("compose"));
+  const root = await gotoStory(page, story("default"));
+  await compose(root).click();
+  await expect(root.locator("pl-drawer")).toHaveAttribute("open", "");
   await root.getByRole("textbox", { name: "To" }).fill("friend");
   await root.getByRole("textbox", { name: "Subject" }).fill("Hello");
   await root.getByRole("textbox", { name: "Body" }).fill("A short note.");
