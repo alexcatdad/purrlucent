@@ -231,7 +231,7 @@ test("every text role meets 4.5:1 against background in all four color schemes",
   page,
   browserName,
 }) => {
-  await gotoStory(page, "foundations-tokens--palette");
+  await gotoStory(page, "foundations-tokens--colors");
   for (const scheme of colorSchemes) {
     const more = scheme.contrast === "more";
     // FIREFOX_CONTRAST_BUG: Firefox would check the default values again.
@@ -393,3 +393,34 @@ for (const theme of ["light", "dark"] as const)
     await page.evaluate(() => document.fonts.ready);
     expect(await lowContrastText(page)).toEqual([]);
   });
+
+test("every color token has a swatch", async ({ page }) => {
+  // The shipped file is the source: each color token is declared once on :root.
+  const declared = new Set(
+    Array.from(
+      readFileSync(`${import.meta.dirname}/tokens.css`, "utf8").matchAll(
+        /^\s+(--pl-color-[a-z0-9-]+):/gm,
+      ),
+      (match) => match[1],
+    ),
+  );
+  expect(declared.size).toBeGreaterThan(0);
+  await gotoStory(page, "foundations-tokens--colors");
+  // Light and dark each get one swatch per token.
+  await expect(page.locator("[data-swatch]")).toHaveCount(declared.size * 2);
+});
+
+test("motion stops under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await gotoStory(page, "foundations-tokens--motion");
+  const dots = page.locator("[data-dot]");
+  const states = () =>
+    dots.evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el).animationPlayState),
+    );
+  const running = await states();
+  expect(running.length).toBeGreaterThan(0);
+  expect(new Set(running)).toEqual(new Set(["running"]));
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(new Set(await states())).toEqual(new Set(["paused"]));
+});
