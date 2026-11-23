@@ -54,6 +54,19 @@ export class PlAccordionItem extends LitElement {
     this.disabled = false;
   }
 
+  // Text of the heading slot, which names the panel region.
+  #slotted = "";
+
+  #onHeadingSlot = (event: Event) => {
+    this.#slotted = (event.target as HTMLSlotElement)
+      .assignedNodes({ flatten: true })
+      .map((node) => node.textContent ?? "")
+      .join("")
+      .replace(/\s+/g, " ")
+      .trim();
+    this.requestUpdate();
+  };
+
   #toggle = () => {
     this.open = !this.open;
     this.dispatchEvent(
@@ -89,7 +102,10 @@ export class PlAccordionItem extends LitElement {
         >
           ${chevron}
           <span class="label" part="label"
-            >${this.heading}<slot name="heading"></slot
+            >${this.heading}<slot
+              name="heading"
+              @slotchange=${this.#onHeadingSlot}
+            ></slot
           ></span>
         </button>
       </div>
@@ -98,7 +114,7 @@ export class PlAccordionItem extends LitElement {
         class="panel"
         part="panel"
         role=${region ? "region" : nothing}
-        aria-labelledby=${region ? "trigger" : nothing}
+        aria-label=${region ? `${this.heading} ${this.#slotted}`.trim() : nothing}
       >
         <div class="inner">
           <div class="content" part="content"><slot></slot></div>
