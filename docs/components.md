@@ -225,6 +225,25 @@ A button. The label is the slotted text and is required for an accessible name; 
 
 - `pl-press`: When the button is activated by pointer, Enter or Space.
 
+## Button group
+
+```ts
+import "purrlucent/button-group";
+```
+
+### `<pl-button-group>`
+
+A set of related `pl-button` elements joined into one shape: the borders meet and only the outer corners are round. It is layout and a label only. It holds no selection and fires no events; each button keeps its own press, tab stop and form behavior. For one choice from a set use `pl-toggle-group`. Always set `label` (or `aria-label`): without either the group has no accessible name. Give the buttons in a group equal weight: one size, one variant.
+
+| Attribute     | Type                         | Default        | Description                           |
+| ------------- | ---------------------------- | -------------- | ------------------------------------- |
+| `label`       | `string`                     | `""`           | The accessible name of the group.     |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`. |
+
+**Slots**
+
+- default: `pl-button` elements.
+
 ## Card
 
 ```ts
