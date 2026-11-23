@@ -137,7 +137,9 @@ export class PlMessageScroller extends LitElement {
     // Not during a scroll the reader started either: setting the offset would
     // stop a smooth scroll (the End key's, say) partway.
     const following = !this.#released && this.autoScroll && this.#atEnd;
-    if (!this.#hold && !following && !this.#scrolling()) this.#keep();
+    const placing = this.#placing === this.#settling;
+    if (!this.#hold && !following && !placing && !this.#scrolling())
+      this.#keep();
     this.#follow();
     this.#sync();
     this.#remember();
@@ -168,6 +170,8 @@ export class PlMessageScroller extends LitElement {
   #top = 0;
   // Identifies the scroll being settled; any newer scroll or release cancels it.
   #settling = 0;
+  // The settle that places the first render; while it runs, it alone moves the view.
+  #placing = -1;
 
   constructor() {
     super();
@@ -482,12 +486,27 @@ export class PlMessageScroller extends LitElement {
     };
     this.scrollTo({ top: top(), behavior: "instant" });
     // Rows skipped by content-visibility get their real size once seen; an end
-    // or an anchor is corrected until it settles. The start never moves.
+    // or an anchor is corrected until it settles. The start never moves. A
+    // scroll made meanwhile by anything else, a script or the reader, wins.
     if (this.defaultScrollPosition === "start") return;
-    this.#settle(top, () => {
-      this.#measure();
-      this.#sync();
-    });
+    let placed = this.scrollTop;
+    this.#settle(
+      () => {
+        // Rows taking their size can shrink the content under the offset, and
+        // the browser then clamps it; only a move beyond that is someone else's.
+        const expected = Math.min(placed, this.#max());
+        if (Math.abs(this.scrollTop - expected) > EDGE) return this.scrollTop;
+        placed = Math.min(Math.max(0, top()), this.#max());
+        return placed;
+      },
+      () => {
+        this.#placing = -1;
+        this.#measure();
+        this.#sync();
+        this.#remember();
+      },
+    );
+    this.#placing = this.#settling;
   }
 
   /**

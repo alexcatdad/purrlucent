@@ -1,0 +1,29 @@
+name: Component or feature request
+description: A new component, or a new option for an existing one.
+labels: [enhancement]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      description: An existing element to extend, or a name for a new one.
+      placeholder: pl-calendar, or "a tree view"
+    validations:
+      required: true
+  - type: textarea
+    id: need
+    attributes:
+      label: What you need it for
+      description: The interface you are building and what is missing today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: How it could work
+      description: Optional. Attributes, slots, events, keyboard behavior, or a link to the matching HIG page or WAI-ARIA pattern.
+  - type: textarea
+    id: workaround
+    attributes:
+      label: What you do now instead
+      description: Optional.
