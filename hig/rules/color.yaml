@@ -39,3 +39,15 @@
   rule: Wide-gamut colors have an sRGB fallback that stays distinguishable.
   check: automated
   layer: tokens
+- id: color/9
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: A badge's text meets 4.5:1 against its fill in every variant, and its text states the status so color is not the only cue.
+  check: automated
+  test: src/components/badge/badge.e2e.ts > the text meets 4.5:1 against the fill in every variant
+  layer: components
+- id: color/10
+  source: https://developer.apple.com/design/human-interface-guidelines/color
+  rule: A separator is drawn only in the border color token, as a hairline, and never as a fill.
+  check: automated
+  test: src/components/separator/separator.e2e.ts > the line uses the border token
+  layer: components
