@@ -34,6 +34,14 @@
       "types": "./dist/types/surfaces/surfaces.css.d.ts",
       "default": "./dist/surfaces.js"
     },
+    "./typography": {
+      "types": "./dist/types/typography/typography.css.d.ts",
+      "default": "./dist/typography.js"
+    },
+    "./aspect-ratio": {
+      "types": "./dist/types/components/aspect-ratio/aspect-ratio.d.ts",
+      "default": "./dist/aspect-ratio.js"
+    },
     "./badge": {
       "types": "./dist/types/components/badge/badge.d.ts",
       "default": "./dist/badge.js"
@@ -85,6 +93,10 @@
     "./radio-group": {
       "types": "./dist/types/components/radio-group/radio-group.d.ts",
       "default": "./dist/radio-group.js"
+    },
+    "./scroll-area": {
+      "types": "./dist/types/components/scroll-area/scroll-area.d.ts",
+      "default": "./dist/scroll-area.js"
     },
     "./select": {
       "types": "./dist/types/components/select/select.d.ts",

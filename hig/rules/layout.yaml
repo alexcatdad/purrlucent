@@ -43,3 +43,9 @@
   rule: Critical controls and information are not pinned to the bottom edge of a desktop window.
   check: rubric
   layer: components
+- id: layout/10
+  source: https://developer.apple.com/design/human-interface-guidelines/layout
+  rule: Media keeps its proportions as the space available changes.
+  check: automated
+  test: src/components/aspect-ratio/aspect-ratio.e2e.ts > the box keeps its ratio at any width
+  layer: components

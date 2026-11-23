@@ -2,6 +2,46 @@
 
 This page is generated from the code by `bun scripts/component-docs.ts`. Each component has its own import path; `import "purrlucent"` loads all of them. Examples for every component are in Storybook.
 
+## Aspect ratio
+
+```ts
+import "purrlucent/aspect-ratio";
+```
+
+### `<pl-aspect-ratio>`
+
+A box that keeps its content at a fixed width-to-height ratio. Slotted media fills the box and is cropped to fit, never stretched.
+
+| Attribute | Type     | Default | Description                                                                                    |
+| --------- | -------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `ratio`   | `string` | `"1"`   | Width to height, such as `16/9` or `1.5`. Defaults to `1`. An invalid value falls back to `1`. |
+
+**Slots**
+
+- default: The media, such as an image, a video or a map.
+
+## Badge
+
+```ts
+import "purrlucent/badge";
+```
+
+### `<pl-badge>`
+
+A small label for a count or a status. It is presentational and takes no focus. The text always carries the meaning, so a status badge says its status in words; the variant only adds color. Put a count in context in the surrounding text, for example "Inbox" before a badge reading "3".
+
+| Attribute | Type                                     | Default     | Description                                     |
+| --------- | ---------------------------------------- | ----------- | ----------------------------------------------- |
+| `variant` | `"neutral" \| "accent" \| "destructive"` | `"neutral"` | `neutral` (default), `accent` or `destructive`. |
+
+**Slots**
+
+- default: The badge text.
+
+**Parts**
+
+- `label`: The text.
+
 ## Banner
 
 ```ts
@@ -251,6 +291,24 @@ A single-line text field. A native input inside does the editing, so typing, sel
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change, as a native input fires it.
 
+## Kbd
+
+```ts
+import "purrlucent/kbd";
+```
+
+### `<pl-kbd>`
+
+A key or a shortcut, shown in a keycap style. It is presentational: it takes no focus and does nothing when pressed. Write a shortcut as symbols with the modifiers in the order Control, Option, Shift, Command and the key last, for example `⌃⌥⇧⌘K`, or use one element for each key.
+
+**Slots**
+
+- default: The key text, for example `⌘K` or `Esc`.
+
+**Parts**
+
+- `key`: The `kbd` element.
+
 ## Menu
 
 ```ts
@@ -465,6 +523,29 @@ A set of radios that offers one choice, as a native radio group does. Tab enters
 - `input`: After pl-change, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
+## Scroll area
+
+```ts
+import "purrlucent/scroll-area";
+```
+
+### `<pl-scroll-area>`
+
+A region that scrolls its content with the browser's own scrolling: wheel, touch, trackpad and keyboard all work. The scrollbar is thin and drawn from tokens. Give it a size, such as `block-size` or `max-block-size`, so the content has something to overflow. When the content overflows and holds nothing focusable, the region takes focus so the keyboard can scroll it.
+
+| Attribute     | Type                                   | Default      | Description                                   |
+| ------------- | -------------------------------------- | ------------ | --------------------------------------------- |
+| `label`       | `string`                               | `""`         | The accessible name of the region.            |
+| `orientation` | `"vertical" \| "horizontal" \| "both"` | `"vertical"` | `vertical` (default), `horizontal` or `both`. |
+
+**Slots**
+
+- default: The content to scroll.
+
+**Parts**
+
+- `content`: The wrapper around the content.
+
 ## Select
 
 ```ts
@@ -524,6 +605,21 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 - `pl-change`: The user chose another option. `detail.value` holds its value.
 - `input`: After pl-change, as a native select fires it.
 - `change`: After input, as a native select fires it.
+
+## Separator
+
+```ts
+import "purrlucent/separator";
+```
+
+### `<pl-separator>`
+
+A hairline rule between groups of content. By default it is decoration and assistive technology skips it (`role="none"`). Set `semantic` when it divides content that a screen reader user should know is divided; it then has `role="separator"` and `aria-orientation`.
+
+| Attribute     | Type                         | Default        | Description                                                                                   |
+| ------------- | ---------------------------- | -------------- | --------------------------------------------------------------------------------------------- |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`. A vertical rule fills the height of a flex or grid row. |
+| `semantic`    | `boolean`                    | `false`        | Expose it as a separator instead of hiding it from assistive technology.                      |
 
 ## Sidebar
 
