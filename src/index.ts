@@ -11,6 +11,7 @@ export * from "./components/button/button.ts";
 export * from "./components/button-group/button-group.ts";
 export * from "./components/calendar/calendar.ts";
 export * from "./components/card/card.ts";
+export * from "./components/carousel/carousel.ts";
 export * from "./components/checkbox/checkbox.ts";
 export * from "./components/collapsible/collapsible.ts";
 export * from "./components/combobox/combobox.ts";

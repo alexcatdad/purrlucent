@@ -306,6 +306,52 @@ A card: a grouped content surface with an optional header, content and footer. I
 - `content`: The content section.
 - `footer`: The footer section.
 
+## Carousel
+
+```ts
+import "purrlucent/carousel";
+```
+
+### `<pl-carousel-item>`
+
+One slide of a `pl-carousel`, one page wide. The carousel gives it its "n of m" name.
+
+**Slots**
+
+- default: The slide's content.
+
+### `<pl-carousel>`
+
+A row of slides that scrolls with the browser's own scrolling and CSS scroll-snap: swipe, trackpad and keyboard scrolling all work. Previous and Next buttons and a dot for each page sit centered below. It does not autoplay and does not wrap: Previous is disabled on the first page and Next on the last. The current page's dot is marked `aria-current="true"`. It follows the WAI-ARIA carousel pattern without rotation. The host is a `region` described as a "carousel" and named by `label`; each `pl-carousel-item` is a `group` described as a "slide" and named "n of m". Under reduced motion the buttons and dots jump instead of gliding. With the focus on the scrolling area, the arrow keys, Home and End change the page. Each item is one page wide. Use it for peer content browsed in order, such as images or cards; for a few labelled views use `pl-tabs`.
+
+| Attribute        | Type     | Default                | Description                                                                                              |
+| ---------------- | -------- | ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| `label`          | `string` | `""`                   | The accessible name of the carousel. Always set one.                                                     |
+| `previous-label` | `string` | `"Previous slide"`     | The accessible name of the Previous button. Defaults to "Previous slide".                                |
+| `next-label`     | `string` | `"Next slide"`         | The accessible name of the Next button. Defaults to "Next slide".                                        |
+| `page-label`     | `string` | `"Go to slide {page}"` | The accessible name of a page's dot; `{page}` is its number. Defaults to "Go to slide {page}".           |
+| `slide-label`    | `string` | `"{page} of {total}"`  | The name of each slide; `{page}` is its number and `{total}` the count. Defaults to "{page} of {total}". |
+| `index`          | `number` | `0`                    | The current page, from 0. Change it with `goTo`.                                                         |
+| `count`          | `number` | `0`                    |                                                                                                          |
+
+**Slots**
+
+- default: The `pl-carousel-item` slides.
+
+**Parts**
+
+- `viewport`: The scrolling area.
+- `controls`: The row of Previous, dots and Next.
+- `previous`: The Previous button.
+- `next`: The Next button.
+- `pages`: The list of dots.
+- `page`: A page's dot.
+- `current`: The current page's dot, besides `page`.
+
+**Events**
+
+- `pl-change`: The current page changed after a scroll settled. `detail.index` is the zero-based page.
+
 ## Chart
 
 ```ts
