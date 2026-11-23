@@ -191,6 +191,66 @@ The path to the current page: a navigation landmark holding an ordered list of `
 
 - `list`: The ordered list.
 
+## Bubble
+
+```ts
+import "purrlucent/bubble";
+```
+
+### `<pl-bubble>`
+
+A chat message bubble. It sizes to its content up to 80% of its container (`--pl-bubble-max-inline-size`); `ghost` is unframed and full width, for assistant text, markdown and code. The bubble never parses markdown: slot the rendered content. An `href` makes the body a link, `interactive` a button; reactions stay outside both, so no control nests in another. The `destructive` variant draws an error mark beside the text; the message itself must say what went wrong, as color is not the only cue.
+
+| Attribute     | Type                                                                                          | Default     | Description                                                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `variant`     | `\| "default" \| "secondary" \| "muted" \| "tinted" \| "outline" \| "ghost" \| "destructive"` | `"default"` | `default` (strong accent, for the person's own messages), `secondary`, `muted`, `tinted`, `outline`, `ghost` or `destructive`. |
+| `align`       | `"start" \| "end"`                                                                            | `"start"`   | `start` (default) or `end`.                                                                                                    |
+| `href`        | `string \| null`                                                                              | `null`      | Makes the body a link to this address.                                                                                         |
+| `target`      | `string \| null`                                                                              | `null`      | Where the link opens, as on `a`.                                                                                               |
+| `rel`         | `string \| null`                                                                              | `null`      | The link's relationship, as on `a`.                                                                                            |
+| `interactive` | `boolean`                                                                                     | `false`     | Makes the body a button. Listen for `click`.                                                                                   |
+
+**Slots**
+
+- default: The message content.
+- `reactions`: A `pl-bubble-reactions` over the bubble's edge.
+
+**Parts**
+
+- `body`: The filled shape: a link, a button or a div.
+- `content`: The slotted content.
+
+**CSS properties**
+
+- `--pl-bubble-max-inline-size`: The widest the bubble grows.
+
+### `<pl-bubble-reactions>`
+
+The reactions on a bubble, a pill that overlaps the bubble's top or bottom edge. Alone it is one image named by `label` (or, without one, by its text), so a screen reader hears "3 likes" and not each emoji. With `interactive` it is a group, and each slotted `button` is a real control with its own name.
+
+| Attribute     | Type                | Default    | Description                                                                                       |
+| ------------- | ------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| `side`        | `"top" \| "bottom"` | `"bottom"` | `bottom` (default) or `top`: the bubble edge it overlaps.                                         |
+| `align`       | `"start" \| "end"`  | `"end"`    | `end` (default) or `start`: where along that edge.                                                |
+| `label`       | `string \| null`    | `null`     | The summary read out, such as "2 likes, 1 laugh". Without `interactive`, give emoji or icons one. |
+| `interactive` | `boolean`           | `false`    | The children are buttons.                                                                         |
+
+**Slots**
+
+- default: The reactions: text or icons, or `button` elements when interactive.
+
+### `<pl-bubble-group>`
+
+A run of consecutive bubbles from one sender. The neighbors' touching corners are tight, and the gap between them is small. Name the group with `label` when it needs one, such as the sender.
+
+| Attribute | Type             | Default | Description                  |
+| --------- | ---------------- | ------- | ---------------------------- |
+| `label`   | `string \| null` | `null`  | The group's accessible name. |
+
+**Slots**
+
+- default: `pl-bubble` elements.
+
 ## Button
 
 ```ts

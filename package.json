@@ -62,6 +62,10 @@
       "types": "./dist/types/components/breadcrumb/breadcrumb.d.ts",
       "default": "./dist/breadcrumb.js"
     },
+    "./bubble": {
+      "types": "./dist/types/components/bubble/bubble.d.ts",
+      "default": "./dist/bubble.js"
+    },
     "./button": {
       "types": "./dist/types/components/button/button.d.ts",
       "default": "./dist/button.js"

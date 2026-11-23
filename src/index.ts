@@ -7,6 +7,7 @@ export * from "./components/avatar/avatar.ts";
 export * from "./components/badge/badge.ts";
 export * from "./components/banner/banner.ts";
 export * from "./components/breadcrumb/breadcrumb.ts";
+export * from "./components/bubble/bubble.ts";
 export * from "./components/button/button.ts";
 export * from "./components/button-group/button-group.ts";
 export * from "./components/calendar/calendar.ts";
