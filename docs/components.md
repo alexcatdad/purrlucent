@@ -2,6 +2,24 @@
 
 This page is generated from the code by `bun scripts/component-docs.ts`. Each component has its own import path; `import "purrlucent"` loads all of them. Examples for every component are in Storybook.
 
+## Aspect ratio
+
+```ts
+import "purrlucent/aspect-ratio";
+```
+
+### `<pl-aspect-ratio>`
+
+A box that keeps its content at a fixed width-to-height ratio. Slotted media fills the box and is cropped to fit, never stretched.
+
+| Attribute | Type     | Default | Description                                                                                    |
+| --------- | -------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `ratio`   | `string` | `"1"`   | Width to height, such as `16/9` or `1.5`. Defaults to `1`. An invalid value falls back to `1`. |
+
+**Slots**
+
+- default: The media, such as an image, a video or a map.
+
 ## Banner
 
 ```ts
@@ -464,6 +482,29 @@ A set of radios that offers one choice, as a native radio group does. Tab enters
 - `pl-change`: The user chose a radio. `detail.selected` is a one-item array of its value.
 - `input`: After pl-change, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
+
+## Scroll area
+
+```ts
+import "purrlucent/scroll-area";
+```
+
+### `<pl-scroll-area>`
+
+A region that scrolls its content with the browser's own scrolling: wheel, touch, trackpad and keyboard all work. The scrollbar is thin and drawn from tokens. Give it a size, such as `block-size` or `max-block-size`, so the content has something to overflow. When the content overflows and holds nothing focusable, the region takes focus so the keyboard can scroll it.
+
+| Attribute     | Type                                   | Default      | Description                                   |
+| ------------- | -------------------------------------- | ------------ | --------------------------------------------- |
+| `label`       | `string`                               | `""`         | The accessible name of the region.            |
+| `orientation` | `"vertical" \| "horizontal" \| "both"` | `"vertical"` | `vertical` (default), `horizontal` or `both`. |
+
+**Slots**
+
+- default: The content to scroll.
+
+**Parts**
+
+- `content`: The wrapper around the content.
 
 ## Select
 
