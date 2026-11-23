@@ -34,7 +34,7 @@ Write the elements as JSX tags. Props are set as properties, so booleans, number
 </purr-button>
 ```
 
-Listen to an event with `on` followed by its exact name. The event's `detail` holds its data; the [component reference](./components.md) lists each element's events:
+Listen to an event with `on` followed by its exact name. The event's `detail` holds its data and is typed, so `e.detail.value` below is a `string`; the [component reference](./components.md) lists each element's events:
 
 ```tsx
 const [fruit, setFruit] = useState("apple");
@@ -59,7 +59,63 @@ Use `className`, `slot`, `id` and the other usual attributes as on any element.
 
 ## Forms
 
-The form controls take part in a native `<form>` like built-in inputs: they submit their `name` and value, reset with the form, and report validity. Read them with `FormData` in a submit handler, or keep them controlled with `value` and their `purr-change` event.
+The form controls take part in a native `<form>` like built-in inputs: they submit their `name` and value, reset with the form, and report validity. Read them with `FormData` in a submit handler.
+
+They also fire the native `input` and `change` events after their own `purr-input` and `purr-change`, so `onInput` and `onChange` work as on a built-in input. Read the new state from the element:
+
+```tsx
+<purr-switch checked={wifi} onChange={(e) => setWifi(e.currentTarget.checked)}>
+  Wi-Fi
+</purr-switch>
+```
+
+`onChange` fires when the user commits a change: when a text field loses focus after an edit, on Enter in a single-line field, and at once for a choice such as a switch, a select or a stepper button. `onInput` fires on each edit. While someone types in `purr-number-field` or `purr-combobox`, their `value` stays the last committed one; read the text being typed from the `purr-input` event's `detail`.
+
+Changing `value` or `checked` from code fires no event, as with a built-in input.
+
+### react-hook-form
+
+Spread `register` onto a control as onto a built-in input. `purr-checkbox` and `purr-switch` have a `type` of `checkbox`, so their field is a boolean:
+
+```tsx
+const { register, handleSubmit } = useForm<{ name: string; news: boolean }>();
+
+<form onSubmit={handleSubmit(save)}>
+  <purr-input label="Name" {...register("name", { required: true })} />
+  <purr-checkbox {...register("news")}>Newsletter</purr-checkbox>
+  <purr-button type="submit" variant="primary">
+    Save
+  </purr-button>
+</form>;
+```
+
+## Styling
+
+Change the look with tokens first: every `--purr-*` custom property reaches inside the elements. Set them in your global CSS or on any element. For one part of an element, use `::part()`; the [component reference](./components.md) lists each element's parts:
+
+```css
+:root {
+  --purr-color-accent: oklch(51% 0.17 250deg);
+}
+
+purr-button::part(label) {
+  letter-spacing: 0.02em;
+}
+```
+
+`className` and `style` set on an element style its host box, as on any element. The [install guide](./install.md#theming) covers theming in full.
+
+## Testing
+
+Test components that use purrlucent in a real browser, for example with [Vitest browser mode](https://vitest.dev/guide/browser/) and its Playwright provider. jsdom and happy-dom do not implement the parts of `ElementInternals` the form controls use, such as `setFormValue` and `setValidity`, so form values and validity do not work there.
+
+In a test, wait for an element to render before reading it, and find its inner parts through its shadow root:
+
+```ts
+const select = document.querySelector("purr-select")!;
+await select.updateComplete;
+select.shadowRoot!.querySelector('[part="listbox"]');
+```
 
 ## Server rendering
 
