@@ -123,7 +123,11 @@ function layout(locale: string) {
 
 /** An ISO day as the locale writes it, in its own digits, for the text field. */
 export function formatDay(iso: string, locale: string) {
-  return dayFormat(locale, {}).format(parseIso(iso)!);
+  return dayFormat(locale, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(parseIso(iso)!);
 }
 
 /** The text with the locale's own digits written as Latin ones. */

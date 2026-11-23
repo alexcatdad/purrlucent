@@ -319,7 +319,8 @@ test("disabled unchecked checkbox border meets 3:1 non-text contrast", async ({
   page,
 }) => {
   for (const theme of ["light", "dark"]) {
-    await gotoStory(page, story("states"), `theme:${theme};contrast:more`);
+    await gotoStory(page, story("states"), `theme:${theme}`);
+    await page.emulateMedia({ contrast: "more" });
     const shadow = await page
       .locator("pl-checkbox[disabled]:not([checked])")
       .first()
