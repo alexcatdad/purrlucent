@@ -37,6 +37,7 @@ export const toolbarStyles = css`
   /* A search field takes the capsule material of the group beside it. */
   ::slotted(pl-input[type="search"]) {
     --pl-color-input: var(--pl-color-overlay);
+    --pl-material-field: var(--pl-color-overlay);
     --pl-color-input-border: var(--pl-color-overlay-border);
 
     inline-size: calc(var(--pl-spacing) * 39.75);
