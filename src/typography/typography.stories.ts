@@ -73,7 +73,9 @@ export const Default: Story = { render };
 export const Rtl: Story = { render, globals: { dir: "rtl" } };
 
 export const Glass: Story = {
-  render,
+  // Prose is content: it sits on a solid page surface, not on the glass backdrop.
+  render: () =>
+    html`<div style="background: var(--pl-color-background)">${render()}</div>`,
   globals: { material: "glass", theme: "dark", contrast: "more" },
   play: () => {
     expect(document.documentElement.getAttribute("pl-material")).toBe("glass");
