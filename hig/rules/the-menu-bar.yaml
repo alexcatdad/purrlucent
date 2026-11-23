@@ -1,0 +1,22 @@
+- id: the-menu-bar/1
+  source: https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
+  rule: Every command is reachable from the menu bar, and the bar can be operated entirely from the keyboard.
+  check: automated
+  test: src/components/menubar/menubar.e2e.ts > Left and Right move between the triggers with wrap; Home and End jump
+  layer: components
+- id: the-menu-bar/2
+  source: https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
+  rule: With a menu open, moving sideways opens the neighboring menu, so people can scan the bar without reopening.
+  check: automated
+  test: src/components/menubar/menubar.e2e.ts > with a menu open, Right and Left switch to the adjacent menu and wrap
+  layer: components
+- id: the-menu-bar/3
+  source: https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
+  rule: Menu titles are single, short words, and the standard menus keep their familiar names and order.
+  check: rubric
+  layer: components
+- id: the-menu-bar/4
+  source: https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
+  rule: A menu with no available command is dimmed but stays in the bar, so the bar does not change shape.
+  check: rubric
+  layer: components
