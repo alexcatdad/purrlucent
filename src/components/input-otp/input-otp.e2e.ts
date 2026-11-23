@@ -61,7 +61,12 @@ test("the input asks the system for a one-time code with a numeric keyboard", as
       .nth(n)
       .evaluate((el) => {
         const input = el.shadowRoot!.querySelector("input")!;
-        return [input.type, input.autocomplete, input.inputMode];
+        // Firefox reports "" from the property for a token it does not use.
+        return [
+          input.type,
+          input.getAttribute("autocomplete"),
+          input.inputMode,
+        ];
       });
   expect(await attrs(0)).toEqual(["text", "one-time-code", "numeric"]);
   expect(await attrs(1)).toEqual(["text", "one-time-code", "numeric"]);
