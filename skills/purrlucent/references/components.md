@@ -645,6 +645,40 @@ A numeric field with up and down stepper buttons, following the WAI-ARIA spinbut
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change, as a native input fires it.
 
+## Pagination
+
+```ts
+import "purrlucent/pagination";
+```
+
+### `<pl-pagination>`
+
+Previous and next buttons and numbered pages for moving through an ordered list of pages. The first and last page always show; pages in between give way to an ellipsis, so a long range stays seven items wide. The current page is marked `aria-current="page"` and filled. The host is a `navigation` landmark named by `label`; give each pagination on a page its own `label`. Without `href-template` the items are buttons and the app reacts to `pl-change`. With it they are links, so each page has an address; `pl-change` still fires on a plain click, and a click with a modifier key (open in a new tab) changes nothing. At the first page Previous is disabled, and at the last page Next is. Use it only for pages in a sequence. For a few peer views use `pl-toggle-group`; for a large hierarchy use `pl-sidebar`.
+
+| Attribute        | Type     | Default           | Description                                                                                 |
+| ---------------- | -------- | ----------------- | ------------------------------------------------------------------------------------------- |
+| `page`           | `number` | `1`               | The current page, from 1 to `total`. Defaults to 1; a value out of range is clamped.        |
+| `total`          | `number` | `1`               | The number of pages. Defaults to 1.                                                         |
+| `label`          | `string` | `"Pagination"`    | The accessible name of the landmark. Defaults to "Pagination".                              |
+| `href-template`  | `string` | `""`              | Makes the pages links. `{page}` is replaced by the page number, as in `/posts?page={page}`. |
+| `previous-label` | `string` | `"Previous page"` | The accessible name of the Previous button. Defaults to "Previous page".                    |
+| `next-label`     | `string` | `"Next page"`     | The accessible name of the Next button. Defaults to "Next page".                            |
+
+**Parts**
+
+- `list`: The list of items.
+- `previous`: The Previous button or link.
+- `next`: The Next button or link.
+- `page`: A page button or link.
+- `current`: The current page, besides `page`.
+- `gap`: An ellipsis.
+
+**Events**
+
+- `pl-change`: The user chose another page. `detail.page` holds it.
+- `input`: After pl-change, as a native control fires it.
+- `change`: After input, as a native control fires it.
+
 ## Popover
 
 ```ts

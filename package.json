@@ -110,6 +110,10 @@
       "types": "./dist/types/components/number-field/number-field.d.ts",
       "default": "./dist/number-field.js"
     },
+    "./pagination": {
+      "types": "./dist/types/components/pagination/pagination.d.ts",
+      "default": "./dist/pagination.js"
+    },
     "./popover": {
       "types": "./dist/types/components/popover/popover.d.ts",
       "default": "./dist/popover.js"
