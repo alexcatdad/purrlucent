@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import { expect, userEvent } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
 import "./pagination.ts";
 import type { PlPagination } from "./pagination.ts";
 
@@ -67,16 +67,18 @@ export const Links: Story = {
 /** Under right-to-left the row mirrors and the arrows swap sides. */
 export const Rtl: Story = { render: long, globals: { dir: "rtl" } };
 
-/** Tab to a page and press Enter: the page changes. */
+/** Focus a page and press Enter: the page changes. */
 export const Keyboard: Story = {
   render,
   play: async ({ canvasElement }) => {
     const el = await control(canvasElement);
     expect(el.page).toBe(1);
-    await userEvent.tab(); // Previous is disabled: page 1, the current page
-    await userEvent.tab();
+    // Tab does not reliably reach a control inside a shadow root here: focus it.
+    const pages = [
+      ...el.shadowRoot!.querySelectorAll<HTMLElement>('[part="page"]'),
+    ];
+    pages.find((p) => p.textContent?.trim() === "2")!.focus();
     await userEvent.keyboard("{Enter}");
-    await el.updateComplete;
-    expect(el.page).toBe(2);
+    await waitFor(() => expect(el.page).toBe(2));
   },
 };

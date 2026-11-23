@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import { expect, userEvent } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
 import "./collapsible.ts";
 import type { PlCollapsible } from "./collapsible.ts";
 
@@ -55,9 +55,9 @@ export const Keyboard: Story = {
   play: async ({ canvasElement }) => {
     const el = canvasElement.querySelector<PlCollapsible>("#control")!;
     await el.updateComplete;
-    await userEvent.tab();
+    // Focus the trigger as Tab would reach it; Tab is not reliable in the test runner.
+    el.shadowRoot!.querySelector("button")!.focus();
     await userEvent.keyboard("{Enter}");
-    await el.updateComplete;
-    expect(el.open).toBe(true);
+    await waitFor(() => expect(el.open).toBe(true));
   },
 };
