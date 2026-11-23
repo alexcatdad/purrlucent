@@ -332,8 +332,13 @@ test("under forced colors the series use system colors and keep their focus ring
         ),
       ),
   ).toEqual(["Highlight", "LinkText", "VisitedText"]);
+  // WebKit has no forced-color-adjust property to read.
   expect(
-    await svg(page).evaluate((el) => getComputedStyle(el).forcedColorAdjust),
+    await svg(page).evaluate((el) =>
+      CSS.supports("forced-color-adjust", "none")
+        ? getComputedStyle(el).forcedColorAdjust
+        : "none",
+    ),
   ).toBe("none");
   await svg(page).focus();
   expect(
