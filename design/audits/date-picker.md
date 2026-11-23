@@ -1,0 +1,37 @@
+# HIG audit: date picker
+
+Source: HIG Date pickers (`https://developer.apple.com/design/human-interface-guidelines/date-pickers`). The page could not be fetched when this audit was written (HTTP 404 on the page and its data file, 2026-11-23), so the guidelines below are the ones the library's rules (`hig/rules/date-pickers.yaml`) state from general knowledge of the page, and **each needs a check against the live page** before the audit is final. Code: `src/components/date-picker/`, `src/components/calendar/`, `src/components/popover/`, `src/components/input/input.css.ts` (the shared field shell), `hig/rules/date-pickers.yaml`. The calendar's own rows are in `calendar.md`; text entry rows lean on `text-fields.md`. Nothing was run for this audit, so every verdict comes from reading the code and the tests as written.
+
+Verdicts: **met**, **gap**, **deviation** (deliberate, with a reason), or **needs eyes** (a visual judgement for the maintainer).
+
+## Library guidelines
+
+| Guideline (shortened)                                                            | Verdict    | Evidence                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A date can be typed as well as chosen, shown in the locale's format.             | met        | A native text entry shows `Intl` 2-digit day, month and year in the locale's order. Rule date-pickers/2; test "the entry shows the day as the locale writes it".                                                                                                                                                                   |
+| Typed text is read in the locale's order; a partial or unreal date is no value.  | met        | Three numbers in the locale's order with a four-digit year, or an ISO day; anything else leaves the value empty. Rule date-pickers/3; tests "a day half typed or not real is no value", "an ISO day is read too, and the entry is rewritten in the locale's format on commit".                                                     |
+| The calendar opens from a button beside the field and focus comes back on close. | met        | The button is the `pl-popover` trigger; a chosen day closes it and the popover returns focus to the button; Escape does the same. Rule date-pickers/5; tests "choosing a day fills the entry, closes the calendar and returns focus to the button", "Escape closes the calendar, keeps the value and returns focus to the button". |
+| The calendar starts on the current value.                                        | met        | The value is passed to the calendar and focus moves to its day on open; with no value the calendar starts on today. Rule date-pickers/11; test "the button opens the calendar on the value and focus moves to the selected day".                                                                                                   |
+| Min, max and disabled days apply to typed text too.                              | met        | A typed day that is not available gives an empty value and a validity message. Rule date-pickers/8; test "a day outside min and max or a disabled day is invalid and is no value".                                                                                                                                                 |
+| An invalid entry is explained in text, not only by colour.                       | met        | The shared field message with an icon, linked by `aria-describedby`, after the field has been touched. Rule date-pickers/15; test "an invalid entry shows its message after a blur and describes the entry with it".                                                                                                               |
+| (Platform behavior) Takes part in forms; disabled and read-only states.          | met        | Form-associated like `pl-input`: submits `name`, resets to the `value` attribute, a disabled fieldset disables it, read-only keeps the text and does not open. Tests under "the form gets the value", "required and a day that is not real make the form invalid", "a disabled fieldset disables...".                              |
+| (Platform behavior) Alt and Down Arrow open the list-like popup.                 | met        | Alt+Down in the entry opens the calendar, as in the ARIA combobox pattern. Not stated on the HIG page. Test "Alt and Down Arrow in the entry open the calendar".                                                                                                                                                                   |
+| (Platform behavior) Size and touch targets.                                      | met        | The shell is the text field's: `--pl-size-md`, `lg` or `xl`, 44px on a coarse pointer; the button is as tall as the shell. Test "the field and the button are at least 44 by 44".                                                                                                                                                  |
+| A date picker is for a date near today, not a distant one.                       | needs eyes | A usage matter for the app (date-pickers/1, a rubric rule); typing a distant date is supported.                                                                                                                                                                                                                                    |
+
+## Decisions and findings
+
+- `value` follows the typed text on every keystroke while the text is a complete, available day, and is empty otherwise, so a form submitted by Enter has the current value. `pl-change` and the native `change` fire on commit (blur, Enter) or when a day is chosen, once per change.
+- The calendar's own `pl-change`, `input` and `change` are stopped inside the field, which reports its own events.
+- The popover panel is widened with `::part(panel)` to hold seven day columns, because the popover's default cap is narrower than the calendar.
+- The invalid and out-of-range messages are English defaults; `invalid-message` and `range-message` replace them. The browser has no localized text for these cases.
+- The entry has no input mask and no segmented day, month and year fields; typing is free text.
+- The `pl-toggle` of the popover is stopped inside the field; the field has no `open` property or event of its own.
+
+## Usage guidelines (for `docs/components.md`, not the component)
+
+- Slot a visible label; `label` alone names the field for assistive technology only.
+- Set `placeholder` to the format the locale expects, for example `mm/dd/yyyy`, since the field does not draw one.
+- Set `min`, `max` and `disabled-dates` so the calendar and the typed text agree.
+- Set `locale` when the page's `lang` is not the audience's.
+- Read `value` as an ISO day, `yyyy-mm-dd`, and never as a locale string.

@@ -1,0 +1,88 @@
+- id: date-pickers/1
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: A date picker is for a single date or a short range, not for a distant or open-ended value such as a birth year.
+  check: rubric
+  layer: components
+- id: date-pickers/2
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: A date can be typed as well as chosen, and the field shows it in the format the person's locale writes.
+  check: automated
+  test: src/components/date-picker/date-picker.e2e.ts > the entry shows the day as the locale writes it
+  layer: components
+- id: date-pickers/3
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: Typed text is read in the locale's order of day, month and year, and a date that is half typed or not real is not taken as a value.
+  check: automated
+  test: src/components/date-picker/date-picker.e2e.ts > a day half typed or not real is no value
+  layer: components
+- id: date-pickers/4
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: The calendar shows one month as a grid of days under weekday headings, with controls for the previous and next month.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > the days are a grid named by the month, with weekday headings
+  layer: components
+- id: date-pickers/5
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: The calendar opens from a button beside the field, and choosing a day fills the field, closes the calendar and returns focus to the button.
+  check: automated
+  test: src/components/date-picker/date-picker.e2e.ts > choosing a day fills the entry, closes the calendar and returns focus to the button
+  layer: components
+- id: date-pickers/6
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: A minimum and a maximum limit what can be chosen, and days outside them are shown as unavailable and cannot be selected.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > min and max grey out the days outside and stop the month buttons
+  layer: components
+- id: date-pickers/7
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: Individual days can be made unavailable, and an unavailable day cannot be selected by pointer or keyboard.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > disabled-dates takes a list of ISO days and they cannot be selected
+  layer: components
+- id: date-pickers/8
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: A typed date that is outside the allowed range or unavailable is reported as invalid and is not taken as a value.
+  check: automated
+  test: src/components/date-picker/date-picker.e2e.ts > a day outside min and max or a disabled day is invalid and is no value
+  layer: components
+- id: date-pickers/9
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: Month names, weekday names and the first day of the week follow the person's locale.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > month names, weekday names and the first weekday follow the locale
+  layer: components
+- id: date-pickers/10
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: Today is marked in the calendar so the person can find their place in it.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > today is marked
+  layer: components
+- id: date-pickers/11
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: The calendar opens on the current value, or on today when there is none, so the starting point is the date the person is most likely to want.
+  check: automated
+  test: src/components/date-picker/date-picker.e2e.ts > the button opens the calendar on the value and focus moves to the selected day
+  layer: components
+- id: date-pickers/12
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: The selected day, today and an unavailable day are told apart by more than their color.
+  check: rubric
+  layer: components
+- id: date-pickers/13
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: Under a right-to-left language the calendar mirrors, including the month controls and the direction of the arrow keys.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > under rtl the month buttons and the arrow keys mirror
+  layer: components
+- id: date-pickers/14
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: Days and the month controls are large enough to hit on a touch screen.
+  check: automated
+  test: src/components/calendar/calendar.e2e.ts > the days and the month buttons are at least 44 by 44
+  layer: components
+- id: date-pickers/15
+  source: https://developer.apple.com/design/human-interface-guidelines/date-pickers
+  rule: An entry that is not a valid date is explained in text beside the field, not only by a change of color.
+  check: automated
+  test: src/components/date-picker/date-picker.e2e.ts > an invalid entry shows its message after a blur and describes the entry with it
+  layer: components

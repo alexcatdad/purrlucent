@@ -244,6 +244,44 @@ A set of related `pl-button` elements joined into one shape: the borders meet an
 
 - default: `pl-button` elements.
 
+## Calendar
+
+```ts
+import "purrlucent/calendar";
+```
+
+### `<pl-calendar>`
+
+A month calendar for choosing one day, as the WAI-ARIA date grid: the days are a `grid` with one tab stop, and the arrow keys, Home, End, Page Up and Page Down move through them (Shift with Page Up or Down moves a year), Enter or Space selects. Buttons above the grid show the previous and next month. The value is an ISO day, `yyyy-mm-dd`. Month and weekday names, the first day of the week and the writing direction follow the locale. It takes part in forms like a native input: it submits `name` with its value and a reset returns it to its `value` attribute.
+
+| Attribute        | Type                      | Default            | Description                                                                                                                                               |
+| ---------------- | ------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`          | `string`                  | `""`               | The selected day, `yyyy-mm-dd`, or empty. The `value` property holds the current one.                                                                     |
+| `min`            | `string \| undefined`     |                    | The earliest day that can be selected, `yyyy-mm-dd`.                                                                                                      |
+| `max`            | `string \| undefined`     |                    | The latest day that can be selected, `yyyy-mm-dd`.                                                                                                        |
+| `disabled-dates` | `PlCalendarDisabledDates` | `[]`               | Days that cannot be selected, as ISO days separated by commas or spaces. The `disabledDates` property also takes a function from an ISO day to a boolean. |
+| `locale`         | `string \| undefined`     |                    | A BCP 47 tag for names, the first weekday and the direction of the numbers. Defaults to the closest `lang`, else the document's, else the browser's.      |
+| `first-day`      | `number \| undefined`     |                    | The first day of the week, 1 (Monday) to 7 (Sunday). Defaults to the locale's.                                                                            |
+| `name`           | `string`                  | `""`               | The name submitted with a form.                                                                                                                           |
+| `prev-label`     | `string`                  | `"Previous month"` | The previous month button's accessible name. Defaults to "Previous month".                                                                                |
+| `next-label`     | `string`                  | `"Next month"`     | The next month button's accessible name. Defaults to "Next month".                                                                                        |
+| `_focus`         | `string`                  | `""`               | The day that holds the tab stop, and with it the month on show. Empty until a day is chosen or focused.                                                   |
+
+**Parts**
+
+- `header`: The row with the month buttons and the title.
+- `title`: The month and year.
+- `nav`: A month button.
+- `grid`: The table of days.
+- `weekday`: A weekday heading.
+- `day`: A day cell.
+
+**Events**
+
+- `pl-change`: A day was selected. `detail.value` holds it. Selecting the day that is already selected fires nothing.
+- `input`: After each pl-change, as a native input fires it.
+- `change`: After each pl-change, as a native input fires it.
+
 ## Card
 
 ```ts
@@ -457,6 +495,58 @@ A command palette: a search field above a list of commands that is always showin
 - `pl-input`: The search text changed through typing, Escape or the clear button. `detail.query` holds it.
 - `pl-select`: An item was activated. `detail.value` holds its value.
 - `input`: After each pl-input, as a native input fires it.
+
+## Date picker
+
+```ts
+import "purrlucent/date-picker";
+```
+
+### `<pl-date-picker>`
+
+A field for one day. The text entry takes the day as the locale writes it (`11/22/2026`, `22.11.2026`) or as an ISO day (`2026-11-22`); the button beside it opens a `pl-calendar` in a popover, and choosing a day there fills the field, closes the popover and returns focus to the button. The slotted text is a visible label; without it, `label` becomes the entry's accessible name, and without both a native `<label for>` names it. The `value` is the ISO day, `yyyy-mm-dd`, or empty while the text is not a day that can be chosen. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and a day that is not real, or is outside `min` and `max` or one of the disabled days, makes the form invalid. Alt and Down Arrow in the entry open the calendar.
+
+| Attribute         | Type                      | Default                       | Description                                                                                                                                             |
+| ----------------- | ------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`           | `string`                  | `""`                          | The starting day, `yyyy-mm-dd`. The `value` property holds the current one.                                                                             |
+| `label`           | `string \| undefined`     |                               | The accessible name when there is no slotted label.                                                                                                     |
+| `size`            | `"md" \| "lg" \| "xl"`    | `"md"`                        | `md` (default), `lg` or `xl`.                                                                                                                           |
+| `name`            | `string`                  | `""`                          | The name submitted with a form.                                                                                                                         |
+| `placeholder`     | `string \| undefined`     |                               | Hint shown while the entry is empty, for example the format the locale expects.                                                                         |
+| `min`             | `string \| undefined`     |                               | The earliest day that can be chosen, `yyyy-mm-dd`.                                                                                                      |
+| `max`             | `string \| undefined`     |                               | The latest day that can be chosen, `yyyy-mm-dd`.                                                                                                        |
+| `disabled-dates`  | `PlCalendarDisabledDates` | `[]`                          | Days that cannot be chosen, as ISO days separated by commas or spaces. The `disabledDates` property also takes a function from an ISO day to a boolean. |
+| `locale`          | `string \| undefined`     |                               | A BCP 47 tag for the day format, names and first weekday. Defaults to the closest `lang`, else the document's, else the browser's.                      |
+| `first-day`       | `number \| undefined`     |                               | The calendar's first day of the week, 1 (Monday) to 7 (Sunday). Defaults to the locale's.                                                               |
+| `required`        | `boolean`                 | `false`                       | The form is invalid while the field is empty.                                                                                                           |
+| `readonly`        | `boolean`                 | `false`                       | The text can be selected but not edited and the calendar does not open.                                                                                 |
+| `disabled`        | `boolean`                 | `false`                       | No focus, nothing submitted.                                                                                                                            |
+| `calendar-label`  | `string`                  | `"Choose date"`               | The calendar button's and the popover's accessible name. Defaults to "Choose date".                                                                     |
+| `invalid-message` | `string`                  | `"Enter a valid date."`       | The message for text that is not a day. Defaults to "Enter a valid date."                                                                               |
+| `range-message`   | `string`                  | `"Choose an available date."` | The message for a day outside `min` and `max` or one of the disabled days. Defaults to "Choose an available date."                                      |
+| `_text`           | `string`                  | `""`                          | What the entry shows. It follows `value`, except while the typed text is not a day.                                                                     |
+| `_labelled`       | `boolean`                 | `false`                       |                                                                                                                                                         |
+
+**Slots**
+
+- default: The visible label.
+
+**Parts**
+
+- `label`: The visible label.
+- `field`: The shell around the entry and the button.
+- `control`: The native text entry.
+- `trigger`: The button that opens the calendar.
+- `calendar`: The calendar in the popover.
+- `message`: The icon and validation message below the field while it is invalid.
+
+**Events**
+
+- `name`:
+- `pl-input`: The value changed through typing or the calendar. `detail.value` holds the ISO day, or an empty string while the text is not a day that can be chosen.
+- `pl-change`: The value was committed (blur or Enter after typing, or a day chosen in the calendar). `detail.value` holds it.
+- `input`: After each edit, as a native input fires it.
+- `change`: After each pl-change, as a native input fires it.
 
 ## Dialog
 
