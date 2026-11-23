@@ -57,13 +57,18 @@ export function componentDocs(manifest: Manifest): string {
     if (folder && elements.length)
       folders.set(folder, [...(folders.get(folder) ?? []), ...elements]);
   }
-  const sections = [...folders]
-    .sort(([a], [b]) => a.localeCompare(b))
+  const sorted = [...folders].sort(([a], [b]) => a.localeCompare(b));
+  const contents = sorted
     .map(
       ([folder, elements]) =>
-        `## ${title(folder)}\n\n\`\`\`ts\nimport "purrlucent/${folder}";\n\`\`\`\n\n${elements.map(element).join("")}`,
-    );
-  return `# Components\n\nThis page is generated from the code by \`bun scripts/component-docs.ts\`. Each component has its own import path; \`import "purrlucent"\` loads all of them. Examples for every component are in Storybook.\n\n${sections.join("")}`.replace(
+        `- [${title(folder)}](#${folder}): ${elements.map((d) => `\`${d.tagName}\``).join(", ")}`,
+    )
+    .join("\n");
+  const sections = sorted.map(
+    ([folder, elements]) =>
+      `## ${title(folder)}\n\n\`\`\`ts\nimport "purrlucent/${folder}";\n\`\`\`\n\n${elements.map(element).join("")}`,
+  );
+  return `# Components\n\nThis page is generated from the code by \`bun scripts/component-docs.ts\`. Each component has its own import path; \`import "purrlucent"\` loads all of them. Examples for every component are in Storybook.\n\n## Contents\n\n${contents}\n\n${sections.join("")}`.replace(
     /\n+$/,
     "\n",
   );
