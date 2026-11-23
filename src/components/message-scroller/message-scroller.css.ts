@@ -26,6 +26,11 @@ export const messageScrollerStyles = css`
     overflow-y: auto;
     overscroll-behavior-block: contain;
 
+    /* The scroller keeps rows in place itself (prepends, anchors, follow), as
+       in engines without scroll anchoring; the browser's own adjustment on
+       top of that moved the view when rows were added. */
+    overflow-anchor: none;
+
     /* The previous item's peek: a scroll target sits this far below the top. */
     scroll-padding-block-start: var(--_peek);
     scrollbar-width: thin;
