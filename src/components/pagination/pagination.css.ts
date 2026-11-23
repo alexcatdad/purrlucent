@@ -10,7 +10,7 @@ export const paginationStyles = css`
     --_size: max(var(--pl-size-md), var(--pl-size-hit-min));
 
     display: block;
-    background: var(--pl-material-bar);
+    background: var(--pl-material-capsule);
     backdrop-filter: var(--pl-material-bar-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
