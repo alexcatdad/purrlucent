@@ -148,6 +148,49 @@ A notification banner: an icon, a title, a message, optional actions and a close
 
 - `pl-close`: The user closed the banner.
 
+## Breadcrumb
+
+```ts
+import "purrlucent/breadcrumb";
+```
+
+### `<pl-breadcrumb-item>`
+
+One step of the trail. With an `href` it is a link; without, it is plain text. The parent `pl-breadcrumb` marks the last one `current`. A name wider than the room ends in an ellipsis and its full text becomes the title.
+
+| Attribute | Type                  | Default | Description                                                          |
+| --------- | --------------------- | ------- | -------------------------------------------------------------------- |
+| `href`    | `string \| undefined` |         | Where the step leads. Without it the step is text.                   |
+| `target`  | `string \| undefined` |         | Where to open the link, such as `_blank`.                            |
+| `rel`     | `string \| undefined` |         | The link relationship.                                               |
+| `current` | `boolean`             | `false` | The page the trail ends on. Set by `pl-breadcrumb` on the last step. |
+| `_full`   | `string \| undefined` |         |                                                                      |
+
+**Slots**
+
+- default: The name of the step.
+
+**Parts**
+
+- `link`: The link, or the text of a step with no `href`.
+- `separator`: The decorative chevron after the step.
+
+### `<pl-breadcrumb>`
+
+The path to the current page: a navigation landmark holding an ordered list of `pl-breadcrumb-item`s. The last item is the current page and carries `aria-current="page"`. The chevrons between items are decorative and hidden from assistive technology. Long trails shrink their items to ellipses, each offering its full text. Put it in the window body, not in a toolbar or status bar.
+
+| Attribute | Type     | Default        | Description                                   |
+| --------- | -------- | -------------- | --------------------------------------------- |
+| `label`   | `string` | `"Breadcrumb"` | Accessible name of the landmark. Localize it. |
+
+**Slots**
+
+- default: The `pl-breadcrumb-item`s, the root first and the current page last.
+
+**Parts**
+
+- `list`: The ordered list.
+
 ## Button
 
 ```ts
