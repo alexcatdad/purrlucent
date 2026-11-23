@@ -235,7 +235,7 @@ test("a menu without a label logs a warning and has no aria-label", async ({
   await gotoStory(page, story("no-label"));
   await page.locator("#nav").waitFor();
   expect(logged).toContain("pl-navigation-menu needs a label.");
-  await expect(page.locator("#nav nav")).not.toHaveAttribute("aria-label");
+  await expect(page.locator("#nav")).not.toHaveAttribute("aria-label");
 });
 
 test("a panel opens below its button, aligned to its start edge", async ({
