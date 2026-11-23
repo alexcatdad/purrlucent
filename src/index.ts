@@ -15,6 +15,7 @@ export * from "./components/combobox/combobox.ts";
 export * from "./components/dialog/dialog.ts";
 export * from "./components/empty/empty.ts";
 export * from "./components/input/input.ts";
+export * from "./components/input-group/input-group.ts";
 export * from "./components/item/item.ts";
 export * from "./components/kbd/kbd.ts";
 export * from "./components/menu/menu.ts";

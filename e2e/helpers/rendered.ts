@@ -58,7 +58,11 @@ export async function lowContrastText(page: Page): Promise<string[]> {
         let clipped = false;
         let opacity = 1;
         for (let a: Element | null = el; a; a = up(a)) {
-          if (a.matches(':disabled, [disabled], [aria-disabled="true"]'))
+          if (
+            a.matches(
+              ':disabled, [disabled], [aria-disabled="true"], :state(disabled)',
+            )
+          )
             disabled = true;
           const s = getComputedStyle(a);
           opacity *= Number(s.opacity);

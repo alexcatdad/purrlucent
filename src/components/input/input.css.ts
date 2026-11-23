@@ -134,6 +134,13 @@ export const fieldStyles = css`
     -webkit-text-fill-color: var(--pl-color-disabled-foreground);
   }
 
+  /* Inside a pl-input-group the group draws the edge, fill and ring. */
+  :host([data-grouped]) [part="field"] {
+    background: none;
+    box-shadow: none;
+    outline-color: transparent;
+  }
+
   @media (forced-colors: active) {
     [part="field"] {
       border: 1px solid ButtonText;
@@ -163,6 +170,12 @@ export const fieldStyles = css`
 
     :host(:disabled) [part="control"] {
       -webkit-text-fill-color: GrayText;
+    }
+
+    :host([data-grouped]) [part="field"] {
+      border: 0;
+      background: none;
+      outline-color: transparent;
     }
   }
 `;
