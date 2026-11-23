@@ -228,7 +228,7 @@ export class PlDataTable extends LitElement {
                         this.selectable
                           ? html`<td class="select">
                               <pl-checkbox
-                                aria-label=${`${this.selectRowLabel} ${first ? String(row[first] ?? "") : key}`.trim()}
+                                aria-label=${`${this.selectRowLabel ?? ""} ${first ? String(row[first] ?? "") : key}`.trim()}
                                 .checked=${chosen.has(key)}
                                 @pl-change=${(
                                   e: CustomEvent<{ checked: boolean }>,
