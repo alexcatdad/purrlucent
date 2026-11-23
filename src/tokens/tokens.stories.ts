@@ -194,6 +194,24 @@ export const Materials: Story = {
   globals: { material: "glass" },
 };
 
+// One panel per blur token over the glass backdrop.
+export const Blur: Story = {
+  render: () => html`
+    <div style="${list} ${grid}">
+      ${tokens("--pl-blur-").map((token) =>
+        cell(
+          token,
+          html`<div
+            data-blur
+            style="inline-size: calc(var(--pl-spacing) * 40); block-size: var(--pl-size-xl); box-shadow: var(--pl-material-edge); backdrop-filter: blur(var(${token}));"
+          ></div>`,
+        ),
+      )}
+    </div>
+  `,
+  globals: { material: "glass" },
+};
+
 export const Elevation: Story = {
   render: () => html`
     <div style="${list} ${grid}">
