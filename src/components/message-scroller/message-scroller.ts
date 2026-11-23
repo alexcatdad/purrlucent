@@ -492,7 +492,10 @@ export class PlMessageScroller extends LitElement {
     let placed = this.scrollTop;
     this.#settle(
       () => {
-        if (Math.abs(this.scrollTop - placed) > EDGE) return this.scrollTop;
+        // Rows taking their size can shrink the content under the offset, and
+        // the browser then clamps it; only a move beyond that is someone else's.
+        const expected = Math.min(placed, this.#max());
+        if (Math.abs(this.scrollTop - expected) > EDGE) return this.scrollTop;
         placed = Math.min(Math.max(0, top()), this.#max());
         return placed;
       },
