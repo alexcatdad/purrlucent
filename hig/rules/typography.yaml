@@ -38,3 +38,27 @@
   rule: The most important content keeps its place and priority at large text sizes.
   check: rubric
   layer: components
+- id: typography/9
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Running text steps down in size from heading to body, and headings carry heavier weights.
+  check: automated
+  test: src/typography/typography.e2e.ts > headings step down in size and every heading is bold
+  layer: surfaces
+- id: typography/10
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Running text uses regular and heavier weights only.
+  check: automated
+  test: src/typography/typography.e2e.ts > no text is lighter than regular weight
+  layer: surfaces
+- id: typography/11
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Long passages use loose leading, scanned lists and tables use normal leading, and no line height is tighter than the text needs.
+  check: automated
+  test: src/typography/typography.e2e.ts > paragraphs use loose leading and every line height clears the font size
+  layer: surfaces
+- id: typography/12
+  source: https://developer.apple.com/design/human-interface-guidelines/typography
+  rule: Running text and inline code stay at readable sizes.
+  check: automated
+  test: src/typography/typography.e2e.ts > body text is at least 13 CSS pixels and code is not smaller than 12
+  layer: surfaces

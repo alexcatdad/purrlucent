@@ -34,6 +34,7 @@ export default defineConfig({
       entry: {
         index: resolve(root, "src/index.ts"),
         surfaces: resolve(root, "src/surfaces/surfaces.css.ts"),
+        typography: resolve(root, "src/typography/typography.css.ts"),
         ...Object.fromEntries(
           components.map((name) => [
             name,

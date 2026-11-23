@@ -10,7 +10,7 @@ Web components for apps: buttons, form controls, menus, dialogs and navigation, 
 
 ## Components
 
-Avatar, badge, banner, button, checkbox, combobox, dialog, input, kbd, menu, number field, popover, progress, radio group, select, separator, sidebar, skeleton, slider, spinner, switch, textarea, toggle, toggle group, toolbar and tooltip.
+Aspect ratio, avatar, badge, banner, button, checkbox, combobox, dialog, input, kbd, menu, number field, popover, progress, radio group, scroll area, select, separator, sidebar, skeleton, slider, spinner, switch, textarea, toggle, toggle group, toolbar and tooltip.
 
 The [component reference](docs/components.md) lists every element with its attributes, slots, parts and events. Storybook has an example of each state.
 
