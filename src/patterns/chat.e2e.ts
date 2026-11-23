@@ -70,11 +70,23 @@ test("sending adds the message and clears the field", async ({ page }) => {
   await expect(stop(root)).toBeVisible();
 });
 
-test("the reply streams in word by word and the view follows it", async ({
+test("streaming: a partial reply is showing while the prompt offers Stop", async ({
   page,
 }) => {
   const root = await gotoStory(page, story("streaming"));
-  await expect(field(root)).toHaveValue("Can you check the changelog too?");
+  const bubble = root.locator("pl-bubble", { hasText: "streamed one word" });
+  await expect(bubble).toBeVisible();
+  await expect(bubble).not.toContainText("Press Stop at any time");
+  await expect(scroller(root)).toHaveAttribute("busy", "");
+  await expect(stop(root)).toBeVisible();
+  await expect(send(root)).toHaveCount(0);
+});
+
+test("the reply streams in word by word and the view follows it", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("conversation"));
+  await field(root).fill("Can you check the changelog too?");
   await send(root).click();
   await expect(thinking(root)).toBeVisible();
   await expect(replies(root)).toHaveCount(1);

@@ -31,7 +31,12 @@ const column = (content: unknown) =>
 export const Default: Story = {
   render: () =>
     column(
-      html`<pl-select id="select" label="Apple variety">${apples}</pl-select>`,
+      html`<pl-select
+        id="select"
+        label="Apple variety"
+        placeholder="Choose a variety"
+        >${apples}</pl-select
+      >`,
     ),
 };
 

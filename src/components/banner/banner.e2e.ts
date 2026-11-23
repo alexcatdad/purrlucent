@@ -106,7 +106,7 @@ const toneIcon = (page: Page, i: number) =>
     });
 
 test("without a slotted icon each tone draws its own", async ({ page }) => {
-  await gotoStory(page, story("without-icon"));
+  await gotoStory(page, story("tone-icons"));
   const [info, destructive] = [
     await toneIcon(page, 0),
     await toneIcon(page, 1),
@@ -115,6 +115,19 @@ test("without a slotted icon each tone draws its own", async ({ page }) => {
   expect(destructive.width).toBeGreaterThan(0);
   expect(destructive.paths).not.toBe(info.paths);
   expect([info.hidden, destructive.hidden]).toEqual(["true", "true"]);
+});
+
+test("without icon: the icon part is not rendered", async ({ page }) => {
+  await gotoStory(page, story("without-icon"));
+  await expect(page.locator("pl-banner")).toHaveCount(2);
+  for (const i of [0, 1]) {
+    const drawn = await page
+      .locator("pl-banner")
+      .nth(i)
+      .evaluate((el) => !!el.shadowRoot!.querySelector("slot[name=icon]"));
+    expect(drawn).toBe(false);
+  }
+  await expect(page.getByText("Your changes are saved.")).toBeVisible();
 });
 
 test("a slotted icon replaces the tone's own", async ({ page }) => {

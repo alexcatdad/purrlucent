@@ -48,6 +48,14 @@ const touch = (page: Page, type: string, x: number, y: number) =>
     { type, x, y },
   );
 
+/** Disables the whole region, as an app would. The Disabled story shows disabled items instead. */
+const disableRegion = (page: Page) =>
+  page.locator("pl-context-menu").evaluate(async (el) => {
+    el.setAttribute("disabled", "");
+    await (el as HTMLElement & { updateComplete: Promise<boolean> })
+      .updateComplete;
+  });
+
 const longPress = async (page: Page) => {
   const box = (await area(page).boundingBox())!;
   await touch(page, "pointerdown", box.x + 40, box.y + 40);
@@ -80,7 +88,8 @@ test("the browser's own menu is suppressed while the region handles it", async (
 test("a disabled region leaves the browser's menu alone and never opens", async ({
   page,
 }) => {
-  await gotoStory(page, story("disabled"));
+  await gotoStory(page, story("default"));
+  await disableRegion(page);
   expect(await contextmenuAt(page, 100, 100)).toBe(true);
   await file(page).focus();
   await page.keyboard.press("Shift+F10");
@@ -205,6 +214,27 @@ test("a submenu item opens its submenu with ArrowRight", async ({ page }) => {
   await expect(item(page, "Mail")).toBeFocused();
 });
 
+test("disabled: the menu is open and its unavailable items are marked disabled", async ({
+  page,
+}) => {
+  await gotoStory(page, story("disabled"));
+  await expect(menu(page)).toBeVisible();
+  await expect(item(page, "Rename")).toHaveAttribute("aria-disabled", "true");
+  await expect(item(page, "Move to Trash")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await expect(item(page, "Open")).not.toHaveAttribute("aria-disabled");
+});
+
+test("submenu: the Share submenu is open beside its row", async ({ page }) => {
+  await gotoStory(page, story("submenu"));
+  await expect(menu(page)).toBeVisible();
+  await expect(menu(page, "Share")).toBeVisible();
+  await expect(item(page, "Mail")).toBeVisible();
+  await expect(item(page, "Copy Link")).toBeVisible();
+});
+
 test("pl-open and pl-close report each open and close, however it happens", async ({
   page,
 }) => {
@@ -281,7 +311,8 @@ test.describe("long press", () => {
   });
 
   test("a disabled region ignores it", async ({ page }) => {
-    await gotoStory(page, story("disabled"));
+    await gotoStory(page, story("default"));
+    await disableRegion(page);
     await longPress(page);
     await page.waitForTimeout(700);
     await expect(menu(page)).toBeHidden();

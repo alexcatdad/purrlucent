@@ -73,7 +73,7 @@ export const OpenStart = opened("start");
 /** Opens at the end side of the trigger. */
 export const OpenEnd = opened("end");
 
-/** One popover per side, all closed. Opening one closes the others; the Open stories cover each side open. */
+/** One popover per side, all open. Opening one later closes the others. */
 export const Placements: Story = {
   render: () =>
     stage(
@@ -84,6 +84,7 @@ export const Placements: Story = {
           popover({
             id: placement,
             placement,
+            open: true,
             label: `Sharing, ${placement}`,
           }),
         )}

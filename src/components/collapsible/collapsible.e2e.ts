@@ -35,6 +35,16 @@ test("the trigger is a button with aria-expanded and aria-controls", async ({
   await expect(page.locator("#body")).toBeVisible();
 });
 
+test("disabled: the trigger is disabled and a press does not open the content", async ({
+  page,
+}) => {
+  await open(page, "containers-collapsible--disabled");
+  await expect(trigger(page)).toBeDisabled();
+  await trigger(page).click({ force: true });
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#body")).toBeHidden();
+});
+
 test("closed content is hidden and takes no space", async ({ page }) => {
   await open(page);
   await expect(page.locator("#body")).toBeHidden();

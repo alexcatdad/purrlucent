@@ -27,9 +27,7 @@ export const Default: Story = {
 
 export const Labelled: Story = {
   render: () =>
-    column(
-      html`<pl-input-otp id="otp" label="Verification code"></pl-input-otp>`,
-    ),
+    column(html`<pl-input-otp id="otp">Verification code</pl-input-otp>`),
 };
 
 export const Lengths: Story = {
@@ -80,7 +78,21 @@ export const States: Story = {
         value="123456"
         readonly
       ></pl-input-otp>`,
+      html`<pl-input-otp id="invalid">Invalid</pl-input-otp>`,
     ]),
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector<PlInputOtp>("#invalid")!;
+    await el.updateComplete;
+    el.focus();
+    await waitFor(() =>
+      expect(el.shadowRoot!.querySelector("input")).toBe(
+        el.shadowRoot!.activeElement,
+      ),
+    );
+    await userEvent.keyboard("123");
+    await userEvent.tab();
+    await el.updateComplete;
+  },
 };
 
 /** In a form the field submits its value and follows reset, fieldset and validity. */
