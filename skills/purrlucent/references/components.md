@@ -921,6 +921,57 @@ An empty state: an optional icon, a title, a description and an action. Say what
 - `text`: The title and description.
 - `action`: The action row.
 
+## Field
+
+```ts
+import "purrlucent/field";
+```
+
+### `<pl-field>`
+
+Lays out and wires a label, a control, a description and an error message for a control that does not carry its own label: a native input, a third party element, or a `pl-` control in a custom layout. The slotted elements live in the light DOM, so the field gives the label, description and error an `id` when they have none and points the control at them. - A control with its own role (a native input, `pl-checkbox`, `pl-switch`, `pl-slider`, `pl-radio-group`) gets `aria-labelledby`, `aria-describedby`, and, while `invalid`, `aria-invalid` and `aria-errormessage`. - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox` or `pl-date-picker` keeps its edit control in a shadow root that an id reference cannot reach. A slotted `<label>` gets `for` pointing at the host, which names the control; the description, and the error while `invalid`, go to the control's `aria-description`, and `aria-invalid` is set on it. A label that is not a `<label>` is copied to the control's `label`. - A click on the label turns a checkbox, switch or radio on or off and focuses any other control. Use the field or the control's own validation message, not both: the field shows the `error` slot while `invalid`, and a `pl-input` shows its own message after interaction.
+
+| Attribute     | Type                                         | Default      | Description                                                                                                                                                                                                                           |
+| ------------- | -------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orientation` | `"vertical" \| "horizontal" \| "responsive"` | `"vertical"` | `vertical` (default), `horizontal` or `responsive`. Horizontal puts the label beside the control, and before it for a checkbox or switch, which the field puts first. Responsive is horizontal when the field is at least 32rem wide. |
+| `invalid`     | `boolean`                                    | `false`      | Shows the `error` slot and marks the control invalid.                                                                                                                                                                                 |
+| `_hasError`   | `boolean`                                    | `false`      |                                                                                                                                                                                                                                       |
+
+**Slots**
+
+- `label`: The visible label, ideally a `<label>`.
+- default: The control. A wrapper such as `pl-input-group` is fine; the field finds the control inside it.
+- `description`: Help text under the control.
+- `error`: The error message, shown while `invalid`. Say what is wrong and how to fix it.
+
+**Parts**
+
+- `base`: The grid that places the parts.
+- `label`: The wrapper around the label.
+- `control`: The wrapper around the control.
+- `description`: The wrapper around the description.
+- `error`: The icon and error message while `invalid`.
+
+### `<pl-fieldset>`
+
+A group of fields with a legend and a description. The host is a `role="group"` named by the legend and described by the description. A native `<fieldset>` in the shadow root would not disable the slotted fields, which are not its descendants, so `disabled` turns off every control inside, as a native disabled fieldset does, including ones added later.
+
+| Attribute  | Type      | Default | Description                                                                                       |
+| ---------- | --------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `disabled` | `boolean` | `false` | Disables every control inside. A control that was already disabled stays so when this is cleared. |
+
+**Slots**
+
+- `legend`: The group's name.
+- `description`: Help text under the legend.
+- default: The `pl-field` elements, or any other content.
+
+**Parts**
+
+- `legend`: The wrapper around the legend.
+- `description`: The wrapper around the description.
+- `fields`: The wrapper around the fields.
+
 ## Hover card
 
 ```ts

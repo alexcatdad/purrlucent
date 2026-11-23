@@ -16,3 +16,31 @@
   check: automated
   test: src/components/input-otp/input-otp.e2e.ts > a numeric code takes digits only
   layer: components
+- id: entering-data/4
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: Ask for as little typed input as possible; offer choices, defaults and pickers where they fit.
+  check: rubric
+  layer: components
+- id: entering-data/5
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: Every field has a visible label that names it, and any help text is tied to the field it describes.
+  check: automated
+  test: src/components/field/field.e2e.ts > a pl-input is named by the label and described by the description
+  layer: components
+- id: entering-data/6
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: A message about a bad value appears next to its field, says what is wrong, and marks the field invalid.
+  check: automated
+  test: src/components/field/field.e2e.ts > the error shows and marks the control only while the field is invalid
+  layer: components
+- id: entering-data/7
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: Related fields are grouped under a title that names the group.
+  check: automated
+  test: src/components/field/field.e2e.ts > a fieldset is a group named by its legend and described by its description
+  layer: components
+- id: entering-data/8
+  source: https://developer.apple.com/design/human-interface-guidelines/entering-data
+  rule: A value is checked when the person has finished entering it, not on every keystroke.
+  check: rubric
+  layer: components

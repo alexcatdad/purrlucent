@@ -134,6 +134,10 @@
       "types": "./dist/types/components/empty/empty.d.ts",
       "default": "./dist/empty.js"
     },
+    "./field": {
+      "types": "./dist/types/components/field/field.d.ts",
+      "default": "./dist/field.js"
+    },
     "./hover-card": {
       "types": "./dist/types/components/hover-card/hover-card.d.ts",
       "default": "./dist/hover-card.js"
