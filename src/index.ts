@@ -26,6 +26,7 @@ export * from "./components/dialog/dialog.ts";
 export * from "./components/drawer/drawer.ts";
 export * from "./components/empty/empty.ts";
 export * from "./components/field/field.ts";
+export * from "./components/file-input/file-input.ts";
 export * from "./components/hover-card/hover-card.ts";
 export * from "./components/input/input.ts";
 export * from "./components/input-group/input-group.ts";

@@ -142,6 +142,10 @@
       "types": "./dist/types/components/field/field.d.ts",
       "default": "./dist/field.js"
     },
+    "./file-input": {
+      "types": "./dist/types/components/file-input/file-input.d.ts",
+      "default": "./dist/file-input.js"
+    },
     "./hover-card": {
       "types": "./dist/types/components/hover-card/hover-card.d.ts",
       "default": "./dist/hover-card.js"

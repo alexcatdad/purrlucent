@@ -16,6 +16,7 @@ const placement: Record<string, readonly string[]> = {
     "Input",
     "Input Group",
     "Input OTP",
+    "File Input",
     "Text Area",
     "Number Field",
     "Select",

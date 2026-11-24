@@ -73,6 +73,10 @@ const en = {
   pinTop: "Pin to top",
   pinBottom: "Pin to bottom",
   unpinRow: "Unpin row",
+  chooseFile: "Choose file",
+  chooseFiles: "Choose files",
+  noFileChosen: "No file chosen",
+  fileRequired: "Choose a file to continue.",
 };
 
 export type PlMessages = typeof en;
