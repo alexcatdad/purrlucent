@@ -839,7 +839,12 @@ test("rich cells: a link in a cell is in the tab order", async ({ page }) => {
   const link = page
     .locator("pl-data-table#control")
     .getByRole("link", { name: "Ada Lovelace" });
-  await link.focus();
+  await page
+    .locator("pl-data-table#control")
+    .getByRole("columnheader", { name: "Age" })
+    .getByRole("button")
+    .focus();
+  await page.keyboard.press("Tab");
   await expect(link).toBeFocused();
 });
 

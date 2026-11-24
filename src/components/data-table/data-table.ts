@@ -35,11 +35,17 @@ export interface PlDataTableColumn {
 
 export type PlDataTableRow = Record<string, unknown>;
 
-/** Content for a cell: a string, a `Node` or a Lit template; `null` or `undefined` keeps the text. */
-export type PlCellRenderer = (
-  row: PlDataTableRow | PlModelRow,
-  column: PlDataTableColumn | PlModelColumn,
-) => unknown;
+/**
+ * Content for a cell: a string, a `Node` or a Lit template; `null` or
+ * `undefined` keeps the text. A method-style signature, so a renderer that takes
+ * only the row and column types of one mode is assignable.
+ */
+export type PlCellRenderer = {
+  render(
+    row: PlDataTableRow | PlModelRow,
+    column: PlDataTableColumn | PlModelColumn,
+  ): unknown;
+}["render"];
 export type PlSortDirection = "ascending" | "descending";
 
 const glyph = {
@@ -103,9 +109,10 @@ const compare = (a: unknown, b: unknown) =>
  * markers, checkboxes and buttons. It receives the row and the column: in model
  * mode a `PlModelRow` and a `PlModelColumn` (group rows and the footer keep
  * their text), otherwise a row object and a `PlDataTableColumn`. Returning
- * `null` or `undefined` keeps the text. With `cell-select`, the arrow keys move
- * between cells only while a cell itself has focus; interactive content in a
- * cell stays in the tab order and keeps its own keys.
+ * `null` or `undefined` keeps the text. Return a Lit template for interactive
+ * content: a returned `Node` is replaced on every render. With `cell-select`,
+ * the arrow keys move between cells only while a cell itself has focus;
+ * interactive content in a cell stays in the tab order and keeps its own keys.
  *
  * @attr {string} caption - A visible caption that also names the table.
  * @attr {boolean} sticky-header - The headings stay at the top while the rows scroll; give the element a `max-block-size`.
