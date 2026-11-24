@@ -1,5 +1,6 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { AriaWatch, forwardAria } from "../../behaviors/aria-forward.ts";
 import {
   fieldMessage,
   syncFieldMessage,
@@ -81,6 +82,7 @@ export class PlTextarea extends LitElement {
   // Kept here: the inner control does not exist before the first render.
   #custom = "";
   readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
+  readonly #ariaWatch = new AriaWatch(this, () => this.#sync());
 
   constructor() {
     super();
@@ -112,12 +114,14 @@ export class PlTextarea extends LitElement {
       subtree: true,
       characterData: true,
     });
+    this.#ariaWatch.observe();
     this.#syncLabelled();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#labelWatch.disconnect();
+    this.#ariaWatch.disconnect();
   }
 
   get form() {
@@ -190,6 +194,7 @@ export class PlTextarea extends LitElement {
     else this.#internals.states.delete("user-invalid");
     if (invalid) control.setAttribute("aria-invalid", "true");
     else control.removeAttribute("aria-invalid");
+    forwardAria(this, control);
     syncFieldMessage(this.renderRoot as ShadowRoot, control, invalid);
   }
 

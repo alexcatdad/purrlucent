@@ -9,6 +9,22 @@ import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
 const story = (name: string) => `forms-text-area--${name}`;
 
+test("host aria attributes reach the native textarea", async ({ page }) => {
+  await gotoStory(page, story("host-aria"));
+  const inner = page.locator("#area textarea");
+  await expect(inner).toHaveAttribute("aria-required", "true");
+  await expect(inner).toHaveAttribute("aria-invalid", "true");
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "Plain text only. Write a message.",
+  );
+  await page.locator("#area").evaluate((el) => {
+    el.removeAttribute("aria-invalid");
+  });
+  await expect(inner).not.toHaveAttribute("aria-invalid", "true");
+  await expect(inner).toHaveAttribute("aria-description", "Plain text only.");
+});
+
 test("widths story sizes the control", async ({ page }) => {
   await gotoStory(page, story("widths"));
   await expectWidthsIncrease(page, "pl-textarea");

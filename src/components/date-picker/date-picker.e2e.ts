@@ -8,6 +8,25 @@ import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
 const story = (name: string) => `forms-date-picker--${name}`;
 
+test("host aria attributes reach the native input", async ({ page }) => {
+  await gotoStory(page, story("host-aria"));
+  const inner = field(page);
+  await expect(inner).toHaveAttribute("aria-required", "true");
+  await expect(inner).toHaveAttribute("aria-invalid", "true");
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "Pick a day next week. Choose a date.",
+  );
+  await page.locator("#picker").evaluate((el) => {
+    el.removeAttribute("aria-invalid");
+  });
+  await expect(inner).not.toHaveAttribute("aria-invalid", "true");
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "Pick a day next week.",
+  );
+});
+
 test("widths story sizes the control", async ({ page }) => {
   await gotoStory(page, story("widths"));
   await expectWidthsIncrease(page, "pl-date-picker");
