@@ -25,17 +25,17 @@ const frames = (page: Page) =>
   });
 
 /**
- * Waits until the scroll offset and content height hold for three frames.
- * WebKit gives rows skipped by content-visibility their real size a row or two
- * per frame, and at the end each shrink pulls the offset back.
+ * Waits until the scroll offset and content height hold for three frames, for
+ * at most 60 frames. WebKit gives rows skipped by content-visibility their real
+ * size a row or two per frame, and at the end each shrink pulls the offset
+ * back. The cap counts frames, not time, so a stalled frame does not trip it.
  */
 const settled = (el: Locator) =>
   el.evaluate(async (e) => {
-    const deadline = performance.now() + 1000;
     let last = "";
-    for (let still = 0; still < 3;) {
-      if (performance.now() > deadline)
-        throw new Error(`The scroller did not settle within 1s (${last})`);
+    for (let frame = 0, still = 0; still < 3; frame++) {
+      if (frame === 60)
+        throw new Error(`The scroller did not settle in 60 frames (${last})`);
       await new Promise(requestAnimationFrame);
       const now = `scrollTop ${e.scrollTop}, scrollHeight ${e.scrollHeight}`;
       still = now === last ? still + 1 : 0;
