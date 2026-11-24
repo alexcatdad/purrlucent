@@ -836,6 +836,53 @@ test("manual-filter: leaving keeps the text and value when the app's list lacks 
   expect(await probeValue(page)).toBe("a");
 });
 
+test("busy hides the no-results row while the action row still shows", async ({
+  page,
+}) => {
+  await gotoStory(page, story("busy"));
+  await combo(page, "City").focus();
+  await page.keyboard.type("zzz");
+  await expect(listbox(page)).toBeVisible();
+  await expect(option(page, "Add zzz")).toBeVisible();
+  await expect(page.locator("#combo [part=empty]")).toHaveCount(0);
+  // The lookup finished with nothing: the row comes back.
+  await page.locator("#combo").evaluate((el) => el.removeAttribute("busy"));
+  await expect(page.locator("#combo [part=empty]")).toHaveCount(1);
+  await expect(page.getByRole("option", { name: "No results" })).toBeVisible();
+});
+
+test("leaving the field fires pl-input when it clears or restores the text", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  await record(page, "pl-input");
+  await combo(page).focus();
+  await page.keyboard.type("zzz");
+  // Typing fired pl-input for each character; leaving restores the chosen label.
+  const chosen = await combo(page).inputValue();
+  await page.keyboard.press("Tab");
+  await expect(combo(page)).toHaveValue(/^[^z]+$/);
+  const log = (await recorded(page)) as { text: string }[];
+  expect(log.at(-1)).toEqual({ text: await combo(page).inputValue() });
+  expect(log.at(-1)!.text).not.toBe(chosen);
+});
+
+test("leaving the field fires no pl-input when the text did not change", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await record(page, "pl-input");
+  await combo(page).focus();
+  await page.keyboard.press("Tab");
+  expect(await recorded(page)).toEqual([]);
+  await combo(page).focus();
+  await page.keyboard.type("Fuji");
+  const before = (await recorded(page)).length;
+  await page.keyboard.press("Tab");
+  // The typed text matched an option exactly: nothing changed on leaving.
+  expect((await recorded(page)).length).toBe(before);
+});
+
 test("action-label adds a row for the typed text only while text is typed", async ({
   page,
 }) => {
@@ -949,6 +996,7 @@ test("an action option is not chosen by typing its label", async ({ page }) => {
 
 for (const name of [
   "manual-filter",
+  "busy",
   "action-label",
   "action-option",
   "default",

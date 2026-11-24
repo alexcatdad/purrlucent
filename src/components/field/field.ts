@@ -9,7 +9,7 @@ export * from "./fieldset.ts";
 
 /** What the field names and describes: the first match inside the slotted content. */
 const CONTROLS =
-  "input, select, textarea, pl-input, pl-textarea, pl-number-field, pl-select, pl-combobox, pl-date-picker, pl-checkbox, pl-switch, pl-slider, pl-radio-group, pl-toggle-group, [role]:not(button, pl-button)";
+  "input, select, textarea, pl-input, pl-textarea, pl-number-field, pl-select, pl-combobox, pl-date-picker, pl-file-input, pl-checkbox, pl-switch, pl-slider, pl-radio-group, pl-toggle-group, [role]:not(button, pl-button)";
 
 /** A control the label turns on and off; any other control takes focus. */
 const TOGGLES =
@@ -43,8 +43,8 @@ type Control = HTMLElement & {
  *   while `invalid`, `aria-invalid` and `aria-errormessage`; an error without
  *   its own `role` or `aria-live` becomes a polite live region. Text, not id
  *   references into the slots, which crash Firefox.
- * - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox`
- *   or `pl-date-picker` keeps its edit control in a shadow root that an id
+ * - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox`,
+ *   `pl-date-picker` or `pl-file-input` keeps its edit control in a shadow root that an id
  *   reference cannot reach. A slotted `<label>` gets `for` pointing at the host,
  *   which names the control; the description, and the error while `invalid`, go
  *   to the control's `aria-description`, and `aria-invalid` is set on it.
@@ -246,7 +246,7 @@ export class PlField extends LitElement {
   async #decorate(control: Control, message: string, invalid: boolean) {
     await control.updateComplete;
     const inner = control.shadowRoot?.querySelector(
-      "[part=control], [part=trigger]",
+      "[part=control], [part=trigger], [part=button]",
     );
     if (!inner || control !== this.#control || !this.isConnected) return;
     const apply = () => {

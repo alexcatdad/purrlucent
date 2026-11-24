@@ -81,6 +81,7 @@ export const fieldStyles = css`
         pl-select,
         pl-combobox,
         pl-date-picker,
+        pl-file-input,
         pl-input-group
       )
     ) {

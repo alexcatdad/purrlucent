@@ -195,7 +195,8 @@ export const dialogStyles = css`
     margin-inline-end: auto;
   }
 
-  ::slotted([slot="actions-start"]) {
+  /* A button there keeps its own size and colors. */
+  ::slotted([slot="actions-start"]:not(pl-button)) {
     min-inline-size: 0;
     color: var(--pl-color-muted-foreground);
   }

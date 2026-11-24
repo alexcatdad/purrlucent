@@ -824,6 +824,55 @@ test("actions-start content sits at the start of the actions row", async ({
   expect(statusBox!.y).toBeLessThan(save!.y + save!.height);
 });
 
+test("a button in actions-start sits before the actions and is neither default nor cancel", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await gotoStory(page, story("open-actions-start-button"));
+  await record(page);
+  const reset = page.getByRole("button", { name: "Reset" });
+  const [resetBox, cancel, save] = await Promise.all([
+    reset.boundingBox(),
+    page.getByRole("button", { name: "Cancel" }).boundingBox(),
+    page.getByRole("button", { name: "Save" }).boundingBox(),
+  ]);
+  expect(resetBox!.x).toBeLessThan(cancel!.x);
+  expect(cancel!.x).toBeLessThan(save!.x);
+  // Same row, and the same height as the other buttons.
+  expect(Math.abs(resetBox!.y - save!.y)).toBeLessThan(2);
+  expect(Math.abs(resetBox!.height - save!.height)).toBeLessThan(2);
+  // The default action takes the initial focus, not the leading button.
+  await expect(page.getByRole("button", { name: "Save" })).toBeFocused();
+  await dialogEl(page).evaluate((el) => {
+    const clicks: number[] = [];
+    (window as unknown as { resets: number[] }).resets = clicks;
+    el.querySelector("[data-reset]")!.addEventListener("click", () =>
+      clicks.push(1),
+    );
+  });
+  // Escape closes through the cancel action, not through Reset.
+  await page.keyboard.press("Escape");
+  await expect(sheet(page)).toBeHidden();
+  expect(await recorded(page)).toContainEqual([
+    "pl-close",
+    { returnValue: "cancel", reason: "user" },
+  ]);
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { resets: number[] }).resets.length,
+    ),
+  ).toBe(0);
+});
+
+test("clicking a button in actions-start leaves the dialog open", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-actions-start-button"));
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(sheet(page)).toBeVisible();
+  expect(await isOpen(page)).toBe(true);
+});
+
 test("pl-close reports reason user for the keyboard and programmatic for close()", async ({
   page,
 }) => {

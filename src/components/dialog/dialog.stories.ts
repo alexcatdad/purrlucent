@@ -268,6 +268,24 @@ export const OpenActionsStart: Story = {
   play: open,
 };
 
+/** A secondary `pl-button` in `actions-start` sits on the left; it is neither the default nor the cancel action. */
+export const OpenActionsStartButton: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-dialog id="dialog" variant="sheet">
+        <h2 slot="title">Filters</h2>
+        ${note("Choose which items the list shows.")}
+        <pl-button slot="actions-start" variant="secondary" data-reset
+          >Reset</pl-button
+        >
+        <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+        <pl-button slot="actions" default data-close="save">Save</pl-button>
+      </pl-dialog>`,
+    ),
+  play: open,
+};
+
 /** The `description` attribute describes a dialog that has no description slot. */
 export const OpenDescribedByAttribute: Story = {
   render: () =>
