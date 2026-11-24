@@ -17,37 +17,44 @@ env:
   LEFTHOOK: 0
 
 jobs:
-  # Decides what this push should do: open or update the version pull request
-  # (pending changesets), or release the version already on main (no changesets
-  # left, a changelog exists, and no release for that version exists yet).
+  # Decides what this push should do, each independently: open or update the
+  # version pull request (pending changesets), and release the version on main
+  # when it has a changelog and no release yet. A changeset that lands just
+  # before the version pull request merges no longer holds the release back.
   plan:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     outputs:
       version: ${{ steps.plan.outputs.version }}
+      commit: ${{ steps.plan.outputs.commit }}
       changes: ${{ steps.plan.outputs.changes }}
       release: ${{ steps.plan.outputs.release }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
+          fetch-depth: 0 # finds the commit that set the version
       - id: plan
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           version=$(jq -r .version package.json)
+          # The release is built from the commit that set this version, so it
+          # holds what its changelog lists and nothing merged after it.
+          commit=$(git log -1 --format=%H -G'^  "version":' -- package.json)
           changes=false
           for f in .changeset/*.md; do
             [ -e "$f" ] && [ "$(basename "$f")" != README.md ] && changes=true
           done
           release=false
-          if [ "$changes" = false ] && [ -f CHANGELOG.md ] && ! gh release view "v${version}" > /dev/null 2>&1; then
+          if [ -f CHANGELOG.md ] && ! gh release view "v${version}" > /dev/null 2>&1; then
             release=true
           fi
           {
             echo "version=${version}"
+            echo "commit=${commit}"
             echo "changes=${changes}"
             echo "release=${release}"
           } >> "$GITHUB_OUTPUT"
@@ -105,10 +112,12 @@ jobs:
       contents: write # create the tag and the release
     env:
       VERSION: ${{ needs.plan.outputs.version }}
+      COMMIT: ${{ needs.plan.outputs.commit }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
+          ref: ${{ needs.plan.outputs.commit }}
       - uses: ./.github/actions/setup
         with:
           bun-version: ${{ env.BUN_VERSION }}
@@ -119,4 +128,4 @@ jobs:
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "v${VERSION}" "${RUNNER_TEMP}/purrlucent-${VERSION}.tgz" --title "v${VERSION}" --notes-file "${RUNNER_TEMP}/notes.md" --target "${GITHUB_SHA}"
+        run: gh release create "v${VERSION}" "${RUNNER_TEMP}/purrlucent-${VERSION}.tgz" --title "v${VERSION}" --notes-file "${RUNNER_TEMP}/notes.md" --target "${COMMIT}"
