@@ -377,12 +377,16 @@ import "purrlucent/button";
 
 ### `<pl-button>`
 
-A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link; set it again to rename the link. `focus()` focuses the inner link, and a `tabindex` set on the host, as a toolbar's arrow-key focus does, moves to it too. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
+A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link; set it again to rename the link. `focus()` focuses the inner link, and a `tabindex` set on the host, as a toolbar's arrow-key focus does, moves to it too. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns. A submit button also takes Enter in a native single-line `input` of its form, as a native submit button does, and submits the form it names with `form` from outside it. Its `name` and `value` are submitted only when it is the button that submitted, as a native submit button's are.
 
 | Attribute     | Type                              | Default       | Description                                                                                              |
 | ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
 | `aria-label`  | `string`                          |               |                                                                                                          |
 | `tabindex`    | `string`                          |               |                                                                                                          |
+| `size`        | `PlButtonSize`                    | `"md"`        | `md` (default), `sm` for dense tables and toolbars, `lg` or `xl`.                                        |
+| `form`        | `string \| null`                  | `null`        | The `id` of the owning form; the browser resolves the owner from the attribute.                          |
+| `name`        | `string \| null`                  | `null`        | The name its `value` is submitted under when this button submits the form.                               |
+| `value`       | `string \| null`                  | `null`        | The value submitted under `name` when this button submits the form.                                      |
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
@@ -392,7 +396,6 @@ A button. The label is the slotted text and is required for an accessible name; 
 | `download`    | `string \| null`                  | `null`        | The link downloads its address, as on `a`; the value is the suggested file name.                         |
 | `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
-| `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
@@ -911,16 +914,20 @@ import "purrlucent/dialog";
 
 ### `<pl-dialog>`
 
-A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `pl-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. A sheet opened while another sheet is open is warned about and still shows; an alert over a sheet is not. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
+A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description; the `description` attribute gives one when nothing is slotted. Initial focus goes to the element with `autofocus`, otherwise the default action (a `pl-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. A sheet opened while another sheet is open is warned about and still shows; an alert over a sheet is not. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open. With `nonmodal` the dialog opens without blocking the page: the rest of the page stays interactive, and there is no scrim, focus trap or scroll lock. Use it for a panel that works beside the page, such as an in-context translation tool, and not for a question that must be answered first. Escape and the close button close it while focus is inside it.
 
-| Attribute     | Type                 | Default   | Description                                                            |
-| ------------- | -------------------- | --------- | ---------------------------------------------------------------------- |
-| `open`        | `boolean`            | `false`   | The dialog is showing. Setting it opens the dialog modally.            |
-| `variant`     | `"alert" \| "sheet"` | `"sheet"` | `sheet` (default) or `alert`.                                          |
-| `label`       | `string`             | `""`      | The accessible name when there is no slotted title.                    |
-| `dismissible` | `boolean`            | `false`   | A sheet also closes when the backdrop is pressed. An alert never does. |
-| `_scrolls`    | `boolean`            | `false`   |                                                                        |
-| `_actions`    | `number`             | `0`       |                                                                        |
+| Attribute     | Type                 | Default   | Description                                                                                                                 |
+| ------------- | -------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `open`        | `boolean`            | `false`   | The dialog is showing. Setting it opens the dialog modally, or without blocking the page with `nonmodal`.                   |
+| `variant`     | `"alert" \| "sheet"` | `"sheet"` | `sheet` (default) or `alert`.                                                                                               |
+| `label`       | `string`             | `""`      | The accessible name when there is no slotted title.                                                                         |
+| `description` | `string`             | `""`      | The accessible description when nothing is slotted for it: the `description` slot of a sheet, the default slot of an alert. |
+| `dismissible` | `boolean`            | `false`   | A sheet also closes when the backdrop is pressed. An alert never does.                                                      |
+| `closable`    | `boolean`            | `false`   | A sheet shows a close button in its header. It asks to close like Escape.                                                   |
+| `close-label` | `string`             | `""`      | The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Close".           |
+| `nonmodal`    | `boolean`            | `false`   | Opens without blocking the page: no scrim, inert page or scroll lock. Set it before opening.                                |
+| `_scrolls`    | `boolean`            | `false`   |                                                                                                                             |
+| `_actions`    | `number`             | `0`       |                                                                                                                             |
 
 **Slots**
 
@@ -929,12 +936,14 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 - `description`: A short explanation under the sheet's title.
 - default: The alert's message, or the sheet's scrolling body.
 - `actions`: `pl-button` elements, in the order they are shown.
+- `actions-start`: Non-button content, such as a status line, at the start of a sheet's row of actions.
 
 **Parts**
 
 - `dialog`: The native dialog.
 - `surface`: The padded panel inside it.
 - `header`: The icon and title.
+- `close`: The close button of a closable sheet.
 - `body`: The scrolling content.
 - `actions`: The row or column of actions.
 
@@ -945,8 +954,8 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 **Events**
 
 - `name`:
-- `pl-cancel`: Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
-- `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with.
+- `pl-cancel`: Escape, the close button, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
+- `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with. `detail.reason` is `user` for Escape, an action, the backdrop or the close button, and `programmatic` for `close()` or `open` set to false. It does not fire when `open` is set again before the close completes.
 
 ## Drawer
 
@@ -965,6 +974,7 @@ A modal panel anchored to an edge of the screen. A native `<dialog>` inside open
 | `detents`      | `string`       | `""`       | Space-separated heights a bottom sheet can rest at: `medium`, `large` or `medium large`. Without it the sheet is as tall as its content, up to the large height. |
 | `detent`       | `Detent \| ""` | `""`       | The current detent, one of `detents`; the first when unset or not listed. Reflects dragging and the grabber.                                                     |
 | `label`        | `string`       | `""`       | The accessible name when there is no slotted title.                                                                                                              |
+| `description`  | `string`       | `""`       | The accessible description when nothing is slotted in the `description` slot.                                                                                    |
 | `expand-label` | `string`       | `""`       | The grabber's accessible name while it grows the sheet. Defaults to the page language's text (see `setMessages`), in English "Expand".                           |
 | `close-label`  | `string`       | `""`       | The grabber's accessible name while it closes the sheet. Defaults to the page language's text (see `setMessages`), in English "Close".                           |
 | `dismissible`  | `boolean`      | `false`    | Pressing the backdrop also asks to close.                                                                                                                        |
@@ -1315,30 +1325,39 @@ import "purrlucent/menu";
 
 ### `<pl-menu-item>`
 
-One command in a `pl-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `pl-menu` in the `submenu` slot makes it open a submenu.
+One command in a `pl-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `pl-menu` in the `submenu` slot makes it open a submenu. With `href` it is a link: a real anchor covers the row, so middle-click, open in a new tab and copy link work. Choosing an item dispatches a `click` event on the item itself, then the menu fires `pl-select`.
 
-| Attribute     | Type                          | Default | Description                                               |
-| ------------- | ----------------------------- | ------- | --------------------------------------------------------- |
-| `value`       | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.          |
-| `type`        | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.         |
-| `checked`     | `boolean`                     | `false` | Checked, for a checkbox or radio item.                    |
-| `disabled`    | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.          |
-| `destructive` | `boolean`                     | `false` | The command deletes or discards something.                |
-| `detail`      | `string`                      | `""`    | Trailing text such as a shortcut. The `detail` slot wins. |
-| `indent`      | `boolean`                     | `false` | Reserves the check column. The menu sets it.              |
-| `hasSubmenu`  | `boolean`                     | `false` |                                                           |
+| Attribute            | Type                          | Default | Description                                                                          |
+| -------------------- | ----------------------------- | ------- | ------------------------------------------------------------------------------------ |
+| `value`              | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.                                     |
+| `type`               | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.                                    |
+| `checked`            | `boolean`                     | `false` | Checked, for a checkbox or radio item.                                               |
+| `disabled`           | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.                                     |
+| `destructive`        | `boolean`                     | `false` | The command deletes or discards something.                                           |
+| `detail`             | `string`                      | `""`    | Trailing text such as a shortcut. The `detail` slot wins.                            |
+| `description`        | `string`                      | `""`    | A second, muted line under the label. The `description` slot wins.                   |
+| `href`               | `string`                      | `""`    | Makes the item a link to this URL. Choosing it closes the menu and follows the link. |
+| `target`             | `string`                      | `""`    | Where the link opens, such as `_blank`.                                              |
+| `rel`                | `string`                      | `""`    | The link's relationship, such as `noopener`.                                         |
+| `indent`             | `boolean`                     | `false` | Reserves the check column. The menu sets it.                                         |
+| `hasSubmenu`         | `boolean`                     | `false` |                                                                                      |
+| `hasDescriptionSlot` | `boolean`                     | `false` |                                                                                      |
 
 **Slots**
 
 - default: The label.
 - `icon`: A leading svg.
+- `description`: A second, muted line under the label.
 - `detail`: Trailing content, such as a shortcut.
 - `submenu`: A nested `pl-menu`.
 
 **Parts**
 
 - `check`: The check mark.
+- `link`: The anchor of a link item.
+- `text`: The label and description column.
 - `label`: The label wrapper.
+- `description`: The description wrapper.
 - `detail`: The trailing text wrapper.
 - `chevron`: The submenu arrow.
 
@@ -1352,25 +1371,30 @@ A section header inside a `pl-menu`. Its text is the heading.
 
 ### `<pl-menu>`
 
-A menu: a list of commands that opens from a trigger (the menu button pattern), at a point (a context menu, see `showAt`) or from a parent item (a submenu, `slot="submenu"`). The items are the light-DOM children, so focus moves to them while the menu is open and returns to the trigger on close. Arrow keys move with wrap, Home and End jump, typing jumps to a label, Enter and Space activate, Escape closes one level, Tab closes all of them. Activating an item closes every level and fires `pl-select`.
+A menu: a list of commands that opens from a trigger (the menu button pattern), at a point (a context menu, see `showAt`) or from a parent item (a submenu, `slot="submenu"`). The items are the light-DOM children, so focus moves to them while the menu is open and returns to the trigger on close. Arrow keys move with wrap, Home and End jump, typing jumps to a label, Enter and Space activate, Escape closes one level, Tab closes all of them. Activating an item dispatches `click` on the item, closes every level and fires `pl-select`. `show()` and `open` open it from code with the first item focused, as a keyboard open does.
 
-| Attribute | Type      | Default | Description                      |
-| --------- | --------- | ------- | -------------------------------- |
-| `label`   | `string`  | `""`    | The accessible name of the menu. |
-| `open`    | `boolean` | `false` | The menu is showing.             |
+| Attribute   | Type            | Default          | Description                                                                                                                                                  |
+| ----------- | --------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`     | `string`        | `""`             | The accessible name of the menu.                                                                                                                             |
+| `open`      | `boolean`       | `false`          | The menu is showing.                                                                                                                                         |
+| `placement` | `MenuPlacement` | `"bottom-start"` | Where the menu opens from its trigger: `bottom-start` (default), `bottom-end`, `top-start`, `top-end`, `start` or `end`. It flips when the side has no room. |
+| `hasHeader` | `boolean`       | `false`          |                                                                                                                                                              |
 
 **Slots**
 
 - `trigger`: A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
+- `header`: Non-interactive content above the items, such as a name and email block or an empty state.
 - default: The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
 
 **Parts**
 
 - `menu`: The popup.
+- `header`: The wrapper of the header content.
 
 **Events**
 
-- `pl-select`: An item was activated. `detail.value` holds its value.
+- `pl-select`: An item was activated. `detail.value` holds its value and `detail.item` the item element.
+- `pl-toggle`: The menu opened or closed. `detail.open` says which. A submenu fires it on itself and it does not bubble.
 
 ## Menubar
 
@@ -1672,13 +1696,14 @@ import "purrlucent/popover";
 
 ### `<pl-popover>`
 
-A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger. The panel is as wide as its content, from a minimum that keeps the arrow clear of the corners up to a maximum of `calc(var(--pl-spacing) * 45)`, and never wider than the viewport; longer content wraps.
+A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger. The panel is as wide as its content, from a minimum that keeps the arrow clear of the corners up to a maximum of `--pl-popover-max-inline-size`, and never wider than the viewport; longer content wraps.
 
-| Attribute   | Type                                    | Default    | Description                                                                                                                                     |
-| ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                                                          |
-| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                         |
-| `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it. |
+| Attribute   | Type                                    | Default    | Description                                                                                                                                                                                            |
+| ----------- | --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                                                                                                                 |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                                                                                |
+| `align`     | `Align`                                 | `"center"` | How the panel lines up with the trigger on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the trigger. |
+| `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it.                                                        |
 
 **Slots**
 
@@ -1689,6 +1714,10 @@ A non-modal floating panel anchored to a trigger. The trigger is any focusable c
 
 - `panel`: The floating panel.
 - `arrow`: The arrow pointing at the trigger.
+
+**CSS properties**
+
+- `--pl-popover-max-inline-size`: The widest the panel grows before its content wraps. Default `calc(var(--pl-spacing) * 45)`.
 
 **Events**
 
@@ -2320,6 +2349,10 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 | `pressed`     | `boolean`                         | `false`       |                                                                                                          |
 | `aria-label`  | `string`                          |               |                                                                                                          |
 | `tabindex`    | `string`                          |               |                                                                                                          |
+| `size`        | `PlButtonSize`                    | `"md"`        | `md` (default), `sm` for dense tables and toolbars, `lg` or `xl`.                                        |
+| `form`        | `string \| null`                  | `null`        | The `id` of the owning form; the browser resolves the owner from the attribute.                          |
+| `name`        | `string \| null`                  | `null`        | The name its `value` is submitted under when this button submits the form.                               |
+| `value`       | `string \| null`                  | `null`        | The value submitted under `name` when this button submits the form.                                      |
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
@@ -2329,7 +2362,6 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 | `download`    | `string \| null`                  | `null`        | The link downloads its address, as on `a`; the value is the suggested file name.                         |
 | `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
-| `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
@@ -2345,7 +2377,7 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 
 **Events**
 
-- `pl-change`: A press changed the state. `detail.pressed` holds the new one.
+- `pl-change`: A press is about to change the state, before it is applied. `detail.pressed` holds the new one. Cancelable: `preventDefault()` keeps the current state.
 - `pl-press`: When the button is activated by pointer, Enter or Space.
 
 ## Toggle group
@@ -2374,7 +2406,7 @@ One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. A
 
 ### `<pl-toggle-group>`
 
-A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
+A row of equal-width items that offers one required choice, as a radio group: choosing the selected item again never deselects it, so one item is always selected. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
 | Attribute     | Type                   | Default | Description                                                                                                                                                                                                |
 | ------------- | ---------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2391,8 +2423,8 @@ A row of equal-width items that offers one required choice, as a radio group. Ar
 
 **Events**
 
-- `pl-change`: The selection changed by the user. `detail.selected` is a one-item array.
-- `input`: After pl-change, as a native radio fires it.
+- `pl-change`: The user is about to change the selection, before it is applied. `detail.selected` is a one-item array. Cancelable: `preventDefault()` keeps the current value and fires no `input` or `change`.
+- `input`: After the selection changed, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
 ## Toolbar
@@ -2439,6 +2471,7 @@ A bar of controls with one tab stop and arrow-key navigation. A `<pl-input type=
 | `label`    | `string`       | `""`    | Accessible name. Required.                                             |
 | `scrolled` | `boolean`      | `false` | Set while content is scrolled beneath the bar; shows the scroll edge.  |
 | `size`     | `"md" \| "xl"` | `"xl"`  | `xl` (default) or the compact `md`. Give the controls the same `size`. |
+| `floating` | `boolean`      | `false` | A capsule that floats over the content, with a shadow under glass.     |
 
 **Slots**
 
@@ -2456,19 +2489,26 @@ import "purrlucent/tooltip";
 
 ### `<pl-tooltip>`
 
-Shows `text` in a small bubble beside its content (the target): after a delay on hover, at once on keyboard focus. It hides on pointer leave, blur, Escape and a press, and the pointer can move onto the bubble without hiding it. It never shows for touch, so a tap always reaches the target. The bubble is a `role="tooltip"` element that the tooltip adds to its own children, so the target can name it in `aria-describedby`: an id reference cannot reach into a shadow root.
+Shows `text` in a small bubble beside its content (the target): after a delay on hover, at once on keyboard focus. It hides on pointer leave, blur, Escape and a press, and the pointer can move onto the bubble without hiding it. It never shows for touch, so a tap always reaches the target. The bubble is a `role="tooltip"` element that the tooltip adds to its own children, so the target can name it in `aria-describedby`: an id reference cannot reach into a shadow root. For more than a line of text, put one non-interactive element (a `<div>` holding a `<dl>` or several lines) in the `content` slot: it becomes the `role="tooltip"` element and `text` is not used. Not the `<dl>` itself: `role="tooltip"` on it breaks its list semantics. The bubble wraps at `--pl-tooltip-max-inline-size`.
 
-| Attribute   | Type                                    | Default    | Description                                                                      |
-| ----------- | --------------------------------------- | ---------- | -------------------------------------------------------------------------------- |
-| `text`      | `string`                                | `""`       | What the bubble says. Required.                                                  |
-| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | `bottom` (default), `top`, `start` or `end`. It flips when the side has no room. |
-| `shown`     | `boolean`                               | `false`    |                                                                                  |
+| Attribute   | Type                                    | Default    | Description                                                                                                                                                                                           |
+| ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`      | `string`                                | `""`       | What the bubble says. Required unless the `content` slot is used.                                                                                                                                     |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                                                                                                      |
+| `align`     | `Align`                                 | `"center"` | How the bubble lines up with the target on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the target. |
+| `shown`     | `boolean`                               | `false`    |                                                                                                                                                                                                       |
 
 **Slots**
 
 - default: The target: a control, or anything the pointer or focus can reach.
+- `content`: Rich, non-interactive content for the bubble, in place of `text`.
 
 **Parts**
 
 - `bubble`: The floating box. Invisible: its padding is the gap to the target.
 - `face`: The visible bubble.
+
+**CSS properties**
+
+- `--pl-tooltip-open-delay`: How long the pointer must rest on the target before the bubble shows. Default `560ms`. Keyboard focus shows it at once.
+- `--pl-tooltip-max-inline-size`: The widest the bubble grows before its content wraps. Default `calc(var(--pl-spacing) * 60)`.
