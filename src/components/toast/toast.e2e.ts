@@ -325,8 +325,9 @@ test.describe("coarse pointer on a wide screen", () => {
       toasts(page).getByRole("button", { name: "Undo" }),
     ]) {
       const box = (await target.boundingBox())!;
-      expect(box.width).toBeGreaterThanOrEqual(44);
-      expect(box.height).toBeGreaterThanOrEqual(44);
+      // Layout rounds 2.75rem to a hair under 44 (43.99994) in some engines.
+      expect(box.width).toBeGreaterThanOrEqual(44 - 0.01);
+      expect(box.height).toBeGreaterThanOrEqual(44 - 0.01);
     }
   });
 });

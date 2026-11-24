@@ -433,22 +433,11 @@
 
   @supports (backdrop-filter: blur(1px)) {
     [pl-material="glass"] {
-      /* The glass fill: translucent enough that what is behind shows through
-         the blur, and boosted in color, as a material is. The solid overlay
-         stays for surfaces that are not glass. */
-      --pl-material-glass: light-dark(
-        rgb(255 255 255 / 64%),
-        color-mix(
-          in srgb,
-          color-mix(
-              in srgb,
-              var(--pl-color-oxford-navy),
-              var(--pl-color-honeydew) 10%
-            )
-            74%,
-          transparent
-        )
-      );
+      /* The glass fill and its color boost. The fill is as clear as text on it
+         allows over any backdrop, black to white (HIG materials): below the
+         overlay's opacity, accent and tertiary text drop under 4.5:1. An app
+         that controls what sits behind its glass may set a clearer fill. */
+      --pl-material-glass: var(--pl-color-overlay);
       --pl-material-saturate: saturate(160%);
       --pl-material-bar: var(--pl-material-glass);
       --pl-material-capsule: var(--pl-material-glass);

@@ -144,6 +144,8 @@ body {
 }
 ```
 
+The glass fill, `--pl-material-glass`, is as clear as it can be while text on it holds 4.5:1 over anything, black to white. If you control what sits behind your glass, you may set a clearer fill on the `pl-material="glass"` element, and then check text contrast over your own backdrop.
+
 If glass looks solid everywhere, check the system's transparency setting first: macOS **Reduce transparency** (System Settings, Accessibility, Display), iOS **Reduce Transparency**, or Windows **Transparency effects** off. Each sets `prefers-reduced-transparency: reduce`, and the elements then stay solid on purpose. `matchMedia("(prefers-reduced-transparency: reduce)").matches` in the browser console tells you which it is.
 
 ## Theming
