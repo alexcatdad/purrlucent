@@ -167,6 +167,14 @@ export class PlDialog extends LitElement {
   }
 
   // Asks to close, which a `pl-cancel` handler can refuse.
+  // The close button cancels like Escape: through the cancel action if any.
+  #dismiss() {
+    const button = this.#action("cancel");
+    if (button) {
+      if (!button.matches(":disabled")) button.click();
+    } else this.#requestClose();
+  }
+
   #requestClose() {
     if (this.#emit("pl-cancel", undefined, true)) this.#finish("", "user");
   }
@@ -202,6 +210,8 @@ export class PlDialog extends LitElement {
       if (this.nonmodal) {
         this.#opener = document.activeElement;
         dialog.show();
+        // The top layer keeps it above page content without making the page inert.
+        if (!dialog.matches(":popover-open")) dialog.showPopover();
       } else {
         dialog.showModal();
         if (!this.#locked) lockScroll();
@@ -283,6 +293,7 @@ export class PlDialog extends LitElement {
   #onClose = () => {
     // Reopened before this event ran: the dialog is open again.
     if (this.#dialog!.open) return;
+    if (this.#dialog!.matches(":popover-open")) this.#dialog!.hidePopover();
     this.open = false;
     this.#unlock();
     this.#returnValue = this.#dialog!.returnValue;
@@ -371,6 +382,7 @@ export class PlDialog extends LitElement {
     const described = !this.#hasDescription && !!this.description;
     return html`<dialog
       part="dialog"
+      popover=${this.nonmodal ? "manual" : nothing}
       role=${alert ? "alertdialog" : nothing}
       aria-labelledby=${titled ? "title" : nothing}
       aria-label=${!titled && this.label ? this.label : nothing}
@@ -410,7 +422,7 @@ export class PlDialog extends LitElement {
                   part="close"
                   type="button"
                   aria-label=${this.closeLabel || messages(this).close}
-                  @click=${() => this.#requestClose()}
+                  @click=${() => this.#dismiss()}
                 >
                   ${closeGlyph}
                 </button>`

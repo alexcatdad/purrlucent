@@ -727,6 +727,18 @@ test("virtual screen reader speaks the title, message and actions", async ({
 
 const closeButton = (page: Page) => dialogEl(page).locator("[part=close]");
 
+test("the close button clicks the cancel action, like Escape", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-closable-with-cancel"));
+  await record(page);
+  await closeButton(page).click();
+  await expect(sheet(page)).toBeHidden();
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([["pl-close", { returnValue: "cancel", reason: "user" }]]);
+});
+
 test("a closable sheet has a close button named Close that asks to cancel and closes", async ({
   page,
 }) => {
@@ -880,6 +892,23 @@ test.describe("nonmodal", () => {
       ),
     ).toBe(1);
     await expect(sheet(page)).toBeVisible();
+  });
+
+  test("stays above page content with a higher z-index", async ({ page }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await expect(sheet(page)).toBeVisible();
+    const topmost = await dialogEl(page).evaluate((el) => {
+      const box = el
+        .shadowRoot!.querySelector("dialog")!
+        .getBoundingClientRect();
+      return (
+        document.elementFromPoint(
+          box.x + box.width / 2,
+          box.y + box.height / 2,
+        ) === el
+      );
+    });
+    expect(topmost).toBe(true);
   });
 
   test("Escape and the close button close it", async ({ page }) => {

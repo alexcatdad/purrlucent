@@ -58,12 +58,11 @@ export const dialogStyles = css`
     flex-direction: column;
   }
 
-  /* Not in the top layer, so it centers itself and sits above the page. */
+  /* A manual popover: in the top layer, so it centers itself above the page. */
   :host([nonmodal]) dialog {
     position: fixed;
     inset: 0;
     block-size: fit-content;
-    z-index: 1;
   }
 
   dialog::backdrop {

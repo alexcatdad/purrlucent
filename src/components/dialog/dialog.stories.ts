@@ -220,6 +220,21 @@ export const Glass: Story = {
 
 const note = (text: string) => html`<p style="margin:0">${text}</p>`;
 
+/** With a cancel action, the close button clicks it, as Escape does. */
+export const OpenClosableWithCancel: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-dialog id="dialog" variant="sheet" closable>
+        <h2 slot="title">Rename file</h2>
+        ${note("The new name applies everywhere.")}
+        <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+        <pl-button slot="actions" default data-close="save">Save</pl-button>
+      </pl-dialog>`,
+    ),
+  play: open,
+};
+
 /** `closable` adds a close button to the header; it cancels like Escape. */
 export const OpenClosable: Story = {
   render: () =>
@@ -289,6 +304,10 @@ export const OpenNonmodal: Story = {
         <pl-button slot="actions" data-close="done">Done</pl-button>
       </pl-dialog>
       <pl-button id="page-button">Page action</pl-button>
+      <div
+        id="page-layer"
+        style="position:fixed;inset:0;z-index:10;pointer-events:none"
+      ></div>
     </div>`,
   play: open,
 };
