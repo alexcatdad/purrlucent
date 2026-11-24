@@ -53,7 +53,7 @@ export const selectStyles = css`
     block-size: var(--_size);
     margin: 0;
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     padding: 0;
     padding-inline-start: var(--_pad);
     background: var(--_face);
@@ -168,7 +168,7 @@ export const listboxStyles = css`
     inset: auto;
     margin: var(--pl-space-1) 0;
     border: 0;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     padding: var(--pl-pad-surface);
     background: var(--pl-material-panel);
     backdrop-filter: var(--pl-material-panel-filter);
@@ -204,7 +204,7 @@ export const optionStyles = css`
     align-items: center;
     box-sizing: border-box;
     min-block-size: var(--pl-size-hit-min);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-row);
     padding-inline: var(--_label) var(--pl-pad-item);
     outline: none;
     white-space: nowrap;

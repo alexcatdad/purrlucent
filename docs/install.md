@@ -180,9 +180,11 @@ Every color, size and duration is a custom property with the `--pl-` prefix. Ove
 ```css
 :root {
   --pl-color-accent: oklch(51% 0.17 250deg);
-  --pl-radius: 6px;
+  --pl-radius-control: 6px;
 }
 ```
+
+Radii follow role and pointer. `--pl-radius-control` (8px, 12px for a coarse pointer) rounds buttons, fields and groups; `--pl-radius-panel` (16px) rounds dialogs, popovers, menus, sheets and sidebars. Two follow from them, so nested curves stay parallel: `--pl-radius-control-inner` is the control radius minus the 2px a face sits inside it, and `--pl-radius-row` is the panel radius minus a panel's padding, for menu and list rows. `--pl-radius-full` makes a pill.
 
 The tokens are in the `pl.tokens` cascade layer, so your unlayered styles win without extra selectors. Keep your colors readable: the contrast checks apply to the defaults, not to your overrides.
 

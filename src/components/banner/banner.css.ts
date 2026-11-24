@@ -56,7 +56,7 @@ export const bannerStyles = css`
     inline-size: var(--_tile);
     block-size: var(--_tile);
     padding: calc(var(--_tile) / 4);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: linear-gradient(
       color-mix(in srgb, var(--_tone), var(--pl-color-honeydew) 25%),
       var(--_tone)

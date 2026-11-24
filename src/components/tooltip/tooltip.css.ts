@@ -41,7 +41,7 @@ export const tooltipStyles = css`
   [part="face"] {
     inline-size: max-content;
     max-inline-size: 100%;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     padding: var(--pl-space-1) var(--pl-space-1-5);
     background: var(--pl-material-panel);
     backdrop-filter: var(--pl-material-panel-filter);

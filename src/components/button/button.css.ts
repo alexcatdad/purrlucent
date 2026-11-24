@@ -22,7 +22,7 @@ export const buttonStyles = css`
 
     min-block-size: var(--_size);
     padding: var(--pl-space-1) var(--pl-pad-control);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     color: var(--_fg);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: center;

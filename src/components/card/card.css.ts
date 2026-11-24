@@ -14,7 +14,7 @@ export const cardStyles = css`
     background: var(--pl-color-background);
     backdrop-filter: none;
     border: 1px solid var(--pl-color-border);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     overflow: clip;

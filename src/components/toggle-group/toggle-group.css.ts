@@ -18,7 +18,7 @@ export const groupStyles = css`
     grid-auto-flow: column;
     max-inline-size: 100%;
     overflow: clip;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: var(--pl-material-control);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
@@ -129,13 +129,13 @@ export const itemStyles = css`
   }
 
   :host(:first-child) {
-    border-start-start-radius: var(--pl-radius);
-    border-end-start-radius: var(--pl-radius);
+    border-start-start-radius: var(--pl-radius-control);
+    border-end-start-radius: var(--pl-radius-control);
   }
 
   :host(:last-child) {
-    border-start-end-radius: var(--pl-radius);
-    border-end-end-radius: var(--pl-radius);
+    border-start-end-radius: var(--pl-radius-control);
+    border-end-end-radius: var(--pl-radius-control);
   }
 
   :host::before {

@@ -79,7 +79,7 @@ export const markerStyles = [
       margin: 0;
       padding: 0 var(--pl-space-1);
       border: 0;
-      border-radius: var(--pl-radius);
+      border-radius: var(--pl-radius-control-inner);
       background: none;
       color: inherit;
       font: inherit;

@@ -60,7 +60,7 @@ export const itemStyles = css`
     position: absolute;
     inset: 0;
     z-index: -1;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: transparent;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
@@ -110,7 +110,7 @@ export const itemStyles = css`
     inset: auto;
     margin: var(--pl-space-1) 0;
     border: 0;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     padding: var(--pl-pad-surface);
     background: var(--pl-material-panel);
     backdrop-filter: var(--pl-material-panel-filter);
@@ -138,7 +138,7 @@ export const itemStyles = css`
     align-items: center;
     box-sizing: border-box;
     min-block-size: var(--_row);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-row);
     padding: var(--pl-space-1) var(--pl-pad-item);
     color: inherit;
     text-decoration: none;

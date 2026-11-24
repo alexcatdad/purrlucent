@@ -38,7 +38,7 @@ export const dataTableStyles = css`
     margin: 0;
     padding: 0;
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: none;
     color: inherit;
     font: inherit;
@@ -196,7 +196,7 @@ export const dataTableStyles = css`
     margin: 0;
     padding: 0;
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: none;
     color: inherit;
     cursor: default;
@@ -264,7 +264,7 @@ export const dataTableStyles = css`
     margin: 0;
     padding: 0;
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: none;
     color: var(--pl-color-muted-foreground);
     cursor: default;

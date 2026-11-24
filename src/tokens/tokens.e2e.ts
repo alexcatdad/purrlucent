@@ -424,3 +424,49 @@ test("motion stops under reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   expect(new Set(await states())).toEqual(new Set(["paused"]));
 });
+
+/** Each radius token, resolved to pixels on a probe. */
+const radii = (page: Page) =>
+  page.evaluate(() =>
+    Object.fromEntries(
+      ["control", "control-inner", "panel", "row"].map((name) => {
+        const probe = document.createElement("div");
+        probe.style.borderRadius = `var(--pl-radius-${name})`;
+        document.body.append(probe);
+        const px = parseFloat(getComputedStyle(probe).borderTopLeftRadius);
+        probe.remove();
+        return [name, px];
+      }),
+    ),
+  );
+
+test("radii follow role, and nested radii the inset between faces", async ({
+  page,
+}) => {
+  await gotoStory(page, "foundations-tokens--colors");
+  expect(await radii(page)).toEqual({
+    control: 8,
+    "control-inner": 6,
+    panel: 16,
+    row: 8,
+  });
+});
+
+test.describe("coarse pointer on a wide screen", () => {
+  test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
+
+  test("controls round more for a coarse pointer, panels do not", async ({
+    page,
+  }) => {
+    await gotoStory(page, "foundations-tokens--colors");
+    expect(
+      await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
+    ).toBe(true);
+    expect(await radii(page)).toEqual({
+      control: 12,
+      "control-inner": 10,
+      panel: 16,
+      row: 8,
+    });
+  });
+});

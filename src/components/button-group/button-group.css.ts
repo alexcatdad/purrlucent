@@ -25,7 +25,7 @@ export const buttonGroupStyles = css`
 
   /* The group, not each button, carries the light shadow of glass. */
   :host {
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     box-shadow: var(--pl-elevation-control);
   }
 
@@ -36,23 +36,23 @@ export const buttonGroupStyles = css`
 
   /* An icon button is round alone; in a group its outer ends stay round. */
   :host(:not([orientation="vertical"])) ::slotted(pl-button:first-child) {
-    border-start-start-radius: var(--pl-radius);
-    border-end-start-radius: var(--pl-radius);
+    border-start-start-radius: var(--pl-radius-control);
+    border-end-start-radius: var(--pl-radius-control);
   }
 
   :host(:not([orientation="vertical"])) ::slotted(pl-button:last-child) {
-    border-start-end-radius: var(--pl-radius);
-    border-end-end-radius: var(--pl-radius);
+    border-start-end-radius: var(--pl-radius-control);
+    border-end-end-radius: var(--pl-radius-control);
   }
 
   :host([orientation="vertical"]) ::slotted(pl-button:first-child) {
-    border-start-start-radius: var(--pl-radius);
-    border-start-end-radius: var(--pl-radius);
+    border-start-start-radius: var(--pl-radius-control);
+    border-start-end-radius: var(--pl-radius-control);
   }
 
   :host([orientation="vertical"]) ::slotted(pl-button:last-child) {
-    border-end-start-radius: var(--pl-radius);
-    border-end-end-radius: var(--pl-radius);
+    border-end-start-radius: var(--pl-radius-control);
+    border-end-end-radius: var(--pl-radius-control);
   }
 
   /* The ring of a focused button is drawn over its neighbours. */

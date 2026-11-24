@@ -23,7 +23,7 @@ export const kbdStyles = css`
     block-size: calc(var(--pl-leading-normal) + var(--pl-space-1));
     padding-inline: var(--pl-space-1-5);
     border: 1px solid var(--pl-color-border);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control-inner);
     background: var(--pl-color-muted-2);
     color: var(--pl-color-foreground);
     font: 500 var(--pl-text-xs) / 1 var(--pl-font-sans);

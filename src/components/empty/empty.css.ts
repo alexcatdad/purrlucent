@@ -53,7 +53,7 @@ export const emptyStyles = css`
     inline-size: calc(var(--pl-spacing) * 12);
     block-size: calc(var(--pl-spacing) * 12);
     padding: var(--pl-space-3);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
     background: var(--pl-color-muted-1);
     color: var(--pl-color-muted-foreground);
     fill: none;

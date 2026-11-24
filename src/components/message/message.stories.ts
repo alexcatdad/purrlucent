@@ -24,7 +24,7 @@ const thread = (content: unknown) =>
 /* Stand-in for a bubble: the message only lays out whatever it is given. */
 const bubble = (text: string, rtl = false) =>
   html`<div
-    style="padding:var(--pl-space-2) var(--pl-space-3);border-radius:var(--pl-radius);background:var(--pl-color-muted-1);color:var(--pl-color-foreground)"
+    style="padding:var(--pl-space-2) var(--pl-space-3);border-radius:var(--pl-radius-control);background:var(--pl-color-muted-1);color:var(--pl-color-foreground)"
   >
     ${isolate(rtl, text)}
   </div>`;

@@ -56,7 +56,7 @@ export const breadcrumbItemStyles = css`
     min-inline-size: 0;
     padding: var(--_pad) var(--pl-space-1-5);
     overflow: hidden;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     color: inherit;
     text-decoration: none;
     text-overflow: ellipsis;

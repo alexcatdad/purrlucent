@@ -49,7 +49,7 @@ export const paginationStyles = css`
   .control {
     padding: var(--pl-space-1) var(--pl-space-2);
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: transparent;
     color: inherit;
     font: inherit;

@@ -47,7 +47,7 @@ export const sidebarSurface = css`
     background: var(--pl-material-sidebar);
     backdrop-filter: var(--pl-material-sidebar-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     color: var(--pl-color-foreground);
     padding: var(--pl-space-2);
   }
@@ -63,7 +63,7 @@ export const panelSurface = css`
     background: var(--pl-material-panel);
     backdrop-filter: var(--pl-material-panel-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     color: var(--pl-color-foreground);
     padding: var(--pl-space-4);
   }
@@ -79,7 +79,7 @@ export const sheetSurface = css`
     background: var(--pl-material-sheet);
     backdrop-filter: var(--pl-material-sheet-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-sheet);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     color: var(--pl-color-foreground);
     padding: var(--pl-space-6);
   }
@@ -110,7 +110,7 @@ export const fieldShell = css`
     background: var(--pl-color-background);
     backdrop-filter: none;
     border: 1px solid var(--pl-color-input-border);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     color: var(--pl-color-foreground);
     padding: var(--pl-space-2) var(--pl-space-3);
   }
