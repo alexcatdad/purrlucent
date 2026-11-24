@@ -117,6 +117,16 @@ export const toolbarTitleStyles = css`
     white-space: nowrap;
   }
 
+  /* Between two spacers the title is centered on the bar (the toolbar is its containing block). */
+  :host([data-centered]) {
+    position: absolute;
+    inset: 0;
+    inline-size: fit-content;
+    block-size: fit-content;
+    margin: auto;
+    pointer-events: none;
+  }
+
   [part="stack"] {
     display: flex;
     min-inline-size: 0;

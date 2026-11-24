@@ -14,7 +14,7 @@ type Story = StoryObj;
 const slide = (n: number) => html`
   <pl-carousel-item>
     <div
-      style="display: grid; place-items: center; block-size: calc(var(--pl-spacing) * 40); background: var(--pl-color-muted-1); color: var(--pl-color-foreground); font-size: var(--pl-text-xl);"
+      style="display: grid; place-items: center; block-size: calc(var(--pl-spacing) * 40); background: var(--pl-color-muted-1); color: var(--pl-color-foreground); font-size: var(--pl-text-xl); text-align: center; white-space: nowrap;"
     >
       Slide ${n}
     </div>

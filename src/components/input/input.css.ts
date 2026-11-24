@@ -48,6 +48,8 @@ export const fieldStyles = css`
   [part="message"] {
     display: flex;
     align-items: flex-start;
+    justify-self: stretch;
+    min-inline-size: 0;
     gap: var(--pl-gap-icon);
     color: var(--pl-color-destructive-text);
     font-size: var(--pl-text-xs);

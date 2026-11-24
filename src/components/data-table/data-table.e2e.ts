@@ -238,6 +238,27 @@ test("the sticky header stays at the top while the rows scroll", async ({
   expect(Math.abs(head!.y - area!.y)).toBeLessThanOrEqual(3);
 });
 
+test("sticky header: the scroll area shows whole rows", async ({ page }) => {
+  await open(page, "data-data-table--sticky-header");
+  const area = (await page
+    .locator("pl-data-table pl-table >> [part=scroller]")
+    .boundingBox())!;
+  const rows = await page.locator("pl-data-table tbody tr").evaluateAll((els) =>
+    els.map((el) => {
+      const { top, bottom } = el.getBoundingClientRect();
+      return { top, bottom };
+    }),
+  );
+  // The scroller's 1px border sits inside its box.
+  const [top, bottom] = [area.y + 1, area.y + area.height - 1];
+  const cut = rows.filter((row) => {
+    const shown = Math.min(row.bottom, bottom) - Math.max(row.top, top);
+    return shown > 2 && shown < row.bottom - row.top - 2;
+  });
+  expect(cut).toEqual([]);
+  expect(rows.some((row) => row.bottom <= bottom + 0.5)).toBe(true);
+});
+
 test("under rtl the first column is on the right", async ({ page }) => {
   await open(page, "data-data-table--rtl");
   const [name, role] = await Promise.all(

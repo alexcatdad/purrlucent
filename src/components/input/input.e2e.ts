@@ -240,6 +240,18 @@ test("an invalid field shows its message after a blur and describes the control 
   await expect(email).toHaveAccessibleDescription("");
 });
 
+test("validation message spans the field width", async ({ page }) => {
+  await gotoStory(page, story("states"));
+  const host = page.locator("#invalid");
+  await expect(host.locator('[part="message"]')).toBeVisible();
+  const [message, field] = await Promise.all([
+    host.locator('[part="message"]').boundingBox(),
+    host.locator('[part="field"]').boundingBox(),
+  ]);
+  expect(Math.abs(message!.width - field!.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(message!.x - field!.x)).toBeLessThanOrEqual(1);
+});
+
 test("the form gets the value, and a reset returns the value attribute", async ({
   page,
 }) => {

@@ -755,6 +755,20 @@ test("a spacer pushes the following items to the trailing edge and is not a tab 
   expect(await focusedName(page)).toBe("Done");
 });
 
+test("toolbar spacers: title centered within ±1px", async ({ page }) => {
+  await openStory(page, "spacers");
+  const [bar, title] = await Promise.all([
+    page.locator("pl-toolbar").boundingBox(),
+    page.locator("pl-toolbar-title").boundingBox(),
+  ]);
+  expect(
+    Math.abs(title!.x + title!.width / 2 - (bar!.x + bar!.width / 2)),
+  ).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(title!.y + title!.height / 2 - (bar!.y + bar!.height / 2)),
+  ).toBeLessThanOrEqual(1);
+});
+
 test("a long title ends in an ellipsis and keeps its accessible name", async ({
   page,
 }) => {

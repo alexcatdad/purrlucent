@@ -478,6 +478,12 @@ export const Empty: Story = {
   `,
 };
 
+// The height of the scroll area: its border, the caption, the heading row and
+// four whole body rows, each made of the same tokens the table pads with, so
+// no row is cut off at the bottom at rest.
+const bodyRow = "(var(--pl-leading-normal) + var(--pl-space-2) * 2 + 1px)";
+const stickyHeight = `calc(2px + var(--pl-leading-normal) + var(--pl-space-3) * 2 + var(--pl-size-hit-min) + var(--pl-space-2) * 2 + 1px + ${bodyRow} * 4)`;
+
 /** With a bounded height the headings stay while the rows scroll. */
 export const StickyHeader: Story = {
   render: () => html`
@@ -485,7 +491,7 @@ export const StickyHeader: Story = {
       id="control"
       caption="Pioneers"
       sticky-header
-      style="max-block-size: calc(var(--pl-spacing) * 50)"
+      style="max-block-size: ${stickyHeight}"
       .columns=${columns}
       .rows=${[...rows, ...rows.map((r) => ({ ...r, id: `${r.id}-2` }))]}
     ></pl-data-table>

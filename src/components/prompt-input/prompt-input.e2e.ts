@@ -218,7 +218,7 @@ test("the field grows with its text, stops at a maximum, scrolls, and shrinks ag
       el.ownerDocument.createElement("div"),
     );
     probe.style.blockSize =
-      "calc(var(--pl-leading-normal) * 8 + var(--pl-space-1) * 2)";
+      "calc(var(--pl-leading-normal) * 7 + var(--pl-size-md) + var(--pl-pad-control) * 2)";
     const result = probe.getBoundingClientRect().height;
     probe.remove();
     return result;
@@ -284,6 +284,35 @@ test("tools sit on either side, before Send, and stay beside the last line", asy
   expect(m!.x + m!.width).toBeLessThanOrEqual(s!.x + 1);
   for (const box of [a, m])
     expect(Math.abs(box!.y + box!.height - (s!.y + s!.height))).toBeLessThan(2);
+});
+
+test("prompt input: buttons are inset by --pl-pad-control from the bar's top and bottom", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, story("tools"));
+  const inset = await root.locator("pl-prompt-input").evaluate((el) => {
+    const probe = el.ownerDocument.body.appendChild(
+      el.ownerDocument.createElement("div"),
+    );
+    probe.style.blockSize = "var(--pl-pad-control)";
+    const height = probe.getBoundingClientRect().height;
+    probe.remove();
+    return height;
+  });
+  const shell = await root.locator("pl-prompt-input").evaluate((el) => {
+    const box = el
+      .shadowRoot!.querySelector("pl-input-group")!
+      .shadowRoot!.querySelector('[part="shell"]')!
+      .getBoundingClientRect();
+    return { top: box.top, bottom: box.bottom };
+  });
+  for (const name of ["Attach", "Model", "Send"]) {
+    const box = (await root.getByRole("button", { name }).boundingBox())!;
+    expect(Math.abs(box.y - shell.top - inset)).toBeLessThan(1.5);
+    expect(Math.abs(shell.bottom - (box.y + box.height) - inset)).toBeLessThan(
+      1.5,
+    );
+  }
 });
 
 test("an empty start slot leaves no gap before the field", async ({ page }) => {
