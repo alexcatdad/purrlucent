@@ -4,6 +4,8 @@ import { PlSidebarItem } from "./sidebar-item.ts";
 import { PlSidebarSection } from "./sidebar-section.ts";
 import { sidebarStyles } from "./sidebar.css.ts";
 import { fill, messages } from "../../behaviors/locale.ts";
+import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
+import { isApple, matchesShortcut } from "./shortcut.ts";
 
 export { PlSidebarItem, PlSidebarSection };
 
@@ -19,17 +21,35 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * a tab stop. As an extra, Up and Down arrows, Home and End move among all
  * visible items (Left and Right are not used). Space or Enter on a link selects
  * it; Escape on a group button or inside its group closes it and focuses the
- * button. On a narrow screen (600px or less) the sidebar collapses on its own;
- * shown again, it fills the width. A collapse it made itself is undone when
- * the screen widens; read the first state from `collapsed`, because
- * `pl-collapse` can fire before a listener is attached.
+ * button. On a narrow screen (`collapse-below`, 600px or less by default) the
+ * sidebar collapses on its own; shown again, it is a modal panel on the start
+ * edge over a scrim: the page behind is inert, Escape or a press on the scrim
+ * closes it, focus moves into it and returns to the toggle. A collapse it made
+ * itself is undone when the screen widens; `pl-collapse` also fires for the
+ * first one, once the sidebar has rendered.
  *
+ * `collapsed` is the state, and an app can control it: set the property or
+ * attribute, or call `toggle()`, `show()` and `hide()`. Setting `collapsed`
+ * does not fire `pl-collapse`; the toggle button, the methods, the `shortcut`
+ * and the automatic collapse do. With `no-toggle` the built-in button is
+ * hidden, for an app that has its own.
+ *
+ * @attr {boolean} collapsed - The sidebar is hidden, leaving only its toggle. Set it to control the sidebar; changing it from outside fires no `pl-collapse`.
+ * @attr {number} collapse-below - The viewport width in px at and below which the sidebar collapses on its own and opens as a modal panel. `0` turns this off. Defaults to 600.
+ * @attr {boolean} no-toggle - Hides the built-in toggle button. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.
+ * @attr {boolean} reorderable - Level 1 items show a grip and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
+ * @attr {string} shortcut - A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known.
  * @attr {string} toggle-label - The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.
  * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
+ * @slot header - Content pinned above the navigation, such as a logo or the account name. It sits outside the `nav` landmark.
+ * @slot footer - Content pinned below the navigation, such as preferences, the signed-in person or a version. It sits outside the `nav` landmark.
  * @csspart toggle - The button that hides and shows the sidebar.
+ * @csspart header - The wrapper of the `header` slot.
  * @csspart nav - The navigation landmark.
+ * @csspart footer - The wrapper of the `footer` slot.
+ * @csspart dialog - The modal panel a narrow screen shows.
  * @fires {CustomEvent<{ selected: PlSidebarItem[] }>} pl-change - The selected item changed. `detail.selected` is an array holding the new item.
- * @fires {CustomEvent<{ collapsed: boolean }>} pl-collapse - The sidebar was hidden or shown. `detail.collapsed` holds the new state.
+ * @fires {CustomEvent<{ collapsed: boolean }>} pl-collapse - The sidebar was hidden or shown by its toggle, a method, the shortcut, Escape or the scrim, or by the screen width. `detail.collapsed` holds the new state.
  */
 export class PlSidebar extends LitElement {
   static override styles = sidebarStyles;
@@ -38,6 +58,15 @@ export class PlSidebar extends LitElement {
     collapsed: { type: Boolean, reflect: true },
     size: { reflect: true },
     toggleLabel: { attribute: "toggle-label" },
+    noToggle: { type: Boolean, attribute: "no-toggle", reflect: true },
+    reorderable: { type: Boolean, reflect: true },
+    shortcut: {},
+    collapseBelow: {
+      type: Number,
+      attribute: "collapse-below",
+      noAccessor: true,
+    },
+    _narrow: { state: true },
   };
 
   /** Accessible name of the navigation landmark. */
@@ -46,6 +75,24 @@ export class PlSidebar extends LitElement {
   /** `md` (default) or `lg`, the larger rows. */
   declare size: "md" | "lg";
   declare toggleLabel: string;
+  declare noToggle: boolean;
+  declare reorderable: boolean;
+  declare shortcut: string;
+  declare _narrow: boolean;
+
+  #collapseBelow = 600;
+
+  /** The width in px at and below which the sidebar collapses on its own; 0 turns it off. */
+  get collapseBelow(): number {
+    return this.#collapseBelow;
+  }
+
+  set collapseBelow(value: number | null | undefined) {
+    const old = this.#collapseBelow;
+    this.#collapseBelow = value ?? 600;
+    this.requestUpdate("collapseBelow", old);
+    if (this.isConnected) this.#watchNarrow();
+  }
 
   // An item's group, level or selection changed from outside; reveal only
   // follows a selection, so an app can still close a group holding the page.
@@ -65,6 +112,10 @@ export class PlSidebar extends LitElement {
     this.collapsed = false;
     this.size = "md";
     this.toggleLabel = "";
+    this.noToggle = false;
+    this.reorderable = false;
+    this.shortcut = "";
+    this._narrow = false;
   }
 
   /** The items in document order, loose or inside a section. */
@@ -88,11 +139,15 @@ export class PlSidebar extends LitElement {
         parent = item;
         const next = items[i + 1];
         item.expandable =
-          next?.level === 2 && next.parentElement === item.parentElement;
+          !item.action &&
+          next?.level === 2 &&
+          next.parentElement === item.parentElement;
         item.hidden = false;
+        item.reorderable = this.reorderable;
         // Its button names the items that follow, which may have changed.
         if (item.expandable) item.requestUpdate();
       } else {
+        item.reorderable = false;
         if (reveal && item.selected && parent) parent.expanded = true;
         item.hidden = parent ? !parent.expanded : false;
       }
@@ -106,19 +161,44 @@ export class PlSidebar extends LitElement {
     const item = event.target;
     // A parent link selects; its disclosure button, like any group button, does not.
     const origin = event.composedPath()[0];
+    if (!(item instanceof PlSidebarItem)) return;
+    // A press on the grip only moves the item.
+    if (origin instanceof Element && origin.closest("[part=handle]")) return;
+    // A modified click opens the link elsewhere; this page stays current.
+    const plain =
+      event.button === 0 &&
+      !event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.shiftKey;
+    // A router can take over a plain click on a link before the browser leaves.
+    const link = event
+      .composedPath()
+      .find(
+        (node): node is HTMLAnchorElement =>
+          node instanceof HTMLAnchorElement &&
+          node.getRootNode() === item.shadowRoot,
+      );
     if (
-      !(item instanceof PlSidebarItem) ||
+      link &&
+      plain &&
+      !item.dispatchEvent(
+        new CustomEvent("pl-navigate", {
+          detail: { href: item.href },
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        }),
+      )
+    )
+      event.preventDefault();
+    if (
+      item.action ||
       (item.expandable &&
         (!item.href ||
           (origin instanceof Element && origin.closest("button")))) ||
       item.selected ||
-      // A modified click opens the link elsewhere; this page stays current.
-      (item.href &&
-        (event.button !== 0 ||
-          event.altKey ||
-          event.ctrlKey ||
-          event.metaKey ||
-          event.shiftKey))
+      (item.href && !plain)
     )
       return;
     for (const other of this.#items()) other.selected = other === item;
@@ -141,6 +221,26 @@ export class PlSidebar extends LitElement {
       origin.click();
       return;
     }
+    if (
+      this.reorderable &&
+      item.level === 1 &&
+      event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.shiftKey &&
+      (event.key === "ArrowUp" || event.key === "ArrowDown")
+    ) {
+      event.preventDefault();
+      const peers = this.#peers(item);
+      const from = peers.indexOf(item);
+      const to = from + (event.key === "ArrowUp" ? -1 : 1);
+      if (to >= 0 && to < peers.length) {
+        this.#reorder(item, from, to);
+        // Moving the item in the page drops its focus; the app may have done so.
+        queueMicrotask(() => item.focus());
+      }
+      return;
+    }
     if (event.key !== "Escape") return;
     const items = this.#items();
     const parent =
@@ -155,14 +255,84 @@ export class PlSidebar extends LitElement {
             )
         : item;
     if (!parent?.expandable || !parent.expanded) return;
+    // Closing the group is this Escape's whole job: a modal panel stays open.
+    event.preventDefault();
     // The button's own handler closes it and fires pl-toggle.
     parent.renderRoot.querySelector("button")?.click();
     parent.focus();
   };
 
+  /** The level 1 items of the item's section, or of the sidebar. */
+  #peers(item: PlSidebarItem) {
+    return this.#items().filter(
+      (peer) => peer.level === 1 && peer.parentElement === item.parentElement,
+    );
+  }
+
+  #reorder(item: PlSidebarItem, from: number, to: number) {
+    item.dispatchEvent(
+      new CustomEvent("pl-reorder", {
+        detail: { from, to },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  #drag?: {
+    item: PlSidebarItem;
+    peers: PlSidebarItem[];
+    from: number;
+    to: number;
+    y: number;
+  };
+
+  #onPointerdown = (event: PointerEvent) => {
+    const item = event.target;
+    const origin = event.composedPath()[0];
+    const grip = origin instanceof Element && origin.closest("[part=handle]");
+    if (
+      !this.reorderable ||
+      !grip ||
+      !(item instanceof PlSidebarItem) ||
+      item.level !== 1 ||
+      !event.isPrimary ||
+      (event.pointerType === "mouse" && event.button !== 0)
+    )
+      return;
+    const peers = this.#peers(item);
+    const from = peers.indexOf(item);
+    grip.setPointerCapture(event.pointerId);
+    this.#drag = { item, peers, from, to: from, y: event.clientY };
+    item.toggleAttribute("data-dragging", true);
+    // Keeps the press from selecting text or starting a native drag.
+    event.preventDefault();
+  };
+
+  #onPointermove = (event: PointerEvent) => {
+    const drag = this.#drag;
+    if (!drag) return;
+    drag.item.style.setProperty("translate", `0 ${event.clientY - drag.y}px`);
+    // Its place is the number of other items whose middle is above the pointer.
+    drag.to = drag.peers.filter((peer) => {
+      const box = peer.getBoundingClientRect();
+      return peer !== drag.item && box.top + box.height / 2 < event.clientY;
+    }).length;
+  };
+
+  #onPointerend = (event: PointerEvent) => {
+    const drag = this.#drag;
+    if (!drag) return;
+    this.#drag = undefined;
+    drag.item.removeAttribute("data-dragging");
+    drag.item.style.removeProperty("translate");
+    if (event.type === "pointerup" && drag.to !== drag.from)
+      this.#reorder(drag.item, drag.from, drag.to);
+  };
+
   // Narrow screen, any pointer: the sidebar collapses on its own, so the app's
   // own navigation (a bottom tab bar is preferred) takes over.
-  readonly #narrow = matchMedia("(max-width: 600px)");
+  #narrow?: MediaQueryList;
 
   // A collapse the sidebar made itself is undone when the screen widens again;
   // one the person or the app made, or undid, is theirs to keep.
@@ -171,17 +341,51 @@ export class PlSidebar extends LitElement {
   // a crossing while detached is caught on reconnect.
   #wasNarrow?: boolean;
 
+  #watchNarrow() {
+    this.#narrow?.removeEventListener("change", this.#onNarrow);
+    this.#narrow =
+      this.#collapseBelow > 0
+        ? matchMedia(`(max-width: ${this.#collapseBelow}px)`)
+        : undefined;
+    this.#narrow?.addEventListener("change", this.#onNarrow);
+    this.#onNarrow();
+  }
+
   #onNarrow = () => {
-    this.#wasNarrow = this.#narrow.matches;
-    if (this.#narrow.matches && !this.collapsed) this.#setCollapsed(true, true);
-    else if (!this.#narrow.matches && this.#autoCollapsed && this.collapsed)
+    const narrow = this.#narrow?.matches ?? false;
+    if (narrow === this.#wasNarrow) return;
+    const first = this.#wasNarrow === undefined;
+    this.#wasNarrow = narrow;
+    this._narrow = narrow;
+    // A listener added after the element connected still hears the first one.
+    if (narrow && !this.collapsed) this.#setCollapsed(true, true, first);
+    else if (!narrow && this.#autoCollapsed && this.collapsed)
       this.#setCollapsed(false);
+  };
+
+  readonly #onShortcut = (event: KeyboardEvent) => {
+    if (
+      !this.shortcut ||
+      event.defaultPrevented ||
+      event.repeat ||
+      event.isComposing ||
+      !matchesShortcut(event, this.shortcut, isApple())
+    )
+      return;
+    event.preventDefault();
+    this.toggle();
   };
 
   override connectedCallback() {
     super.connectedCallback();
-    this.#narrow.addEventListener("change", this.#onNarrow);
-    if (this.#narrow.matches !== this.#wasNarrow) this.#onNarrow();
+    this.#watchNarrow();
+    document.addEventListener("keydown", this.#onShortcut);
+    // A native modal dialog leaves the top layer when its host is moved.
+    const dialog = this.shadowRoot?.querySelector("dialog");
+    if (dialog?.open) {
+      dialog.close();
+      this.requestUpdate();
+    }
     this.#watcher.observe(this, {
       attributes: true,
       subtree: true,
@@ -193,62 +397,161 @@ export class PlSidebar extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.#narrow.removeEventListener("change", this.#onNarrow);
+    this.#narrow?.removeEventListener("change", this.#onNarrow);
+    document.removeEventListener("keydown", this.#onShortcut);
     this.#watcher.disconnect();
   }
 
-  protected override willUpdate(changed: PropertyValues<this>) {
-    if (!changed.has("collapsed")) return;
-    // Any opening, including one the app sets, ends an automatic collapse.
-    if (!this.collapsed) this.#autoCollapsed = false;
-    // The navigation is about to be hidden; keep focus from falling to the page.
-    else if (this.matches(":focus-within"))
-      this.shadowRoot?.querySelector<HTMLElement>(".toggle")?.focus();
+  /** Hides the sidebar when it is shown, and shows it when it is hidden. Fires `pl-collapse`. */
+  toggle() {
+    this.#setCollapsed(!this.collapsed);
   }
 
-  #toggleCollapsed = () => this.#setCollapsed(!this.collapsed);
+  /** Shows the sidebar. Fires `pl-collapse` when it was hidden. */
+  show() {
+    if (this.collapsed) this.#setCollapsed(false);
+  }
 
-  #setCollapsed(collapsed: boolean, auto = false) {
+  /** Hides the sidebar. Fires `pl-collapse` when it was shown. */
+  hide() {
+    if (!this.collapsed) this.#setCollapsed(true);
+  }
+
+  /** A narrow screen shows the open sidebar as a modal panel. */
+  get #overlay() {
+    return this._narrow && !this.collapsed;
+  }
+
+  #wasOverlay = false;
+  // Focus goes back to the toggle, or to what had it before the panel opened.
+  #refocus = false;
+  #opener?: HTMLElement | null;
+
+  protected override willUpdate(changed: PropertyValues<this>) {
+    const overlay = this.#overlay;
+    this.toggleAttribute("data-overlay", overlay);
+    // Any opening, including one the app sets, ends an automatic collapse.
+    if (changed.has("collapsed") && !this.collapsed)
+      this.#autoCollapsed = false;
+    // The navigation is about to be hidden; keep focus from falling to the page.
+    if (
+      this.matches(":focus-within") &&
+      ((changed.has("collapsed") && this.collapsed) ||
+        (this.#wasOverlay && !overlay))
+    )
+      this.#refocus = true;
+    this.#wasOverlay = overlay;
+    if (changed.has("reorderable")) this.#sync();
+  }
+
+  protected override updated() {
+    const dialog = this.shadowRoot?.querySelector("dialog");
+    if (dialog && !dialog.open) {
+      this.#opener = document.activeElement as HTMLElement | null;
+      dialog.showModal();
+      const items = this.#items().filter((item) => !item.hidden);
+      (items.find((item) => item.selected) ?? items[0])?.focus();
+    }
+    if (this.#refocus) {
+      this.#refocus = false;
+      const toggle = this.shadowRoot?.querySelector<HTMLElement>(
+        ".toggle:not(.in-dialog)",
+      );
+      (toggle ?? this.#opener)?.focus();
+    }
+  }
+
+  #toggleCollapsed = () => this.toggle();
+
+  #setCollapsed(collapsed: boolean, auto = false, deferEvent = false) {
     this.#autoCollapsed = auto;
     this.collapsed = collapsed;
-    this.dispatchEvent(
-      new CustomEvent("pl-collapse", {
-        detail: { collapsed: this.collapsed },
-        bubbles: true,
-        composed: true,
-      }),
-    );
+    const emit = () =>
+      this.dispatchEvent(
+        new CustomEvent("pl-collapse", {
+          detail: { collapsed: this.collapsed },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    if (deferEvent) void this.updateComplete.then(emit);
+    else emit();
   }
 
-  override render() {
+  // Escape closes the panel; the sidebar's own state follows.
+  #onCancel = (event: Event) => {
+    event.preventDefault();
+    this.hide();
+  };
+
+  // The panel fills the dialog, so a press on the dialog itself is the scrim.
+  #onScrim = (event: MouseEvent) => {
+    if (event.target === event.currentTarget) this.hide();
+  };
+
+  #toggleButton(inDialog: boolean) {
+    return this.noToggle
+      ? nothing
+      : html`<button
+          class=${inDialog ? "toggle in-dialog" : "toggle"}
+          part="toggle"
+          type="button"
+          aria-expanded=${this.collapsed ? "false" : "true"}
+          aria-controls="nav"
+          aria-label=${
+            this.toggleLabel ||
+            (this.label
+              ? fill(messages(this).sidebarFor, { label: this.label })
+              : messages(this).sidebar)
+          }
+          @click=${this.#toggleCollapsed}
+        >
+          ${sidebarIcon}
+        </button>`;
+  }
+
+  // The header and footer are outside the landmark: they hold the app's own
+  // logo, preferences and account, not navigation.
+  #content() {
     return html`
-      <button
-        class="toggle"
-        part="toggle"
-        type="button"
-        aria-expanded=${this.collapsed ? "false" : "true"}
-        aria-controls="nav"
-        aria-label=${
-          this.toggleLabel ||
-          (this.label
-            ? fill(messages(this).sidebarFor, { label: this.label })
-            : messages(this).sidebar)
-        }
-        @click=${this.#toggleCollapsed}
-      >
-        ${sidebarIcon}
-      </button>
+      <div part="header" hidden>
+        <slot name="header" @slotchange=${hideWhenEmpty}></slot>
+      </div>
       <nav
         id="nav"
         part="nav"
         aria-label=${this.label || nothing}
         @click=${this.#onClick}
         @keydown=${this.#onKeydown}
+        @pointerdown=${this.#onPointerdown}
+        @pointermove=${this.#onPointermove}
+        @pointerup=${this.#onPointerend}
+        @pointercancel=${this.#onPointerend}
         @pl-toggle=${() => this.#sync()}
       >
         <slot @slotchange=${this.#onSlotchange}></slot>
       </nav>
+      <div part="footer" hidden>
+        <slot name="footer" @slotchange=${hideWhenEmpty}></slot>
+      </div>
     `;
+  }
+
+  override render() {
+    return html`${this.#toggleButton(false)}${
+      this.#overlay
+        ? html`<dialog
+            part="dialog"
+            aria-label=${this.label || messages(this).sidebar}
+            @cancel=${this.#onCancel}
+            @click=${this.#onScrim}
+          >
+            <div class="panel">
+              ${this.#toggleButton(true)}${this.#content()}
+            </div>
+          </dialog>`
+        : this.#content()
+    }`;
   }
 }
 

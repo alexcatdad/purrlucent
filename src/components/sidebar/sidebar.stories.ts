@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect } from "storybook/test";
+import "../avatar/avatar.ts";
+import "../button/button.ts";
 import "./sidebar.ts";
+import type { PlSidebar } from "./sidebar.ts";
 
 const meta = { title: "Navigation/Sidebar" } satisfies Meta;
 
@@ -148,4 +151,89 @@ export const Large: Story = { render: () => folders({ size: "lg" }) };
 export const SectionsGlassDarkRtl: Story = {
   render: () => folders(),
   globals: { material: "glass", theme: "dark", dir: "rtl" },
+};
+
+/** Header and footer slots sit outside the navigation landmark. */
+export const HeaderFooter: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Library">
+      <span slot="header" id="brand">Acme</span>
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+      <pl-sidebar-item id="settings" href="#settings">Settings</pl-sidebar-item>
+      <span slot="footer" id="version">Version 1.2.0</span>
+    </pl-sidebar>
+  `,
+  play: async ({ canvasElement }) => {
+    const nav = canvasElement
+      .querySelector("pl-sidebar")
+      ?.shadowRoot?.querySelector("nav");
+    await expect(nav?.contains(canvasElement.querySelector("#brand"))).toBe(
+      false,
+    );
+  },
+};
+
+/** The sidebar collapses below its own width, here 900px. */
+export const CollapseBelow: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Library" collapse-below="900">
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+      <pl-sidebar-item id="settings" href="#settings">Settings</pl-sidebar-item>
+    </pl-sidebar>
+  `,
+};
+
+const sidebar = () => document.querySelector<PlSidebar>("#sidebar")!;
+
+/** The built-in toggle is hidden; the app's buttons and the shortcut control the sidebar. */
+export const ExternalControl: Story = {
+  render: () => html`
+    <pl-sidebar
+      id="sidebar"
+      label="Library"
+      no-toggle
+      shortcut="mod+b"
+      collapse-below="0"
+    >
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+      <pl-sidebar-item id="settings" href="#settings">Settings</pl-sidebar-item>
+    </pl-sidebar>
+    <div>
+      <pl-button id="toggle" @click=${() => sidebar().toggle()}
+        >Toggle</pl-button
+      >
+      <pl-button id="show" @click=${() => sidebar().show()}>Show</pl-button>
+      <pl-button id="hide" @click=${() => sidebar().hide()}>Hide</pl-button>
+    </div>
+  `,
+};
+
+/** Rows of other kinds: an action, a larger item, a description and an avatar. */
+export const Rows: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Workspace">
+      <pl-sidebar-item id="account" action
+        ><pl-avatar slot="icon" name="Ada Lovelace"></pl-avatar>Ada
+        Lovelace<span slot="description">ada@example.com</span></pl-sidebar-item
+      >
+      <pl-sidebar-item id="inbox" href="#inbox" selected
+        >${inbox}Inbox<span slot="description">3 unread</span></pl-sidebar-item
+      >
+      <pl-sidebar-item id="big" href="#big" size="lg"
+        >${inbox}Larger</pl-sidebar-item
+      >
+      <pl-sidebar-item id="new" action>${inbox}New folder</pl-sidebar-item>
+    </pl-sidebar>
+  `,
+};
+
+/** Level 1 items show a grip and can be reordered with a drag or Alt with the arrow keys. */
+export const Reorderable: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Library" reorderable>
+      <pl-sidebar-item id="first" href="#first" selected>First</pl-sidebar-item>
+      <pl-sidebar-item id="second" href="#second">Second</pl-sidebar-item>
+      <pl-sidebar-item id="third" href="#third">Third</pl-sidebar-item>
+    </pl-sidebar>
+  `,
 };
