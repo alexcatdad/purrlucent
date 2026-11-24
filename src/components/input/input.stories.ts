@@ -207,6 +207,13 @@ export const HostAria: Story = {
 /** Return in a field of a form without a submit button presses the dialog's default action. */
 export const InDialog: Story = {
   render: () => html`
+    <pl-button
+      @click=${(event: Event) =>
+        (
+          (event.currentTarget as HTMLElement).nextElementSibling as PlDialog
+        ).show()}
+      >Rename…</pl-button
+    >
     <pl-dialog id="dialog" variant="sheet" label="Rename">
       <form id="form" novalidate>
         <pl-input id="first" label="Name" value="Untitled"></pl-input>

@@ -282,7 +282,14 @@ test.describe("hide-scrollbar", () => {
     page,
   }) => {
     await open(page);
-    expect((await list(page)).scrollbarWidth).not.toBe("none");
+    // The page's own default, which differs between engines and CI setups.
+    const baseline = await page.evaluate(() => {
+      const div = document.body.appendChild(document.createElement("div"));
+      const width = getComputedStyle(div).scrollbarWidth;
+      div.remove();
+      return width;
+    });
+    expect((await list(page)).scrollbarWidth).toBe(baseline);
   });
 
   test("axe finds no violations", async ({ page }) => {
