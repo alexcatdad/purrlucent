@@ -83,6 +83,61 @@ export const badgeStyles = css`
     --_dot: var(--pl-color-destructive-mark);
   }
 
+  /*
+   * Soft and outline. Each variant names its tint (the solid fill), its edge
+   * (the tone's mark) and its ink (the tone's text color). The text is that ink
+   * mixed toward the foreground, which keeps 4.5:1 on the light tint in light
+   * and on the dark tint in dark. A dot badge keeps its neutral fill and edge.
+   */
+  :host {
+    --_tint: var(--pl-color-foreground);
+    --_edge: var(--pl-color-neutral-mark);
+    --_ink: var(--pl-color-foreground);
+  }
+
+  :host([variant="accent"]) {
+    --_tint: var(--pl-color-accent);
+    --_edge: var(--pl-color-accent-mark);
+    --_ink: var(--pl-color-accent-text);
+  }
+
+  :host([variant="success"]) {
+    --_tint: var(--pl-color-success);
+    --_edge: var(--pl-color-success-mark);
+    --_ink: var(--pl-color-success-text);
+  }
+
+  :host([variant="warning"]) {
+    --_tint: var(--pl-color-warning);
+    --_edge: var(--pl-color-warning-mark);
+    --_ink: var(--pl-color-warning-text);
+  }
+
+  :host([variant="destructive"]) {
+    --_tint: var(--pl-color-destructive);
+    --_edge: var(--pl-color-destructive-mark);
+    --_ink: var(--pl-color-destructive-text);
+  }
+
+  :host([dot]) {
+    --_edge: var(--pl-color-neutral-mark);
+  }
+
+  :host([appearance="soft"]:not([dot])) {
+    --_fill: color-mix(in srgb, var(--_tint) 12%, transparent);
+    --_text: color-mix(in srgb, var(--_ink) 50%, var(--pl-color-foreground));
+  }
+
+  :host([appearance="outline"]) {
+    --_fill: transparent;
+
+    border-color: var(--_edge);
+  }
+
+  :host([appearance="outline"]:not([dot])) {
+    --_text: color-mix(in srgb, var(--_ink) 50%, var(--pl-color-foreground));
+  }
+
   [part="dot"] {
     flex: none;
     inline-size: calc(var(--pl-spacing) * 1.5);

@@ -93,6 +93,89 @@ test("the text meets 4.5:1 against the fill in every variant", async ({
   for (const ratio of ratios) expect(ratio).toBeGreaterThanOrEqual(4.5);
 });
 
+const tones = ["neutral", "accent", "success", "warning", "destructive"];
+
+test("appearance defaults to solid and reflects", async ({ page }) => {
+  await gotoStory(page, story("appearances"));
+  await expect(page.locator("#soft-accent")).toHaveAttribute(
+    "appearance",
+    "soft",
+  );
+  await gotoStory(page, story("default"));
+  await expect(page.locator("#badge")).toHaveJSProperty("appearance", "solid");
+});
+
+test("soft is a tinted fill and outline has no fill but an edge", async ({
+  page,
+}) => {
+  await gotoStory(page, story("appearances"));
+  for (const tone of tones) {
+    const solid = await page
+      .locator(`#solid-${tone}`)
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const soft = await page
+      .locator(`#soft-${tone}`)
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const outline = await page.locator(`#outline-${tone}`).evaluate((el) => {
+      const style = getComputedStyle(el);
+      return {
+        fill: style.backgroundColor,
+        edge: style.borderTopColor,
+        width: style.borderTopWidth,
+      };
+    });
+    expect(soft).not.toBe(solid);
+    expect(outline.fill).toBe("rgba(0, 0, 0, 0)");
+    expect(outline.edge).not.toBe("rgba(0, 0, 0, 0)");
+    expect(outline.width).not.toBe("0px");
+  }
+});
+
+for (const theme of ["light", "dark"])
+  test(`soft and outline text meets 4.5:1 in ${theme}`, async ({ page }) => {
+    await gotoStory(page, story("appearances"), `theme:${theme}`);
+    const ratios = await page.locator("pl-badge").evaluateAll((els) => {
+      const channels = (css: string, base: number[]) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 1;
+        const ctx = canvas.getContext("2d")!;
+        ctx.fillStyle = `rgb(${base.join(",")})`;
+        ctx.fillRect(0, 0, 1, 1);
+        ctx.fillStyle = css;
+        ctx.fillRect(0, 0, 1, 1);
+        return [...ctx.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+      };
+      const backdrop = (el: Element) => {
+        for (let n: Element | null = el.parentElement; n; n = n.parentElement) {
+          const bg = getComputedStyle(n).backgroundColor;
+          if (bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") return bg;
+        }
+        return "rgb(255, 255, 255)";
+      };
+      const luminance = ([r, g, b]: number[]) => {
+        const lin = (v: number) => {
+          const s = v / 255;
+          return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * lin(r!) + 0.7152 * lin(g!) + 0.0722 * lin(b!);
+      };
+      return els.map((el) => {
+        const style = getComputedStyle(el);
+        const base = channels(backdrop(el), [255, 255, 255]);
+        const fill = channels(style.backgroundColor, base);
+        const a = luminance(fill);
+        const b = luminance(channels(style.color, fill));
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      });
+    });
+    expect(ratios).toHaveLength(15);
+    for (const ratio of ratios) expect(ratio).toBeGreaterThanOrEqual(4.5);
+  });
+
+test("it passes axe with every appearance", async ({ page }) => {
+  await expectAccessible(await gotoStory(page, story("appearances")));
+});
+
 test("it takes no focus", async ({ page }) => {
   await gotoStory(page, story("variants"));
   await page.keyboard.press("Tab");
