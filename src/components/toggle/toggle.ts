@@ -24,6 +24,7 @@ export class PlToggle extends PlButton {
     super();
     this.pressed = false;
     this.addEventListener("pl-press", () => {
+      if (this.href) return;
       this.pressed = !this.pressed;
       this.dispatchEvent(
         new CustomEvent("pl-change", {
@@ -37,7 +38,8 @@ export class PlToggle extends PlButton {
 
   protected override updated() {
     super.updated();
-    this.setAttribute("aria-pressed", String(this.pressed));
+    if (this.href) this.removeAttribute("aria-pressed");
+    else this.setAttribute("aria-pressed", String(this.pressed));
   }
 }
 

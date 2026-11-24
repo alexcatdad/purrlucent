@@ -494,6 +494,12 @@ test.describe("links", () => {
     await expect.poll(() => hash(page)).toBe("#contracts");
   });
 
+  test("click() on the host follows the link", async ({ page }) => {
+    await gotoStory(page, story);
+    await page.locator("#link").evaluate((el: HTMLElement) => el.click());
+    await expect.poll(() => hash(page)).toBe("#contracts");
+  });
+
   test("the whole face is the link's hit area", async ({ page }) => {
     await gotoStory(page, story);
     // In the padding at the start edge, outside the label text.

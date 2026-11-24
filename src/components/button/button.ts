@@ -293,6 +293,14 @@ export class PlButton extends LitElement {
     this.#tabindex = null;
   }
 
+  // A link button's host `click()` follows the link, as `click()` on an `a` does.
+  override click() {
+    const link = this.shadowRoot?.querySelector<HTMLElement>("[part=link]");
+    if (this.href && link && !this.busy && !this.matches(":disabled"))
+      link.click();
+    else super.click();
+  }
+
   override render() {
     const label = html`<span part="label"
       >${
@@ -308,6 +316,7 @@ export class PlButton extends LitElement {
       href=${off ? nothing : this.href}
       role=${off ? "link" : nothing}
       aria-disabled=${off ? "true" : nothing}
+      aria-busy=${this.busy ? "true" : nothing}
       aria-label=${ifDefined(this.#linkLabel ?? undefined)}
       tabindex=${off || this.#linkTabIndex === null ? nothing : this.#linkTabIndex}
       target=${ifDefined(this.target ?? undefined)}
