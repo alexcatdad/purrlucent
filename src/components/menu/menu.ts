@@ -16,6 +16,15 @@ const TYPE_AHEAD_MS = 500;
 const HOVER_MS = 200;
 const DISABLED_TRIGGER = ":disabled, [aria-disabled=true]";
 
+// The icon's gap is applied to the wrapper once the slot holds something.
+const onIcon = (event: Event) => {
+  const slot = event.target as HTMLSlotElement;
+  slot.parentElement?.toggleAttribute(
+    "data-filled",
+    slot.assignedElements().length > 0,
+  );
+};
+
 export type MenuPlacement = Exclude<Placement, "top" | "bottom">;
 
 /**
@@ -167,7 +176,7 @@ export class PlMenuItem extends LitElement {
               <path d="M5 12l5 5l10 -10" />
             </svg>`
           : nothing
-      }<slot name="icon"></slot
+      }<span class="icon"><slot name="icon" @slotchange=${onIcon}></slot></span
       ><span part="text"
         ><span part="label"><slot></slot></span
         ><span part="description" ?hidden=${!this.#described}

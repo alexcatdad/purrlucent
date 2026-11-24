@@ -118,6 +118,75 @@ function ButtonLink({ to, children }: { to: string; children: ReactNode }) {
 
 Without the handler the browser follows the link. A `disabled` link has no address and cannot be focused. An icon link takes its name from `aria-label`, as an icon button does.
 
+## Account menu
+
+A sidebar footer row that opens a menu is a `pl-sidebar-item` with `action` as the `trigger` of a `pl-menu` in the sidebar's `footer` slot. Language and Theme are submenus of radio items; the parent row's `detail` shows the current choice. Choosing an item fires `pl-select` with its `value`, and the radio group moves its own check:
+
+```tsx
+function AccountMenu({ language, theme, onLanguage, onTheme }: Props) {
+  return (
+    <pl-sidebar label="Workspace">
+      <pl-sidebar-item href="/" selected>
+        Home
+      </pl-sidebar-item>
+      <pl-menu
+        slot="footer"
+        label="Account"
+        placement="top-start"
+        onpl-select={(e) => {
+          const { value, item } = e.detail;
+          const group = item.parentElement?.label;
+          if (group === "Language") onLanguage(value);
+          if (group === "Theme") onTheme(value);
+        }}
+      >
+        <pl-sidebar-item slot="trigger" action>
+          <pl-avatar slot="icon" name="Ada Lovelace" />
+          Ada Lovelace
+        </pl-sidebar-item>
+        <pl-menu-item href="/profile">Profile</pl-menu-item>
+        <pl-menu-separator />
+        <pl-menu-item detail={language === "sv" ? "Svenska" : "English"}>
+          Language
+          <pl-menu slot="submenu" label="Language">
+            <pl-menu-item type="radio" value="en" checked={language === "en"}>
+              English
+            </pl-menu-item>
+            <pl-menu-item type="radio" value="sv" checked={language === "sv"}>
+              Svenska
+            </pl-menu-item>
+          </pl-menu>
+        </pl-menu-item>
+        <pl-menu-item detail={theme}>
+          Theme
+          <pl-menu slot="submenu" label="Theme">
+            <pl-menu-item
+              type="radio"
+              value="system"
+              checked={theme === "system"}
+            >
+              System
+            </pl-menu-item>
+            <pl-menu-item
+              type="radio"
+              value="light"
+              checked={theme === "light"}
+            >
+              Light
+            </pl-menu-item>
+            <pl-menu-item type="radio" value="dark" checked={theme === "dark"}>
+              Dark
+            </pl-menu-item>
+          </pl-menu>
+        </pl-menu-item>
+      </pl-menu>
+    </pl-sidebar>
+  );
+}
+```
+
+The `AccountMenu` story under Sidebar shows the same markup.
+
 ## Language
 
 Register each language's text once with `setMessages` from `purrlucent/locale`; the [install guide](./install.md#languages) lists the keys. To switch language while the app runs, set `lang` and leave the rest to the elements: they update their text and the messages the library writes without a re-render from React. The [install guide](./install.md#languages) lists what follows the language.

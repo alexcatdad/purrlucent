@@ -426,13 +426,13 @@
     --pl-material-field: var(--pl-color-input);
     --pl-material-float: var(--pl-color-background);
 
-    /* The focus ring and the selection on glass: the pink deepened in light
+    /* The focus ring and the selection on glass: the accent deepened in light
        and lifted in dark, so each holds 3:1 on the thin fill over any
-       backdrop, and on every solid ground. Increased contrast gives them its
-       own ring and selection colors. */
+       backdrop, and on every solid ground. They follow the app's accent.
+       Increased contrast gives them its own ring and selection colors. */
     --pl-material-ring: light-dark(
-      oklch(from var(--pl-color-hot-pink) 26% c h),
-      color-mix(in srgb, var(--pl-color-hot-pink), white 55%)
+      oklch(from var(--pl-color-accent) 26% c h),
+      oklch(from var(--pl-color-accent) 85% c h)
     );
     --pl-material-selected: var(--pl-material-ring);
 

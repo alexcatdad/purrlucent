@@ -843,6 +843,69 @@ test.describe("opening from code", () => {
   });
 });
 
+test.describe("item icons", () => {
+  // Page resets such as `* { margin: 0 }` reach a slotted svg, so the gap must
+  // live in the shadow tree. Each kind of item is measured with one injected.
+  test("every kind of item sizes its icon and keeps the icon gap from the label", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    await page.addStyleTag({ content: "* { margin: 0 }" });
+    const rows = await page.evaluate(async () => {
+      const icon = `<svg slot="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16" /></svg>`;
+      const host = document.createElement("div");
+      host.innerHTML = `
+        <pl-menu id="kinds" label="Kinds">
+          <pl-menu-item id="plain">${icon}Plain</pl-menu-item>
+          <pl-menu-item id="link" href="#x">${icon}Link</pl-menu-item>
+          <pl-menu-item id="checkbox" type="checkbox" checked>${icon}Checkbox</pl-menu-item>
+          <pl-menu-item id="radio" type="radio" checked>${icon}Radio</pl-menu-item>
+          <pl-menu-item id="parent">${icon}Parent
+            <pl-menu slot="submenu" label="Sub"><pl-menu-item>One</pl-menu-item></pl-menu>
+          </pl-menu-item>
+        </pl-menu>`;
+      document.body.append(host);
+      const menu = host.querySelector<HTMLElement & { open: boolean }>(
+        "#kinds",
+      )!;
+      menu.open = true;
+      await (menu as unknown as { updateComplete: Promise<unknown> })
+        .updateComplete;
+      const probe = document.createElement("div");
+      probe.style.inlineSize = "var(--pl-gap-icon)";
+      document.body.append(probe);
+      const gap = probe.getBoundingClientRect().width;
+      probe.remove();
+      return [...menu.children].map((row) => {
+        const svg = row.querySelector(":scope > svg")!.getBoundingClientRect();
+        const label = row
+          .shadowRoot!.querySelector("[part=label]")!
+          .getBoundingClientRect();
+        return {
+          id: row.id,
+          width: svg.width,
+          gap: label.left - svg.right,
+          expected: gap,
+        };
+      });
+    });
+    expect(rows.map((row) => row.id)).toEqual([
+      "plain",
+      "link",
+      "checkbox",
+      "radio",
+      "parent",
+    ]);
+    for (const row of rows) {
+      expect(row.expected, `${row.id} token`).toBeGreaterThan(0);
+      expect(Math.abs(row.width - 16), `${row.id} width`).toBeLessThanOrEqual(
+        1,
+      );
+      expect(row.gap, `${row.id} gap`).toBeGreaterThanOrEqual(row.expected - 1);
+    }
+  });
+});
+
 test.describe("choosing an item", () => {
   test("dispatches click on the item, then pl-select with the item in its detail", async ({
     page,
