@@ -28,12 +28,29 @@ async function at(control: Locator, fraction: number) {
 }
 
 test("aria snapshot", async ({ page }) => {
-  const root = await gotoStory(page, story("states"));
-  await expect(root).toMatchAriaSnapshot(`
-    - slider "Idle"
-    - slider "Disabled" [disabled]
-    - slider "Ticked, disabled" [disabled]
-  `);
+  await gotoStory(page, story("states"));
+  // Each slider sits in its own pl-field, so assert them one by one.
+  await expect(page.getByRole("slider", { name: "Idle" })).not.toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  for (const name of ["Disabled", "Ticked, disabled"]) {
+    await expect(
+      page.getByRole("slider", { name, exact: true }),
+    ).toHaveAttribute("aria-disabled", "true");
+  }
+});
+
+test("each slider shows its label and its value, and the value follows the keys", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const field = page.locator("pl-field");
+  await expect(field.locator("label")).toHaveText("Volume");
+  await expect(field.locator("[slot=description]")).toHaveText("50");
+  await page.getByRole("slider", { name: "Volume" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(field.locator("[slot=description]")).toHaveText("51");
 });
 
 test("the host carries the slider attributes", async ({ page }) => {
@@ -366,7 +383,9 @@ test("virtual screen reader speaks the role, name and value", async ({
 }) => {
   await gotoStory(page, story("values"));
   const spoken = await spokenPhrases(page);
-  const phrase = spoken.find((p) => p.includes("Value 25"));
+  const phrase = spoken.find(
+    (p) => p.includes("Value 25") && p.includes("slider"),
+  );
   expect(phrase).toContain("slider");
   expect(phrase).toContain("25");
 });

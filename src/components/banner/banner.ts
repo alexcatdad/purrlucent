@@ -1,4 +1,4 @@
-import { LitElement, html, svg } from "lit";
+import { LitElement, html, nothing, svg } from "lit";
 import { closeGlyph, errorGlyph } from "../../behaviors/glyphs.ts";
 import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import { bannerStyles } from "./banner.css.ts";
@@ -14,6 +14,7 @@ const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12
  * @attr {boolean} open - The banner is showing.
  * @attr {string} tone - `info` (default) or `destructive`.
  * @attr {string} close-label - The close button's accessible name. Defaults to "Dismiss".
+ * @attr {boolean} no-icon - Shows no icon, not the tone's own either.
  * @slot icon - An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, an error mark for `destructive`.
  * @slot title - The heading.
  * @slot - The message.
@@ -28,11 +29,13 @@ export class PlBanner extends LitElement {
     open: { type: Boolean, reflect: true },
     tone: { reflect: true },
     closeLabel: { attribute: "close-label" },
+    noIcon: { type: Boolean, reflect: true, attribute: "no-icon" },
   };
 
   declare open: boolean;
   declare tone: "info" | "destructive";
   declare closeLabel: string;
+  declare noIcon: boolean;
 
   #role = "";
 
@@ -41,6 +44,7 @@ export class PlBanner extends LitElement {
     this.open = false;
     this.tone = "info";
     this.closeLabel = "Dismiss";
+    this.noIcon = false;
   }
 
   // A role attribute, so it shows in the DOM and in the accessibility tree of
@@ -61,9 +65,13 @@ export class PlBanner extends LitElement {
   }
 
   override render() {
-    return html`<slot name="icon"
-        >${this.tone === "destructive" ? errorGlyph : infoGlyph}</slot
-      >
+    return html`${
+        this.noIcon
+          ? nothing
+          : html`<slot name="icon"
+              >${this.tone === "destructive" ? errorGlyph : infoGlyph}</slot
+            >`
+      }
       <div part="text">
         <div part="title"><slot name="title"></slot></div>
         <slot></slot>

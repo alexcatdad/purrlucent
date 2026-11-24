@@ -230,6 +230,11 @@ test("the placeholder shows while nothing is chosen", async ({ page }) => {
   await expect(selectedLabel(page)).toHaveText("Choose a variety");
 });
 
+test("default: the placeholder shows, not an empty value", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await expect(selectedLabel(page)).toHaveText("Choose a variety");
+});
+
 test("a disabled select takes no focus and does not open", async ({ page }) => {
   await gotoStory(page, story("disabled"));
   const control = trigger(page);

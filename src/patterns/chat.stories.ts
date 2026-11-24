@@ -157,7 +157,16 @@ bun publish</code></pre>
   },
 ];
 
-const seeds: Record<string, Row[]> = { conversation, empty: [] };
+/** A reply caught mid-stream: the first words of the canned reply. */
+const partial = reply.split(" ").slice(0, 15).join(" ");
+
+const streaming: Row[] = [
+  ...conversation,
+  { id: "p-ask", kind: "me", text: "Can you check the changelog too?" },
+  { id: "p-reply", kind: "reply", text: partial, thinking: false },
+];
+
+const seeds: Record<string, Row[]> = { conversation, streaming, empty: [] };
 
 /**
  * The chat set working together: a scroller of rows with the prompt input
@@ -196,7 +205,11 @@ class ChatDemo extends LitElement {
   }
 
   protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("seed")) this.rows = seeds[this.seed ?? "empty"] ?? [];
+    if (changed.has("seed")) {
+      this.rows = seeds[this.seed ?? "empty"] ?? [];
+      // The streaming seed is caught mid-reply, so the prompt offers Stop.
+      this.busy = this.seed === "streaming";
+    }
   }
 
   #patch(id: string, change: Partial<Row>) {
@@ -381,20 +394,14 @@ if (!customElements.get("chat-demo"))
 const page = (content: unknown) =>
   html`<div style="padding:var(--pl-space-4)">${content}</div>`;
 
-/** A conversation: a date separator, messages from the person and the assistant, attachments, a reaction and the prompt below. */
+/** A conversation: a date separator, messages from the person and the assistant, attachments, a reaction and the prompt below. Press Send: the message joins the transcript, Thinking shimmers, then the reply streams in. Stop ends it early. */
 export const Conversation: Story = {
   render: () => page(html`<chat-demo seed="conversation"></chat-demo>`),
 };
 
-/** Press Send: the message joins the transcript, Thinking shimmers, then the reply streams in. Stop ends it early. */
+/** A reply part way through: the first words are in, the scroller is busy and the prompt offers Stop. */
 export const Streaming: Story = {
-  render: () =>
-    page(
-      html`<chat-demo
-        seed="conversation"
-        draft="Can you check the changelog too?"
-      ></chat-demo>`,
-    ),
+  render: () => page(html`<chat-demo seed="streaming"></chat-demo>`),
 };
 
 /** A new chat: an empty state until the first message. */

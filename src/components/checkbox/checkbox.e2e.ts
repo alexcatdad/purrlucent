@@ -95,6 +95,31 @@ test("a click on a mixed box makes it checked", async ({ page }) => {
   await expect(control).toHaveAttribute("aria-checked", "true");
 });
 
+test("a read-only box keeps its state, takes focus and is marked read-only", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("checkbox", { name: "Read only" });
+  await expect(control).toHaveAttribute("aria-readonly", "true");
+  await expect(control).toBeChecked();
+  await control.click();
+  await expect(control).toBeChecked();
+  await expect(control).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(control).toBeChecked();
+});
+
+test("an invalid box is marked invalid and its message is shown", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("checkbox", { name: "Accept the terms" });
+  await expect(control).toHaveAttribute("aria-invalid", "true");
+  await expect(
+    page.getByText("Accept the terms to continue.", { exact: true }),
+  ).toBeVisible();
+});
+
 test("a disabled box takes no focus and does not change", async ({ page }) => {
   await gotoStory(page, story("states"));
   const control = page.getByRole("checkbox", { name: "Network" });
