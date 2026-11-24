@@ -1071,7 +1071,14 @@ test.describe("header and footer", () => {
   }) => {
     await open(page, "header-footer");
     const nav = page.getByRole("navigation", { name: "Library" });
-    await expect(nav.getByRole("link")).toHaveCount(2);
+    await expect(nav).toBeVisible();
+    // The items are slotted into the landmark; header and footer are not.
+    for (const id of ["home", "settings"])
+      expect(
+        await page
+          .locator(`#${id}`)
+          .evaluate((el) => !!el.assignedSlot?.closest("nav")),
+      ).toBe(true);
     for (const id of ["brand", "version"]) {
       await expect(page.locator(`#${id}`)).toBeVisible();
       expect(

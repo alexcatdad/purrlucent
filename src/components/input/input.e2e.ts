@@ -103,7 +103,7 @@ test("Return in a form without a submit button presses the dialog's default acti
     await page.evaluate(
       () => (window as unknown as { plClosed: unknown[] }).plClosed,
     ),
-  ).toEqual([{ returnValue: "rename" }]);
+  ).toEqual([{ returnValue: "rename", reason: "user" }]);
 });
 
 /** What the form would submit, as [name, value] pairs. */

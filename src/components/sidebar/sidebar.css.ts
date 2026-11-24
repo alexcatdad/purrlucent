@@ -323,6 +323,9 @@ export const itemStyles = [
        of the row and sets its own initials from that size. */
     ::slotted(pl-avatar[slot="icon"]) {
       --_s: calc(var(--_glyph) * 1.5);
+
+      inline-size: var(--_s);
+      block-size: var(--_s);
     }
 
     /* The grip of a reorderable item sits at the trailing end, past the
