@@ -617,6 +617,18 @@ test.describe("button", () => {
   });
 });
 
+test("message-scroller: jump button does not cover text", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const [padding, button] = await Promise.all([
+    scroller(page).evaluate((e) =>
+      parseFloat(getComputedStyle(e).scrollPaddingBlockEnd),
+    ),
+    latest(page).boundingBox(),
+  ]);
+  // Content scrolled to the end stops above the button, which is as tall as it.
+  expect(Math.abs(padding - button!.height)).toBeLessThan(1);
+});
+
 test("the button sits at the center under rtl and the region scrolls", async ({
   page,
 }) => {

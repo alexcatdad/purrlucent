@@ -18,6 +18,32 @@ const next = (page: Page) =>
 const previous = (page: Page) =>
   page.getByRole("button", { name: "Previous slide", exact: true });
 
+test("carousel keyboard: the slide label is one line, centered", async ({
+  page,
+}) => {
+  // The story's play function has already paged to the second slide.
+  await open(page, "containers-carousel--keyboard");
+  const slide = page.locator("#control pl-carousel-item").nth(1);
+  await expect(slide).toBeInViewport({ ratio: 0.99 });
+  const { lines, offset } = await slide.evaluate((el) => {
+    const card = el.firstElementChild as HTMLElement;
+    const range = document.createRange();
+    range.selectNodeContents(card);
+    const text = range.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    return {
+      lines: range.getClientRects().length,
+      offset: [
+        text.left + text.width / 2 - (box.left + box.width / 2),
+        text.top + text.height / 2 - (box.top + box.height / 2),
+      ],
+    };
+  });
+  expect(lines).toBe(1);
+  expect(Math.abs(offset[0]!)).toBeLessThanOrEqual(1);
+  expect(Math.abs(offset[1]!)).toBeLessThanOrEqual(1);
+});
+
 const record = (page: Page) =>
   page.locator("#control").evaluate((el) => {
     const log: number[] = [];

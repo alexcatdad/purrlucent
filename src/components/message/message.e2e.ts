@@ -16,6 +16,17 @@ test("has no axe violations", async ({ page }) => {
   await expectAccessible(await gotoStory(page, story("default")));
 });
 
+test("message own: name aligns with the bubble", async ({ page }) => {
+  const root = await gotoStory(page, story("own"));
+  const message = root.locator("pl-message");
+  const name = await box(message.locator('[slot="header"]'));
+  const bubble = await box(bubbleOf(message));
+  // Own messages sit at the end, so the name ends where the bubble ends.
+  expect(
+    Math.abs(name.x + name.width - (bubble.x + bubble.width)),
+  ).toBeLessThanOrEqual(1);
+});
+
 test("has no axe violations as a group", async ({ page }) => {
   await expectAccessible(await gotoStory(page, story("group")));
 });

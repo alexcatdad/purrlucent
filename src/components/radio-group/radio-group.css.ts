@@ -19,11 +19,9 @@ export const groupStyles = css`
   }
 
   :host([orientation="horizontal"]) {
-    display: inline-grid;
-    grid-auto-columns: 1fr;
-    grid-auto-flow: column;
-    align-items: start;
-    column-gap: var(--pl-gap-form);
+    flex-flow: row wrap;
+    align-items: flex-start;
+    gap: var(--pl-gap-form);
     max-inline-size: 100%;
   }
 `;

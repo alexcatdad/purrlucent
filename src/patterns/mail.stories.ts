@@ -643,8 +643,10 @@ class MailDemo extends LitElement {
       }
     }
 
+    /* One column as wide as the pane: the sidebar's own width is a ceiling, not a minimum. */
     .folders {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: var(--pl-space-3);
       padding: var(--pl-space-3);
     }
@@ -757,7 +759,7 @@ export const Default: Story = {
 export const Narrow: Story = {
   render: () =>
     page(
-      html`<div style="inline-size:calc(var(--pl-spacing) * 100)">
+      html`<div style="inline-size:min(100%, calc(var(--pl-spacing) * 100))">
         <mail-demo></mail-demo>
       </div>`,
     ),

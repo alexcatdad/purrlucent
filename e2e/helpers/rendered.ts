@@ -175,6 +175,62 @@ export async function lowContrastText(page: Page): Promise<string[]> {
 }
 
 /**
+ * Elements that reach past the story root, and a story root that scrolls.
+ *
+ * A box counts when it sticks out of the root's left or right edge. Content
+ * inside a scroll container, a fixed or top-layer box and a hidden or empty one
+ * are left out: they do not widen the page. It looks into shadow roots.
+ */
+export async function overflowsRoot(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const root = document.querySelector<HTMLElement>("#storybook-root")!;
+    const edge = root.getBoundingClientRect();
+    const out: string[] = [];
+    const doc = document.documentElement;
+    if (doc.scrollWidth > doc.clientWidth)
+      out.push(
+        `the page scrolls sideways: ${doc.scrollWidth} > ${doc.clientWidth}`,
+      );
+    if (root.scrollWidth > root.clientWidth)
+      out.push(
+        `the root scrolls sideways: ${root.scrollWidth} > ${root.clientWidth}`,
+      );
+    const up = (node: Element): Element | null =>
+      node.assignedSlot ??
+      node.parentElement ??
+      (node.getRootNode() instanceof ShadowRoot
+        ? (node.getRootNode() as ShadowRoot).host
+        : null);
+    const contained = (el: Element) => {
+      for (let a = up(el); a && a !== root; a = up(a)) {
+        const s = getComputedStyle(a);
+        if (s.position === "fixed" || s.overflowX !== "visible") return true;
+      }
+      return false;
+    };
+    const visit = (scope: ParentNode) => {
+      for (const el of scope.querySelectorAll("*")) {
+        if (el.shadowRoot) visit(el.shadowRoot);
+        const style = getComputedStyle(el);
+        if (style.display === "contents" || style.display === "none") continue;
+        if (style.position === "fixed" || el.matches("dialog, :popover-open"))
+          continue;
+        const box = el.getBoundingClientRect();
+        // A one-pixel strip is visually hidden text, not content.
+        if (box.width <= 1 || box.height <= 1) continue;
+        if (box.right <= edge.right + 1 && box.left >= edge.left - 1) continue;
+        if (contained(el)) continue;
+        out.push(
+          `<${el.localName}> ${Math.round(box.left)}..${Math.round(box.right)} is outside ${Math.round(edge.left)}..${Math.round(edge.right)}`,
+        );
+      }
+    };
+    visit(root);
+    return out;
+  });
+}
+
+/**
  * Components that ignore the spacing base.
  *
  * Every size in a component is a token or a calc() from tokens, so doubling
