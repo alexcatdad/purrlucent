@@ -1,12 +1,15 @@
 import { LitElement, html, nothing, svg } from "lit";
-import { closeGlyph, errorGlyph } from "../../behaviors/glyphs.ts";
+import {
+  closeGlyph,
+  errorGlyph,
+  successGlyph,
+  warningGlyph,
+} from "../../behaviors/glyphs.ts";
 import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import { bannerStyles } from "./banner.css.ts";
 import { messages } from "../../behaviors/locale.ts";
 
 const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>`;
-const successGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M8.5 12.5l2.5 2.5l4.5 -5" /></svg>`;
-const warningGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 4.2l-7.4 12.8a2 2 0 0 0 1.7 3h14.8a2 2 0 0 0 1.7 -3l-7.4 -12.8a2 2 0 0 0 -3.4 0" /><path d="M12 9v4" /><path d="M12 16.5h.01" /></svg>`;
 
 const glyphs = {
   info: infoGlyph,

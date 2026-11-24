@@ -275,6 +275,104 @@ test("PlToaster.show makes a toaster when the page has none", async ({
   await expect(toasts(page)).toBeVisible();
 });
 
+test("success and warning toasts have an icon, a tone and no alert role", async ({
+  page,
+}) => {
+  await gotoStory(page, story("variants"));
+  for (const variant of ["success", "warning"]) {
+    const toast = page.locator(`pl-toast[variant="${variant}"]`);
+    await expect(toast.locator("[part=icon] svg")).toBeVisible();
+    expect(await toast.getAttribute("role")).toBeNull();
+  }
+  const color = (variant: string) =>
+    page
+      .locator(`pl-toast[variant="${variant}"] [part=title]`)
+      .evaluate((el) => getComputedStyle(el).color);
+  const [success, warning, destructive] = [
+    await color("success"),
+    await color("warning"),
+    await color("destructive"),
+  ];
+  expect(success).not.toBe(warning);
+  expect(success).not.toBe(destructive);
+  await expect(page.getByRole("alert")).toHaveCount(1);
+});
+
+test("a success toast outside a toaster is a status", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await page.evaluate(() => {
+    const solo = document.createElement("pl-toast");
+    solo.id = "solo";
+    solo.variant = "success";
+    document.body.append(solo);
+  });
+  await expect(page.locator("#solo")).toHaveAttribute("role", "status");
+});
+
+test("PlToaster.show takes a node as the description", async ({ page }) => {
+  await gotoStory(page, story("described"));
+  await page.locator("#details").click();
+  const details = toasts(page).locator("details");
+  await expect(details).toBeVisible();
+  await expect(details).not.toHaveAttribute("open", "");
+  await details.getByText("Technical details").click();
+  await expect(details).toHaveAttribute("open", "");
+  await expect(details).toContainText("Error 503 from the sync service.");
+});
+
+test("PlToaster.show keeps the line breaks of a string description", async ({
+  page,
+}) => {
+  await gotoStory(page, story("described"));
+  await page.locator("#lines").click();
+  const text = toasts(page).locator("span", { hasText: "First line" });
+  await expect(text).toBeVisible();
+  const lineHeight = await text.evaluate((el) =>
+    parseFloat(getComputedStyle(el).lineHeight),
+  );
+  expect((await text.boundingBox())!.height).toBeGreaterThan(lineHeight * 1.5);
+});
+
+test("PlToaster.show with an id replaces that toast in place", async ({
+  page,
+}) => {
+  await gotoStory(page, story("described"));
+  await page.locator("#lines").click();
+  await page.locator("#progress").click();
+  await expect(toasts(page)).toHaveCount(2);
+  await page.locator("#lines").click();
+  await expect(toasts(page)).toHaveCount(3);
+  await page.locator("#progress").click();
+  await expect(toasts(page)).toHaveCount(3);
+  await expect(toasts(page).nth(1)).toContainText("Upload step 2");
+  await expect(page.getByText("Upload step 1")).toHaveCount(0);
+});
+
+test("a long description is capped, scrolls and takes the keyboard", async ({
+  page,
+}) => {
+  await gotoStory(page, story("long-description"));
+  const part = toasts(page).locator("[part=description]");
+  await expect(part).toHaveAttribute("tabindex", "0");
+  const box = (await part.boundingBox())!;
+  const metrics = await part.evaluate((el) => ({
+    scroll: el.scrollHeight,
+    client: el.clientHeight,
+    overflow: getComputedStyle(el).overflowY,
+  }));
+  expect(metrics.overflow).toBe("auto");
+  expect(metrics.scroll).toBeGreaterThan(metrics.client);
+  expect(box.height).toBeLessThan(metrics.scroll);
+});
+
+test("a short description does not take the keyboard", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await expect(toasts(page).locator("[part=description]")).not.toHaveAttribute(
+    "tabindex",
+    /.*/,
+  );
+});
+
 test("the focus ring is visible and the toast keeps an edge under forced colors", async ({
   page,
 }) => {
