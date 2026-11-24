@@ -377,12 +377,16 @@ import "purrlucent/button";
 
 ### `<pl-button>`
 
-A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link; set it again to rename the link. `focus()` focuses the inner link, and a `tabindex` set on the host, as a toolbar's arrow-key focus does, moves to it too. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
+A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link; set it again to rename the link. `focus()` focuses the inner link, and a `tabindex` set on the host, as a toolbar's arrow-key focus does, moves to it too. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns. A submit button also takes Enter in a native single-line `input` of its form, as a native submit button does, and submits the form it names with `form` from outside it. Its `name` and `value` are submitted only when it is the button that submitted, as a native submit button's are.
 
 | Attribute     | Type                              | Default       | Description                                                                                              |
 | ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
 | `aria-label`  | `string`                          |               |                                                                                                          |
 | `tabindex`    | `string`                          |               |                                                                                                          |
+| `size`        | `PlButtonSize`                    | `"md"`        | `md` (default), `sm` for dense tables and toolbars, `lg` or `xl`.                                        |
+| `form`        | `string \| null`                  | `null`        | The `id` of the owning form; the browser resolves the owner from the attribute.                          |
+| `name`        | `string \| null`                  | `null`        | The name its `value` is submitted under when this button submits the form.                               |
+| `value`       | `string \| null`                  | `null`        | The value submitted under `name` when this button submits the form.                                      |
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
@@ -392,7 +396,6 @@ A button. The label is the slotted text and is required for an accessible name; 
 | `download`    | `string \| null`                  | `null`        | The link downloads its address, as on `a`; the value is the suggested file name.                         |
 | `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
-| `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
@@ -2320,6 +2323,10 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 | `pressed`     | `boolean`                         | `false`       |                                                                                                          |
 | `aria-label`  | `string`                          |               |                                                                                                          |
 | `tabindex`    | `string`                          |               |                                                                                                          |
+| `size`        | `PlButtonSize`                    | `"md"`        | `md` (default), `sm` for dense tables and toolbars, `lg` or `xl`.                                        |
+| `form`        | `string \| null`                  | `null`        | The `id` of the owning form; the browser resolves the owner from the attribute.                          |
+| `name`        | `string \| null`                  | `null`        | The name its `value` is submitted under when this button submits the form.                               |
+| `value`       | `string \| null`                  | `null`        | The value submitted under `name` when this button submits the form.                                      |
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
@@ -2329,7 +2336,6 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 | `download`    | `string \| null`                  | `null`        | The link downloads its address, as on `a`; the value is the suggested file name.                         |
 | `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
-| `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
@@ -2345,7 +2351,7 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 
 **Events**
 
-- `pl-change`: A press changed the state. `detail.pressed` holds the new one.
+- `pl-change`: A press is about to change the state, before it is applied. `detail.pressed` holds the new one. Cancelable: `preventDefault()` keeps the current state.
 - `pl-press`: When the button is activated by pointer, Enter or Space.
 
 ## Toggle group
@@ -2374,7 +2380,7 @@ One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. A
 
 ### `<pl-toggle-group>`
 
-A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
+A row of equal-width items that offers one required choice, as a radio group: choosing the selected item again never deselects it, so one item is always selected. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
 | Attribute     | Type                   | Default | Description                                                                                                                                                                                                |
 | ------------- | ---------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2391,8 +2397,8 @@ A row of equal-width items that offers one required choice, as a radio group. Ar
 
 **Events**
 
-- `pl-change`: The selection changed by the user. `detail.selected` is a one-item array.
-- `input`: After pl-change, as a native radio fires it.
+- `pl-change`: The user is about to change the selection, before it is applied. `detail.selected` is a one-item array. Cancelable: `preventDefault()` keeps the current value and fires no `input` or `change`.
+- `input`: After the selection changed, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
 ## Toolbar
@@ -2439,6 +2445,7 @@ A bar of controls with one tab stop and arrow-key navigation. A `<pl-input type=
 | `label`    | `string`       | `""`    | Accessible name. Required.                                             |
 | `scrolled` | `boolean`      | `false` | Set while content is scrolled beneath the bar; shows the scroll edge.  |
 | `size`     | `"md" \| "xl"` | `"xl"`  | `xl` (default) or the compact `md`. Give the controls the same `size`. |
+| `floating` | `boolean`      | `false` | A capsule that floats over the content, with a shadow under glass.     |
 
 **Slots**
 
