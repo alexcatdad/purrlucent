@@ -58,6 +58,21 @@ export const menuStyles = css`
     backdrop-filter: none;
   }
 
+  /* Beside the trigger the gap runs along the inline axis. */
+  :host([placement="start"]) [part="menu"],
+  :host([placement="end"]) [part="menu"] {
+    margin: 0 var(--pl-space-1);
+  }
+
+  [part="header"] {
+    padding: var(--pl-space-1) var(--pl-pad-item);
+    cursor: default;
+  }
+
+  [part="header"][hidden] {
+    display: none;
+  }
+
   /* Entry only: nothing waits for an exit animation to end. */
   @starting-style {
     [part="menu"]:popover-open {
@@ -82,9 +97,9 @@ export const itemStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    block-size: var(--pl-size-row);
     min-block-size: var(--pl-size-row);
     border-radius: var(--pl-radius-row);
+    padding-block: var(--pl-space-1);
     padding-inline: var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
@@ -131,10 +146,40 @@ export const itemStyles = css`
     stroke-linejoin: round;
   }
 
+  /* A link lays its content out like the row itself, and its ::after covers the whole row. */
+  [part="link"] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+  }
+
+  [part="link"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
   /* The gap sits here: the detail below is ltr, so its own inline start is always the left. */
-  [part="label"] {
+  [part="text"] {
     flex: 1;
     margin-inline-end: var(--pl-space-2);
+  }
+
+  [part="label"],
+  [part="description"] {
+    display: block;
+  }
+
+  [part="description"] {
+    color: var(--pl-color-muted-foreground);
+    font-size: var(--pl-text-xs);
+  }
+
+  [part="description"][hidden] {
+    display: none;
   }
 
   /* Shortcuts read left to right in every language. */
@@ -182,7 +227,8 @@ export const itemStyles = css`
     color: var(--pl-color-selected-foreground);
   }
 
-  :host(:not([disabled]):focus) :is([part="detail"], [part="chevron"]) {
+  :host(:not([disabled]):focus)
+    :is([part="detail"], [part="description"], [part="chevron"]) {
     color: inherit;
   }
 
@@ -193,7 +239,7 @@ export const itemStyles = css`
     }
 
     :host(:not([disabled], [aria-expanded="true"]):hover)
-      :is([part="detail"], [part="chevron"]) {
+      :is([part="detail"], [part="description"], [part="chevron"]) {
       color: inherit;
     }
   }

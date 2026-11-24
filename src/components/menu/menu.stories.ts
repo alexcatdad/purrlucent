@@ -227,3 +227,103 @@ export const Glass: Story = {
     await openSubmenu(canvasElement);
   },
 };
+
+const account = html`
+  <pl-menu id="menu" label="Account">
+    ${pullDown("Account")}
+    <div
+      slot="header"
+      id="header"
+      style="display:grid;gap:var(--pl-space-1);padding-block:var(--pl-space-1)"
+    >
+      <strong>Alex Doe</strong>
+      <span style="color:var(--pl-color-muted-foreground)"
+        >alex@example.com</span
+      >
+    </div>
+    <pl-menu-separator></pl-menu-separator>
+    <pl-menu-item href="#profile">Profile</pl-menu-item>
+    <pl-menu-item href="#billing" description="Plans and invoices"
+      >Billing</pl-menu-item
+    >
+    <pl-menu-item href="https://example.com/help" target="_blank" rel="noopener"
+      >Help</pl-menu-item
+    >
+    <pl-menu-item href="#archive" disabled>Archive</pl-menu-item>
+    <pl-menu-separator></pl-menu-separator>
+    <pl-menu-item destructive>Sign Out</pl-menu-item>
+  </pl-menu>
+`;
+
+/** Items with `href` are real links: open in a new tab, copy link and middle-click work. */
+export const Links: Story = {
+  render: () => column(account),
+  play: async ({ canvasElement }) => {
+    await openMenu(canvasElement);
+  },
+};
+
+/** The `description` slot or attribute adds a second, muted line. */
+export const Description: Story = {
+  render: () =>
+    column(html`
+      <pl-menu id="menu" label="Sharing">
+        ${pullDown("Sharing")}
+        <pl-menu-item description="Anyone with the link can view"
+          >Public</pl-menu-item
+        >
+        <pl-menu-item>
+          Team
+          <span slot="description">Only people in your team</span>
+        </pl-menu-item>
+        <pl-menu-item detail="⌘P" description="Only you">Private</pl-menu-item>
+      </pl-menu>
+    `),
+  play: async ({ canvasElement }) => {
+    const el = await openMenu(canvasElement);
+    el.querySelectorAll<PlMenuItem>("pl-menu-item")[1]!.focus();
+  },
+};
+
+/** The `header` slot holds non-interactive content above the items. */
+export const Header: Story = {
+  render: () => column(account),
+  play: async ({ canvasElement }) => {
+    await openMenu(canvasElement);
+  },
+};
+
+const placed = (placement: string) => html`
+  <pl-menu id="menu" label="Edit" placement=${placement}>
+    ${pullDown("Edit")}
+    <pl-menu-item>Undo</pl-menu-item>
+    <pl-menu-item>Redo</pl-menu-item>
+    <pl-menu-item>Copy</pl-menu-item>
+  </pl-menu>
+`;
+
+/** `placement` picks the side and edge the menu opens from, like `pl-popover`. */
+export const PlacementEnd: Story = {
+  render: () =>
+    html`<div
+      style="display:grid;place-items:center;min-block-size:calc(var(--pl-spacing) * 90)"
+    >
+      ${placed("end")}
+    </div>`,
+  play: async ({ canvasElement }) => {
+    await openMenu(canvasElement);
+  },
+};
+
+/** A menu opened from code with `show()` focuses its first item. */
+export const FromCode: Story = {
+  render: () => column(edit),
+  play: async ({ canvasElement }) => {
+    const el = menuOf(canvasElement);
+    await el.updateComplete;
+    el.show();
+    await el.updateComplete;
+    expect(el.open).toBe(true);
+    await settled(canvasElement);
+  },
+};
