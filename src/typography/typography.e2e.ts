@@ -236,6 +236,7 @@ test("links keep a system color under forced colors", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active" });
   const underline = await page
     .locator("#prose a")
+    .first()
     .evaluate((el) => getComputedStyle(el).textDecorationLine);
   expect(underline).toBe("underline");
 });
