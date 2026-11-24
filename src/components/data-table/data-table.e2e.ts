@@ -15,7 +15,7 @@ const open = async (page: Page, id = story, globals = "") => {
 
 /** Records the events of #control on window. */
 const record = (page: Page, name: string) =>
-  page.locator("#control").evaluate((el, type) => {
+  page.locator("pl-data-table#control").evaluate((el, type) => {
     const w = window as unknown as { events: unknown[] };
     w.events = [];
     el.addEventListener(type, (e) => w.events.push((e as CustomEvent).detail));
@@ -26,7 +26,7 @@ const events = (page: Page) =>
 
 const firstColumn = (page: Page) =>
   page
-    .locator("#control tbody tr")
+    .locator("pl-data-table#control tbody tr")
     .evaluateAll((trs) =>
       trs.map((tr) =>
         (tr.querySelector("td:not(.select)") as HTMLElement).innerText.trim(),
@@ -115,7 +115,7 @@ test("a sorted attribute starts the table in that order", async ({ page }) => {
 test("manual-sort reports pl-sort and leaves the order", async ({ page }) => {
   await open(page);
   await page
-    .locator("#control")
+    .locator("pl-data-table#control")
     .evaluate((el) => el.setAttribute("manual-sort", ""));
   await record(page, "pl-sort");
   const before = await firstColumn(page);
@@ -192,7 +192,7 @@ test("selecting the last unselected row turns select all on", async ({
 
 test("the checkbox's own events do not leave the table", async ({ page }) => {
   await open(page, selectable);
-  await page.locator("#control").evaluate((el) => {
+  await page.locator("pl-data-table#control").evaluate((el) => {
     const w = window as unknown as { leaked: string[] };
     w.leaked = [];
     for (const type of ["pl-change", "input"])
@@ -323,7 +323,7 @@ type Table = HTMLElement & { page: number; filter: string };
 
 const setAttr = (page: Page, name: string, value = "") =>
   page
-    .locator("#control")
+    .locator("pl-data-table#control")
     .evaluate((el, [n, v]) => el.setAttribute(n!, v!), [name, value]);
 
 const filterField = (page: Page) =>
@@ -339,7 +339,9 @@ test("filter narrows rows and resets the page", async ({ page }) => {
   expect(await firstColumn(page)).toEqual(engineers);
   expect(await events(page)).toEqual([{ value: "engineer" }]);
   expect(
-    await page.locator("#control").evaluate((el) => (el as Table).page),
+    await page
+      .locator("pl-data-table#control")
+      .evaluate((el) => (el as Table).page),
   ).toBe(1);
 });
 
@@ -353,7 +355,7 @@ test("no matches shows the empty state", async ({ page }) => {
   await open(page, filterable);
   await filterField(page).fill("zzz");
   await expect(page.getByText("Nobody matches this filter.")).toBeVisible();
-  await expect(page.locator("#control tbody tr")).toHaveCount(1);
+  await expect(page.locator("pl-data-table#control tbody tr")).toHaveCount(1);
 });
 
 test("select all acts on the filtered rows", async ({ page }) => {
@@ -382,14 +384,14 @@ test("pagination moves through rows", async ({ page }) => {
 
 test("filter then page past the end clamps", async ({ page }) => {
   await open(page, paginated);
-  await page.locator("#control").evaluate((el) => {
+  await page.locator("pl-data-table#control").evaluate((el) => {
     (el as Table).page = 9;
   });
   await expect(
     page.getByRole("button", { name: "3", exact: true }),
   ).toHaveAttribute("aria-current", "page");
   expect(await firstColumn(page)).toEqual(["René Descartes"]);
-  await page.locator("#control").evaluate((el) => {
+  await page.locator("pl-data-table#control").evaluate((el) => {
     (el as Table).filter = "engineer";
   });
   await expect(
@@ -401,7 +403,7 @@ test("filter then page past the end clamps", async ({ page }) => {
 test("the inner controls' events do not leave the table", async ({ page }) => {
   await open(page, filterable);
   await setAttr(page, "page-size", "4");
-  await page.locator("#control").evaluate((el) => {
+  await page.locator("pl-data-table#control").evaluate((el) => {
     const w = window as unknown as { leaked: string[] };
     w.leaked = [];
     for (const type of ["pl-change", "pl-input", "input", "change"])
@@ -433,12 +435,12 @@ test("model: header groups render with colspan", async ({ page }) => {
   await expect(
     page.getByRole("columnheader", { name: "Numbers" }),
   ).toHaveAttribute("colspan", "2");
-  await expect(page.locator("#control thead tr")).toHaveCount(2);
+  await expect(page.locator("pl-data-table#control thead tr")).toHaveCount(2);
 });
 
 test("model: group rows show the value and the count", async ({ page }) => {
   await open(page, grouped);
-  const groups = page.locator("#control tr.group");
+  const groups = page.locator("pl-data-table#control tr.group");
   await expect(groups).toHaveCount(2);
   await expect(groups.first()).toContainText("Engineering");
   await expect(groups.first().locator(".count")).toHaveText("3");
@@ -470,7 +472,7 @@ test("model: child rows are indented under their group", async ({ page }) => {
   await open(page, grouped);
   const marker = (name: string) =>
     page
-      .locator("#control .lead", { hasText: name })
+      .locator("pl-data-table#control .lead", { hasText: name })
       .first()
       .locator(".expand");
   const [group, child] = await Promise.all([
@@ -488,7 +490,9 @@ test("model: the table keeps native table semantics", async ({ page }) => {
 
 test("model: a pinned row is marked", async ({ page }) => {
   await open(page, grouped);
-  await expect(page.locator("#control tr[data-row-pin='top']")).toHaveCount(1);
+  await expect(
+    page.locator("pl-data-table#control tr[data-row-pin='top']"),
+  ).toHaveCount(1);
 });
 
 const scroller = (page: Page) =>
@@ -526,7 +530,7 @@ test("model: under rtl the pinned column sits at the right edge", async ({
 
 test("model: the footer shows aggregates", async ({ page }) => {
   await open(page, grouped);
-  const footer = page.locator("#control tfoot td");
+  const footer = page.locator("pl-data-table#control tfoot td");
   await expect(footer).toHaveCount(3);
   await expect(footer.first()).toHaveText("Average");
   await expect(footer.first()).toHaveAttribute("colspan", "3");
@@ -628,7 +632,7 @@ test("model: a heading filter offers the facets and fires pl-filter with its col
   expect(await events(page)).toEqual([
     { value: "Lead engineer", column: "role" },
   ]);
-  await expect(page.locator("#control tbody tr")).toHaveCount(1);
+  await expect(page.locator("pl-data-table#control tbody tr")).toHaveCount(1);
 });
 
 test("model: a row menu fires pl-row-pin", async ({ page }) => {
@@ -638,7 +642,9 @@ test("model: a row menu fires pl-row-pin", async ({ page }) => {
     .getByRole("button", { name: "Row options Ada Lovelace", exact: true })
     .click();
   await menuItem(page, "Pin to top").click();
-  await expect(page.locator("#control tr[data-row-pin='top']")).toHaveCount(1);
+  await expect(
+    page.locator("pl-data-table#control tr[data-row-pin='top']"),
+  ).toHaveCount(1);
   await page
     .getByRole("button", { name: "Row options Ada Lovelace", exact: true })
     .click();
@@ -722,7 +728,7 @@ test("model: RTL: dragging the handle left fires a larger width", async ({
 });
 
 const cell = (page: Page, id: string) =>
-  page.locator(`#control td[data-cell="${id}"]`);
+  page.locator(`pl-data-table#control td[data-cell="${id}"]`);
 
 test("model: shift-click selects a rectangle", async ({ page }) => {
   await open(page, interactive);
@@ -739,7 +745,9 @@ test("model: shift-click selects a rectangle", async ({ page }) => {
       "grace-salary",
     ],
   });
-  await expect(page.locator("#control td[data-selected]")).toHaveCount(6);
+  await expect(
+    page.locator("pl-data-table#control td[data-selected]"),
+  ).toHaveCount(6);
 });
 
 test("model: shift-arrow extends the range from the focused cell", async ({

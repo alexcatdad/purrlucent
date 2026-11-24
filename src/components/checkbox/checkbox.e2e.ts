@@ -343,9 +343,10 @@ test("virtual screen reader speaks the role, name and state", async ({
 test("disabled unchecked checkbox border meets 3:1 non-text contrast", async ({
   page,
 }) => {
+  // Set before a load: Firefox does not restyle a loaded page for it.
+  await page.emulateMedia({ contrast: "more" });
   for (const theme of ["light", "dark"]) {
     await gotoStory(page, story("states"), `theme:${theme}`);
-    await page.emulateMedia({ contrast: "more" });
     const shadow = await page
       .locator("pl-checkbox[disabled]:not([checked])")
       .first()

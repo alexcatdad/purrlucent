@@ -239,9 +239,19 @@ test("multiline: the field holds four lines and is taller than one", async ({
   const one = (await field(empty).boundingBox())!.height;
   const root = await gotoStory(page, story("multiline"));
   await expect(field(root)).toHaveValue(/^.+\n.+\n.+\n.+$/);
+  // One line fills a control's height; each further line adds one leading.
+  const line = await root.locator("pl-prompt-input").evaluate((el) => {
+    const probe = el.ownerDocument.body.appendChild(
+      el.ownerDocument.createElement("div"),
+    );
+    probe.style.blockSize = "var(--pl-leading-normal)";
+    const result = probe.getBoundingClientRect().height;
+    probe.remove();
+    return result;
+  });
   await expect
     .poll(async () => (await field(root).boundingBox())!.height)
-    .toBeGreaterThan(one * 2);
+    .toBeGreaterThanOrEqual(one + line * 3 - 1);
 });
 
 test("the group's shell grows with the field", async ({ page }) => {

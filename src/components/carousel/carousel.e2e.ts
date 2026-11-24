@@ -31,8 +31,13 @@ test("carousel keyboard: the slide label is one line, centered", async ({
     range.selectNodeContents(card);
     const text = range.getBoundingClientRect();
     const box = card.getBoundingClientRect();
+    // The label is several text nodes (Lit renders the number apart), each its
+    // own rect, so lines are counted by their tops.
+    const tops = [...range.getClientRects()]
+      .filter((rect) => rect.width > 0)
+      .map((rect) => Math.round(rect.top));
     return {
-      lines: range.getClientRects().length,
+      lines: new Set(tops).size,
       offset: [
         text.left + text.width / 2 - (box.left + box.width / 2),
         text.top + text.height / 2 - (box.top + box.height / 2),

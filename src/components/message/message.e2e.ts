@@ -144,16 +144,15 @@ test("an end-aligned message sits its avatar and content at the end edge", async
   expect(bubble.x).toBeGreaterThan(message.x);
 });
 
-test("an end-aligned message keeps its header at the start and its footer at the end", async ({
+test("an end-aligned message ends its header and footer at the bubble's end edge", async ({
   page,
 }) => {
   const root = await gotoStory(page, story("own"));
   const message = root.locator("pl-message");
-  const outer = await box(message);
   const header = await box(message.locator("[slot=header]"));
   const footer = await box(message.locator("[slot=footer]"));
   const bubble = await box(bubbleOf(message));
-  expect(header.x).toBeCloseTo(outer.x, 0);
+  expect(header.x + header.width).toBeCloseTo(bubble.x + bubble.width, 0);
   expect(footer.x + footer.width).toBeCloseTo(bubble.x + bubble.width, 0);
 });
 
