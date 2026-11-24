@@ -37,6 +37,7 @@ export * from "./components/menu/menu.ts";
 export * from "./components/menubar/menubar.ts";
 export * from "./components/message/message.ts";
 export * from "./components/message-scroller/message-scroller.ts";
+export * from "./components/month-range-picker/month-range-picker.ts";
 export * from "./components/navigation-menu/navigation-menu.ts";
 export * from "./components/number-field/number-field.ts";
 export * from "./components/pagination/pagination.ts";
