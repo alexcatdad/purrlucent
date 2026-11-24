@@ -15,30 +15,31 @@ export const chartStyles = css`
        light page makes it darker, on a dark page lighter. Increased contrast
        moves it further. */
     --_lift: 22%;
-    --_red: light-dark(var(--pl-color-destructive), var(--pl-color-punch-red));
+    --_red: light-dark(var(--pl-color-destructive), var(--pl-color-red));
     --_slice-edge: var(--pl-color-background);
 
-    /* A categorical palette, one hue per series: the accent blue, then
-       mixes of the red and the blues around the hue wheel (amber, green,
-       violet), then the red, then a neutral. */
-    --pl-chart-1: color-mix(
-      in oklch,
-      var(--pl-color-selected),
-      var(--pl-color-foreground) var(--_lift)
-    );
+    /* A categorical palette, one hue per series: the accent pink, the amber
+       and the green, a violet halfway between the green and the pink the long
+       way round the hue wheel, then the red, then a neutral. The pink is
+       the accent mark, already 3:1 on the page, so it takes no lift. */
+    --pl-chart-1: var(--pl-color-accent-mark);
     --pl-chart-2: color-mix(
       in oklch,
-      color-mix(in oklch, var(--_red) 62%, var(--pl-color-frosted-blue)),
+      var(--pl-color-saffron),
       var(--pl-color-foreground) var(--_lift)
     );
     --pl-chart-3: color-mix(
       in oklch,
-      color-mix(in oklch longer hue, var(--_red), var(--pl-color-cerulean)),
+      var(--pl-color-sea-green),
       var(--pl-color-foreground) var(--_lift)
     );
     --pl-chart-4: color-mix(
       in oklch,
-      color-mix(in oklch, var(--_red) 40%, var(--pl-color-cerulean)),
+      color-mix(
+        in oklch longer hue,
+        var(--pl-color-sea-green),
+        var(--pl-color-hot-pink)
+      ),
       var(--pl-color-foreground) var(--_lift)
     );
     --pl-chart-5: color-mix(

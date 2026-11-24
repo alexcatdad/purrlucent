@@ -21,12 +21,7 @@ export const dialogStyles = css`
     --_scrim: light-dark(
       color-mix(
         in srgb,
-        color-mix(
-            in srgb,
-            var(--pl-color-oxford-navy),
-            var(--pl-color-honeydew) 63%
-          )
-          60%,
+        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
         transparent
       ),
       color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
@@ -113,7 +108,7 @@ export const dialogStyles = css`
     padding: calc(var(--_icon) / 4);
     border-radius: var(--pl-radius-control);
     background: linear-gradient(
-      color-mix(in srgb, var(--pl-color-accent), var(--pl-color-honeydew) 25%),
+      color-mix(in srgb, var(--pl-color-accent), var(--pl-color-paper) 25%),
       var(--pl-color-accent)
     );
     color: var(--pl-color-accent-foreground);

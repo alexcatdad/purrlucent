@@ -108,7 +108,7 @@ export const fieldStyles = css`
     background: none;
     color: inherit;
     font: inherit;
-    caret-color: var(--pl-color-accent);
+    caret-color: var(--pl-color-accent-text);
     appearance: none;
   }
 

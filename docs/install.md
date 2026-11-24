@@ -131,7 +131,7 @@ body {
   background:
     radial-gradient(
       at 10% 0%,
-      color-mix(in srgb, var(--pl-color-cerulean) 24%, transparent),
+      color-mix(in srgb, var(--pl-color-hot-pink) 24%, transparent),
       transparent 60%
     ),
     radial-gradient(
@@ -162,7 +162,7 @@ For controls over photos and video, such as a player's bar, set `pl-glass="clear
 
 ```css
 :root {
-  --pl-material-tint: var(--pl-color-cerulean);
+  --pl-material-tint: var(--pl-color-hot-pink);
   --pl-material-tint-strength: 18%;
 }
 ```
@@ -180,9 +180,12 @@ Every color, size and duration is a custom property with the `--pl-` prefix. Ove
 ```css
 :root {
   --pl-color-accent: oklch(51% 0.17 250deg);
+  --pl-color-accent-foreground: #fff;
   --pl-radius-control: 6px;
 }
 ```
+
+The default accent is hot pink, a light color, so its fill takes ink text. A darker accent needs white text: set `--pl-color-accent-foreground` with it.
 
 Radii follow role and pointer. `--pl-radius-control` (8px, 12px for a coarse pointer) rounds buttons, fields and groups; `--pl-radius-panel` (16px) rounds dialogs, popovers, menus, sheets and sidebars. Two follow from them, so nested curves stay parallel: `--pl-radius-control-inner` is the control radius minus the 2px a face sits inside it, and `--pl-radius-row` is the panel radius minus a panel's padding, for menu and list rows. `--pl-radius-full` makes a pill.
 

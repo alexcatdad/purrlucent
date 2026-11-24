@@ -24,12 +24,7 @@ export const drawerStyles = css`
     --_scrim: light-dark(
       color-mix(
         in srgb,
-        color-mix(
-            in srgb,
-            var(--pl-color-oxford-navy),
-            var(--pl-color-honeydew) 63%
-          )
-          60%,
+        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
         transparent
       ),
       color-mix(in srgb, var(--pl-color-shade) 62%, transparent)

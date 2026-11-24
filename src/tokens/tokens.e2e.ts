@@ -200,7 +200,7 @@ test.describe("dark color scheme", () => {
 // Contrast pairs: [foreground roles, ground roles, minimum ratio].
 // Translucent roles are measured as they show: "<role>/<i>" is that role
 // composited over black, grey, white and the page.
-const opaque = ["background", "surface", "input"];
+const opaque = ["background", "surface", "input", "raised"];
 const fills = ["muted-1", "muted-2", "muted-3", "muted-pressed"];
 const backdrops = ["#000", "#808080", "#fff"];
 const tints = ["overlay", "popover"];
