@@ -1,5 +1,22 @@
 # purrlucent
 
+## 0.23.0
+
+### Minor Changes
+
+- 9d6c639: Forms: `pl-combobox` has a `busy` attribute that hides the "No results" row while an app's lookup runs, and fires `pl-input` when leaving the field clears or restores the text. `pl-file-input` forwards `aria-required`, `aria-invalid`, `aria-describedby` and `aria-errormessage` to its button and works inside `pl-field`. `pl-dialog` accepts a secondary `pl-button` in the `actions-start` slot.
+- 9d6c639: `pl-sidebar` and `pl-sidebar-item` changes for app integration:
+
+  - The narrow-screen state is applied in the same task as the width change, before the next frame, so a narrow screen never shows the inline sidebar or overflows horizontally.
+  - Hiding and showing animates the width with the motion tokens, and not under `prefers-reduced-motion: reduce`. A collapse caused by the screen width is not animated.
+  - With `no-toggle`, a collapsed sidebar takes no space. The host of the narrow-screen panel takes no place in the page flow.
+  - Reorder grips show on hover and focus within the row, and always on touch screens.
+  - The gap between an item's icon and its label uses `--pl-gap-icon` and is not affected by page CSS that resets margins.
+  - A `pl-sidebar-item` with `action` passes `aria-haspopup`, `aria-expanded` and, where the browser supports element references, `aria-controls` from the host to its button, so a `pl-menu` trigger exposes its state on the focused control.
+  - After the narrow-screen panel closes, focus returns to the toggle in every browser (#166).
+
+- 9d6c639: Table: `striped` and `density` (`regular`, `compact`) attributes; rows with `aria-selected="true"` take the selection tint; `data-numeric` aligns cells like `align="end"`; plain links in cells use the accent colour; header cells use the small text size with a hairline under the header. Visually hidden content in a table no longer widens the page.
+
 ## 0.22.0
 
 ### Minor Changes
