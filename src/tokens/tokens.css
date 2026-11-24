@@ -51,7 +51,7 @@
     --pl-color-success: var(--pl-color-sea-green);
     --pl-color-success-foreground: #fff;
     --pl-color-success-text: light-dark(
-      var(--pl-color-sea-green),
+      color-mix(in srgb, var(--pl-color-sea-green) 88%, black),
       color-mix(in srgb, var(--pl-color-sea-green), white 55%)
     );
     --pl-color-warning: var(--pl-color-saffron);

@@ -181,7 +181,8 @@ export class PlToast extends LitElement {
     const text =
       this.renderRoot.querySelector<HTMLElement>("[part=description]");
     if (!text) return;
-    if (text.scrollHeight > text.clientHeight) {
+    // A pixel of slack: Firefox rounds a fitting box's scroll height up.
+    if (text.scrollHeight > text.clientHeight + 1) {
       text.tabIndex = 0;
       text.setAttribute("role", "region");
       text.setAttribute("aria-labelledby", "title");
