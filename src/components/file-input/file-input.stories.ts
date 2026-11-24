@@ -76,7 +76,8 @@ export const States: Story = {
     find("several").files = [sample("one.txt"), sample("two.txt")];
     const invalid = find("invalid");
     await invalid.updateComplete;
-    invalid.reportValidity();
+    // checkValidity fires `invalid` like a blocked submit, without the browser's own bubble.
+    invalid.checkValidity();
     await invalid.updateComplete;
   },
 };
