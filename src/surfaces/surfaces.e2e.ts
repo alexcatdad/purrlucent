@@ -122,6 +122,75 @@ test("glass blurs and edges each surface over a patterned backdrop", async ({
   }
 });
 
+// Clear glass dims its backdrop to half (brightness(50%)) under a 35% black
+// film, so the brightest backdrop shows as mid gray before the film: its labels
+// are measured over that and over black, in the dark colors it forces.
+test("clear glass dims its backdrop and its labels hold over white or black", async ({
+  page,
+}) => {
+  await openStory(
+    page,
+    "material:glass;theme:dark",
+    "foundations-surfaces--clear",
+  );
+  const colors = await resolveColors(
+    page,
+    Object.fromEntries(
+      glassForegrounds.map(([role]) => [role, `var(--pl-color-${role})`]),
+    ),
+  );
+  for (const id of ["clear-bar", "clear-panel"]) {
+    expect(await backdropFilter(page, id), id).toMatch(
+      /brightness\((0\.5|50%)\)/,
+    );
+    const background = await page
+      .locator(`#${id}`)
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const shown = await compositeOver(page, background, [
+      "rgb(128 128 128)",
+      "#000",
+    ]);
+    for (const over of shown)
+      for (const [role, need] of glassForegrounds)
+        expect(
+          contrast(colors[role]!, over),
+          `${role} on ${id}`,
+        ).toBeGreaterThanOrEqual(need);
+  }
+});
+
+test("clear glass takes the dark text colors in a light theme too", async ({
+  page,
+}) => {
+  await openStory(
+    page,
+    "material:glass;theme:light",
+    "foundations-surfaces--clear",
+  );
+  const [clear, body] = await page.evaluate(() =>
+    [document.querySelector("#clear-bar")!, document.body].map(
+      (el) => getComputedStyle(el).color,
+    ),
+  );
+  expect(clear).not.toBe(body);
+  const { light } = await resolveColors(page, { light: clear! });
+  expect(contrast(light!, [0, 0, 0])).toBeGreaterThan(
+    contrast(light!, [255, 255, 255]),
+  );
+});
+
+test("a tint changes the glass fill and solid ignores it", async ({ page }) => {
+  await openStory(page, "material:glass", "foundations-surfaces--tinted");
+  const tinted = await page
+    .locator("#bar")
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  await openStory(page, "material:glass");
+  const plain = await page
+    .locator("#bar")
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(tinted).not.toBe(plain);
+});
+
 // Forced colors drops box-shadow, so each surface needs a real edge.
 test("surfaces keep a visible edge under forced colors", async ({ page }) => {
   await openStory(page);

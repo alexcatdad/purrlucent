@@ -146,6 +146,27 @@ body {
 
 The glass fill, `--pl-material-glass`, is as clear as it can be while text on it holds 4.5:1 over anything, black to white. If you control what sits behind your glass, you may set a clearer fill on the `pl-material="glass"` element, and then check text contrast over your own backdrop.
 
+### Clear glass
+
+For controls over photos and video, such as a player's bar, set `pl-glass="clear"` on their container inside glass. Clear glass is a thin dark film over a dimmed backdrop, with light text in both color schemes, as Apple's clear variant is. Use it only over media; for everything else the regular glass reads better.
+
+```html
+<div pl-glass="clear">
+  <pl-button>Play</pl-button>
+</div>
+```
+
+### Tint
+
+`--pl-material-tint` mixes a color into the glass fill, by `--pl-material-tint-strength` (0% by default). Set both on the `pl-material="glass"` element. Apple tints glass sparingly, to mark a primary action, so keep the strength low and check text contrast:
+
+```css
+:root {
+  --pl-material-tint: var(--pl-color-cerulean);
+  --pl-material-tint-strength: 18%;
+}
+```
+
 If glass looks solid everywhere, check the system's transparency setting first: macOS **Reduce transparency** (System Settings, Accessibility, Display), iOS **Reduce Transparency**, or Windows **Transparency effects** off. Each sets `prefers-reduced-transparency: reduce`, and the elements then stay solid on purpose. `matchMedia("(prefers-reduced-transparency: reduce)").matches` in the browser console tells you which it is.
 
 ## Theming
