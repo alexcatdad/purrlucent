@@ -38,7 +38,7 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * @attr {number} collapse-below - The viewport width in px at and below which the sidebar collapses on its own and opens as a modal panel. `0` turns this off. Defaults to 600.
  * @attr {boolean} no-toggle - Hides the built-in toggle button. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.
  * @attr {boolean} reorderable - Level 1 items show a grip and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
- * @attr {string} shortcut - A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known.
+ * @attr {string} shortcut - A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known. A key press needs `mod`, `ctrl` or `alt` to count, so typing is never taken.
  * @attr {string} toggle-label - The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.
  * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
  * @slot header - Content pinned above the navigation, such as a logo or the account name. It sits outside the `nav` landmark.
@@ -236,8 +236,13 @@ export class PlSidebar extends LitElement {
       const to = from + (event.key === "ArrowUp" ? -1 : 1);
       if (to >= 0 && to < peers.length) {
         this.#reorder(item, from, to);
-        // Moving the item in the page drops its focus; the app may have done so.
-        queueMicrotask(() => item.focus());
+        // Moving the item in the page drops its focus; an app that renders
+        // later than this microtask has moved it by the next frame.
+        const refocus = () => {
+          if (!item.matches(":focus-within")) item.focus();
+        };
+        queueMicrotask(refocus);
+        requestAnimationFrame(refocus);
       }
       return;
     }
@@ -369,6 +374,8 @@ export class PlSidebar extends LitElement {
       event.defaultPrevented ||
       event.repeat ||
       event.isComposing ||
+      // A bare character key would swallow typing.
+      !(event.ctrlKey || event.metaKey || event.altKey) ||
       !matchesShortcut(event, this.shortcut, isApple())
     )
       return;
@@ -458,6 +465,7 @@ export class PlSidebar extends LitElement {
         ".toggle:not(.in-dialog)",
       );
       (toggle ?? this.#opener)?.focus();
+      this.#opener = undefined;
     }
   }
 
@@ -485,8 +493,15 @@ export class PlSidebar extends LitElement {
   };
 
   // The panel fills the dialog, so a press on the dialog itself is the scrim.
+  // A drag that starts in the panel and ends on the scrim is not a press on it.
+  #scrimPress = false;
+  #onScrimDown = (event: PointerEvent) => {
+    this.#scrimPress = event.target === event.currentTarget;
+  };
+
   #onScrim = (event: MouseEvent) => {
-    if (event.target === event.currentTarget) this.hide();
+    if (this.#scrimPress && event.target === event.currentTarget) this.hide();
+    this.#scrimPress = false;
   };
 
   #toggleButton(inDialog: boolean) {
@@ -544,6 +559,7 @@ export class PlSidebar extends LitElement {
             part="dialog"
             aria-label=${this.label || messages(this).sidebar}
             @cancel=${this.#onCancel}
+            @pointerdown=${this.#onScrimDown}
             @click=${this.#onScrim}
           >
             <div class="panel">
