@@ -60,6 +60,17 @@ test("the days are a grid named by the month, with weekday headings", async ({
   await expect(page.getByRole("columnheader").first()).toContainText("Sun");
 });
 
+test("weekday names keep their full name and lose the dotted underline", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const abbr = page.getByRole("columnheader").first().locator("abbr");
+  await expect(abbr).toHaveAttribute("title", "Sunday");
+  expect(
+    await abbr.evaluate((el) => getComputedStyle(el).textDecorationLine),
+  ).toBe("none");
+});
+
 test("only the selected day is a tab stop", async ({ page }) => {
   await gotoStory(page, story("default"));
   await expect(page.locator('[data-date][tabindex="0"]')).toHaveCount(1);

@@ -627,6 +627,24 @@ test("a title without a subtitle shows only the title", async ({ page }) => {
     .toBe("none");
 });
 
+test("a bar with only a title centers it vertically", async ({ page }) => {
+  await openStory(page);
+  const offsets = await page.locator("#toolbar").evaluate((bar) => {
+    for (const child of [...bar.children]) child.remove();
+    const title = document.createElement("pl-toolbar-title");
+    title.textContent = "Title only";
+    bar.append(title);
+    return new Promise<number[]>((resolve) =>
+      requestAnimationFrame(() => {
+        const b = bar.getBoundingClientRect();
+        const t = title.getBoundingClientRect();
+        resolve([t.top - b.top, b.bottom - t.bottom]);
+      }),
+    );
+  });
+  expect(Math.abs(offsets[0]! - offsets[1]!)).toBeLessThanOrEqual(1);
+});
+
 for (const name of [
   "chrome",
   "compact",

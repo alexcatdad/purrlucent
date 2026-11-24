@@ -47,11 +47,13 @@ export const toolbarStyles = css`
     inline-size: calc(var(--pl-spacing) * 37.25);
   }
 
+  /* A row is as tall as a control, so a bar with only a title centers it. */
   [part="items"] {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: var(--pl-gap-controls);
+    min-block-size: var(--_ctl);
   }
 
   /* The one emphasized item sits at the trailing end. */
