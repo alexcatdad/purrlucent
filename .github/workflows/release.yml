@@ -81,10 +81,21 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
       # Commits go through the GitHub API, so GitHub signs them for the App.
-      - uses: changesets/action/version@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+      - id: changesets
+        uses: changesets/action/version@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           github-token: ${{ steps.app.outputs.token }}
           script: bun run version-packages
+      # The version pull request merges itself once its required checks pass.
+      # The App enables it, so the merge is the App's push and starts this
+      # workflow again, which then creates the release.
+      - name: Merge the version pull request when its checks pass
+        if: steps.changesets.outputs.pr-number
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ steps.changesets.outputs.pr-number }}
+        run: gh pr merge "$PR" --auto --squash
 
   release:
     needs: plan
