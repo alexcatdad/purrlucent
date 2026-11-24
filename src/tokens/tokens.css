@@ -56,6 +56,30 @@
       color-mix(in srgb, var(--pl-color-saffron) 52%, black),
       color-mix(in srgb, var(--pl-color-saffron), white 25%)
     );
+
+    /* Marks: small saturated shapes (a status dot) that keep each tone's hue
+       and 3:1 on the page, lightened in dark. */
+    --pl-color-neutral-mark: color-mix(
+      in srgb,
+      var(--pl-color-foreground) 50%,
+      transparent
+    );
+    --pl-color-accent-mark: light-dark(
+      var(--pl-color-accent),
+      color-mix(in srgb, var(--pl-color-cerulean), white 25%)
+    );
+    --pl-color-success-mark: light-dark(
+      var(--pl-color-sea-green),
+      color-mix(in srgb, var(--pl-color-sea-green), white 30%)
+    );
+    --pl-color-warning-mark: light-dark(
+      color-mix(in srgb, var(--pl-color-saffron) 70%, black),
+      var(--pl-color-saffron)
+    );
+    --pl-color-destructive-mark: light-dark(
+      var(--pl-color-destructive),
+      color-mix(in srgb, var(--pl-color-punch-red), white 20%)
+    );
     --pl-color-selected: light-dark(
       var(--pl-color-accent),
       var(--pl-color-frosted-blue)

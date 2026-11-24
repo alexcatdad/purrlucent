@@ -57,30 +57,30 @@ export const badgeStyles = css`
     --_text: var(--pl-color-warning-foreground);
   }
 
-  /* A status pill: the neutral fill, and the tone's text color on a dot. */
+  /* A status pill: the neutral fill, and the tone's mark color on a dot. */
   :host([dot]) {
     --_fill: var(--pl-color-muted-3);
     --_text: var(--pl-color-foreground);
-    --_dot: var(--pl-color-muted-foreground);
+    --_dot: var(--pl-color-neutral-mark);
 
     gap: var(--pl-space-1);
     padding-inline: var(--pl-space-2);
   }
 
   :host([dot][variant="accent"]) {
-    --_dot: var(--pl-color-accent-text);
+    --_dot: var(--pl-color-accent-mark);
   }
 
   :host([dot][variant="success"]) {
-    --_dot: var(--pl-color-success-text);
+    --_dot: var(--pl-color-success-mark);
   }
 
   :host([dot][variant="warning"]) {
-    --_dot: var(--pl-color-warning-text);
+    --_dot: var(--pl-color-warning-mark);
   }
 
   :host([dot][variant="destructive"]) {
-    --_dot: var(--pl-color-destructive-text);
+    --_dot: var(--pl-color-destructive-mark);
   }
 
   [part="dot"] {

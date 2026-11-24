@@ -34,30 +34,31 @@ test("the variants differ in fill", async ({ page }) => {
   expect(new Set(fills).size).toBe(5);
 });
 
-test("dot: one neutral fill, and a round dot colored per variant", async ({
-  page,
-}) => {
-  await gotoStory(page, story("status"));
-  const badges = await page.locator("pl-badge").evaluateAll((els) =>
-    els.map((el) => {
-      const dot = el.shadowRoot!.querySelector('[part="dot"]')!;
-      const box = dot.getBoundingClientRect();
-      return {
-        fill: getComputedStyle(el).backgroundColor,
-        dot: getComputedStyle(dot).backgroundColor,
-        size: [box.width, box.height],
-        hidden: dot.getAttribute("aria-hidden"),
-      };
-    }),
-  );
-  expect(new Set(badges.map((b) => b.fill)).size).toBe(1);
-  expect(new Set(badges.map((b) => b.dot)).size).toBe(5);
-  for (const badge of badges) {
-    expect(badge.size[0]).toBeGreaterThan(0);
-    expect(badge.size[0]).toBe(badge.size[1]);
-    expect(badge.hidden).toBe("true");
-  }
-});
+for (const theme of ["light", "dark"])
+  test(`dot in ${theme}: one neutral fill, and a round dot colored per variant`, async ({
+    page,
+  }) => {
+    await gotoStory(page, story("status"), `theme:${theme}`);
+    const badges = await page.locator("pl-badge").evaluateAll((els) =>
+      els.map((el) => {
+        const dot = el.shadowRoot!.querySelector('[part="dot"]')!;
+        const box = dot.getBoundingClientRect();
+        return {
+          fill: getComputedStyle(el).backgroundColor,
+          dot: getComputedStyle(dot).backgroundColor,
+          size: [box.width, box.height],
+          hidden: dot.getAttribute("aria-hidden"),
+        };
+      }),
+    );
+    expect(new Set(badges.map((b) => b.fill)).size).toBe(1);
+    expect(new Set(badges.map((b) => b.dot)).size).toBe(5);
+    for (const badge of badges) {
+      expect(badge.size[0]).toBeGreaterThan(0);
+      expect(badge.size[0]).toBe(badge.size[1]);
+      expect(badge.hidden).toBe("true");
+    }
+  });
 
 test("the text meets 4.5:1 against the fill in every variant", async ({
   page,
