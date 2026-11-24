@@ -376,13 +376,18 @@ import "purrlucent/button";
 
 ### `<pl-button>`
 
-A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
+A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns.
 
 | Attribute     | Type                              | Default       | Description                                                                                              |
 | ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| `aria-label`  | `string`                          |               |                                                                                                          |
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
+| `href`        | `string \| null`                  | `null`        | Makes the button a link to this address.                                                                 |
+| `target`      | `string \| null`                  | `null`        | Where the link opens, as on `a`.                                                                         |
+| `rel`         | `string \| null`                  | `null`        | The link's relationship, as on `a`.                                                                      |
+| `download`    | `string \| null`                  | `null`        | The link downloads its address, as on `a`; the value is the suggested file name.                         |
 | `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
 | `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
@@ -397,6 +402,7 @@ A button. The label is the slotted text and is required for an accessible name; 
 **Parts**
 
 - `label`: The wrapper around the label.
+- `link`: The inner link, when there is an `href`.
 
 **Events**
 
@@ -2265,9 +2271,14 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 | Attribute     | Type                              | Default       | Description                                                                                              |
 | ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
 | `pressed`     | `boolean`                         | `false`       |                                                                                                          |
+| `aria-label`  | `string`                          |               |                                                                                                          |
 | `default`     | `boolean`                         | `false`       | The dialog's default button: Return activates it, it draws as primary and it takes initial focus.        |
 | `cancel`      | `boolean`                         | `false`       | The dialog's cancel button: Escape and Command-Period activate it.                                       |
 | `busy`        | `boolean`                         | `false`       | The action is running: a spinner shows before the label, the button ignores presses and stays focusable. |
+| `href`        | `string \| null`                  | `null`        | Makes the button a link to this address.                                                                 |
+| `target`      | `string \| null`                  | `null`        | Where the link opens, as on `a`.                                                                         |
+| `rel`         | `string \| null`                  | `null`        | The link's relationship, as on `a`.                                                                      |
+| `download`    | `string \| null`                  | `null`        | The link downloads its address, as on `a`; the value is the suggested file name.                         |
 | `variant`     | `PlButtonVariant`                 | `"secondary"` |                                                                                                          |
 | `type`        | `"button" \| "submit" \| "reset"` | `"button"`    |                                                                                                          |
 | `size`        | `PlButtonSize`                    | `"md"`        |                                                                                                          |
@@ -2282,6 +2293,7 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 **Parts**
 
 - `label`: The wrapper around the label.
+- `link`: The inner link, when there is an `href`.
 
 **Events**
 

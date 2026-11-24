@@ -159,6 +159,36 @@ export const Busy: Story = {
   },
 };
 
+/**
+ * With an `href` the button is a link that keeps the button's look: opening in
+ * a new tab and copying the address work, and a `click` listener can call
+ * `preventDefault()` to route in the app instead.
+ */
+export const Links: Story = {
+  render: () =>
+    row([
+      html`<pl-button id="link" href="#contracts" variant="primary"
+        >Open in Contracts</pl-button
+      >`,
+      html`<pl-button id="link-ghost" href="#list" variant="ghost"
+        >Back to list</pl-button
+      >`,
+      html`<pl-button id="link-icon" href="#new" icon aria-label="New contract"
+        >${plus}</pl-button
+      >`,
+      html`<pl-button
+        id="link-new-tab"
+        href="#report"
+        target="_blank"
+        rel="noopener"
+        >Open report</pl-button
+      >`,
+      html`<pl-button id="link-disabled" href="#archive" disabled
+        >Archive</pl-button
+      >`,
+    ]),
+};
+
 /** Submit and reset buttons act on the form they are in. */
 export const InForm: Story = {
   render: () => html`
