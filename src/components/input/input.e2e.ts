@@ -86,9 +86,9 @@ test("Return in a form without a submit button presses the dialog's default acti
   await gotoStory(page, story("in-dialog"));
   const dialog = page.locator("#dialog");
   await dialog.evaluate((el) => {
-    (window as unknown as { closed: unknown[] }).closed = [];
+    (window as unknown as { plClosed: unknown[] }).plClosed = [];
     el.addEventListener("pl-close", (event) =>
-      (window as unknown as { closed: unknown[] }).closed.push(
+      (window as unknown as { plClosed: unknown[] }).plClosed.push(
         (event as CustomEvent).detail,
       ),
     );
@@ -101,7 +101,7 @@ test("Return in a form without a submit button presses the dialog's default acti
   await expect(page.getByRole("dialog", { name: "Rename" })).toBeHidden();
   expect(
     await page.evaluate(
-      () => (window as unknown as { closed: unknown[] }).closed,
+      () => (window as unknown as { plClosed: unknown[] }).plClosed,
     ),
   ).toEqual([{ returnValue: "rename" }]);
 });
