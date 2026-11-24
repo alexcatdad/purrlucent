@@ -4,7 +4,7 @@ import "../button/button.ts";
 import "./prompt-input.ts";
 
 const meta = {
-  title: "Components/Prompt Input",
+  title: "AI & Chat/Prompt Input",
   component: "pl-prompt-input",
 } satisfies Meta;
 
@@ -52,6 +52,17 @@ export const Tools: Story = {
         >
         <pl-button slot="end" variant="ghost">Model</pl-button>
       </pl-prompt-input>`,
+    ),
+};
+
+/** The field grows with its text, up to about eight lines. Shift+Enter adds a line. */
+export const Multiline: Story = {
+  render: () =>
+    column(
+      html`<pl-prompt-input
+        id="prompt"
+        value=${"Summarize the release notes:\n- Fixes\n- Features\n- Breaking changes"}
+      ></pl-prompt-input>`,
     ),
 };
 

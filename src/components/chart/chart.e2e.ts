@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-chart--${name}`;
+const story = (name: string) => `data-chart--${name}`;
 
 const label = "Monthly active users by plan, January to June, in users";
 
@@ -358,6 +358,30 @@ test("under rtl the legend and the table read from the right", async ({
   const head = (await heads.first().boundingBox())!;
   const tail = (await heads.last().boundingBox())!;
   expect(head.x).toBeGreaterThan(tail.x);
+});
+
+test("chart rtl: January is rightmost", async ({ page }) => {
+  await gotoStory(page, story("rtl"));
+  const centers = await svg(page).evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    const center = (node: Element) => {
+      const r = node.getBoundingClientRect();
+      return r.left + r.width / 2;
+    };
+    const texts = [...el.querySelectorAll("text")];
+    const at = (pattern: RegExp) =>
+      texts.filter((t) => pattern.test(t.textContent!.trim())).map(center);
+    return {
+      jan: at(/^Jan$/)[0],
+      jun: at(/^Jun$/)[0],
+      values: at(/^[\d,.]+$/),
+      middle: box.left + box.width / 2,
+    };
+  });
+  expect(centers.jan).toBeGreaterThan(centers.jun!);
+  // The value axis sits on the right: its labels are right of the middle.
+  expect(centers.values.length).toBeGreaterThan(0);
+  for (const x of centers.values) expect(x).toBeGreaterThan(centers.middle);
 });
 
 test("every kind of chart passes axe", async ({ page }) => {

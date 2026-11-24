@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "./separator.ts";
 import type { PlSeparator } from "./separator.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Separator",
+  title: "Containers/Separator",
   component: "pl-separator",
 } satisfies Meta;
 
@@ -69,10 +70,12 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    html`<div style=${box}>
-      <p>Account</p>
-      <pl-separator></pl-separator>
-      <p>Notifications</p>
-    </div>`,
+    underGlass(
+      html`<div style=${box}>
+        <p>Account</p>
+        <pl-separator></pl-separator>
+        <p>Notifications</p>
+      </div>`,
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

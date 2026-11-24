@@ -24,7 +24,7 @@ export const inputGroupStyles = css`
     grid-template-columns:
       max-content minmax(calc(var(--pl-spacing) * 20), 1fr)
       max-content;
-    inline-size: calc(var(--pl-spacing) * 30);
+    inline-size: calc(var(--pl-spacing) * 40);
     /* Wide addons or large text grow the group instead of squeezing the field. */
     min-inline-size: min-content;
     max-inline-size: 100%;
@@ -56,8 +56,11 @@ export const inputGroupStyles = css`
     inset-inline: 0;
     block-size: var(--_h);
     border-radius: var(--pl-radius);
-    background: var(--pl-color-input);
-    box-shadow: 0 0 0 1px var(--_edge);
+    background: var(--pl-material-field);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow:
+      var(--pl-material-edge),
+      0 0 0 1px var(--_edge);
     outline: var(--pl-ring-width) solid transparent;
     outline-offset: var(--pl-ring-offset);
     pointer-events: none;
@@ -115,6 +118,7 @@ export const inputGroupStyles = css`
   /* A button fills its end of the field and brings its own padding and face. */
   ::slotted(pl-button[slot]) {
     padding-block: 0;
+    box-shadow: none;
   }
 
   ::slotted(pl-button[slot="start"]) {

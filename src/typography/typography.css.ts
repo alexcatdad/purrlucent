@@ -121,8 +121,225 @@ export const proseStyles = css`
     border-block-start: 1px solid var(--pl-color-border);
   }
 
+  .pl-prose :is(h5, h6) {
+    margin-block: var(--pl-space-4) var(--pl-space-1);
+    font-size: var(--pl-text-base);
+    font-weight: 600;
+    line-height: var(--pl-leading-loose);
+  }
+
+  .pl-prose h6 {
+    color: var(--pl-color-muted-foreground);
+    font-size: var(--pl-text-sm);
+  }
+
+  .pl-prose .lead {
+    color: var(--pl-color-foreground);
+    font-size: var(--pl-text-lg);
+  }
+
+  .pl-prose small {
+    font-size: var(--pl-text-sm);
+  }
+
+  .pl-prose :is(strong, b) {
+    font-weight: 600;
+  }
+
+  .pl-prose :is(em, i, cite) {
+    font-style: italic;
+  }
+
+  .pl-prose q {
+    font-style: italic;
+  }
+
+  .pl-prose mark {
+    padding-inline: var(--pl-space-0-5);
+    border-radius: var(--pl-radius);
+    background-color: var(--pl-color-selected);
+    color: var(--pl-color-selected-foreground);
+  }
+
+  .pl-prose del {
+    color: var(--pl-color-muted-foreground);
+    text-decoration-line: line-through;
+  }
+
+  .pl-prose ins {
+    text-decoration-line: underline;
+    text-decoration-style: double;
+    text-underline-offset: var(--pl-ring-offset);
+  }
+
+  .pl-prose s {
+    text-decoration-line: line-through;
+  }
+
+  .pl-prose :is(sub, sup) {
+    font-size: var(--pl-text-xs);
+    line-height: 0;
+  }
+
+  .pl-prose abbr[title] {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: var(--pl-ring-offset);
+    cursor: help;
+  }
+
+  .pl-prose time {
+    color: var(--pl-color-muted-foreground);
+  }
+
+  .pl-prose kbd {
+    display: inline-block;
+    box-sizing: border-box;
+    min-inline-size: calc(var(--pl-leading-normal) + var(--pl-space-1));
+    padding-inline: var(--pl-space-1-5);
+    border: 1px solid var(--pl-color-border);
+    border-radius: var(--pl-radius);
+    background-color: var(--pl-color-muted-2);
+    color: var(--pl-color-foreground);
+    font: 500 var(--pl-text-xs) /
+      calc(var(--pl-leading-normal) + var(--pl-space-1)) var(--pl-font-sans);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .pl-prose dl {
+    margin-block: var(--pl-space-2) var(--pl-space-4);
+    line-height: var(--pl-leading-normal);
+  }
+
+  .pl-prose dt {
+    font-weight: 600;
+  }
+
+  .pl-prose dd {
+    margin-inline: var(--pl-indent) 0;
+    margin-block-end: var(--pl-space-2);
+    color: var(--pl-color-muted-foreground);
+  }
+
+  .pl-prose figure {
+    margin-block: var(--pl-space-2) var(--pl-space-4);
+    margin-inline: 0;
+  }
+
+  .pl-prose figure img {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+    border-radius: var(--pl-radius-lg);
+  }
+
+  .pl-prose figcaption {
+    margin-block-start: var(--pl-space-2);
+    color: var(--pl-color-muted-foreground);
+    font-size: var(--pl-text-sm);
+    line-height: var(--pl-leading-normal);
+  }
+
+  .pl-prose blockquote footer {
+    margin-block-start: var(--pl-space-1);
+    font-size: var(--pl-text-sm);
+    line-height: var(--pl-leading-normal);
+  }
+
+  .pl-prose caption {
+    padding-block: var(--pl-space-2);
+    caption-side: bottom;
+    color: var(--pl-color-muted-foreground);
+    font-size: var(--pl-text-sm);
+    text-align: start;
+  }
+
+  .pl-prose address {
+    margin-block: var(--pl-space-2) var(--pl-space-4);
+    font-style: normal;
+    line-height: var(--pl-leading-normal);
+  }
+
+  .pl-prose pre {
+    box-sizing: border-box;
+    margin-block: var(--pl-space-2) var(--pl-space-4);
+    padding: var(--pl-space-3) var(--pl-space-4);
+    overflow-x: auto;
+    border-radius: var(--pl-radius-lg);
+    background-color: var(--pl-color-track);
+    font-family: var(--pl-font-mono);
+    font-size: var(--pl-text-sm);
+    line-height: var(--pl-leading-normal);
+    tab-size: 2;
+  }
+
+  .pl-prose details {
+    margin-block: var(--pl-space-2) var(--pl-space-4);
+    padding-inline: var(--pl-space-3);
+    border: 1px solid var(--pl-color-border);
+    border-radius: var(--pl-radius-lg);
+  }
+
+  .pl-prose summary {
+    display: flex;
+    align-items: center;
+    gap: var(--pl-gap-icon);
+    min-block-size: var(--pl-size-hit-min);
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .pl-prose summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* The pl-collapsible chevron: points inline-end, turns toward block-end open. */
+  .pl-prose summary::before {
+    flex: none;
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
+    background-color: var(--pl-color-muted-foreground);
+    content: "";
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9.25 5.75 5.5 5.5q.75.75 0 1.5l-5.5 5.5'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    transition: transform var(--pl-duration) var(--pl-ease-out);
+  }
+
+  .pl-prose details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  .pl-prose summary:dir(rtl)::before {
+    transform: scaleX(-1);
+  }
+
+  .pl-prose details[open] > summary:dir(rtl)::before {
+    transform: scaleX(-1) rotate(90deg);
+  }
+
+  .pl-prose summary:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
+  .pl-prose details > :not(summary) {
+    margin-block-end: var(--pl-space-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pl-prose summary::before {
+      transition: none;
+    }
+  }
+
   @media (prefers-contrast: more) {
     .pl-prose blockquote {
+      color: var(--pl-color-foreground);
+    }
+
+    .pl-prose :is(dd, del, time, figcaption, caption, h6) {
       color: var(--pl-color-foreground);
     }
 
@@ -142,6 +359,34 @@ export const proseStyles = css`
 
     .pl-prose blockquote {
       border-inline-start-color: CanvasText;
+    }
+
+    .pl-prose mark {
+      background-color: Mark;
+      color: MarkText;
+    }
+
+    .pl-prose kbd {
+      border-color: ButtonText;
+      background-color: ButtonFace;
+      color: ButtonText;
+    }
+
+    .pl-prose pre {
+      border: 1px solid CanvasText;
+    }
+
+    .pl-prose details {
+      border-color: CanvasText;
+    }
+
+    .pl-prose summary::before {
+      background-color: CanvasText;
+      transition: none;
+    }
+
+    .pl-prose summary:focus-visible {
+      outline-color: Highlight;
     }
 
     .pl-prose :is(th, td) {

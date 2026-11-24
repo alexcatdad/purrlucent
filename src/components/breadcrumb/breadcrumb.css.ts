@@ -5,6 +5,9 @@ export const breadcrumbStyles = css`
   :host {
     display: block;
     min-inline-size: 0;
+    background: var(--pl-material-capsule);
+    backdrop-filter: var(--pl-material-bar-filter);
+    box-shadow: var(--pl-material-edge);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
 

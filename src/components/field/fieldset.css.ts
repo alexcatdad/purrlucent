@@ -12,6 +12,13 @@ export const fieldsetStyles = css`
     display: none;
   }
 
+  /* A disabled fieldset reads as off: its legend, and the labels of the fields
+     in it, take the disabled color. A field takes its color from the token. */
+  :host([disabled]) {
+    --pl-color-foreground: var(--pl-color-disabled-foreground);
+    --pl-color-muted-foreground: var(--pl-color-disabled-foreground);
+  }
+
   [part="legend"] {
     font-size: var(--pl-text-base);
     font-weight: 600;

@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-radio-group--${name}`;
+const story = (name: string) => `forms-radio-group--${name}`;
 
 const chosen = (page: Page, id = "#control") =>
   page.locator(id).evaluate((el) => (el as HTMLInputElement).value);
@@ -210,14 +210,23 @@ test("horizontal radios lie in a row", async ({ page }) => {
   expect(b!.x).toBeGreaterThan(a!.x);
 });
 
-test("horizontal radios share one width, the longest label's", async ({
-  page,
-}) => {
+test("horizontal radio: equal gaps", async ({ page }) => {
   await gotoStory(page, story("horizontal"));
-  const widths = await page
+  const { gaps, expected } = await page
     .locator("pl-radio")
-    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
-  expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(0.5);
+    .evaluateAll((els) => {
+      const boxes = els.map((el) => el.getBoundingClientRect());
+      const probe = document.body.appendChild(document.createElement("div"));
+      probe.style.inlineSize = "var(--pl-gap-form)";
+      const expected = probe.getBoundingClientRect().width;
+      probe.remove();
+      return {
+        gaps: boxes.slice(1).map((box, i) => box.left - boxes[i]!.right),
+        expected,
+      };
+    });
+  expect(gaps).toHaveLength(2);
+  for (const gap of gaps) expect(Math.abs(gap - expected)).toBeLessThan(1);
 });
 
 test("the group submits name=value only while a radio is chosen", async ({

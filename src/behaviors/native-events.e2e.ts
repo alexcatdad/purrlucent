@@ -40,7 +40,7 @@ for (const [name, selector] of [
   test(`a ${name} reads as a checkbox and a click fires input and change`, async ({
     page,
   }) => {
-    await gotoStory(page, `components-${name}--default`);
+    await gotoStory(page, `forms-${name}--default`);
     const host = page.locator(selector);
     expect(await host.evaluate((el) => (el as { type?: string }).type)).toBe(
       "checkbox",
@@ -54,7 +54,7 @@ for (const [name, selector] of [
 test("choosing an option in a select fires input and change", async ({
   page,
 }) => {
-  await gotoStory(page, "components-select--default");
+  await gotoStory(page, "forms-select--default");
   await listen(page.locator("#select"));
   await page.getByRole("combobox", { name: "Apple variety" }).click();
   await page.getByRole("option", { name: "Gala", exact: true }).click();
@@ -62,7 +62,7 @@ test("choosing an option in a select fires input and change", async ({
 });
 
 test("clearing a combobox fires change, then input", async ({ page }) => {
-  await gotoStory(page, "components-combobox--preselected");
+  await gotoStory(page, "forms-combobox--preselected");
   await listen(page.locator("#combo"));
   await page.getByRole("combobox", { name: "Apple variety" }).focus();
   await page.keyboard.press("ArrowDown");
@@ -79,7 +79,7 @@ test("clearing a combobox fires change, then input", async ({ page }) => {
 test("a click and an arrow key in a radio group each fire input and change", async ({
   page,
 }) => {
-  await gotoStory(page, "components-radio-group--default");
+  await gotoStory(page, "forms-radio-group--default");
   await listen(page.locator("#control"));
   await page.getByRole("radio", { name: "New windows" }).click();
   await page.keyboard.press("ArrowDown");
@@ -92,14 +92,14 @@ test("a click and an arrow key in a radio group each fire input and change", asy
 test("choosing a segment in a toggle group fires input and change", async ({
   page,
 }) => {
-  await gotoStory(page, "components-toggle-group--default");
+  await gotoStory(page, "actions-toggle-group--default");
   await listen(page.locator("#control"));
   await page.getByRole("radio", { name: "Week" }).click();
   expect(await logged(page)).toEqual(changed("week"));
 });
 
 test("a key on a slider fires input, then change", async ({ page }) => {
-  await gotoStory(page, "components-slider--default");
+  await gotoStory(page, "forms-slider--default");
   const host = page.locator("#slider");
   await listen(host);
   await page.getByRole("slider", { name: "Volume" }).focus();
@@ -119,7 +119,7 @@ test("a key on a slider fires input, then change", async ({ page }) => {
 test("typing in an input fires one input per edit and change on commit", async ({
   page,
 }) => {
-  await gotoStory(page, "components-input--default");
+  await gotoStory(page, "forms-input--default");
   await listen(page.locator("pl-input"));
   await page.getByRole("textbox", { name: "Name" }).pressSequentially("ab");
   await page.keyboard.press("Tab");
@@ -136,7 +136,7 @@ test("typing in an input fires one input per edit and change on commit", async (
 test("the clear button of a search field fires input and change", async ({
   page,
 }) => {
-  await gotoStory(page, "components-input--search");
+  await gotoStory(page, "forms-input--search");
   const host = page.locator("pl-input").nth(1);
   await listen(host);
   await host.getByRole("button", { name: "Clear" }).click();
@@ -149,7 +149,7 @@ test("the clear button of a search field fires input and change", async ({
 });
 
 test("typing in a text area fires input and change", async ({ page }) => {
-  await gotoStory(page, "components-text-area--default");
+  await gotoStory(page, "forms-text-area--default");
   await listen(page.locator("#area"));
   await page.getByRole("textbox", { name: "Message" }).pressSequentially("a");
   await page.keyboard.press("Tab");
@@ -162,7 +162,7 @@ test("typing in a text area fires input and change", async ({ page }) => {
 });
 
 test("a key on a number field fires input and change", async ({ page }) => {
-  await gotoStory(page, "components-number-field--steps");
+  await gotoStory(page, "forms-number-field--steps");
   await listen(page.locator("pl-number-field"));
   await page.getByRole("spinbutton").focus();
   await page.keyboard.press("ArrowUp");

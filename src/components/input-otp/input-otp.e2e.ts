@@ -4,8 +4,14 @@ import {
   expectNoOverflowAtTextZoom,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
-const story = (name: string) => `components-input-otp--${name}`;
+const story = (name: string) => `forms-input-otp--${name}`;
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-input-otp");
+});
 
 /** What the form would submit, as [name, value] pairs. */
 const submitted = (page: Page) =>
@@ -371,6 +377,24 @@ test("required and a short code make the form invalid until the code is complete
   expect(await valid(page)).toBe(false);
   await page.getByRole("textbox", { name: "PIN" }).fill("1234");
   expect(await valid(page)).toBe(true);
+});
+
+test("states: the invalid row shows its message and is marked invalid", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const invalid = page.getByRole("textbox", { name: "Invalid", exact: true });
+  await expect(invalid).toHaveAttribute("aria-invalid", "true");
+  await expect(page.locator("#invalid").locator('[part="message"]')).toHaveText(
+    "Enter all 6 characters.",
+  );
+});
+
+test("labelled: the label is visible", async ({ page }) => {
+  await gotoStory(page, story("labelled"));
+  await expect(
+    page.getByText("Verification code", { exact: true }),
+  ).toBeVisible();
 });
 
 test("an incomplete code shows its message after a blur and describes the input with it", async ({

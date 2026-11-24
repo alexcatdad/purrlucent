@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-accordion--default";
+const story = "containers-accordion--default";
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
@@ -86,7 +86,7 @@ test("Enter and Space toggle the focused header", async ({ page }) => {
 });
 
 test("opening a section closes the others", async ({ page }) => {
-  await open(page, "components-accordion--preselected");
+  await open(page, "containers-accordion--preselected");
   expect(await openValues(page)).toEqual(["returns"]);
   await header(page, "Warranty").click();
   await expect(header(page, "Returns")).toHaveAttribute(
@@ -97,7 +97,7 @@ test("opening a section closes the others", async ({ page }) => {
 });
 
 test("multiple keeps several sections open", async ({ page }) => {
-  await open(page, "components-accordion--multiple");
+  await open(page, "containers-accordion--multiple");
   expect(await openValues(page)).toEqual(["shipping", "returns"]);
   await header(page, "Warranty").click();
   await expect(header(page, "Warranty")).toHaveAttribute(
@@ -132,7 +132,7 @@ test("every header is a tab stop; arrows, Home and End move between headers", as
 test("arrow keys inside a panel do not move between headers", async ({
   page,
 }) => {
-  await open(page, "components-accordion--preselected");
+  await open(page, "containers-accordion--preselected");
   await page.locator("[value=returns]").evaluate((el) => {
     const input = document.createElement("input");
     input.id = "inside";
@@ -147,7 +147,7 @@ test("arrow keys inside a panel do not move between headers", async ({
 test("a disabled section is skipped by arrows and ignores clicks", async ({
   page,
 }) => {
-  await open(page, "components-accordion--disabled-item");
+  await open(page, "containers-accordion--disabled-item");
   await expect(header(page, "Returns")).toBeDisabled();
   await header(page, "Shipping").focus();
   await page.keyboard.press("ArrowDown"); // skips Returns
@@ -159,7 +159,7 @@ test("a disabled section is skipped by arrows and ignores clicks", async ({
 test("each header is a button that names its panel, and a closed panel is hidden", async ({
   page,
 }) => {
-  await open(page, "components-accordion--preselected");
+  await open(page, "containers-accordion--preselected");
   const ids = await page.locator("[value=returns]").evaluate((el) => {
     const root = el.shadowRoot!;
     const button = root.querySelector("button")!;
@@ -179,12 +179,12 @@ test("each header is a button that names its panel, and a closed panel is hidden
 });
 
 test("the heading level follows the level attribute", async ({ page }) => {
-  await open(page, "components-accordion--heading-level");
+  await open(page, "containers-accordion--heading-level");
   await expect(page.getByRole("heading", { level: 2 })).toHaveCount(2);
 });
 
 test("a heading slot names the button", async ({ page }) => {
-  await open(page, "components-accordion--rich-heading");
+  await open(page, "containers-accordion--rich-heading");
   await expect(
     page.getByRole("button", { name: "Shipping (free over 50)" }),
   ).toBeVisible();
@@ -193,7 +193,7 @@ test("a heading slot names the button", async ({ page }) => {
 test("the arrow points to the end when closed and down when open, mirrored under rtl", async ({
   page,
 }) => {
-  await open(page, "components-accordion--preselected");
+  await open(page, "containers-accordion--preselected");
   const turn = (value: string) =>
     page
       .locator(`[value=${value}]`)
@@ -203,7 +203,7 @@ test("the arrow points to the end when closed and down when open, mirrored under
       );
   await expect.poll(() => turn("shipping")).toBe("none");
   await expect.poll(() => turn("returns")).toMatch(/^matrix\(0, 1, -1, 0/);
-  await open(page, "components-accordion--rtl");
+  await open(page, "containers-accordion--rtl");
   await expect
     .poll(() =>
       page
@@ -218,7 +218,7 @@ test("the arrow points to the end when closed and down when open, mirrored under
 });
 
 test("under rtl the text starts on the right", async ({ page }) => {
-  await open(page, "components-accordion--rtl");
+  await open(page, "containers-accordion--rtl");
   const [button, item] = await page
     .locator("[value=shipping]")
     .evaluate((el) => [
@@ -282,13 +282,13 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
     page,
   }) => {
     await expectAccessible(
-      await open(page, "components-accordion--preselected", globals),
+      await open(page, "containers-accordion--preselected", globals),
     );
   });
 }
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(
-    await open(page, "components-accordion--preselected"),
+    await open(page, "containers-accordion--preselected"),
   );
 });

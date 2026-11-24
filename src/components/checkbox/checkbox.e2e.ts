@@ -4,9 +4,14 @@ import {
   expectNoOverflowAtTextZoom,
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
+import {
+  compositeOver,
+  contrast,
+  resolveColors,
+} from "../../../e2e/helpers/color.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-checkbox--${name}`;
+const story = (name: string) => `forms-checkbox--${name}`;
 
 /** What the form would submit, as [name, value] pairs. */
 const submitted = (page: Page) =>
@@ -88,6 +93,31 @@ test("a click on a mixed box makes it checked", async ({ page }) => {
   const control = page.getByRole("checkbox", { name: "Tags" });
   await control.click();
   await expect(control).toHaveAttribute("aria-checked", "true");
+});
+
+test("a read-only box keeps its state, takes focus and is marked read-only", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("checkbox", { name: "Read only" });
+  await expect(control).toHaveAttribute("aria-readonly", "true");
+  await expect(control).toBeChecked();
+  await control.click();
+  await expect(control).toBeChecked();
+  await expect(control).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(control).toBeChecked();
+});
+
+test("an invalid box is marked invalid and its message is shown", async ({
+  page,
+}) => {
+  await gotoStory(page, story("states"));
+  const control = page.getByRole("checkbox", { name: "Accept the terms" });
+  await expect(control).toHaveAttribute("aria-invalid", "true");
+  await expect(
+    page.getByText("Accept the terms to continue.", { exact: true }),
+  ).toBeVisible();
 });
 
 test("a disabled box takes no focus and does not change", async ({ page }) => {
@@ -306,6 +336,35 @@ test("virtual screen reader speaks the role, name and state", async ({
   expect(spoken).toContain("checkbox, Shared, not checked");
   expect(spoken).toContain("checkbox, Recents, checked");
   expect(spoken).toContain("checkbox, Tags, partially checked");
+});
+
+// Disabled controls are exempt from WCAG 1.4.11; increased contrast is the mode
+// where the disabled color is dark enough to reach 3:1, and the outline must use it.
+test("disabled unchecked checkbox border meets 3:1 non-text contrast", async ({
+  page,
+}) => {
+  // Set before a load: Firefox does not restyle a loaded page for it.
+  await page.emulateMedia({ contrast: "more" });
+  for (const theme of ["light", "dark"]) {
+    await gotoStory(page, story("states"), `theme:${theme}`);
+    const shadow = await page
+      .locator("pl-checkbox[disabled]:not([checked])")
+      .first()
+      .evaluate(
+        (el) =>
+          getComputedStyle(el.shadowRoot!.querySelector('[part="box"]')!)
+            .boxShadow,
+      );
+    const line = /^(?:rgba?|color)\([^)]*\)/.exec(shadow)?.[0];
+    expect(line, `${theme}: a 1px outline`).toBeDefined();
+    const { page: base } = await resolveColors(page, {
+      page: "var(--pl-color-background)",
+    });
+    const [outline] = await compositeOver(page, line!, [
+      `rgb(${base!.join(",")})`,
+    ]);
+    expect(contrast(outline!, base!), theme).toBeGreaterThanOrEqual(3);
+  }
 });
 
 test.describe("coarse pointer on a wide screen", () => {

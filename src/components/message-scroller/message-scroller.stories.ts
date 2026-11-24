@@ -3,7 +3,7 @@ import { html } from "lit";
 import "./message-scroller.ts";
 
 const meta = {
-  title: "Components/Message Scroller",
+  title: "AI & Chat/Message Scroller",
   component: "pl-message-scroller",
 } satisfies Meta;
 

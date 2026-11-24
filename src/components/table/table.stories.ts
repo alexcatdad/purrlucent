@@ -3,8 +3,9 @@ import { html } from "lit";
 import { expect, waitFor } from "storybook/test";
 import "./table.ts";
 import type { PlTable } from "./table.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
-const meta = { title: "Components/Table" } satisfies Meta;
+const meta = { title: "Data/Table" } satisfies Meta;
 
 export default meta;
 
@@ -60,7 +61,7 @@ const control = async (canvasElement: HTMLElement) => {
 export const Default: Story = { render };
 
 export const Glass: Story = {
-  render,
+  render: () => underGlass(render()),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
 };
 
@@ -69,6 +70,88 @@ export const Light: Story = { render, globals: { theme: "light" } };
 export const Dark: Story = { render, globals: { theme: "dark" } };
 
 export const MoreContrast: Story = { render, globals: { contrast: "more" } };
+
+/** A two-row heading: the group headers span their columns with `colspan`. */
+export const GroupedHeaders: Story = {
+  render: () => html`
+    <pl-table id="control">
+      <table>
+        <caption>
+          Pioneers by field
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col" rowspan="2">Name</th>
+            <th scope="colgroup" colspan="2">Career</th>
+            <th scope="colgroup" colspan="2">Life</th>
+          </tr>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Years active</th>
+            <th scope="col" align="end">Age</th>
+            <th scope="col">Born</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Ada Lovelace</th>
+            <td>Mathematician</td>
+            <td>1833 to 1852</td>
+            <td align="end">36</td>
+            <td>London</td>
+          </tr>
+          <tr>
+            <th scope="row">Grace Hopper</th>
+            <td>Rear admiral</td>
+            <td>1943 to 1986</td>
+            <td align="end">85</td>
+            <td>New York</td>
+          </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** A cell spans rows with `rowspan`, so one group label covers several rows. */
+export const MergedCells: Story = {
+  render: () => html`
+    <pl-table id="control">
+      <table>
+        <caption>
+          Pioneers by role
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Name</th>
+            <th scope="col" align="end">Age</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row" rowspan="2">Mathematician</th>
+            <td>Ada Lovelace</td>
+            <td align="end">36</td>
+          </tr>
+          <tr>
+            <td>Katherine Johnson</td>
+            <td align="end">101</td>
+          </tr>
+          <tr>
+            <th scope="row" rowspan="2">Engineer</th>
+            <td>Margaret Hamilton</td>
+            <td align="end">88</td>
+          </tr>
+          <tr>
+            <td>Mary Jackson</td>
+            <td align="end">76</td>
+          </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
 
 /** A table wider than its space scrolls, and the scroll area takes a tab stop. */
 export const Overflow: Story = {

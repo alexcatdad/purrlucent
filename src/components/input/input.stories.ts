@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./input.ts";
 import type { PlInput } from "./input.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
-  title: "Components/Input",
+  title: "Forms/Input",
   component: "pl-input",
 } satisfies Meta;
 
@@ -41,6 +42,19 @@ export const Sizes: Story = {
             value="Size ${size}"
           ></pl-input>`,
       ),
+    ),
+};
+
+/** The width is the host's `inline-size`: small, medium, large and full. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-input
+          style=${style}
+          label=${label}
+          placeholder=${label}
+        ></pl-input>`,
     ),
 };
 

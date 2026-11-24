@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { expectAccessible } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-carousel--default";
+const story = "containers-carousel--default";
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
@@ -17,6 +17,37 @@ const next = (page: Page) =>
   page.getByRole("button", { name: "Next slide", exact: true });
 const previous = (page: Page) =>
   page.getByRole("button", { name: "Previous slide", exact: true });
+
+test("carousel keyboard: the slide label is one line, centered", async ({
+  page,
+}) => {
+  // The story's play function has already paged to the second slide.
+  await open(page, "containers-carousel--keyboard");
+  const slide = page.locator("#control pl-carousel-item").nth(1);
+  await expect(slide).toBeInViewport({ ratio: 0.99 });
+  const { lines, offset } = await slide.evaluate((el) => {
+    const card = el.firstElementChild as HTMLElement;
+    const range = document.createRange();
+    range.selectNodeContents(card);
+    const text = range.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    // The label is several text nodes (Lit renders the number apart), each its
+    // own rect, so lines are counted by their tops.
+    const tops = [...range.getClientRects()]
+      .filter((rect) => rect.width > 0)
+      .map((rect) => Math.round(rect.top));
+    return {
+      lines: new Set(tops).size,
+      offset: [
+        text.left + text.width / 2 - (box.left + box.width / 2),
+        text.top + text.height / 2 - (box.top + box.height / 2),
+      ],
+    };
+  });
+  expect(lines).toBe(1);
+  expect(Math.abs(offset[0]!)).toBeLessThanOrEqual(1);
+  expect(Math.abs(offset[1]!)).toBeLessThanOrEqual(1);
+});
 
 const record = (page: Page) =>
   page.locator("#control").evaluate((el) => {
@@ -132,13 +163,13 @@ test("when Next becomes disabled the focus moves to Previous", async ({
 test("focusing a control inside a slide brings the slide into view", async ({
   page,
 }) => {
-  await open(page, "components-carousel--with-buttons");
+  await open(page, "containers-carousel--with-buttons");
   await page.getByRole("button", { name: "Read more" }).nth(2).focus();
   await expect(dot(page, 3)).toHaveAttribute("aria-current", "true");
 });
 
 test("a single slide shows no controls", async ({ page }) => {
-  await open(page, "components-carousel--single-slide");
+  await open(page, "containers-carousel--single-slide");
   await expect(page.locator("#control [part=controls]")).toBeHidden();
 });
 
@@ -158,7 +189,7 @@ test("reduced motion jumps to the page instead of gliding", async ({
 test("under rtl the first slide is at the right edge and the arrow keys mirror", async ({
   page,
 }) => {
-  await open(page, "components-carousel--rtl");
+  await open(page, "containers-carousel--rtl");
   const slides = page.locator("#control pl-carousel-item");
   const [first, second] = await Promise.all(
     [0, 1].map((i) => slides.nth(i).boundingBox()),

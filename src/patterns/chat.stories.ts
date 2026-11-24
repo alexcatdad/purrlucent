@@ -81,12 +81,14 @@ const conversation: Row[] = [
     body: html`<pl-message-group label="You">
       <pl-message align="end">
         <pl-bubble align="end"
-          >Can you review the release notes before I publish?</pl-bubble
+          ><bdi
+            >Can you review the release notes before I publish?</bdi
+          ></pl-bubble
         >
       </pl-message>
       <pl-message align="end">
         <pl-bubble align="end"
-          >I attached the draft and the checklist.</pl-bubble
+          ><bdi>I attached the draft and the checklist.</bdi></pl-bubble
         >
         <pl-attachment-group label="Attachments">
           <pl-attachment size="sm" state="uploading">
@@ -110,7 +112,7 @@ const conversation: Row[] = [
       <pl-message>
         ${avatar}
         <pl-bubble variant="ghost">
-          <div class="prose">
+          <div class="prose" dir="ltr">
             <p>
               The notes are clear and the order is right. Two changes before you
               publish:
@@ -133,7 +135,7 @@ bun publish</code></pre>
     body: html`<pl-message-group label="You">
       <pl-message align="end">
         <pl-bubble align="end"
-          >Thanks, that is clearer.
+          ><bdi>Thanks, that is clearer.</bdi>
           <pl-bubble-reactions slot="reactions" align="start" label="1 like"
             >👍 1</pl-bubble-reactions
           >
@@ -148,14 +150,23 @@ bun publish</code></pre>
       <pl-message>
         ${avatar}
         <pl-bubble variant="ghost"
-          ><p>Glad it helps. Tell me when it ships.</p></pl-bubble
+          ><p dir="ltr">Glad it helps. Tell me when it ships.</p></pl-bubble
         >
       </pl-message>
     </pl-message-group>`,
   },
 ];
 
-const seeds: Record<string, Row[]> = { conversation, empty: [] };
+/** A reply caught mid-stream: the first words of the canned reply. */
+const partial = reply.split(" ").slice(0, 15).join(" ");
+
+const streaming: Row[] = [
+  ...conversation,
+  { id: "p-ask", kind: "me", text: "Can you check the changelog too?" },
+  { id: "p-reply", kind: "reply", text: partial, thinking: false },
+];
+
+const seeds: Record<string, Row[]> = { conversation, streaming, empty: [] };
 
 /**
  * The chat set working together: a scroller of rows with the prompt input
@@ -194,7 +205,11 @@ class ChatDemo extends LitElement {
   }
 
   protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("seed")) this.rows = seeds[this.seed ?? "empty"] ?? [];
+    if (changed.has("seed")) {
+      this.rows = seeds[this.seed ?? "empty"] ?? [];
+      // The streaming seed is caught mid-reply, so the prompt offers Stop.
+      this.busy = this.seed === "streaming";
+    }
   }
 
   #patch(id: string, change: Partial<Row>) {
@@ -249,7 +264,7 @@ class ChatDemo extends LitElement {
         return html`<pl-message-group label="You">
           <pl-message align="end">
             <pl-bubble align="end"
-              ><span class="sent">${row.text}</span></pl-bubble
+              ><span class="sent" dir="ltr">${row.text}</span></pl-bubble
             >
           </pl-message>
         </pl-message-group>`;
@@ -264,7 +279,9 @@ class ChatDemo extends LitElement {
           : html`<pl-message-group label="Assistant">
               <pl-message>
                 ${avatar}
-                <pl-bubble variant="ghost"><p>${row.text}</p></pl-bubble>
+                <pl-bubble variant="ghost"
+                  ><p dir="ltr">${row.text}</p></pl-bubble
+                >
               </pl-message>
             </pl-message-group>`;
     }
@@ -377,20 +394,14 @@ if (!customElements.get("chat-demo"))
 const page = (content: unknown) =>
   html`<div style="padding:var(--pl-space-4)">${content}</div>`;
 
-/** A conversation: a date separator, messages from the person and the assistant, attachments, a reaction and the prompt below. */
+/** A conversation: a date separator, messages from the person and the assistant, attachments, a reaction and the prompt below. Press Send: the message joins the transcript, Thinking shimmers, then the reply streams in. Stop ends it early. */
 export const Conversation: Story = {
   render: () => page(html`<chat-demo seed="conversation"></chat-demo>`),
 };
 
-/** Press Send: the message joins the transcript, Thinking shimmers, then the reply streams in. Stop ends it early. */
+/** A reply part way through: the first words are in, the scroller is busy and the prompt offers Stop. */
 export const Streaming: Story = {
-  render: () =>
-    page(
-      html`<chat-demo
-        seed="conversation"
-        draft="Can you check the changelog too?"
-      ></chat-demo>`,
-    ),
+  render: () => page(html`<chat-demo seed="streaming"></chat-demo>`),
 };
 
 /** A new chat: an empty state until the first message. */

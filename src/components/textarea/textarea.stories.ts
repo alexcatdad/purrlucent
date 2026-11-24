@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./textarea.ts";
 import type { PlTextarea } from "./textarea.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
-  title: "Components/Text area",
+  title: "Forms/Text Area",
   component: "pl-textarea",
 } satisfies Meta;
 
@@ -62,6 +63,19 @@ and a second line"
     await userEvent.tab();
     await el.updateComplete;
   },
+};
+
+/** The width is the host's `inline-size`: small, medium, large and full. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-textarea
+          style=${style}
+          label=${label}
+          placeholder=${label}
+        ></pl-textarea>`,
+    ),
 };
 
 export const Resize: Story = {

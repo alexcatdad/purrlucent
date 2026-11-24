@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "../avatar/avatar.ts";
 import "../button/button.ts";
 import "./message.ts";
 
 const meta = {
-  title: "Components/Message",
+  title: "AI & Chat/Message",
   component: "pl-message",
 } satisfies Meta;
 
@@ -21,26 +22,27 @@ const thread = (content: unknown) =>
   </div>`;
 
 /* Stand-in for a bubble: the message only lays out whatever it is given. */
-const bubble = (text: string) =>
+const bubble = (text: string, rtl = false) =>
   html`<div
     style="padding:var(--pl-space-2) var(--pl-space-3);border-radius:var(--pl-radius);background:var(--pl-color-muted-1);color:var(--pl-color-foreground)"
   >
-    ${text}
+    ${isolate(rtl, text)}
   </div>`;
 
 const copy = html`<pl-button slot="footer" size="sm" aria-label="Copy message"
   >Copy</pl-button
 >`;
 
-const reply = html`<pl-message>
-  <pl-avatar slot="avatar" name="Purr Assistant"></pl-avatar>
-  <span slot="header">Purr Assistant</span>
-  ${bubble("Here is the summary you asked for.")}
-  <span slot="footer">10:41</span>
-</pl-message>`;
+const reply = (rtl = false) =>
+  html`<pl-message>
+    <pl-avatar slot="avatar" name="Purr Assistant"></pl-avatar>
+    <span slot="header">${isolate(rtl, "Purr Assistant")}</span>
+    ${bubble("Here is the summary you asked for.", rtl)}
+    <span slot="footer">10:41</span>
+  </pl-message>`;
 
 export const Default: Story = {
-  render: () => thread(reply),
+  render: () => thread(reply()),
 };
 
 /** `align="end"`: the person's own message, mirrored. */
@@ -149,11 +151,11 @@ export const LongText: Story = {
 export const Rtl: Story = {
   render: () =>
     thread([
-      reply,
+      reply(true),
       html`<pl-message align="end">
         <pl-avatar slot="avatar" name="Alex Cat"></pl-avatar>
-        ${bubble("Can you shorten it?")}
-        <span slot="footer">Delivered</span>
+        ${bubble("Can you shorten it?", true)}
+        <span slot="footer">${isolate(true, "Delivered")}</span>
       </pl-message>`,
     ]),
   globals: { dir: "rtl" },

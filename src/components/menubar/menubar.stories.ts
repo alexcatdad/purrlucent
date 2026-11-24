@@ -7,7 +7,7 @@ import type { PlMenu } from "../menu/menu.ts";
 import "./menubar.ts";
 
 const meta = {
-  title: "Components/Menubar",
+  title: "Menus/Menubar",
   component: "pl-menubar",
 } satisfies Meta;
 
@@ -28,7 +28,7 @@ const bar = (disabledMenu = false) => html`
       <pl-menu label="File">
         ${trigger("File")}
         <pl-menu-item detail="⌘N">New</pl-menu-item>
-        <pl-menu-item detail="⌘O">Open…</pl-menu-item>
+        <pl-menu-item detail="⌘O"><bdi>Open…</bdi></pl-menu-item>
         <pl-menu-separator></pl-menu-separator>
         <pl-menu-item detail="⌘W">Close</pl-menu-item>
       </pl-menu>
@@ -40,7 +40,7 @@ const bar = (disabledMenu = false) => html`
         <pl-menu-item>
           Find
           <pl-menu slot="submenu" label="Find">
-            <pl-menu-item>Find…</pl-menu-item>
+            <pl-menu-item><bdi>Find…</bdi></pl-menu-item>
             <pl-menu-item>Find Next</pl-menu-item>
           </pl-menu>
         </pl-menu-item>

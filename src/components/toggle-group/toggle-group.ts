@@ -89,6 +89,7 @@ export class PlToggleGroupItem extends LitElement {
  * @attr {string} name - The name submitted with a form.
  * @attr {string} label - The accessible name of the group.
  * @attr {string} size - `md` (default), `lg` or `xl`.
+ * @attr {boolean} fit-content - Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways. For many items of different lengths.
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `pl-toggle-group-item` elements.
  * @fires {CustomEvent<{ selected: string[] }>} pl-change - The selection changed by the user. `detail.selected` is a one-item array.
@@ -103,12 +104,14 @@ export class PlToggleGroup extends LitElement {
     name: { reflect: true },
     label: { type: String },
     size: { reflect: true },
+    fitContent: { type: Boolean, reflect: true, attribute: "fit-content" },
     disabled: { type: Boolean, reflect: true },
   };
   declare value: string;
   declare name: string;
   declare label: string;
   declare size: "md" | "lg" | "xl";
+  declare fitContent: boolean;
   declare disabled: boolean;
   readonly #internals = this.attachInternals();
   readonly #selection = new SelectionController<string>(this, {
@@ -135,6 +138,7 @@ export class PlToggleGroup extends LitElement {
     this.name = "";
     this.label = "";
     this.size = "md";
+    this.fitContent = false;
     this.disabled = false;
     this.addEventListener("pl-change", (event) => {
       if (this.#syncing) return event.stopImmediatePropagation();

@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import { expect, waitFor } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "../button/button.ts";
 import "../menu/menu.ts";
 import "./context-menu.ts";
 import type { PlMenu } from "../menu/menu.ts";
 
 const meta = {
-  title: "Components/Context Menu",
+  title: "Menus/Context Menu",
   component: "pl-context-menu",
 } satisfies Meta;
 
@@ -23,19 +24,21 @@ const stage = (inner: unknown) =>
     ${inner}
   </div>`;
 
-const region = (disabled = false) => html`
-  <pl-context-menu id="context" ?disabled=${disabled}>
+const region = (unavailable = false, rtl = false) => html`
+  <pl-context-menu id="context">
     <div
       id="area"
       style="box-sizing:border-box;display:grid;justify-items:start;gap:var(--pl-space-3);inline-size:min(100%, calc(var(--pl-spacing) * 90));padding:var(--pl-space-4);border:1px dashed var(--pl-color-muted-foreground);border-radius:var(--pl-radius);color:var(--pl-color-foreground);font:var(--pl-text-sm) var(--pl-font-sans)"
     >
       <pl-button>Report.pdf</pl-button>
-      <span>Right-click, long-press or press Shift+F10.</span>
+      <span
+        >${isolate(rtl, "Right-click, long-press or press Shift+F10.")}</span
+      >
     </div>
     <pl-menu slot="menu" label="File actions">
       <pl-menu-item>Open</pl-menu-item>
-      <pl-menu-item>Rename</pl-menu-item>
-      <pl-menu-item>
+      <pl-menu-item ?disabled=${unavailable}>Rename</pl-menu-item>
+      <pl-menu-item id="share">
         Share
         <pl-menu slot="submenu" label="Share">
           <pl-menu-item>Mail</pl-menu-item>
@@ -43,7 +46,9 @@ const region = (disabled = false) => html`
         </pl-menu>
       </pl-menu-item>
       <pl-menu-separator></pl-menu-separator>
-      <pl-menu-item destructive>Move to Trash</pl-menu-item>
+      <pl-menu-item destructive ?disabled=${unavailable}
+        >Move to Trash</pl-menu-item
+      >
     </pl-menu>
   </pl-context-menu>
 `;
@@ -93,11 +98,29 @@ export const Open: Story = {
   },
 };
 
-/** The region has no context menu: the browser's own shows instead. */
-export const Disabled: Story = { render: () => stage(region(true)) };
+/** Items that cannot be chosen are dimmed and skipped by the keyboard. */
+export const Disabled: Story = {
+  render: () => stage(region(true)),
+  play: async ({ canvasElement }) => {
+    await openMenu(canvasElement);
+  },
+};
+
+/** The Share row opens its submenu beside it, with its second item highlighted. */
+export const Submenu: Story = {
+  render: () => stage(region()),
+  play: async ({ canvasElement }) => {
+    await openMenu(canvasElement);
+    canvasElement.querySelector<HTMLElement>("#share")!.focus();
+    const rtl = getComputedStyle(canvasElement).direction === "rtl";
+    await userEvent.keyboard(rtl ? "{ArrowLeft}" : "{ArrowRight}");
+    await userEvent.keyboard("{ArrowDown}");
+    await settled(canvasElement);
+  },
+};
 
 export const Rtl: Story = {
-  render: () => stage(region()),
+  render: () => stage(region(false, true)),
   globals: { dir: "rtl" },
   play: async ({ canvasElement }) => {
     await openMenu(canvasElement);

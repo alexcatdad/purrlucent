@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-banner--${name}`;
+const story = (name: string) => `feedback-banner--${name}`;
 
 const close = (page: Page) => page.getByRole("button", { name: "Dismiss" });
 
@@ -106,15 +106,39 @@ const toneIcon = (page: Page, i: number) =>
     });
 
 test("without a slotted icon each tone draws its own", async ({ page }) => {
+  await gotoStory(page, story("tone-icons"));
+  // Info, success, warning and destructive, in story order.
+  const icons = [];
+  for (const i of [0, 1, 2, 3]) icons.push(await toneIcon(page, i));
+  for (const icon of icons) {
+    expect(icon.width).toBeGreaterThan(0);
+    expect(icon.hidden).toBe("true");
+  }
+  expect(new Set(icons.map((icon) => icon.paths)).size).toBe(4);
+});
+
+test("no-close: the banner has no close button and stays open", async ({
+  page,
+}) => {
+  await gotoStory(page, story("persistent"));
+  const banner = page.locator("#persistent");
+  await expect(banner).toBeVisible();
+  await expect(banner.getByRole("button")).toHaveCount(0);
+  await page.keyboard.press("Tab");
+  await expect(banner).toBeVisible();
+});
+
+test("without icon: the icon part is not rendered", async ({ page }) => {
   await gotoStory(page, story("without-icon"));
-  const [info, destructive] = [
-    await toneIcon(page, 0),
-    await toneIcon(page, 1),
-  ];
-  expect(info.width).toBeGreaterThan(0);
-  expect(destructive.width).toBeGreaterThan(0);
-  expect(destructive.paths).not.toBe(info.paths);
-  expect([info.hidden, destructive.hidden]).toEqual(["true", "true"]);
+  await expect(page.locator("pl-banner")).toHaveCount(2);
+  for (const i of [0, 1]) {
+    const drawn = await page
+      .locator("pl-banner")
+      .nth(i)
+      .evaluate((el) => !!el.shadowRoot!.querySelector("slot[name=icon]"));
+    expect(drawn).toBe(false);
+  }
+  await expect(page.getByText("Your changes are saved.")).toBeVisible();
 });
 
 test("a slotted icon replaces the tone's own", async ({ page }) => {

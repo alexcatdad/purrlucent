@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-message--${name}`;
+const story = (name: string) => `ai-chat-message--${name}`;
 
 const box = async (locator: Locator) => (await locator.boundingBox())!;
 
@@ -14,6 +14,17 @@ const bubbleOf = (message: Locator) => message.locator(":scope > div").first();
 
 test("has no axe violations", async ({ page }) => {
   await expectAccessible(await gotoStory(page, story("default")));
+});
+
+test("message own: name aligns with the bubble", async ({ page }) => {
+  const root = await gotoStory(page, story("own"));
+  const message = root.locator("pl-message");
+  const name = await box(message.locator('[slot="header"]'));
+  const bubble = await box(bubbleOf(message));
+  // Own messages sit at the end, so the name ends where the bubble ends.
+  expect(
+    Math.abs(name.x + name.width - (bubble.x + bubble.width)),
+  ).toBeLessThanOrEqual(1);
 });
 
 test("has no axe violations as a group", async ({ page }) => {
@@ -133,16 +144,15 @@ test("an end-aligned message sits its avatar and content at the end edge", async
   expect(bubble.x).toBeGreaterThan(message.x);
 });
 
-test("an end-aligned message keeps its header at the start and its footer at the end", async ({
+test("an end-aligned message ends its header and footer at the bubble's end edge", async ({
   page,
 }) => {
   const root = await gotoStory(page, story("own"));
   const message = root.locator("pl-message");
-  const outer = await box(message);
   const header = await box(message.locator("[slot=header]"));
   const footer = await box(message.locator("[slot=footer]"));
   const bubble = await box(bubbleOf(message));
-  expect(header.x).toBeCloseTo(outer.x, 0);
+  expect(header.x + header.width).toBeCloseTo(bubble.x + bubble.width, 0);
   expect(footer.x + footer.width).toBeCloseTo(bubble.x + bubble.width, 0);
 });
 

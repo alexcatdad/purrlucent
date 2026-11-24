@@ -6,9 +6,10 @@ import { html } from "lit";
 import { expect, waitFor } from "storybook/test";
 import "./chart.ts";
 import type { PlChart } from "./chart.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Chart",
+  title: "Data/Chart",
   component: "pl-chart",
 } satisfies Meta;
 
@@ -203,6 +204,6 @@ export const Rtl: Story = {
 };
 
 export const Glass: Story = {
-  render: () => plans(),
+  render: () => underGlass(plans()),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

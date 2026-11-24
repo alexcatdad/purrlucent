@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
 import "./input-otp.ts";
 import type { PlInputOtp } from "./input-otp.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
-  title: "Components/Input OTP",
+  title: "Forms/Input OTP",
   component: "pl-input-otp",
 } satisfies Meta;
 
@@ -27,9 +28,7 @@ export const Default: Story = {
 
 export const Labelled: Story = {
   render: () =>
-    column(
-      html`<pl-input-otp id="otp" label="Verification code"></pl-input-otp>`,
-    ),
+    column(html`<pl-input-otp id="otp">Verification code</pl-input-otp>`),
 };
 
 export const Lengths: Story = {
@@ -48,6 +47,15 @@ export const Lengths: Story = {
         value="A1B2C3D4"
       ></pl-input-otp>`,
     ]),
+};
+
+/** The width is the host's `inline-size`; the boxes shrink to fit it. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-input-otp style=${style} label=${label}></pl-input-otp>`,
+    ),
 };
 
 export const Sizes: Story = {
@@ -80,7 +88,21 @@ export const States: Story = {
         value="123456"
         readonly
       ></pl-input-otp>`,
+      html`<pl-input-otp id="invalid">Invalid</pl-input-otp>`,
     ]),
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector<PlInputOtp>("#invalid")!;
+    await el.updateComplete;
+    el.focus();
+    await waitFor(() =>
+      expect(el.shadowRoot!.querySelector("input")).toBe(
+        el.shadowRoot!.activeElement,
+      ),
+    );
+    await userEvent.keyboard("123");
+    await userEvent.tab();
+    await el.updateComplete;
+  },
 };
 
 /** In a form the field submits its value and follows reset, fieldset and validity. */

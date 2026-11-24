@@ -5,8 +5,9 @@ import {
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
-const story = (name: string) => `components-input--${name}`;
+const story = (name: string) => `forms-input--${name}`;
 
 /** What the form would submit, as [name, value] pairs. */
 const submitted = (page: Page) =>
@@ -34,6 +35,11 @@ test("aria snapshot", async ({ page }) => {
     - textbox "Read only": Value
     - textbox "Invalid" [invalid]: nope
   `);
+});
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-input");
 });
 
 test("a slotted label names the input and a click on it focuses the field", async ({
@@ -232,6 +238,18 @@ test("an invalid field shows its message after a blur and describes the control 
   await expect(message).toBeHidden();
   await expect(email).not.toHaveAttribute("aria-describedby");
   await expect(email).toHaveAccessibleDescription("");
+});
+
+test("validation message spans the field width", async ({ page }) => {
+  await gotoStory(page, story("states"));
+  const host = page.locator("#invalid");
+  await expect(host.locator('[part="message"]')).toBeVisible();
+  const [message, field] = await Promise.all([
+    host.locator('[part="message"]').boundingBox(),
+    host.locator('[part="field"]').boundingBox(),
+  ]);
+  expect(Math.abs(message!.width - field!.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(message!.x - field!.x)).toBeLessThanOrEqual(1);
 });
 
 test("the form gets the value, and a reset returns the value attribute", async ({

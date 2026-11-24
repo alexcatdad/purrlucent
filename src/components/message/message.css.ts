@@ -58,6 +58,11 @@ export const messageStyles = css`
     text-align: start;
   }
 
+  /* The name sits over the bubble's own edge, which is the end under align="end". */
+  :host([align="end"]) [part="header"] {
+    text-align: end;
+  }
+
   [part="content"] {
     grid-area: content;
     display: flex;

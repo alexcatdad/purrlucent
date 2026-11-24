@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-button-group--default";
+const story = "actions-button-group--default";
 
 const stories = [
   "default",
@@ -43,7 +43,7 @@ test("aria snapshot", async ({ page }) => {
 for (const id of stories) {
   test(`axe finds no WCAG 2.2 AA violations in ${id}`, async ({ page }) => {
     await expectAccessible(
-      await gotoStory(page, `components-button-group--${id}`),
+      await gotoStory(page, `actions-button-group--${id}`),
     );
   });
 }
@@ -51,7 +51,7 @@ for (const id of stories) {
 test("an icon button is named by aria-label inside the group", async ({
   page,
 }) => {
-  const root = await gotoStory(page, "components-button-group--icons");
+  const root = await gotoStory(page, "actions-button-group--icons");
   await expect(root).toMatchAriaSnapshot(`
     - group "Text alignment":
       - button "Align left"
@@ -77,7 +77,7 @@ test("a horizontal group rounds only the outer ends", async ({ page }) => {
 test("a vertical group stacks the buttons and rounds the top and bottom", async ({
   page,
 }) => {
-  await gotoStory(page, "components-button-group--vertical");
+  await gotoStory(page, "actions-button-group--vertical");
   const boxes = await page
     .locator("pl-button")
     .evaluateAll((els) => els.map((el) => el.getBoundingClientRect()));
@@ -124,7 +124,7 @@ test("the focused button's ring is not covered by its neighbour", async ({
 });
 
 test("a disabled button in the group takes no focus", async ({ page }) => {
-  await gotoStory(page, "components-button-group--disabled-button");
+  await gotoStory(page, "actions-button-group--disabled-button");
   await expect(page.getByRole("button", { name: "Copy" })).toBeDisabled();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
@@ -162,7 +162,7 @@ test("changing label renames the group and clearing it removes the name", async 
 });
 
 test("under rtl the first button is on the right", async ({ page }) => {
-  await gotoStory(page, "components-button-group--rtl");
+  await gotoStory(page, "actions-button-group--rtl");
   const [cut, paste] = await Promise.all(
     ["Cut", "Paste"].map((name) =>
       page.getByRole("button", { name }).boundingBox(),

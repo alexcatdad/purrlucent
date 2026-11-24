@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "../checkbox/checkbox.ts";
 import "../button/button.ts";
 import "../input/input.ts";
@@ -9,7 +10,7 @@ import "../textarea/textarea.ts";
 import "./field.ts";
 
 const meta = {
-  title: "Components/Field",
+  title: "Forms/Field",
   component: "pl-field",
 } satisfies Meta;
 
@@ -185,7 +186,9 @@ export const Rtl: Story = {
       html`<pl-field id="field" orientation="horizontal">
         <label slot="label">Name</label>
         <pl-input id="control"></pl-input>
-        <span slot="description">Shown on your profile.</span>
+        <span slot="description"
+          >${isolate(true, "Shown on your profile.")}</span
+        >
       </pl-field>`,
       "40rem",
     ),

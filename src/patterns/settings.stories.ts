@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, nothing } from "lit";
+import { plaintextRtl } from "../../.storybook/isolate.ts";
 import "../components/button/button.ts";
 import "../components/checkbox/checkbox.ts";
 import "../components/dialog/dialog.ts";
@@ -233,6 +234,8 @@ class SettingsDemo extends LitElement {
   }
 
   static override styles = css`
+    ${plaintextRtl}
+
     :host {
       display: block;
       box-sizing: border-box;

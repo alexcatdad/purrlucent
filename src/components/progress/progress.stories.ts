@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "./progress.ts";
 import type { PlProgress } from "./progress.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Progress",
+  title: "Feedback/Progress",
   component: "pl-progress",
 } satisfies Meta;
 
@@ -36,6 +37,30 @@ export const Determinate: Story = {
           ></pl-progress>`,
       ),
     ),
+};
+
+/** A tone colors the fill; the label still says the state. */
+export const Tones: Story = {
+  render: () =>
+    column([
+      html`<pl-progress label="Downloading, 60%" value="60"></pl-progress>`,
+      html`<pl-progress
+        id="success"
+        label="Archived"
+        tone="success"
+        value="100"
+      ></pl-progress>`,
+      html`<pl-progress
+        label="Behind, 30%"
+        tone="warning"
+        value="30"
+      ></pl-progress>`,
+      html`<pl-progress
+        label="Failed at 45%"
+        tone="destructive"
+        value="45"
+      ></pl-progress>`,
+    ]),
 };
 
 export const Indeterminate: Story = {
@@ -76,9 +101,11 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    column([
-      html`<pl-progress label="Upload" value="50"></pl-progress>`,
-      html`<pl-progress label="Preparing"></pl-progress>`,
-    ]),
+    underGlass(
+      column([
+        html`<pl-progress label="Upload" value="50"></pl-progress>`,
+        html`<pl-progress label="Preparing"></pl-progress>`,
+      ]),
+    ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

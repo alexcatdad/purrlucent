@@ -10,8 +10,8 @@ export const buttonStyles = css`
   :host {
     --_tone: var(--pl-color-accent);
     --_tone-text: var(--pl-color-accent-text);
-    --_face: var(--pl-color-secondary);
-    --_face-pressed: var(--pl-color-secondary-pressed);
+    --_face: var(--pl-material-control);
+    --_face-pressed: var(--pl-material-control-pressed);
     --_face-disabled: var(--pl-color-secondary-disabled);
     --_fg: var(--pl-color-foreground);
     --_fg-disabled: var(--pl-color-disabled-foreground);
@@ -73,9 +73,35 @@ export const buttonStyles = css`
     border-radius: var(--pl-radius-full);
   }
 
-  /* Increased contrast outlines every face but the label-only ghost. */
+  /* Every face but the label-only ghost is glass under the glass material:
+     a blur behind it, a lit edge and a light shadow. Tinted and filled faces
+     keep their fill. Increased contrast outlines the face instead. */
+  :host(:not([variant="ghost"])) {
+    backdrop-filter: var(--pl-material-control-filter);
+  }
+
+  /* Only the neutral face is lifted; filled and tinted faces add no shadow. */
+  :host(
+    :not(
+      [variant="ghost"],
+      [variant="primary"],
+      [variant="tinted"],
+      [destructive],
+      [default],
+      [pressed]
+    )
+  ) {
+    box-shadow: var(--pl-elevation-control);
+  }
+
   :host(:not([variant="ghost"]))::before {
-    box-shadow: var(--pl-boundary);
+    box-shadow: var(--pl-material-edge);
+  }
+
+  @media (prefers-contrast: more) {
+    :host(:not([variant="ghost"]))::before {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   /* The preferred action; a default button without a variant of its own. */

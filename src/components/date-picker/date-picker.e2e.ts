@@ -4,8 +4,14 @@ import {
   expectNoOverflowAtTextZoom,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
-const story = (name: string) => `components-date-picker--${name}`;
+const story = (name: string) => `forms-date-picker--${name}`;
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-date-picker");
+});
 
 const field = (page: Page, scope = "#picker") => page.locator(`${scope} input`);
 const button = (page: Page, scope = "#picker") =>
@@ -67,6 +73,24 @@ test("the entry shows the day as the locale writes it", async ({ page }) => {
   await expect(field(page, "#de")).toHaveValue("18.11.2026");
   await expect(field(page, "#ja")).toHaveValue("2026/11/18");
   expect(await value(page, "#de")).toBe("2026-11-18");
+});
+
+test("date-picker ar locale shows a well-ordered value", async ({ page }) => {
+  await gotoStory(page, story("locales"));
+  const expected = await page.evaluate(() =>
+    new Intl.DateTimeFormat("ar", {
+      calendar: "gregory",
+      timeZone: "UTC",
+    }).format(Date.UTC(2026, 10, 18)),
+  );
+  await expect(field(page, "#ar")).toHaveValue(expected);
+  expect(await value(page, "#ar")).toBe("2026-11-18");
+  // The locale's own digits read back as the same day.
+  await field(page, "#ar").fill("");
+  await field(page, "#ar").fill(expected);
+  await field(page, "#ar").blur();
+  expect(await value(page, "#ar")).toBe("2026-11-18");
+  await expect(field(page, "#ar")).toHaveValue(expected);
 });
 
 test("a slotted label names the entry and a click on it focuses the field", async ({
@@ -150,6 +174,16 @@ test("a day outside min and max or a disabled day is invalid and is no value", a
   }
   await field(page).fill("11/10/2026");
   expect(await value(page)).toBe("2026-11-10");
+});
+
+test("range: a start and an end date are shown", async ({ page }) => {
+  await gotoStory(page, story("range"));
+  await expect(page.getByRole("textbox", { name: "Start" })).toHaveValue(
+    "11/18/2026",
+  );
+  await expect(page.getByRole("textbox", { name: "End" })).toHaveValue(
+    "12/02/2026",
+  );
 });
 
 test("invalid-message and range-message can be replaced", async ({ page }) => {

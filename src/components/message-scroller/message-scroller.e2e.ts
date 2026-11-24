@@ -6,7 +6,7 @@ import {
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 import type { PlMessageScroller } from "./message-scroller.ts";
 
-const story = (name: string) => `components-message-scroller--${name}`;
+const story = (name: string) => `ai-chat-message-scroller--${name}`;
 
 const scroller = (page: Page) => page.locator("#scroller");
 
@@ -370,9 +370,14 @@ test.describe("placement", () => {
     const el = scroller(page);
     await el.evaluate((e) => (e.scrollTop = e.scrollHeight));
     await frames(page);
+    const before = await el.evaluate((e) => e.scrollTop);
     await append(el, [{ id: "plain", lines: 5 }]);
     await frames(page);
-    expect(await toEnd(el)).toBeGreaterThan(50);
+    // The view stays put, so the new row waits below the end.
+    expect(
+      Math.abs((await el.evaluate((e) => e.scrollTop)) - before),
+    ).toBeLessThan(1);
+    expect(await toEnd(el)).toBeGreaterThan(0);
   });
 
   test("default-scroll-position end opens at the latest message", async ({
@@ -615,6 +620,18 @@ test.describe("button", () => {
       .click();
     await expect.poll(() => toEnd(el)).toBeLessThan(2);
   });
+});
+
+test("message-scroller: jump button does not cover text", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const [padding, button] = await Promise.all([
+    scroller(page).evaluate((e) =>
+      parseFloat(getComputedStyle(e).scrollPaddingBlockEnd),
+    ),
+    latest(page).boundingBox(),
+  ]);
+  // Content scrolled to the end stops above the button, which is as tall as it.
+  expect(Math.abs(padding - button!.height)).toBeLessThan(1);
 });
 
 test("the button sits at the center under rtl and the region scrolls", async ({

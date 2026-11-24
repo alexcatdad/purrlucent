@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-tooltip--${name}`;
+const story = (name: string) => `dialogs-tooltip--${name}`;
 
 const target = (page: Page, scope = "") =>
   page.locator(`${scope} pl-button`.trim());
@@ -206,12 +206,18 @@ test("the bubble takes no pointer events without a hover-capable pointer", async
   await context.close();
 });
 
+test("placements: four tooltips are visible", async ({ page }) => {
+  await gotoStory(page, story("placements"));
+  for (const side of ["top", "bottom", "start", "end"]) {
+    await expect(bubble(page, `#${side}`)).toBeVisible();
+  }
+});
+
 test("the placements put the bubble on the requested side of the target", async ({
   page,
 }) => {
   await gotoStory(page, story("placements"));
   for (const side of ["top", "bottom", "start", "end"]) {
-    await page.keyboard.press("Tab");
     await expect(bubble(page, `#${side}`)).toBeVisible();
     const b = await box(bubble(page, `#${side}`));
     const t = await box(target(page, `#${side}`));

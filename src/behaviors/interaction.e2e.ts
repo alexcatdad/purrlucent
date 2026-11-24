@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
-const story = "behaviors-interaction--default";
+const story = "foundations-interaction--default";
 
 // Review Focus 5: a tablet in landscape is wide but still touch.
 test.describe("coarse pointer on a wide screen", () => {

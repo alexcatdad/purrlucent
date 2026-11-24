@@ -8,7 +8,7 @@ import { gotoStory } from "../../../e2e/helpers/story.ts";
 // Motion is measured at rest; the motion test turns it back on.
 test.use({ reducedMotion: "reduce" });
 
-const story = (name: string) => `components-drawer--${name}`;
+const story = (name: string) => `dialogs-drawer--${name}`;
 
 const sheet = (page: Page) => page.getByRole("dialog");
 const drawerEl = (page: Page) => page.locator("pl-drawer");

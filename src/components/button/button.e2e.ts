@@ -19,7 +19,7 @@ const stories = [
 const labels = ["Duplicate", "Save", "Share", "Cancel"];
 
 test("aria snapshot", async ({ page }) => {
-  const root = await gotoStory(page, "components-button--variants");
+  const root = await gotoStory(page, "actions-button--variants");
   await expect(root).toMatchAriaSnapshot(`
     - button "Duplicate"
     - button "Save"
@@ -29,25 +29,25 @@ test("aria snapshot", async ({ page }) => {
 });
 
 test("an icon button takes its name from aria-label", async ({ page }) => {
-  const root = await gotoStory(page, "components-button--sizes");
+  const root = await gotoStory(page, "actions-button--sizes");
   await expect(
     root.getByRole("button", { name: "Add", exact: true }),
   ).toHaveCount(3);
 });
 
 test("a disabled button is exposed as disabled", async ({ page }) => {
-  const root = await gotoStory(page, "components-button--disabled");
+  const root = await gotoStory(page, "actions-button--disabled");
   await expect(root.getByRole("button", { name: "Cancel" })).toBeDisabled();
 });
 
 for (const id of stories) {
   test(`axe finds no WCAG 2.2 AA violations in ${id}`, async ({ page }) => {
-    await expectAccessible(await gotoStory(page, `components-button--${id}`));
+    await expectAccessible(await gotoStory(page, `actions-button--${id}`));
   });
 }
 
 test("a button without label text fails axe", async ({ page }) => {
-  const root = await gotoStory(page, "components-button--default");
+  const root = await gotoStory(page, "actions-button--default");
   await root.evaluate((el) => {
     const empty = document.createElement("pl-button");
     empty.id = "empty";
@@ -63,7 +63,7 @@ test("a button without label text fails axe", async ({ page }) => {
 test("a destructive button is never styled as the prominent button", async ({
   page,
 }) => {
-  await gotoStory(page, "components-button--destructive");
+  await gotoStory(page, "actions-button--destructive");
   const background = (id: string) =>
     page
       .locator(`#${id}`)
@@ -85,7 +85,7 @@ test("a destructive button is never styled as the prominent button", async ({
 test("a submit button submits its form and a reset button resets it", async ({
   page,
 }) => {
-  await gotoStory(page, "components-button--in-form");
+  await gotoStory(page, "actions-button--in-form");
   await page.locator("#form").evaluate((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -102,7 +102,7 @@ test("a submit button submits its form and a reset button resets it", async ({
 });
 
 test("each size is taller than the one before", async ({ page }) => {
-  await gotoStory(page, "components-button--sizes");
+  await gotoStory(page, "actions-button--sizes");
   const heights = await page
     .locator("pl-button:not([icon])")
     .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
@@ -111,7 +111,7 @@ test("each size is taller than the one before", async ({ page }) => {
 });
 
 test("an icon button is as wide as it is tall", async ({ page }) => {
-  await gotoStory(page, "components-button--sizes");
+  await gotoStory(page, "actions-button--sizes");
   for (const button of await page.locator("pl-button[icon]").all()) {
     const box = await button.boundingBox();
     expect(box!.width).toBe(box!.height);
@@ -121,7 +121,7 @@ test("an icon button is as wide as it is tall", async ({ page }) => {
 test("the pressed state is visible on the button", async ({ page }) => {
   // Zero durations, so each face tone is read without waiting for a transition.
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await gotoStory(page, "components-button--default");
+  await gotoStory(page, "actions-button--default");
   const button = page.locator("#button");
   const face = () =>
     button.evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
@@ -135,12 +135,12 @@ test("the pressed state is visible on the button", async ({ page }) => {
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(
-    await gotoStory(page, "components-button--variants"),
+    await gotoStory(page, "actions-button--variants"),
   );
 });
 
 test("virtual screen reader speaks each button", async ({ page }) => {
-  await gotoStory(page, "components-button--variants");
+  await gotoStory(page, "actions-button--variants");
   const spoken = (await spokenPhrases(page)).join(" ");
   for (const label of labels) expect(spoken).toContain(label);
 });
@@ -150,7 +150,7 @@ test.describe("coarse pointer on a wide screen", () => {
 
   test("every button keeps a 44 by 44 hit area", async ({ page }) => {
     for (const id of ["variants", "sizes"]) {
-      await gotoStory(page, `components-button--${id}`);
+      await gotoStory(page, `actions-button--${id}`);
       for (const button of await page.locator("pl-button").all()) {
         const box = await button.boundingBox();
         expect(box!.width).toBeGreaterThanOrEqual(44);
@@ -161,7 +161,7 @@ test.describe("coarse pointer on a wide screen", () => {
 });
 
 test("the focus ring stays visible under forced colors", async ({ page }) => {
-  await gotoStory(page, "components-button--variants");
+  await gotoStory(page, "actions-button--variants");
   await page.emulateMedia({ forcedColors: "active" });
   await page.keyboard.press("Tab");
   const button = page.locator("pl-button").first();
@@ -174,7 +174,7 @@ test("the focus ring stays visible under forced colors", async ({ page }) => {
 test("a disabled fieldset makes the button inert, as a native button is", async ({
   page,
 }) => {
-  const root = await gotoStory(page, "components-button--default");
+  const root = await gotoStory(page, "actions-button--default");
   await root.evaluate((el) => {
     el.insertAdjacentHTML(
       "beforeend",
@@ -212,7 +212,7 @@ test("a disabled fieldset makes the button inert, as a native button is", async 
 test("Enter and Space fire click, as a native button does", async ({
   page,
 }) => {
-  await gotoStory(page, "components-button--default");
+  await gotoStory(page, "actions-button--default");
   const button = page.locator("#button");
   await button.evaluate((el) => {
     el.dataset.clicks = "0";
@@ -227,7 +227,7 @@ test("Enter and Space fire click, as a native button does", async ({
 test("a busy button shows a spinner, ignores presses and stays focusable", async ({
   page,
 }) => {
-  await gotoStory(page, "components-button--busy");
+  await gotoStory(page, "actions-button--busy");
   const button = page.locator("#busy");
   await expect(button).toHaveAttribute("aria-busy", "true");
   await expect(button).not.toHaveAttribute("aria-disabled");
@@ -253,7 +253,7 @@ test("a busy button shows a spinner, ignores presses and stays focusable", async
 });
 
 test("a click on a disabled button reaches no listener", async ({ page }) => {
-  const root = await gotoStory(page, "components-button--disabled");
+  const root = await gotoStory(page, "actions-button--disabled");
   const button = root.getByRole("button", { name: "Cancel" });
   await button.evaluate((el) => {
     el.dataset.clicks = "0";
@@ -267,7 +267,7 @@ test("a click on a disabled button reaches no listener", async ({ page }) => {
 test("a button keeps its own tabindex, also across disabling", async ({
   page,
 }) => {
-  const root = await gotoStory(page, "components-button--default");
+  const root = await gotoStory(page, "actions-button--default");
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
@@ -284,7 +284,7 @@ test("a button keeps its own tabindex, also across disabling", async ({
 });
 
 test("the hidden attribute hides the button", async ({ page }) => {
-  const root = await gotoStory(page, "components-button--default");
+  const root = await gotoStory(page, "actions-button--default");
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
@@ -296,7 +296,7 @@ test("the hidden attribute hides the button", async ({ page }) => {
 
 test("pressing shows feedback under forced colors", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
-  await gotoStory(page, "components-button--default");
+  await gotoStory(page, "actions-button--default");
   const button = page.locator("#button");
   const edge = () =>
     button.evaluate((el) => getComputedStyle(el, "::before").borderTopColor);
@@ -309,7 +309,7 @@ test("pressing shows feedback under forced colors", async ({ page }) => {
 
 test("increased contrast outlines every filled variant", async ({ page }) => {
   await page.emulateMedia({ contrast: "more" });
-  const root = await gotoStory(page, "components-button--default");
+  const root = await gotoStory(page, "actions-button--default");
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",

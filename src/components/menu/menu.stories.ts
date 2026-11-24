@@ -6,7 +6,7 @@ import "./menu.ts";
 import type { PlMenu, PlMenuItem } from "./menu.ts";
 
 const meta = {
-  title: "Components/Menu",
+  title: "Menus/Menu",
   component: "pl-menu",
 } satisfies Meta;
 
@@ -64,7 +64,7 @@ const edit = html`
     <pl-menu-item id="find">
       ${glyph(find)}Find
       <pl-menu slot="submenu" label="Find">
-        <pl-menu-item>${glyph(find)}Find…</pl-menu-item>
+        <pl-menu-item>${glyph(find)}<bdi>Find…</bdi></pl-menu-item>
         <pl-menu-item>${glyph(find)}Find Next</pl-menu-item>
         <pl-menu-item>${glyph(find)}Find Previous</pl-menu-item>
         <pl-menu-item disabled>${glyph(copy)}Use Selection</pl-menu-item>

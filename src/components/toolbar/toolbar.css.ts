@@ -37,6 +37,7 @@ export const toolbarStyles = css`
   /* A search field takes the capsule material of the group beside it. */
   ::slotted(pl-input[type="search"]) {
     --pl-color-input: var(--pl-color-overlay);
+    --pl-material-field: var(--pl-color-overlay);
     --pl-color-input-border: var(--pl-color-overlay-border);
 
     inline-size: calc(var(--pl-spacing) * 39.75);
@@ -114,6 +115,16 @@ export const toolbarTitleStyles = css`
     min-inline-size: 0;
     max-inline-size: 50%;
     white-space: nowrap;
+  }
+
+  /* Between two spacers the title is centered on the bar (the toolbar is its containing block). */
+  :host([data-centered]) {
+    position: absolute;
+    inset: 0;
+    inline-size: fit-content;
+    block-size: fit-content;
+    margin: auto;
+    pointer-events: none;
   }
 
   [part="stack"] {

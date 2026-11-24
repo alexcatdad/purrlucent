@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-kbd--${name}`;
+const story = (name: string) => `text-kbd--${name}`;
 
 test("aria snapshot: the key text is plain text", async ({ page }) => {
   const root = await gotoStory(page, story("shortcut"));
@@ -55,6 +55,26 @@ test("a single glyph is at least as wide as it is tall", async ({ page }) => {
 test("under rtl the key keeps its own text order", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   await expect(page.locator("#key")).toHaveText("⌘K");
+});
+
+test("kbd rtl reads ⌘K", async ({ page }) => {
+  await gotoStory(page, story("rtl"));
+  const key = page.locator("#key");
+  expect(
+    await key.locator("kbd").evaluate((el) => getComputedStyle(el).direction),
+  ).toBe("ltr");
+  // ⌘ is drawn left of K.
+  const [command, letter] = await key.evaluate((el) => {
+    const text = el.firstChild as Text;
+    const left = (at: number) => {
+      const range = document.createRange();
+      range.setStart(text, at);
+      range.setEnd(text, at + 1);
+      return range.getBoundingClientRect().left;
+    };
+    return [left(0), left(1)];
+  });
+  expect(command).toBeLessThan(letter!);
 });
 
 test("the keycap keeps its edge under forced colors", async ({ page }) => {

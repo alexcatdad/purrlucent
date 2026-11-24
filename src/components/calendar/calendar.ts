@@ -8,6 +8,7 @@ import {
   addMonths,
   clamp,
   dayFormat,
+  dayNumber,
   daysInMonth,
   firstDayOf,
   isIso,
@@ -242,9 +243,18 @@ export class PlCalendar extends LitElement {
     const title = dayFormat(locale, { month: "long", year: "numeric" }).format(
       parseIso(focus)!,
     );
+    const week = Array.from({ length: 7 }, (_, i) =>
+      parseIso(addDays(MONDAY, i))!,
+    );
+    // Short names where they tell the days apart, else the narrow ones.
     const short = dayFormat(locale, { weekday: "short" });
+    const names = dayFormat(locale, {
+      weekday:
+        new Set(week.map((time) => short.format(time))).size === 7
+          ? "short"
+          : "narrow",
+    });
     const long = dayFormat(locale, { weekday: "long" });
-    const number = dayFormat(locale, { day: "numeric" });
     const full = dayFormat(locale, {
       weekday: "long",
       day: "numeric",
@@ -268,7 +278,7 @@ export class PlCalendar extends LitElement {
         aria-label=${full.format(parseIso(iso)!)}
         @click=${() => this.#select(iso)}
       >
-        ${number.format(parseIso(iso)!)}
+        ${dayNumber(iso, locale)}
       </td>`;
     };
 
@@ -305,7 +315,7 @@ export class PlCalendar extends LitElement {
               const weekday = addDays(MONDAY, (firstDay - 1 + i) % 7);
               return html`<th part="weekday" scope="col">
                 <abbr title=${long.format(parseIso(weekday)!)}
-                  >${short.format(parseIso(weekday)!)}</abbr
+                  >${names.format(parseIso(weekday)!)}</abbr
                 >
               </th>`;
             })}

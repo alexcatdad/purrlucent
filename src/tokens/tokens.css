@@ -1,5 +1,5 @@
-/* Purrlucent tokens. Five palette colors and one spacing base; everything
-   else is calculated from them. Colors are light-dark() pairs and follow the
+/* Purrlucent tokens. Five palette colors, two status colors and one spacing
+   base; everything else is calculated from them. Colors are light-dark() pairs and follow the
    page's color-scheme. Every token sits in a cascade layer, so app styles
    override it. */
 @layer pl.tokens {
@@ -11,6 +11,10 @@
     --pl-color-frosted-blue: #a8dadc;
     --pl-color-cerulean: #457b9d;
     --pl-color-oxford-navy: #1d3557;
+
+    /* Status: done or healthy, and needing attention. */
+    --pl-color-sea-green: #2d7a4f;
+    --pl-color-saffron: #e9a23b;
     --pl-color-shade: color-mix(
       in srgb,
       var(--pl-color-oxford-navy),
@@ -36,6 +40,46 @@
     );
     --pl-color-accent-foreground: #fff;
     --pl-color-destructive-foreground: #fff;
+
+    /* Success is a green fill under white text; warning an amber fill under
+       navy text, as a light fill takes dark text. Each -text color is for
+       the tone's text on the page. */
+    --pl-color-success: var(--pl-color-sea-green);
+    --pl-color-success-foreground: #fff;
+    --pl-color-success-text: light-dark(
+      var(--pl-color-sea-green),
+      color-mix(in srgb, var(--pl-color-sea-green), white 55%)
+    );
+    --pl-color-warning: var(--pl-color-saffron);
+    --pl-color-warning-foreground: var(--pl-color-oxford-navy);
+    --pl-color-warning-text: light-dark(
+      color-mix(in srgb, var(--pl-color-saffron) 52%, black),
+      color-mix(in srgb, var(--pl-color-saffron), white 25%)
+    );
+
+    /* Marks: small saturated shapes (a status dot) that keep each tone's hue
+       and 3:1 on the page, lightened in dark. */
+    --pl-color-neutral-mark: color-mix(
+      in srgb,
+      var(--pl-color-foreground) 50%,
+      transparent
+    );
+    --pl-color-accent-mark: light-dark(
+      var(--pl-color-accent),
+      color-mix(in srgb, var(--pl-color-cerulean), white 25%)
+    );
+    --pl-color-success-mark: light-dark(
+      var(--pl-color-sea-green),
+      color-mix(in srgb, var(--pl-color-sea-green), white 30%)
+    );
+    --pl-color-warning-mark: light-dark(
+      color-mix(in srgb, var(--pl-color-saffron) 70%, black),
+      var(--pl-color-saffron)
+    );
+    --pl-color-destructive-mark: light-dark(
+      var(--pl-color-destructive),
+      color-mix(in srgb, var(--pl-color-punch-red), white 20%)
+    );
     --pl-color-selected: light-dark(
       var(--pl-color-accent),
       var(--pl-color-frosted-blue)
@@ -338,7 +382,9 @@
 }
 
 /* Surface materials. Solid is the default. Glass is opt-in with
-   pl-material="glass" on any ancestor, for bars, sidebars, panels and sheets. */
+   pl-material="glass" on any ancestor, for the controls and navigation layer:
+   controls, bars, capsules (a bar with no fill of its own), sidebars, panels
+   and sheets. Content stays solid. */
 @layer pl.tokens {
   :root {
     --pl-color-surface: color-mix(
@@ -347,6 +393,7 @@
       var(--pl-color-foreground) 5%
     );
     --pl-material-bar: var(--pl-color-surface);
+    --pl-material-capsule: transparent;
     --pl-material-sidebar: var(--pl-color-surface);
     --pl-material-panel: var(--pl-color-surface);
     --pl-material-sheet: var(--pl-color-surface);
@@ -354,7 +401,13 @@
     --pl-material-sidebar-filter: none;
     --pl-material-panel-filter: none;
     --pl-material-sheet-filter: none;
+    --pl-material-highlight: transparent;
     --pl-material-edge: 0 0 transparent;
+    --pl-material-control: var(--pl-color-secondary);
+    --pl-material-control-pressed: var(--pl-color-secondary-pressed);
+    --pl-material-control-filter: none;
+    --pl-material-field: var(--pl-color-input);
+    --pl-material-float: var(--pl-color-background);
 
     /* The neutral control face. Glass makes it stronger. */
     --pl-color-secondary: var(--pl-color-muted-2);
@@ -375,11 +428,13 @@
     --pl-color-edge: transparent;
     --pl-elevation-panel: var(--pl-shadow-lg);
     --pl-elevation-sheet: var(--pl-shadow-lg);
+    --pl-elevation-control: none;
   }
 
   @supports (backdrop-filter: blur(1px)) {
     [pl-material="glass"] {
       --pl-material-bar: var(--pl-color-overlay);
+      --pl-material-capsule: var(--pl-color-overlay);
       --pl-material-sidebar: var(--pl-color-overlay);
       --pl-material-panel: var(--pl-color-overlay);
       --pl-material-sheet: var(--pl-color-overlay);
@@ -387,7 +442,28 @@
       --pl-material-sidebar-filter: blur(var(--pl-blur-md)) saturate(125%);
       --pl-material-panel-filter: blur(var(--pl-blur-lg)) saturate(125%);
       --pl-material-sheet-filter: blur(var(--pl-blur-lg)) saturate(125%);
-      --pl-material-edge: inset 0 0 0 1px var(--pl-color-overlay-border);
+      --pl-material-highlight: light-dark(
+        color-mix(in srgb, #fff 45%, transparent),
+        color-mix(in srgb, #fff 22%, transparent)
+      );
+      --pl-material-edge:
+        inset 0 1px 0 0 var(--pl-material-highlight),
+        inset 0 0 0 1px var(--pl-color-overlay-border);
+      --pl-material-control: var(--pl-color-overlay);
+      --pl-material-control-pressed: color-mix(
+        in srgb,
+        var(--pl-color-overlay),
+        var(--pl-color-foreground) 12%
+      );
+      --pl-material-control-filter: blur(var(--pl-blur-md)) saturate(125%);
+      --pl-material-field: color-mix(
+        in srgb,
+        var(--pl-color-input) 70%,
+        transparent
+      );
+      --pl-material-float: var(--pl-color-overlay);
+      --pl-elevation-control: 0 calc(var(--pl-spacing) / 4)
+        calc(var(--pl-spacing) * 2) color-mix(in srgb, #000 18%, transparent);
       --pl-color-edge: var(--pl-color-overlay-border);
       --pl-color-secondary: color-mix(
         in srgb,
@@ -421,6 +497,7 @@
     (forced-colors: active) {
     [pl-material="glass"] {
       --pl-material-bar: var(--pl-color-surface);
+      --pl-material-capsule: transparent;
       --pl-material-sidebar: var(--pl-color-surface);
       --pl-material-panel: var(--pl-color-surface);
       --pl-material-sheet: var(--pl-color-surface);
@@ -428,7 +505,14 @@
       --pl-material-sidebar-filter: none;
       --pl-material-panel-filter: none;
       --pl-material-sheet-filter: none;
+      --pl-material-highlight: transparent;
       --pl-material-edge: 0 0 transparent;
+      --pl-material-control: var(--pl-color-secondary);
+      --pl-material-control-pressed: var(--pl-color-secondary-pressed);
+      --pl-material-control-filter: none;
+      --pl-material-field: var(--pl-color-input);
+      --pl-material-float: var(--pl-color-background);
+      --pl-elevation-control: none;
       --pl-color-edge: transparent;
       --pl-color-secondary: var(--pl-color-muted-2);
       --pl-color-secondary-pressed: var(--pl-color-muted-pressed);

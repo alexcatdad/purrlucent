@@ -3,8 +3,9 @@ import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
 import "./accordion.ts";
 import type { PlAccordion } from "./accordion.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
-const meta = { title: "Components/Accordion" } satisfies Meta;
+const meta = { title: "Containers/Accordion" } satisfies Meta;
 
 export default meta;
 
@@ -112,7 +113,7 @@ export const RichHeading: Story = {
 };
 
 export const Glass: Story = {
-  render,
+  render: () => underGlass(render()),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
 };
 

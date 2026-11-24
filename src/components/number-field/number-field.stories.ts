@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./number-field.ts";
 import type { PlNumberField } from "./number-field.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
-  title: "Components/Number field",
+  title: "Forms/Number Field",
   component: "pl-number-field",
 } satisfies Meta;
 
@@ -57,6 +58,19 @@ export const Sizes: Story = {
             ></pl-number-field>`,
         ),
       ),
+    ),
+};
+
+/** The width is the host's `inline-size`; the stepper stays at its end. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-number-field
+          style=${style}
+          label=${label}
+          value="3"
+        ></pl-number-field>`,
     ),
 };
 

@@ -135,3 +135,22 @@ test("reduced motion builds a definition without animation", () => {
     buildDefinition(spec("line", { reducedMotion: true })).svgAnimation,
   ).toBe(false);
 });
+
+for (const type of ["bar", "line", "area"] as const)
+  test(`a ${type} chart in rtl runs its categories right to left and puts the value axis on the right`, () => {
+    const scales = (rtl: boolean) =>
+      (
+        buildDefinition(spec(type, { rtl })) as unknown as {
+          scales: Record<string, { reverse?: boolean; side?: string }>;
+        }
+      ).scales;
+    expect(scales(true).x?.reverse).toBe(true);
+    expect(scales(true).y?.side).toBe("right");
+    expect(scales(false).x?.reverse).toBeFalsy();
+    expect(scales(false).y?.side).toBeUndefined();
+    const scene = createChartScene(
+      buildDefinition(spec(type, { rtl: true })) as never,
+      size,
+    );
+    expect(scene.nodes.length).toBeGreaterThan(0);
+  });

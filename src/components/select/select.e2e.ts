@@ -5,11 +5,26 @@ import {
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
-const story = (name: string) => `components-select--${name}`;
+const story = (name: string) => `forms-select--${name}`;
 
 const trigger = (page: Page, name = "Apple variety") =>
   page.getByRole("combobox", { name });
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-select");
+});
+
+test("placeholder fits by default", async ({ page }) => {
+  await gotoStory(page, story("placeholder"));
+  const value = page.locator("pl-select").locator('[part="value"]');
+  await expect(value).toHaveText("Choose a variety");
+  expect(await value.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+    true,
+  );
+});
 const option = (page: Page, name: string) =>
   page.getByRole("option", { name, exact: true });
 const listbox = (page: Page) => page.getByRole("listbox");
@@ -212,6 +227,11 @@ test("a disabled option cannot be chosen", async ({ page }) => {
 
 test("the placeholder shows while nothing is chosen", async ({ page }) => {
   await gotoStory(page, story("placeholder"));
+  await expect(selectedLabel(page)).toHaveText("Choose a variety");
+});
+
+test("default: the placeholder shows, not an empty value", async ({ page }) => {
+  await gotoStory(page, story("default"));
   await expect(selectedLabel(page)).toHaveText("Choose a variety");
 });
 

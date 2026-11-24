@@ -19,8 +19,9 @@ export const groupStyles = css`
     max-inline-size: 100%;
     overflow: clip;
     border-radius: var(--pl-radius);
-    background-color: var(--pl-color-secondary);
-    box-shadow: var(--pl-boundary);
+    background-color: var(--pl-material-control);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
@@ -36,6 +37,29 @@ export const groupStyles = css`
     --_pad: var(--pl-pad-control-xl);
     --_sep: calc(var(--pl-spacing) * 5);
     --_min: calc(var(--pl-spacing) * 9.5);
+  }
+
+  /* Items as wide as their text, on one line; a track wider than its room
+     scrolls sideways, and a focused item scrolls into view. */
+  /* max-content, not auto: an auto track shrinks to the item's own minimum
+     size and lets the text spill instead of scrolling. */
+  :host([fit-content]) {
+    grid-auto-columns: max-content;
+    overflow: auto hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
+  }
+
+  :host([fit-content]) ::slotted(*) {
+    white-space: nowrap;
+  }
+
+  /* Increased contrast outlines the track instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    :host {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   /* Forced colors drop the track's shadow and fill: outline it instead. */

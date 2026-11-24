@@ -5,11 +5,38 @@ import {
   spokenPhrases,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
-const story = (name: string) => `components-combobox--${name}`;
+const story = (name: string) => `forms-combobox--${name}`;
 
 const combo = (page: Page, name = "Apple variety") =>
   page.getByRole("combobox", { name });
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-combobox");
+});
+
+test("placeholder fits by default", async ({ page }) => {
+  await gotoStory(page, story("placeholder"));
+  // A placeholder is not an element, so measure the same text in the input's font.
+  const fits = await page.locator("pl-combobox").evaluate((host) => {
+    const input = host.shadowRoot!.querySelector("input")!;
+    const style = getComputedStyle(input);
+    const probe = document.createElement("span");
+    probe.textContent = input.placeholder;
+    probe.style.cssText = "position:absolute;visibility:hidden;white-space:pre";
+    probe.style.fontFamily = style.fontFamily;
+    probe.style.fontSize = style.fontSize;
+    probe.style.fontWeight = style.fontWeight;
+    probe.style.letterSpacing = style.letterSpacing;
+    document.body.append(probe);
+    const width = probe.getBoundingClientRect().width;
+    probe.remove();
+    return [input.placeholder, width <= input.clientWidth];
+  });
+  expect(fits).toEqual(["Search varieties", true]);
+});
 const option = (page: Page, name: string) =>
   page.getByRole("option", { name, exact: true });
 const listbox = (page: Page) => page.getByRole("listbox");

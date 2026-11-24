@@ -3,8 +3,9 @@ import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
 import "./collapsible.ts";
 import type { PlCollapsible } from "./collapsible.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
-const meta = { title: "Components/Collapsible" } satisfies Meta;
+const meta = { title: "Containers/Collapsible" } satisfies Meta;
 
 export default meta;
 
@@ -35,8 +36,20 @@ export const Open: Story = {
   `,
 };
 
+/** `disabled` dims the trigger and keeps the content as it is. */
+export const Disabled: Story = {
+  render: () => html`
+    <pl-collapsible id="control" disabled>
+      <span slot="trigger">Shipping details</span>
+      <p id="body" style="margin:0">
+        Orders leave the warehouse within two working days.
+      </p>
+    </pl-collapsible>
+  `,
+};
+
 export const Glass: Story = {
-  render,
+  render: () => underGlass(render()),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
 };
 

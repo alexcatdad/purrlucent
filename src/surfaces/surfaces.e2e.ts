@@ -11,7 +11,7 @@ import {
 } from "../../e2e/helpers/color.ts";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
-const story = "surfaces--default";
+const story = "foundations-surfaces--default";
 
 // The machine's own settings leak into the browser, so pin both to no preference.
 // Chromium only: Playwright's emulateMedia has no reduced-transparency option.
@@ -28,7 +28,7 @@ const openStory = async (page: Page, globals = "", id = story) => {
   return gotoStory(page, id, globals);
 };
 
-const patterned = "surfaces--patterned-backdrop";
+const patterned = "foundations-surfaces--patterned-backdrop";
 
 const backdropFilter = (page: Page, id: string) =>
   page.locator(`#${id}`).evaluate((el) => getComputedStyle(el).backdropFilter);
@@ -133,6 +133,22 @@ test("surfaces keep a visible edge under forced colors", async ({ page }) => {
     });
     expect(edge, id).toBe("solid 1px");
   }
+});
+
+const bodyImage = (page: Page) =>
+  page.evaluate(() => getComputedStyle(document.body).backgroundImage);
+
+test("glass stories paint the backdrop", async ({ page }) => {
+  await openStory(page, "", "foundations-surfaces--glass");
+  // The decorator sets the attribute during render, after the root attaches.
+  await expect.poll(() => bodyImage(page)).toContain("radial-gradient");
+});
+
+test("solid stories do not", async ({ page }) => {
+  await openStory(page);
+  // Wait for the story to render, so the read cannot pass before the decorator ran.
+  await page.locator("#bar").waitFor();
+  expect(await bodyImage(page)).toBe("none");
 });
 
 test("aria snapshot", async ({ page }) => {

@@ -12,7 +12,7 @@ export const inputOtpStyles = css`
     --_edge: var(--pl-color-input-border);
 
     display: inline-grid;
-    grid-template-columns: minmax(0, max-content);
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--pl-gap-form);
     max-inline-size: 100%;
     color: var(--pl-color-foreground);
@@ -99,8 +99,11 @@ export const inputOtpStyles = css`
     place-items: center;
     block-size: var(--_h);
     border-radius: var(--pl-radius);
-    background: var(--pl-color-input);
-    box-shadow: 0 0 0 1px var(--_edge);
+    background: var(--pl-material-field);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow:
+      var(--pl-material-edge),
+      0 0 0 1px var(--_edge);
     outline: var(--pl-ring-width) solid transparent;
     outline-offset: var(--pl-ring-offset);
     font: 500 var(--pl-text-xl) / 1 var(--pl-font-sans);
@@ -115,7 +118,7 @@ export const inputOtpStyles = css`
     background: color-mix(
       in srgb,
       var(--pl-color-accent) 24%,
-      var(--pl-color-input)
+      var(--pl-material-field)
     );
   }
 

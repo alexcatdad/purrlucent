@@ -9,7 +9,7 @@ test("screen reader announces the toolbar and its items", async ({
   page,
   screenReader,
 }) => {
-  await gotoStory(page, "components-toolbar--default");
+  await gotoStory(page, "navigation-toolbar--default");
   await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);

@@ -9,7 +9,7 @@ test("screen reader speaks the navigation landmark and its items", async ({
   page,
   screenReader,
 }) => {
-  await gotoStory(page, "components-sidebar--group-open");
+  await gotoStory(page, "navigation-sidebar--group-open");
   await addClickSpacer(page);
   await screenReader.navigateToWebContent();
   await traceState("setup", page, screenReader);

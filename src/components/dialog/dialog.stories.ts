@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { expect, userEvent } from "storybook/test";
 import "../button/button.ts";
 import "../input/input.ts";
@@ -8,7 +9,7 @@ import "./dialog.ts";
 import type { PlDialog } from "./dialog.ts";
 
 const meta = {
-  title: "Components/Dialog",
+  title: "Dialogs/Dialog",
   component: "pl-dialog",
 } satisfies Meta;
 
@@ -73,55 +74,69 @@ const draft = (stacked = false) =>
  * grid, the same label column as the sheet's icon, and the label is hidden from
  * assistive technology because the control carries the name.
  */
-const rows = html`<style>
-    .rows {
-      display: grid;
-      gap: var(--pl-gap-form);
-    }
-    .row {
-      display: grid;
-      grid-template-columns: calc(var(--pl-spacing) * 23) minmax(0, 1fr);
-      gap: var(--pl-gap-form);
-      align-items: center;
-    }
-    .row > span {
-      color: var(--pl-color-muted-foreground);
-      text-align: end;
-    }
-    .row > :is(pl-input, pl-select) {
-      inline-size: 100%;
-    }
-  </style>
-  <div class="rows">
-    <div class="row">
-      <span aria-hidden="true">Save As:</span>
-      <pl-input label="Save as" value="Untitled" autofocus></pl-input>
-    </div>
-    <div class="row">
-      <span aria-hidden="true">Tags:</span>
-      <pl-input label="Tags"></pl-input>
-    </div>
-    <div class="row">
-      <span aria-hidden="true">File Format:</span>
-      <pl-select label="File format" value="Rich Text Document">
-        <pl-option>Rich Text Document</pl-option>
-        <pl-option>Plain Text</pl-option>
-      </pl-select>
-    </div>
-  </div>`;
+const rows = (dir?: "ltr") =>
+  html`<style>
+      .rows {
+        display: grid;
+        gap: var(--pl-gap-form);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: calc(var(--pl-spacing) * 23) minmax(0, 1fr);
+        gap: var(--pl-gap-form);
+        align-items: center;
+      }
+      .row > span {
+        color: var(--pl-color-muted-foreground);
+        text-align: end;
+      }
+      .row > :is(pl-input, pl-select) {
+        inline-size: 100%;
+      }
+    </style>
+    <div class="rows">
+      <div class="row">
+        <span aria-hidden="true" dir=${ifDefined(dir)}>Save As:</span>
+        <pl-input
+          label="Save as"
+          value="Untitled"
+          dir=${ifDefined(dir)}
+          autofocus
+        ></pl-input>
+      </div>
+      <div class="row">
+        <span aria-hidden="true" dir=${ifDefined(dir)}>Tags:</span>
+        <pl-input label="Tags" dir=${ifDefined(dir)}></pl-input>
+      </div>
+      <div class="row">
+        <span aria-hidden="true" dir=${ifDefined(dir)}>File Format:</span>
+        <pl-select
+          label="File format"
+          value="Rich Text Document"
+          dir=${ifDefined(dir)}
+        >
+          <pl-option>Rich Text Document</pl-option>
+          <pl-option>Plain Text</pl-option>
+        </pl-select>
+      </div>
+    </div>`;
 
-const save = html`<pl-dialog id="dialog" variant="sheet">
-  ${file}
-  <h2 slot="title">Do you want to keep this new document “Untitled”?</h2>
-  <p slot="description" style="margin:0">
-    You can choose to save your changes, or delete this document immediately.
-    You can’t undo this action.
-  </p>
-  ${rows}
-  <pl-button slot="actions" destructive data-close="delete">Delete</pl-button>
-  <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
-  <pl-button slot="actions" default data-close="save">Save</pl-button>
-</pl-dialog>`;
+/** `dir="ltr"` isolates the English sentences when the story runs right to left. */
+const save = (dir?: "ltr") =>
+  html`<pl-dialog id="dialog" variant="sheet">
+    ${file}
+    <h2 slot="title" dir=${ifDefined(dir)}>
+      Do you want to keep this new document “Untitled”?
+    </h2>
+    <p slot="description" style="margin:0" dir=${ifDefined(dir)}>
+      You can choose to save your changes, or delete this document immediately.
+      You can’t undo this action.
+    </p>
+    ${rows(dir)}
+    <pl-button slot="actions" destructive data-close="delete">Delete</pl-button>
+    <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+    <pl-button slot="actions" default data-close="save">Save</pl-button>
+  </pl-dialog>`;
 
 const long = html`<pl-dialog id="dialog" variant="sheet" dismissible>
   <h2 slot="title">Terms of use</h2>
@@ -181,7 +196,7 @@ export const OpenStackedAlert: Story = {
 
 /** A sheet with form rows. `autofocus` on the first field gives it initial focus. */
 export const OpenSheet: Story = {
-  render: () => scene("Show sheet", save),
+  render: () => scene("Show sheet", save()),
   play: open,
 };
 
@@ -192,7 +207,7 @@ export const OpenLongContent: Story = {
 };
 
 export const Rtl: Story = {
-  render: () => scene("Show sheet", save),
+  render: () => scene("Show sheet", save("ltr")),
   play: open,
   globals: { dir: "rtl" },
 };
@@ -204,7 +219,7 @@ export const Glass: Story = {
 };
 
 export const GlassSheet: Story = {
-  render: () => scene("Show sheet", save),
+  render: () => scene("Show sheet", save()),
   play: open,
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

@@ -6,7 +6,7 @@ import "./tooltip.ts";
 import type { PlTooltip } from "./tooltip.ts";
 
 const meta = {
-  title: "Components/Tooltip",
+  title: "Dialogs/Tooltip",
   component: "pl-tooltip",
 } satisfies Meta;
 
@@ -49,7 +49,14 @@ export const Open: Story = {
   play: showByFocus,
 };
 
+/** One tooltip per side, all showing. */
 export const Placements: Story = {
+  play: async ({ canvasElement }) => {
+    for (const el of canvasElement.querySelectorAll<PlTooltip>("pl-tooltip")) {
+      await el.updateComplete;
+      el.shown = true;
+    }
+  },
   render: () =>
     stage(
       html`<div

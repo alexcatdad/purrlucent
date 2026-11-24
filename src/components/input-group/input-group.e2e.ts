@@ -4,8 +4,9 @@ import {
   expectNoOverflowAtTextZoom,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
-const story = (name: string) => `components-input-group--${name}`;
+const story = (name: string) => `forms-input-group--${name}`;
 
 /** The box of the group's shell, of the input's own field row, and of one addon. */
 const boxes = (group: Locator, addon: string) =>
@@ -24,6 +25,11 @@ const boxes = (group: Locator, addon: string) =>
       addon: rect(el.querySelector(selector)!),
     };
   }, addon);
+
+test("widths story sizes the control", async ({ page }) => {
+  await gotoStory(page, story("widths"));
+  await expectWidthsIncrease(page, "pl-input-group");
+});
 
 test("aria snapshot", async ({ page }) => {
   const root = await gotoStory(page, story("default"));

@@ -56,11 +56,19 @@ export const boxStyles = css`
     margin-block-start: calc((1lh - var(--_box)) / 2);
     border-radius: var(--_r);
     background-color: var(--_off);
-    box-shadow: var(--pl-boundary);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
     color: var(--pl-color-selected-foreground);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       opacity var(--pl-duration-fast) var(--pl-ease-out);
+  }
+
+  /* Increased contrast outlines the box instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    [part="box"] {
+      box-shadow: var(--pl-boundary);
+    }
   }
 
   svg {
@@ -148,6 +156,12 @@ export const boxStyles = css`
     --_off: var(--pl-color-muted-3);
   }
 
+  /* An empty disabled box keeps an outline, so it still reads against the page. */
+  :host(:state(disabled):not(:is(:state(checked), :state(indeterminate))))
+    [part="box"] {
+    box-shadow: inset 0 0 0 1px var(--pl-color-disabled-foreground);
+  }
+
   :host(:state(disabled):is(:state(checked), :state(indeterminate)))
     [part="box"] {
     --_off: var(--pl-color-selected);
@@ -205,5 +219,10 @@ export const boxStyles = css`
 export const checkboxStyles = css`
   :host {
     --_r: calc(var(--pl-radius) / 2);
+  }
+
+  /* A field marks its control invalid; the message beside it says why. */
+  :host([aria-invalid="true"]) [part="box"] {
+    box-shadow: inset 0 0 0 1px var(--pl-color-destructive);
   }
 `;

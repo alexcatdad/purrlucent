@@ -6,7 +6,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = (name: string) => `components-navigation-menu--${name}`;
+const story = (name: string) => `navigation-navigation-menu--${name}`;
 
 const button = (page: Page, name: string) =>
   page.getByRole("button", { name, exact: true });

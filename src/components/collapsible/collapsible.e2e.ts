@@ -5,7 +5,7 @@ import {
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
-const story = "components-collapsible--default";
+const story = "containers-collapsible--default";
 
 const open = async (page: Page, id = story, globals = "") => {
   const root = await gotoStory(page, id, globals);
@@ -35,6 +35,16 @@ test("the trigger is a button with aria-expanded and aria-controls", async ({
   await expect(page.locator("#body")).toBeVisible();
 });
 
+test("disabled: the trigger is disabled and a press does not open the content", async ({
+  page,
+}) => {
+  await open(page, "containers-collapsible--disabled");
+  await expect(trigger(page)).toBeDisabled();
+  await trigger(page).click({ force: true });
+  await expect(trigger(page)).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#body")).toBeHidden();
+});
+
 test("closed content is hidden and takes no space", async ({ page }) => {
   await open(page);
   await expect(page.locator("#body")).toBeHidden();
@@ -50,7 +60,7 @@ test("closed content is hidden and takes no space", async ({ page }) => {
 test("a collapsible with open starts showing its content and fires no event", async ({
   page,
 }) => {
-  await open(page, "components-collapsible--open");
+  await open(page, "containers-collapsible--open");
   await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#body")).toBeVisible();
 });
@@ -124,7 +134,7 @@ test("under reduced motion the content shows at once", async ({ page }) => {
 });
 
 test("closing keeps the content out of the tab order", async ({ page }) => {
-  await open(page, "components-collapsible--open");
+  await open(page, "containers-collapsible--open");
   await trigger(page).click();
   await expect(page.locator("#body")).toBeHidden();
 });
@@ -132,7 +142,7 @@ test("closing keeps the content out of the tab order", async ({ page }) => {
 test("under rtl the chevron mirrors and the content keeps the label's edge", async ({
   page,
 }) => {
-  await open(page, "components-collapsible--rtl");
+  await open(page, "containers-collapsible--rtl");
   await expect(page.locator("#control")).toHaveCSS("direction", "rtl");
   const transform = await page
     .locator("#control")
@@ -176,7 +186,7 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
 }
 
 test("axe finds no violations when open", async ({ page }) => {
-  await expectAccessible(await open(page, "components-collapsible--open"));
+  await expectAccessible(await open(page, "containers-collapsible--open"));
 });
 
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {

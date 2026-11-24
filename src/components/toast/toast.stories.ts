@@ -6,7 +6,7 @@ import "./toast.ts";
 import { PlToaster, type PlToast } from "./toast.ts";
 
 const meta = {
-  title: "Components/Toast",
+  title: "Feedback/Toast",
   component: "pl-toast",
 } satisfies Meta;
 

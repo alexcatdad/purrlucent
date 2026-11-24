@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "./kbd.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Kbd",
+  title: "Text/Kbd",
   component: "pl-kbd",
 } satisfies Meta;
 
@@ -42,6 +43,6 @@ export const Rtl: Story = {
 };
 
 export const Glass: Story = {
-  render: () => html`<pl-kbd>⌘K</pl-kbd>`,
+  render: () => underGlass(html`<pl-kbd>⌘K</pl-kbd>`),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

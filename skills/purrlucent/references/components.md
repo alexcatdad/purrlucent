@@ -217,9 +217,10 @@ import "purrlucent/badge";
 
 A small label for a count or a status. It is presentational and takes no focus. The text always carries the meaning, so a status badge says its status in words; the variant only adds color. Put a count in context in the surrounding text, for example "Inbox" before a badge reading "3".
 
-| Attribute | Type                                     | Default     | Description                                     |
-| --------- | ---------------------------------------- | ----------- | ----------------------------------------------- |
-| `variant` | `"neutral" \| "accent" \| "destructive"` | `"neutral"` | `neutral` (default), `accent` or `destructive`. |
+| Attribute | Type                                                               | Default     | Description                                                                                   |
+| --------- | ------------------------------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------- |
+| `variant` | `"neutral" \| "accent" \| "success" \| "warning" \| "destructive"` | `"neutral"` | `neutral` (default), `accent`, `success`, `warning` or `destructive`.                         |
+| `dot`     | `boolean`                                                          | `false`     | A status pill: the badge keeps the neutral fill and the variant colors a dot before the text. |
 
 **Slots**
 
@@ -227,6 +228,7 @@ A small label for a count or a status. It is presentational and takes no focus. 
 
 **Parts**
 
+- `dot`: The status dot, shown with `dot`.
 - `label`: The text.
 
 ## Banner
@@ -239,15 +241,17 @@ import "purrlucent/banner";
 
 A notification banner: an icon, a title, a message, optional actions and a close button. It is a live region (`status`, or `alert` for the destructive tone) and never takes focus when it appears. The close button hides the banner and fires `pl-close`.
 
-| Attribute     | Type                      | Default     | Description                                                |
-| ------------- | ------------------------- | ----------- | ---------------------------------------------------------- |
-| `open`        | `boolean`                 | `false`     | The banner is showing.                                     |
-| `tone`        | `"info" \| "destructive"` | `"info"`    | `info` (default) or `destructive`.                         |
-| `close-label` | `string`                  | `"Dismiss"` | The close button's accessible name. Defaults to "Dismiss". |
+| Attribute     | Type                                                | Default     | Description                                                                                        |
+| ------------- | --------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------- |
+| `open`        | `boolean`                                           | `false`     | The banner is showing.                                                                             |
+| `tone`        | `"info" \| "success" \| "warning" \| "destructive"` | `"info"`    | `info` (default), `success`, `warning` or `destructive`.                                           |
+| `close-label` | `string`                                            | `"Dismiss"` | The close button's accessible name. Defaults to "Dismiss".                                         |
+| `no-icon`     | `boolean`                                           | `false`     | Shows no icon, not the tone's own either.                                                          |
+| `no-close`    | `boolean`                                           | `false`     | Shows no close button, for a banner that stays until its cause is gone, such as a lost connection. |
 
 **Slots**
 
-- `icon`: An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, an error mark for `destructive`.
+- `icon`: An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, a check for `success`, a triangle for `warning`, an error mark for `destructive`.
 - `title`: The heading.
 - default: The message.
 - `actions`: Buttons below the message.
@@ -582,6 +586,7 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 | `size`          | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                       |
 | `required`      | `boolean`              | `false` | The form is invalid while the box is unchecked.                     |
 | `disabled`      | `boolean`              | `false` | No focus, no feedback, nothing submitted.                           |
+| `readonly`      | `boolean`              | `false` | The state shows and submits but a press does not change it.         |
 
 **Slots**
 
@@ -608,9 +613,10 @@ import "purrlucent/collapsible";
 
 A single disclosure: a trigger that shows and hides a block of content. The trigger is a button named by the text in the `trigger` slot; it carries `aria-expanded` and `aria-controls`. Space and Enter toggle it, as on any button. The content grows and shrinks in height with `--pl-duration`; under reduced motion it shows and hides at once. Closed content is hidden from focus and assistive technology. For several disclosures that open one at a time, handle `pl-toggle` in the app.
 
-| Attribute | Type      | Default | Description                                                                 |
-| --------- | --------- | ------- | --------------------------------------------------------------------------- |
-| `open`    | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses. |
+| Attribute  | Type      | Default | Description                                                                 |
+| ---------- | --------- | ------- | --------------------------------------------------------------------------- |
+| `open`     | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses. |
+| `disabled` | `boolean` | `false` | The trigger takes no focus and the content cannot be toggled.               |
 
 **Slots**
 
@@ -786,20 +792,36 @@ import "purrlucent/data-table";
 
 ### `<pl-data-table>`
 
-A native table drawn from `columns` and `rows`, with sortable headings and optional row selection. A sortable heading is a button inside its `<th>`, and the sorted column carries `aria-sort`. A click sorts ascending; a click on the sorted column reverses it. The rows are sorted here unless `manual-sort` is set, which leaves the order to the app (which then answers `pl-sort`). With `selectable`, each row has a checkbox and the header has a select-all checkbox that shows mixed when some rows are selected. Every row is rendered; there is no virtualization. With no rows, the `empty` slot (or `empty-label`) shows in place of the body.
+A native table drawn from `columns` and `rows`, with sortable headings and optional row selection. A sortable heading is a button inside its `<th>`, and the sorted column carries `aria-sort`. A click sorts ascending; a click on the sorted column reverses it. The rows are sorted here unless `manual-sort` is set, which leaves the order to the app (which then answers `pl-sort`). With `selectable`, each row has a checkbox and the header has a select-all checkbox that shows mixed when some rows are selected. Every row is rendered on its page; there is no virtualization. With no rows, the `empty` slot (or `empty-label`) shows in place of the body. With `filterable`, a search field above the table keeps the rows whose text contains the query, ignoring case and accents. The filter runs before the sort, and select-all applies to the filtered rows. With `page-size`, the rows are paged and a `pl-pagination` below the table moves through them; a page past the end falls back to the last one. `manual-filter` and `manual-pagination` show the state but leave the rows to the app, which answers `pl-filter` and `pl-page`. With `model`, the table draws exactly that model: its header rows, spanning cells, group rows (value and count), indented rows with a disclosure button, aggregate footer, pinned rows and columns, and column widths. It then ignores `columns`, `rows`, the sort, the filter and the paging logic, and only reports `pl-sort`, `pl-filter`, `pl-page` and `pl-expand`; the app answers with a new model. A pinned column needs a `width` so the ones after it can sit beside it. In model mode each heading of a column also has a menu (sort, hide, move, pin, group), a "Columns" menu above the table shows or hides columns, a heading with a `filter` gets a combobox of its `facets`, and a `resizable` heading gets a resize handle (a separator that a pointer drags and the arrow keys move). With `row-menu` each row has a menu to pin it to the top or bottom, and with `cell-select` the cells take a roving focus and shift-click or shift-arrow selects a rectangle of them. The table never changes the model itself: each of these reports an event and the app answers with a new model.
 
-| Attribute          | Type                  | Default        | Description                                                                                                                                    |
-| ------------------ | --------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `caption`          | `string \| undefined` |                | A visible caption that also names the table.                                                                                                   |
-| `sticky-header`    | `boolean`             | `false`        | The headings stay at the top while the rows scroll; give the element a `max-block-size`.                                                       |
-| `selectable`       | `boolean`             | `false`        | Adds a checkbox column.                                                                                                                        |
-| `row-key`          | `string`              | `"id"`         | The row property that identifies a row in `selected` and `pl-selection-change`. Defaults to `id`; a row without it is identified by its index. |
-| `sort-column`      | `string \| undefined` |                | The `key` of the sorted column.                                                                                                                |
-| `sort-direction`   | `PlSortDirection`     | `"ascending"`  | `ascending` (default) or `descending`.                                                                                                         |
-| `manual-sort`      | `boolean`             | `false`        | Do not reorder the rows; the app does it on `pl-sort`.                                                                                         |
-| `empty-label`      | `string`              | `"No results"` | The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".                                                |
-| `select-all-label` | `string`              | `"Select all"` | The select-all checkbox's accessible name. Defaults to "Select all".                                                                           |
-| `select-row-label` | `string`              | `"Select"`     | Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".                                         |
+| Attribute           | Type                  | Default            | Description                                                                                                                                    |
+| ------------------- | --------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `caption`           | `string \| undefined` |                    | A visible caption that also names the table.                                                                                                   |
+| `sticky-header`     | `boolean`             | `false`            | The headings stay at the top while the rows scroll; give the element a `max-block-size`.                                                       |
+| `selectable`        | `boolean`             | `false`            | Adds a checkbox column.                                                                                                                        |
+| `row-key`           | `string`              | `"id"`             | The row property that identifies a row in `selected` and `pl-selection-change`. Defaults to `id`; a row without it is identified by its index. |
+| `sort-column`       | `string \| undefined` |                    | The `key` of the sorted column.                                                                                                                |
+| `sort-direction`    | `PlSortDirection`     | `"ascending"`      | `ascending` (default) or `descending`.                                                                                                         |
+| `manual-sort`       | `boolean`             | `false`            | Do not reorder the rows; the app does it on `pl-sort`.                                                                                         |
+| `filterable`        | `boolean`             | `false`            | Shows a search field above the table.                                                                                                          |
+| `filter-label`      | `string`              | `"Filter"`         | The search field's accessible name. Defaults to "Filter".                                                                                      |
+| `filter`            | `string`              | `""`               | The global filter query.                                                                                                                       |
+| `manual-filter`     | `boolean`             | `false`            | Do not filter the rows; the app does it on `pl-filter`.                                                                                        |
+| `page-size`         | `number`              | `0`                | Rows per page; 0 (default) shows every row and no pagination.                                                                                  |
+| `page`              | `number`              | `1`                | The current page, from 1. Defaults to 1; a page past the end is clamped.                                                                       |
+| `manual-pagination` | `boolean`             | `false`            | Do not slice the rows; the app does it on `pl-page`. `row-count` then gives the total.                                                         |
+| `row-count`         | `number \| undefined` |                    | With `manual-pagination`, the number of rows over all pages. Defaults to the number of rows given.                                             |
+| `empty-label`       | `string`              | `"No results"`     | The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".                                                |
+| `select-all-label`  | `string`              | `"Select all"`     | The select-all checkbox's accessible name. Defaults to "Select all".                                                                           |
+| `select-row-label`  | `string`              | `"Select"`         | Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".                                         |
+| `expand-label`      | `string`              | `"Expand"`         | Prefix of each disclosure button's accessible name, followed by the row's first cell, in model mode. Defaults to "Expand".                     |
+| `columns-label`     | `string`              | `"Columns"`        | The text of the menu that shows and hides columns, in model mode. Defaults to "Columns".                                                       |
+| `column-menu-label` | `string`              | `"Column options"` | Prefix of each heading menu's accessible name, followed by the heading, in model mode. Defaults to "Column options".                           |
+| `resize-label`      | `string`              | `"Resize"`         | Prefix of each resize handle's accessible name, followed by the heading, in model mode. Defaults to "Resize".                                  |
+| `row-menu`          | `boolean`             | `false`            | Gives each row a menu to pin it, in model mode.                                                                                                |
+| `row-menu-label`    | `string`              | `"Row options"`    | Prefix of each row menu's accessible name, followed by the row's first cell. Defaults to "Row options".                                        |
+| `cell-select`       | `boolean`             | `false`            | The cells take a roving focus and shift-click or shift-arrow selects a rectangle, in model mode.                                               |
+| `focusCell`         | `string \| undefined` |                    | The id of the cell that holds the roving tab stop.                                                                                             |
 
 **Slots**
 
@@ -809,7 +831,17 @@ A native table drawn from `columns` and `rows`, with sortable headings and optio
 
 - `name`:
 - `pl-sort`: A heading was activated. `detail.column` is the column key and `detail.direction` the new direction.
+- `pl-column-visibility`: A column was hidden or shown from a menu, in model mode.
+- `pl-column-order`: A column was moved; `detail.index` is its new place among the model's columns.
+- `pl-column-pin`: A column was pinned to a side, or unpinned (`null`).
+- `pl-column-resize`: A column's resize handle moved; `detail.width` is the requested width in pixels.
+- `pl-column-group`: A column was grouped or ungrouped from its menu.
+- `pl-row-pin`: A row was pinned to the top or bottom, or unpinned (`null`).
+- `pl-cell-select`: The selected cell range changed. `detail.cells` holds the cell ids.
 - `pl-selection-change`: The selection changed through a checkbox. `detail.keys` holds the selected row keys, in row order.
+- `pl-filter`: A filter field changed. `detail.value` is the query; `detail.column` names the column of a heading filter, and is absent for the global one.
+- `pl-page`: Another page was chosen. `detail.page` is the page.
+- `pl-expand`: A disclosure button was activated in model mode. `detail.expanded` is the new state.
 
 ## Date picker
 
@@ -991,7 +1023,7 @@ import "purrlucent/field";
 
 ### `<pl-field>`
 
-Lays out and wires a label, a control, a description and an error message for a control that does not carry its own label: a native input, a third party element, or a `pl-` control in a custom layout. The slotted elements live in the light DOM, so the field gives the label, description and error an `id` when they have none and points the control at them. - A control with its own role (a native input, `pl-checkbox`, `pl-switch`, `pl-slider`, `pl-radio-group`) gets the label's text as `aria-label`, the description (and the error while `invalid`) as `aria-description`, and, while `invalid`, `aria-invalid` and `aria-errormessage`. Text, not id references into the slots, which crash Firefox. - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox` or `pl-date-picker` keeps its edit control in a shadow root that an id reference cannot reach. A slotted `<label>` gets `for` pointing at the host, which names the control; the description, and the error while `invalid`, go to the control's `aria-description`, and `aria-invalid` is set on it. A label that is not a `<label>` is copied to the control's `label`. - A click on the label turns a checkbox, switch or radio on or off and focuses any other control. Use the field or the control's own validation message, not both: the field shows the `error` slot while `invalid`, and a `pl-input` shows its own message after interaction.
+Lays out and wires a label, a control, a description and an error message for a control that does not carry its own label: a native input, a third party element, or a `pl-` control in a custom layout. The slotted elements live in the light DOM, so the field gives the label, description and error an `id` when they have none and points the control at them. - A control with its own role (a native input, `pl-checkbox`, `pl-switch`, `pl-slider`, `pl-radio-group`) gets the label's text as `aria-label`, the description (and the error while `invalid`) as `aria-description`, and, while `invalid`, `aria-invalid` and `aria-errormessage`; an error without its own `role` or `aria-live` becomes a polite live region. Text, not id references into the slots, which crash Firefox. - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox` or `pl-date-picker` keeps its edit control in a shadow root that an id reference cannot reach. A slotted `<label>` gets `for` pointing at the host, which names the control; the description, and the error while `invalid`, go to the control's `aria-description`, and `aria-invalid` is set on it. A label that is not a `<label>` is copied to the control's `label`. - A click on the label turns a checkbox, switch or radio on or off and focuses any other control. Use the field or the control's own validation message, not both: the field shows the `error` slot while `invalid`, and a `pl-input` shows its own message after interaction.
 
 | Attribute     | Type                                         | Default      | Description                                                                                                                                                                                                                           |
 | ------------- | -------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1016,7 +1048,7 @@ Lays out and wires a label, a control, a description and an error message for a 
 
 ### `<pl-fieldset>`
 
-A group of fields with a legend and a description. The host is a `role="group"` named by the legend's text and described by the description's text, set as `aria-label` and `aria-description`. A native `<fieldset>` in the shadow root would not disable the slotted fields, which are not its descendants, so `disabled` turns off every control inside, as a native disabled fieldset does, including ones added later.
+A group of fields with a legend and a description. The host is a `role="group"` named by the legend's text and described by the description's text, set as `aria-label` and `aria-description`. A native `<fieldset>` in the shadow root would not disable the slotted fields, which are not its descendants, so `disabled` turns off every control inside, as a native disabled fieldset does, including ones added later, and sets `aria-disabled` on the group.
 
 | Attribute  | Type      | Default | Description                                                                                       |
 | ---------- | --------- | ------- | ------------------------------------------------------------------------------------------------- |
@@ -1619,11 +1651,12 @@ import "purrlucent/progress";
 
 A progress bar. With a `value` it shows how far along the work is; without one it shows that work is going on. Name it with `label`.
 
-| Attribute | Type                  | Default | Description                                                        |
-| --------- | --------------------- | ------- | ------------------------------------------------------------------ |
-| `value`   | `number \| undefined` |         | How much is done, from 0 to `max`. Leave it out for indeterminate. |
-| `max`     | `number`              | `100`   | The value that means done. Defaults to 100.                        |
-| `label`   | `string`              | `""`    | The accessible name.                                               |
+| Attribute | Type                                                   | Default | Description                                                                                                                               |
+| --------- | ------------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `number \| undefined`                                  |         | How much is done, from 0 to `max`. Leave it out for indeterminate.                                                                        |
+| `max`     | `number`                                               | `100`   | The value that means done. Defaults to 100.                                                                                               |
+| `label`   | `string`                                               | `""`    | The accessible name.                                                                                                                      |
+| `tone`    | `"success" \| "warning" \| "destructive" \| undefined` |         | The fill's color: the accent (default), `success`, `warning` or `destructive`. Say the state in words too; color alone does not carry it. |
 
 **Parts**
 
@@ -2281,13 +2314,14 @@ One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. A
 
 A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
-| Attribute  | Type                   | Default | Description                                                                                                                                   |
-| ---------- | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`    | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                       |
-| `name`     | `string`               | `""`    | The name submitted with a form.                                                                                                               |
-| `label`    | `string`               | `""`    | The accessible name of the group.                                                                                                             |
-| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                 |
-| `disabled` | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it. |
+| Attribute     | Type                   | Default | Description                                                                                                                                               |
+| ------------- | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                                   |
+| `name`        | `string`               | `""`    | The name submitted with a form.                                                                                                                           |
+| `label`       | `string`               | `""`    | The accessible name of the group.                                                                                                                         |
+| `size`        | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                             |
+| `fit-content` | `boolean`              | `false` | Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways. For many items of different lengths. |
+| `disabled`    | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.             |
 
 **Slots**
 

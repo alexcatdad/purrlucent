@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import {
   compositeOver,
   contrast,
   resolveColors,
 } from "../../e2e/helpers/color.ts";
+import { lowContrastText } from "../../e2e/helpers/rendered.ts";
 import { gotoStory } from "../../e2e/helpers/story.ts";
 
 const colorSchemes = [
@@ -39,7 +40,7 @@ const openMaterials = async (
 ) => {
   if (test.info().project.name === "chromium")
     await emulateTransparency(page, "no-preference");
-  await gotoStory(page, "tokens--materials", `theme:${theme}`);
+  await gotoStory(page, "foundations-tokens--materials", `theme:${theme}`);
   // The preview decorator resets the attribute on render; set ours after it.
   await page.locator("#bar").waitFor();
   await page.evaluate(
@@ -48,9 +49,9 @@ const openMaterials = async (
   );
 };
 
-/** The computed backdrop-filter and the alpha of the computed bar background. */
-const bar = (page: Page) =>
-  page.locator("#bar").evaluate((el) => {
+/** The computed backdrop-filter and the alpha of the computed background. */
+const measure = (target: Locator) =>
+  target.evaluate((el) => {
     const style = getComputedStyle(el);
     const color = style.backgroundColor;
     // rgba(r, g, b, a) puts alpha last after a comma; rgb(r g b / a), oklch() and color() put it after a slash.
@@ -64,6 +65,19 @@ const bar = (page: Page) =>
     };
   });
 
+const bar = (page: Page) => measure(page.locator("#bar"));
+
+/** A bare element wearing the control material and the edge, appended after the story renders. */
+const addControl = async (page: Page) => {
+  await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.id = "control";
+    probe.style.cssText =
+      "background: var(--pl-material-control); backdrop-filter: var(--pl-material-control-filter); box-shadow: var(--pl-material-edge)";
+    document.body.append(probe);
+  });
+  return page.locator("#control");
+};
 test("solid mode computes the material filter to none", async ({ page }) => {
   await openMaterials(page, "solid", "light");
   expect((await bar(page)).filter).toBe("none");
@@ -217,7 +231,7 @@ test("every text role meets 4.5:1 against background in all four color schemes",
   page,
   browserName,
 }) => {
-  await gotoStory(page, "tokens--palette");
+  await gotoStory(page, "foundations-tokens--colors");
   for (const scheme of colorSchemes) {
     const more = scheme.contrast === "more";
     // FIREFOX_CONTRAST_BUG: Firefox would check the default values again.
@@ -264,10 +278,149 @@ test("the Storybook theme global switches token colors while the OS stays light"
 }) => {
   await page.emulateMedia({ colorScheme: "light" });
   const barBackground = async (theme: string) => {
-    await gotoStory(page, "tokens--materials", `theme:${theme}`);
+    await gotoStory(page, "foundations-tokens--materials", `theme:${theme}`);
     return page
       .locator("#bar")
       .evaluate((el) => getComputedStyle(el).backgroundColor);
   };
   expect(await barBackground("dark")).not.toBe(await barBackground("light"));
+});
+
+test("glass controls get a material", async ({ page }) => {
+  await openMaterials(page, "glass", "light");
+  const { filter, alpha } = await measure(await addControl(page));
+  expect(filter).toContain("blur");
+  expect(alpha).toBeLessThan(1);
+});
+
+const rootToken = (page: Page, name: string) =>
+  page.evaluate(
+    (token) =>
+      getComputedStyle(document.documentElement).getPropertyValue(token).trim(),
+    name,
+  );
+
+for (const theme of ["light", "dark"] as const)
+  test(`glass edge carries a highlight in ${theme}`, async ({ page }) => {
+    await openMaterials(page, "glass", theme);
+    // The token holds two inset shadows: the top highlight and the hairline.
+    expect(
+      (await rootToken(page, "--pl-material-edge")).match(/inset/g),
+    ).toHaveLength(2);
+    const shadow = await (
+      await addControl(page)
+    ).evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(shadow.match(/inset/g)).toHaveLength(2);
+  });
+
+test("glass controls cast a shadow", async ({ page }) => {
+  await openMaterials(page, "glass", "light");
+  // The build folds color-mix() into a hex color, so the computed shadow is measured, not the token text.
+  const shadow = await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.boxShadow = "var(--pl-elevation-control)";
+    document.body.append(probe);
+    const value = getComputedStyle(probe).boxShadow;
+    probe.remove();
+    return value;
+  });
+  expect(shadow).not.toBe("none");
+  // rgba(r, g, b, a) puts alpha last after a comma; color(srgb r g b / a) after a slash.
+  const color = shadow.match(/(?:rgba?|color)\([^)]*\)/)![0];
+  const alpha = color.includes("/")
+    ? Number.parseFloat(color.split("/")[1]!)
+    : color.startsWith("rgba")
+      ? Number.parseFloat(color.split(",")[3]!)
+      : 1;
+  expect(alpha).toBeGreaterThan(0);
+});
+
+// Under a fallback the control keeps its solid-mode look, so it is compared
+// with the same probe once the material is switched to solid. The solid face
+// is the neutral secondary tint, which is translucent by design.
+const expectSolidControl = async (page: Page) => {
+  const control = await addControl(page);
+  const fallback = await measure(control);
+  const shadow = await control.evaluate((el) => getComputedStyle(el).boxShadow);
+  const elevation = await rootToken(page, "--pl-elevation-control");
+  await page.evaluate(() =>
+    document.documentElement.setAttribute("pl-material", "solid"),
+  );
+  expect(fallback.filter).toBe("none");
+  expect(elevation).toBe("none");
+  expect(fallback).toEqual(await measure(control));
+  expect(shadow).toBe(
+    await control.evaluate((el) => getComputedStyle(el).boxShadow),
+  );
+};
+
+test("reduced transparency makes controls solid", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== "chromium",
+    "emulated through the Chromium protocol",
+  );
+  await openMaterials(page, "glass", "light");
+  await emulateTransparency(page, "reduce");
+  await expectSolidControl(page);
+});
+
+test("more contrast makes controls solid", async ({ page, browserName }) => {
+  test.skip(browserName === "firefox", FIREFOX_CONTRAST_BUG);
+  await openMaterials(page, "glass", "light");
+  await page.emulateMedia({ contrast: "more" });
+  await expectSolidControl(page);
+});
+
+// Measured from rendered pixels, so the story's backdrop, the glass tint and the blur all count.
+for (const theme of ["light", "dark"] as const)
+  test(`text on glass meets contrast over the backdrop in ${theme}`, async ({
+    page,
+    browserName,
+  }) => {
+    // The machine's own settings leak into the browser, so pin them to no preference.
+    await page.emulateMedia({ colorScheme: theme, contrast: "no-preference" });
+    if (browserName === "chromium")
+      await emulateTransparency(page, "no-preference");
+    await gotoStory(
+      page,
+      "foundations-surfaces--glass",
+      `material:glass;theme:${theme}`,
+    );
+    await page.locator("#bar").waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    expect(await lowContrastText(page)).toEqual([]);
+  });
+
+test("every color token has a swatch", async ({ page }) => {
+  // The shipped file is the source: each color token is declared once on :root.
+  const declared = new Set(
+    Array.from(
+      readFileSync(`${import.meta.dirname}/tokens.css`, "utf8").matchAll(
+        /^\s+(--pl-color-[a-z0-9-]+):/gm,
+      ),
+      (match) => match[1],
+    ),
+  );
+  expect(declared.size).toBeGreaterThan(0);
+  await gotoStory(page, "foundations-tokens--colors");
+  // Light and dark each get one swatch per token.
+  await expect(page.locator("[data-swatch]")).toHaveCount(declared.size * 2);
+});
+
+test("motion stops under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await gotoStory(page, "foundations-tokens--motion");
+  const dots = page.locator("[data-dot]");
+  const states = () =>
+    dots.evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el).animationPlayState),
+    );
+  const running = await states();
+  expect(running.length).toBeGreaterThan(0);
+  expect(new Set(running)).toEqual(new Set(["running"]));
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(new Set(await states())).toEqual(new Set(["paused"]));
 });

@@ -5,7 +5,7 @@ import "../button/button.ts";
 import "./button-group.ts";
 
 const meta = {
-  title: "Components/Button Group",
+  title: "Actions/Button Group",
   component: "pl-button-group",
 } satisfies Meta;
 

@@ -2,9 +2,10 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
 import "./item.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Item",
+  title: "Cards & Lists/Item",
   component: "pl-item",
 } satisfies Meta;
 
@@ -107,12 +108,14 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    list(
-      html`<pl-item href="#report">
-        ${doc}
-        <strong slot="title">Quarterly report</strong>
-        <span slot="description">Edited yesterday</span>
-      </pl-item>`,
+    underGlass(
+      list(
+        html`<pl-item href="#report">
+          ${doc}
+          <strong slot="title">Quarterly report</strong>
+          <span slot="description">Edited yesterday</span>
+        </pl-item>`,
+      ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

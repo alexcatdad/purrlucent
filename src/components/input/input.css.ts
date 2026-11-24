@@ -14,7 +14,7 @@ export const fieldStyles = css`
     display: inline-grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pl-gap-form);
-    inline-size: calc(var(--pl-spacing) * 30);
+    inline-size: calc(var(--pl-spacing) * 40);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
@@ -48,6 +48,8 @@ export const fieldStyles = css`
   [part="message"] {
     display: flex;
     align-items: flex-start;
+    justify-self: stretch;
+    min-inline-size: 0;
     gap: var(--pl-gap-icon);
     color: var(--pl-color-destructive-text);
     font-size: var(--pl-text-xs);
@@ -77,8 +79,11 @@ export const fieldStyles = css`
     block-size: var(--_h);
     padding-inline: var(--_pad);
     border-radius: var(--pl-radius);
-    background: var(--pl-color-input);
-    box-shadow: 0 0 0 1px var(--_edge);
+    background: var(--pl-material-field);
+    backdrop-filter: var(--pl-material-control-filter);
+    box-shadow:
+      var(--pl-material-edge),
+      0 0 0 1px var(--_edge);
     outline: var(--pl-ring-width) solid transparent;
     outline-offset: var(--pl-ring-offset);
     cursor: text;
@@ -137,6 +142,7 @@ export const fieldStyles = css`
   /* Inside a pl-input-group the group draws the edge, fill and ring. */
   :host([data-grouped]) [part="field"] {
     background: none;
+    backdrop-filter: none;
     box-shadow: none;
     outline-color: transparent;
   }
@@ -186,7 +192,7 @@ export const inputStyles = [
     /* Room for about five characters beside the glyph and the clear button. */
     :host(:state(search)) {
       inline-size: max(
-        calc(var(--pl-spacing) * 30),
+        calc(var(--pl-spacing) * 40),
         calc(
           var(--_pad) + var(--pl-icon-lg) + var(--pl-gap-icon) * 2 +
             var(--pl-size-hit-min) + var(--pl-spacing) * 12

@@ -10,6 +10,9 @@ export const paginationStyles = css`
     --_size: max(var(--pl-size-md), var(--pl-size-hit-min));
 
     display: block;
+    background: var(--pl-material-capsule);
+    backdrop-filter: var(--pl-material-bar-filter);
+    box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     font-variant-numeric: tabular-nums;

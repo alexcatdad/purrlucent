@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
+import "../field/field.ts";
 import "./checkbox.ts";
 import type { PlCheckbox } from "./checkbox.ts";
 
 const meta = {
-  title: "Components/Checkbox",
+  title: "Forms/Checkbox",
   component: "pl-checkbox",
 } satisfies Meta;
 
@@ -35,6 +36,12 @@ export const States: Story = {
       html`<pl-checkbox checked disabled>Favorites</pl-checkbox>`,
       html`<pl-checkbox indeterminate disabled>Locations</pl-checkbox>`,
       html`<pl-checkbox aria-label="Select all"></pl-checkbox>`,
+      html`<pl-checkbox readonly checked>Read only</pl-checkbox>`,
+      html`<pl-field orientation="horizontal" invalid>
+        <label slot="label">Accept the terms</label>
+        <pl-checkbox required></pl-checkbox>
+        <span slot="error">Accept the terms to continue.</span>
+      </pl-field>`,
     ]),
 };
 

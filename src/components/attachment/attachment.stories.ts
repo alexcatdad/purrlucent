@@ -2,9 +2,10 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
 import "./attachment.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Attachment",
+  title: "Cards & Lists/Attachment",
   component: "pl-attachment",
 } satisfies Meta;
 
@@ -296,12 +297,14 @@ export const GroupRtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    box(
-      html`<pl-attachment href="#report">
-        ${doc}
-        <span slot="title">Quarterly report.pdf</span>
-        <span slot="description">PDF, 2.4 MB</span>
-      </pl-attachment>`,
+    underGlass(
+      box(
+        html`<pl-attachment href="#report">
+          ${doc}
+          <span slot="title">Quarterly report.pdf</span>
+          <span slot="description">PDF, 2.4 MB</span>
+        </pl-attachment>`,
+      ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };

@@ -3,9 +3,10 @@ import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./resizable.ts";
 import type { PlResizable } from "./resizable.ts";
+import { underGlass } from "../../../.storybook/under-glass.ts";
 
 const meta = {
-  title: "Components/Resizable",
+  title: "Containers/Resizable",
   component: "pl-resizable",
 } satisfies Meta;
 
@@ -160,14 +161,16 @@ export const Rtl: Story = {
 
 export const Glass: Story = {
   render: () =>
-    frame(
-      html`<pl-resizable id="group" style=${groupStyle}>
-        <pl-resizable-panel size="30" min="15"
-          >${pane("Library")}</pl-resizable-panel
-        >
-        <pl-resizable-handle label="Resize library"></pl-resizable-handle>
-        <pl-resizable-panel min="15">${pane("Document")}</pl-resizable-panel>
-      </pl-resizable>`,
+    underGlass(
+      frame(
+        html`<pl-resizable id="group" style=${groupStyle}>
+          <pl-resizable-panel size="30" min="15"
+            >${pane("Library")}</pl-resizable-panel
+          >
+          <pl-resizable-handle label="Resize library"></pl-resizable-handle>
+          <pl-resizable-panel min="15">${pane("Document")}</pl-resizable-panel>
+        </pl-resizable>`,
+      ),
     ),
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };
