@@ -3,7 +3,9 @@ import { html, nothing } from "lit";
 import { expect, userEvent } from "storybook/test";
 import { isolate } from "../../../.storybook/isolate.ts";
 import "../button/button.ts";
+import "../dialog/dialog.ts";
 import "./drawer.ts";
+import type { PlDialog } from "../dialog/dialog.ts";
 import type { PlDrawer } from "./drawer.ts";
 
 const meta = {
@@ -120,6 +122,54 @@ export const OpenLongContent: Story = {
         <pl-button slot="footer" variant="primary" data-close="accept"
           >Accept</pl-button
         >
+      </pl-drawer>`,
+    ),
+  play: open,
+};
+
+/** The `description` attribute describes a drawer that has no description slot. */
+export const OpenDescribedByAttribute: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-drawer
+        id="drawer"
+        description="Sharing can be turned off at any time."
+      >
+        <h2 slot="title">Share this photo</h2>
+        <p style="margin:0">The photo is shared at its original size.</p>
+        ${footer}
+      </pl-drawer>`,
+    ),
+  play: open,
+};
+
+/** A dialog opened from inside the open drawer: Escape closes the dialog first. */
+export const OpenWithDialog: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-drawer id="drawer">
+        <h2 slot="title">Share this photo</h2>
+        <pl-button
+          id="inner-trigger"
+          @click=${(event: Event) =>
+            (
+              (event.currentTarget as HTMLElement)
+                .nextElementSibling as PlDialog
+            ).show()}
+          >Remove photo</pl-button
+        >
+        <pl-dialog id="inner-dialog" variant="alert">
+          <h2 slot="title">Remove this photo?</h2>
+          It will be removed from the album.
+          <pl-button slot="actions" size="lg" data-close="cancel"
+            >Cancel</pl-button
+          >
+          <pl-button slot="actions" size="lg" data-close="remove"
+            >Remove</pl-button
+          >
+        </pl-dialog>
       </pl-drawer>`,
     ),
   play: open,
