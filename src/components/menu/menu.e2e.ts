@@ -545,7 +545,14 @@ test.describe("link items", () => {
     const anchors = await page.locator("pl-menu-item").evaluateAll((rows) =>
       rows.map((row) => {
         const a = row.shadowRoot!.querySelector("a");
-        return a && [a.getAttribute("href"), a.target, a.rel];
+        // Attributes, not properties: Firefox reports the page's <base target> as `target`.
+        return (
+          a && [
+            a.getAttribute("href"),
+            a.getAttribute("target") ?? "",
+            a.getAttribute("rel") ?? "",
+          ]
+        );
       }),
     );
     expect(anchors).toEqual([
