@@ -97,7 +97,10 @@ export class PlToast extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) this.#sync();
+    if (this.hasUpdated) {
+      this.#observe();
+      this.#sync();
+    }
   }
 
   override disconnectedCallback() {
@@ -129,6 +132,7 @@ export class PlToast extends LitElement {
   }
 
   protected override updated() {
+    this.#observe();
     this.#sync();
   }
 
@@ -177,14 +181,31 @@ export class PlToast extends LitElement {
     const text =
       this.renderRoot.querySelector<HTMLElement>("[part=description]");
     if (!text) return;
-    if (text.scrollHeight > text.clientHeight) text.tabIndex = 0;
-    else text.removeAttribute("tabindex");
+    if (text.scrollHeight > text.clientHeight) {
+      text.tabIndex = 0;
+      text.setAttribute("role", "region");
+      text.setAttribute("aria-labelledby", "title");
+    } else {
+      text.removeAttribute("tabindex");
+      text.removeAttribute("role");
+      text.removeAttribute("aria-labelledby");
+    }
   }
 
-  #watch(event: Event) {
+  // The description box itself, which a resize observer reports even when its
+  // content is text or inline, and the elements slotted into it.
+  #observe() {
     this.#resize.disconnect();
-    for (const node of (event.target as HTMLSlotElement).assignedElements())
+    const text =
+      this.renderRoot.querySelector<HTMLElement>("[part=description]");
+    if (!text) return;
+    this.#resize.observe(text);
+    for (const node of text.querySelector("slot")?.assignedElements() ?? [])
       this.#resize.observe(node);
+  }
+
+  #watch() {
+    this.#observe();
     this.#fit();
   }
 
@@ -224,7 +245,7 @@ export class PlToast extends LitElement {
           : nothing
       }
       <div part="text">
-        <div part="title"><slot name="title"></slot></div>
+        <div part="title" id="title"><slot name="title"></slot></div>
         <div part="description">
           <slot @slotchange=${this.#watch}></slot>
         </div>
@@ -267,6 +288,7 @@ function createToast(options: PlToastOptions): PlToast {
   if (typeof description === "string") {
     // Only the text `show()` was given keeps its line breaks.
     const text = document.createElement("span");
+    text.style.display = "block";
     text.style.whiteSpace = "pre-line";
     text.textContent = description;
     toast.append(text);
@@ -351,8 +373,17 @@ export class PlToaster extends LitElement {
       options.id === undefined
         ? undefined
         : [...this.children].find((child) => ids.get(child) === options.id);
-    if (same) same.replaceWith(toast);
-    else this.append(toast);
+    if (same) {
+      // Focus inside the old toast moves to the new one that takes its place.
+      const focused = same.matches(":focus-within");
+      same.before(toast);
+      // Closing it fires pl-close, and the toaster removes it.
+      (same as PlToast).close();
+      if (focused)
+        void toast.updateComplete.then(() =>
+          toast.shadowRoot?.querySelector<HTMLElement>("[part=close]")?.focus(),
+        );
+    } else this.append(toast);
     return toast;
   }
 

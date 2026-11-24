@@ -327,9 +327,9 @@ test("PlToaster.show keeps the line breaks of a string description", async ({
   await page.locator("#lines").click();
   const text = toasts(page).locator("span", { hasText: "First line" });
   await expect(text).toBeVisible();
-  const lineHeight = await text.evaluate((el) =>
-    parseFloat(getComputedStyle(el).lineHeight),
-  );
+  const lineHeight = await toasts(page)
+    .locator("[part=description]")
+    .evaluate((el) => parseFloat(getComputedStyle(el).lineHeight));
   expect((await text.boundingBox())!.height).toBeGreaterThan(lineHeight * 1.5);
 });
 
