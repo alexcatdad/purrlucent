@@ -134,11 +134,23 @@ export const itemStyles = css`
     opacity: 1;
   }
 
+  /* The gap sits in this wrapper, not on the icon: page CSS that zeroes
+     margins reaches a slotted element but never the shadow tree. An empty
+     slot adds no width and no gap. */
+  .icon {
+    flex: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon[data-filled] {
+    padding-inline-end: var(--pl-gap-icon);
+  }
+
   ::slotted([slot="icon"]) {
     flex: none;
-    inline-size: var(--pl-icon-sm);
-    block-size: var(--pl-icon-sm);
-    margin-inline-end: var(--pl-gap-icon);
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;

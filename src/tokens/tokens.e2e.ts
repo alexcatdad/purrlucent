@@ -453,6 +453,49 @@ test("radii follow role, and nested radii the inset between faces", async ({
   });
 });
 
+for (const theme of ["light", "dark"] as const) {
+  test(`the glass ring and selection follow the app's accent in ${theme}`, async ({
+    page,
+  }) => {
+    await openMaterials(page, "glass", theme);
+    const roles = {
+      ring: "var(--pl-material-ring)",
+      selected: "var(--pl-material-selected)",
+    };
+    const pink = await resolveColors(page, roles);
+    await page.evaluate(() =>
+      document.documentElement.style.setProperty(
+        "--pl-color-accent",
+        "oklch(51% 0.17 250deg)",
+      ),
+    );
+    const blue = await resolveColors(page, roles);
+    const background = await page
+      .locator("#bar")
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const shown = await compositeOver(page, background, ["#000", "#fff"]);
+    for (const role of ["ring", "selected"] as const) {
+      const [r, , b] = blue[role]!;
+      expect(b, `${role} is blue`).toBeGreaterThan(r);
+      expect(pink[role]![0], `${role} default is pink`).toBeGreaterThan(
+        pink[role]![2],
+      );
+      // The custom accent keeps 3:1 on the thin glass fill over black and white.
+      const fgs = await compositeOver(
+        page,
+        roles[role],
+        shown.map((over) => `rgb(${over.join(" ")})`),
+      );
+      shown.forEach((over, i) =>
+        expect(
+          contrast(fgs[i]!, over),
+          `${role} on glass in ${theme}`,
+        ).toBeGreaterThanOrEqual(3),
+      );
+    }
+  });
+}
+
 test.describe("coarse pointer on a wide screen", () => {
   test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
 

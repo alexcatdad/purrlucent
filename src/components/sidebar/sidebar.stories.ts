@@ -276,6 +276,42 @@ export const NoToggleCollapsed: Story = {
     `),
 };
 
+/** An account row in the footer opens a menu upward. Language and Theme are submenus of radio items, and each parent row shows the current choice as its `detail`. */
+export const AccountMenu: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Workspace" collapse-below="0">
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+      <pl-menu id="menu" slot="footer" label="Account" placement="top-start">
+        <pl-sidebar-item id="account" slot="trigger" action
+          ><pl-avatar slot="icon" name="Ada Lovelace"></pl-avatar>Ada
+          Lovelace</pl-sidebar-item
+        >
+        <pl-menu-item href="#profile">Profile</pl-menu-item>
+        <pl-menu-separator></pl-menu-separator>
+        <pl-menu-item detail="English">
+          Language
+          <pl-menu slot="submenu" label="Language">
+            <pl-menu-item type="radio" value="en" checked>English</pl-menu-item>
+            <pl-menu-item type="radio" value="sv">Svenska</pl-menu-item>
+          </pl-menu>
+        </pl-menu-item>
+        <pl-menu-item detail="System">
+          Theme
+          <pl-menu slot="submenu" label="Theme">
+            <pl-menu-item type="radio" value="system" checked
+              >System</pl-menu-item
+            >
+            <pl-menu-item type="radio" value="light">Light</pl-menu-item>
+            <pl-menu-item type="radio" value="dark">Dark</pl-menu-item>
+          </pl-menu>
+        </pl-menu-item>
+        <pl-menu-separator></pl-menu-separator>
+        <pl-menu-item destructive>Sign Out</pl-menu-item>
+      </pl-menu>
+    </pl-sidebar>
+  `,
+};
+
 /** An `action` item as the trigger of a `pl-menu`: the button that holds focus carries `aria-haspopup` and `aria-expanded`. */
 export const MenuTrigger: Story = {
   render: () => html`
