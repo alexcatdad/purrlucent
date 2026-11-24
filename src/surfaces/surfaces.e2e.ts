@@ -165,8 +165,8 @@ test("clear glass dims its backdrop and its labels hold over white or black", as
         ).toBeGreaterThanOrEqual(need);
     const [undimmed] = await compositeOver(page, background, ["#fff"]);
     expect(
-      contrast(colors.label!, undimmed!),
-      `label on ${id} without the dim`,
+      contrast(colors.foreground!, undimmed!),
+      `foreground on ${id} without the dim`,
     ).toBeGreaterThanOrEqual(4.5);
   }
 });
