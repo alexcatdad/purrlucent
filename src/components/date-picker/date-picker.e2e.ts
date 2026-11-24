@@ -176,6 +176,16 @@ test("a day outside min and max or a disabled day is invalid and is no value", a
   expect(await value(page)).toBe("2026-11-10");
 });
 
+test("range: a start and an end date are shown", async ({ page }) => {
+  await gotoStory(page, story("range"));
+  await expect(page.getByRole("textbox", { name: "Start" })).toHaveValue(
+    "11/18/2026",
+  );
+  await expect(page.getByRole("textbox", { name: "End" })).toHaveValue(
+    "12/02/2026",
+  );
+});
+
 test("invalid-message and range-message can be replaced", async ({ page }) => {
   await gotoStory(page, story("range"));
   await page.locator("#picker").evaluate((el) => {

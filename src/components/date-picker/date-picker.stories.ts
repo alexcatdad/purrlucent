@@ -115,19 +115,28 @@ export const Open: Story = {
   },
 };
 
-/** Only days from min to max, and not the disabled ones, can be chosen. */
+/** A start and an end date. Only days from min to max, and not the disabled ones, can be chosen. */
 export const Range: Story = {
   render: () =>
     column(
       html`<pl-date-picker
-        id="picker"
-        locale="en-US"
-        value="2026-11-18"
-        min="2026-11-09"
-        max="2026-12-20"
-        disabled-dates="2026-11-25"
-        >Date</pl-date-picker
-      >`,
+          id="picker"
+          locale="en-US"
+          value="2026-11-18"
+          min="2026-11-09"
+          max="2026-12-20"
+          disabled-dates="2026-11-25"
+          >Start</pl-date-picker
+        >
+        <pl-date-picker
+          id="end"
+          locale="en-US"
+          value="2026-12-02"
+          min="2026-11-09"
+          max="2026-12-20"
+          disabled-dates="2026-11-25"
+          >End</pl-date-picker
+        >`,
     ),
 };
 

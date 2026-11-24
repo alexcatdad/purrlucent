@@ -220,4 +220,9 @@ export const checkboxStyles = css`
   :host {
     --_r: calc(var(--pl-radius) / 2);
   }
+
+  /* A field marks its control invalid; the message beside it says why. */
+  :host([aria-invalid="true"]) [part="box"] {
+    box-shadow: inset 0 0 0 1px var(--pl-color-destructive);
+  }
 `;
