@@ -799,3 +799,101 @@ for (const id of [interactive, interactiveRtl])
   test(`axe finds no violations in ${id}`, async ({ page }) => {
     await expectAccessible(await open(page, id));
   });
+
+const rich = "data-data-table--rich-cells";
+const modelRich = "data-data-table--model-rich-cells";
+
+test("rich cells: a renderer's template, Node and string replace the text", async ({
+  page,
+}) => {
+  await open(page, rich);
+  const table = page.locator("pl-data-table#control");
+  await expect(table.locator("tbody td a[href]")).toHaveCount(4);
+  await expect(
+    table.getByRole("link", { name: "Ada Lovelace" }),
+  ).toHaveAttribute("href", "#ada");
+  await expect(table.locator("tbody td em")).toHaveText([
+    "Mathematician",
+    "Rear admiral",
+    "Mathematician",
+    "Engineer",
+  ]);
+  await expect(
+    table.getByRole("checkbox", { name: "Verified Grace Hopper" }),
+  ).toBeVisible();
+  // The age text is replaced by the checkbox.
+  await expect(table.locator("tbody")).not.toContainText("101");
+});
+
+test("rich cells: a checkbox in a cell toggles", async ({ page }) => {
+  await open(page, rich);
+  const box = page
+    .locator("pl-data-table#control")
+    .getByRole("checkbox", { name: "Verified Ada Lovelace" });
+  await box.click();
+  await expect(box).toBeChecked();
+});
+
+test("rich cells: a link in a cell is in the tab order", async ({ page }) => {
+  await open(page, rich);
+  const link = page
+    .locator("pl-data-table#control")
+    .getByRole("link", { name: "Ada Lovelace" });
+  await page
+    .locator("pl-data-table#control")
+    .getByRole("columnheader", { name: "Age" })
+    .getByRole("button")
+    .focus();
+  await page.keyboard.press("Tab");
+  await expect(link).toBeFocused();
+});
+
+test("model: rich cells show the renderer's content", async ({ page }) => {
+  await open(page, modelRich);
+  const table = page.locator("pl-data-table#control");
+  await expect(table.locator("tbody a[href]")).toHaveCount(5);
+  await expect(table.getByRole("link", { name: "Ada Lovelace" })).toBeVisible();
+  await expect(table.getByRole("button", { name: "Map London" })).toBeVisible();
+  // A cell the renderer leaves alone keeps its text.
+  await expect(cell(page, "ada-role")).toHaveText("Mathematician");
+});
+
+test("model: arrow keys still move between cells that hold rich content", async ({
+  page,
+}) => {
+  await open(page, modelRich);
+  await cell(page, "ada-role").click();
+  await page.keyboard.press("ArrowRight");
+  await expect(cell(page, "ada-city")).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(cell(page, "grace-city")).toBeFocused();
+});
+
+test("model: arrow keys inside a cell's control do not move the cell focus", async ({
+  page,
+}) => {
+  await open(page, modelRich);
+  const button = page
+    .locator("pl-data-table#control")
+    .getByRole("button", { name: "Map London" });
+  await button.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(button).toBeFocused();
+});
+
+test("model: clicking a control in a cell does not select the cell", async ({
+  page,
+}) => {
+  await open(page, modelRich);
+  await record(page, "pl-cell-select");
+  await page
+    .locator("pl-data-table#control")
+    .getByRole("button", { name: "Map London" })
+    .click();
+  expect(await events(page)).toEqual([]);
+});
+
+for (const id of [rich, modelRich])
+  test(`axe finds no violations in ${id}`, async ({ page }) => {
+    await expectAccessible(await open(page, id));
+  });

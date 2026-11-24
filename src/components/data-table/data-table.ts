@@ -34,6 +34,18 @@ export interface PlDataTableColumn {
 }
 
 export type PlDataTableRow = Record<string, unknown>;
+
+/**
+ * Content for a cell: a string, a `Node` or a Lit template; `null` or
+ * `undefined` keeps the text. A method-style signature, so a renderer that takes
+ * only the row and column types of one mode is assignable.
+ */
+export type PlCellRenderer = {
+  render(
+    row: PlDataTableRow | PlModelRow,
+    column: PlDataTableColumn | PlModelColumn,
+  ): unknown;
+}["render"];
 export type PlSortDirection = "ascending" | "descending";
 
 const glyph = {
@@ -91,6 +103,16 @@ const compare = (a: unknown, b: unknown) =>
  * or shift-arrow selects a rectangle of them. The table never changes the
  * model itself: each of these reports an event and the app answers with a new
  * model.
+ *
+ * With `renderCell`, a function that returns a string, a `Node` or a Lit
+ * template, a cell shows that in place of its text, so cells can hold links,
+ * markers, checkboxes and buttons. It receives the row and the column: in model
+ * mode a `PlModelRow` and a `PlModelColumn` (group rows and the footer keep
+ * their text), otherwise a row object and a `PlDataTableColumn`. Returning
+ * `null` or `undefined` keeps the text. Return a Lit template for interactive
+ * content: a returned `Node` is replaced on every render. With `cell-select`,
+ * the arrow keys move between cells only while a cell itself has focus;
+ * interactive content in a cell stays in the tab order and keeps its own keys.
  *
  * @attr {string} caption - A visible caption that also names the table.
  * @attr {boolean} sticky-header - The headings stay at the top while the rows scroll; give the element a `max-block-size`.
@@ -163,6 +185,7 @@ export class PlDataTable extends LitElement {
     rowMenuLabel: { attribute: "row-menu-label" },
     cellSelect: { type: Boolean, attribute: "cell-select" },
     model: { attribute: false },
+    renderCell: { attribute: false },
     focusCell: { state: true },
   };
 
@@ -197,6 +220,8 @@ export class PlDataTable extends LitElement {
   declare cellSelect: boolean;
   /** A table to draw as it is; see the class description. */
   declare model: PlDataTableModel | undefined;
+  /** Draws a cell's content in place of its text; see the class description. */
+  declare renderCell: PlCellRenderer | undefined;
   /** The id of the cell that holds the roving tab stop. */
   declare focusCell: string | undefined;
 
@@ -575,7 +600,9 @@ export class PlDataTable extends LitElement {
     const td = event.currentTarget as Element;
     if (
       !td.matches("[data-cell]") ||
-      (event.target as Element).closest("button, pl-menu")
+      (event.target as Element).closest(
+        "button, pl-menu, a[href], input, select, textarea, pl-button, pl-checkbox",
+      )
     )
       return;
     if (event.shiftKey && this.#anchor)
@@ -849,11 +876,14 @@ export class PlDataTable extends LitElement {
     const row = place?.row;
     const lead = place?.first ? place : undefined;
     const label = lead?.row.group ? lead.row.group.value : text;
+    const column = this.model?.columns.find((c) => c.key === cell.column);
+    const custom =
+      row && !row.group && column ? this.renderCell?.(row, column) : undefined;
     const body = lead?.row.group
       ? html`${lead.row.group.value}<span class="count"
             >${lead.row.group.count}</span
           >`
-      : text;
+      : (custom ?? text);
     const selectable = this.cellSelect && row && !row.group;
     return html`<td
       colspan=${ifDefined(cell.colSpan && cell.colSpan > 1 ? cell.colSpan : undefined)}
@@ -1048,7 +1078,7 @@ export class PlDataTable extends LitElement {
                         ${this.columns.map(
                           (column) =>
                             html`<td align=${ifDefined(column.align)}>
-                              ${String(row[column.key] ?? "")}
+                              ${this.renderCell?.(row, column) ?? String(row[column.key] ?? "")}
                             </td>`,
                         )}
                       </tr>`,
