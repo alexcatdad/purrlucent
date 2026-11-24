@@ -534,3 +534,311 @@ test.describe("coarse pointer on a wide screen", () => {
       expect((await row.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   });
 });
+
+test.describe("link items", () => {
+  test("a link item renders a real anchor and keeps the menuitem role on the row", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("links"));
+    const profile = item(page, "Profile");
+    await expect(profile).toHaveAttribute("role", "menuitem");
+    const anchors = await page.locator("pl-menu-item").evaluateAll((rows) =>
+      rows.map((row) => {
+        const a = row.shadowRoot!.querySelector("a");
+        return a && [a.getAttribute("href"), a.target, a.rel];
+      }),
+    );
+    expect(anchors).toEqual([
+      ["#profile", "", ""],
+      ["#billing", "", ""],
+      ["https://example.com/help", "_blank", "noopener"],
+      null, // disabled: no link
+      null, // Sign Out is a plain command
+    ]);
+  });
+
+  test("a click follows the link, fires pl-select and closes the menu", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("links"));
+    await recordSelects(page);
+    await item(page, "Profile").click();
+    await expect(menu(page, "Account")).toBeHidden();
+    await expect
+      .poll(() => page.evaluate(() => location.hash))
+      .toBe("#profile");
+    expect(await selects(page)).toEqual(["Profile"]);
+  });
+
+  test("Enter on a link item follows it once and closes the menu", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("links"));
+    await recordSelects(page);
+    await expect(item(page, "Profile")).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(menu(page, "Account")).toBeHidden();
+    await expect
+      .poll(() => page.evaluate(() => location.hash))
+      .toBe("#billing");
+    expect(await selects(page)).toEqual(["Billing"]);
+  });
+
+  test("a disabled link item does not follow its link", async ({ page }) => {
+    await gotoStory(page, story("links"));
+    await recordSelects(page);
+    await item(page, "Archive").click({ force: true });
+    await expect(menu(page, "Account")).toBeVisible();
+    expect(await page.evaluate(() => location.hash)).toBe("");
+    expect(await selects(page)).toEqual([]);
+  });
+});
+
+test.describe("description", () => {
+  test("a described row is described, not named, by its second line and is taller", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("description"));
+    test.skip(
+      !(await page.evaluate(
+        () => "ariaDescribedByElements" in ElementInternals.prototype,
+      )),
+      "needs ARIA element reflection on ElementInternals",
+    );
+    const public_ = item(page, "Public");
+    await expect(public_).toHaveAccessibleDescription(
+      "Anyone with the link can view",
+    );
+    await expect(item(page, "Team")).toHaveAccessibleDescription(
+      "Only people in your team",
+    );
+    await expect(item(page, "Private")).toHaveAccessibleDescription("Only you");
+  });
+
+  test("a described row grows to two lines", async ({ page }) => {
+    await gotoStory(page, story("description"));
+    await expect(page.getByText("Anyone with the link can view")).toBeVisible();
+    const rows = page.locator("pl-menu-item");
+    // The row's own height plus its second line: more than a one-line row of 24 or 44.
+    const heights = await rows.evaluateAll((all) =>
+      all.map((row) => row.getBoundingClientRect().height),
+    );
+    const text = await rows.first().evaluate((row) => {
+      const label = row.shadowRoot!.querySelector("[part=label]")!;
+      const description = row.shadowRoot!.querySelector("[part=description]")!;
+      return (
+        description.getBoundingClientRect().top >=
+        label.getBoundingClientRect().bottom - 1
+      );
+    });
+    expect(text).toBe(true);
+    for (const height of heights) expect(height).toBeGreaterThan(40);
+  });
+
+  test("a plain row has no description", async ({ page }) => {
+    await gotoStory(page, story("default"));
+    await trigger(page).click();
+    await expect(item(page, "Undo ⌘Z")).toHaveAccessibleDescription("");
+  });
+});
+
+test.describe("header", () => {
+  test("it shows above the items and is skipped by the keyboard", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("header"));
+    await expect(page.getByText("alex@example.com")).toBeVisible();
+    const head = (await page.locator("#header").boundingBox())!;
+    const first = (await item(page, "Profile").boundingBox())!;
+    expect(head.y + head.height).toBeLessThanOrEqual(first.y);
+    await expect(item(page, "Profile")).toBeFocused();
+    await page.keyboard.press("ArrowUp");
+    await expect(item(page, "Sign Out")).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(item(page, "Profile")).toBeFocused();
+  });
+
+  test("a menu without header content shows no header", async ({ page }) => {
+    await gotoStory(page, story("default"));
+    await trigger(page).click();
+    await expect(page.getByRole("group")).toHaveCount(0);
+  });
+
+  test("clicking the header does not activate anything or close the menu", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("header"));
+    await recordSelects(page);
+    await page.getByText("Alex Doe").click();
+    await expect(menu(page, "Account")).toBeVisible();
+    expect(await selects(page)).toEqual([]);
+  });
+});
+
+test.describe("placement", () => {
+  test("bottom-end aligns the menu's end edge with the trigger", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    await page.locator("#menu").evaluate((el) => {
+      (el as unknown as { placement: string }).placement = "bottom-end";
+    });
+    await trigger(page).click();
+    const box = (await menu(page).boundingBox())!;
+    const control = (await trigger(page).boundingBox())!;
+    expect(box.x + box.width).toBeCloseTo(control.x + control.width, 0);
+    expect(box.y).toBeGreaterThanOrEqual(control.y + control.height);
+  });
+
+  test("end opens beside the trigger", async ({ page }) => {
+    await gotoStory(page, story("placement-end"));
+    const box = (await menu(page).boundingBox())!;
+    const control = (await trigger(page).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(control.x + control.width);
+  });
+
+  test("it flips to the other side when there is no room", async ({ page }) => {
+    await gotoStory(page, story("default"));
+    await page.locator("#menu").evaluate((el) => {
+      (el as unknown as { placement: string }).placement = "top-start";
+    });
+    await trigger(page).click();
+    const box = (await menu(page).boundingBox())!;
+    const control = (await trigger(page).boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(control.y + control.height);
+  });
+
+  test("changing placement while open moves the menu", async ({ page }) => {
+    await gotoStory(page, story("default"));
+    await trigger(page).click();
+    const before = (await menu(page).boundingBox())!;
+    await page.locator("#menu").evaluate((el) => {
+      (el as unknown as { placement: string }).placement = "bottom-end";
+    });
+    await expect
+      .poll(async () => (await menu(page).boundingBox())!.x)
+      .not.toBe(before.x);
+  });
+});
+
+test.describe("pl-toggle", () => {
+  const recordToggles = (page: Page) =>
+    page.evaluate(() => {
+      const log: boolean[] = [];
+      document.addEventListener("pl-toggle", (e) =>
+        log.push((e as CustomEvent<{ open: boolean }>).detail.open),
+      );
+      (window as unknown as { toggles: boolean[] }).toggles = log;
+    });
+  const toggles = (page: Page) =>
+    page.evaluate(() => (window as unknown as { toggles: boolean[] }).toggles);
+
+  test("fires with detail.open when it opens and when it closes", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    await recordToggles(page);
+    await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
+    expect(await toggles(page)).toEqual([true]);
+    await page.keyboard.press("Escape");
+    await expect(menu(page)).toBeHidden();
+    expect(await toggles(page)).toEqual([true, false]);
+  });
+
+  test("a submenu's own toggles do not bubble to the page", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("open"));
+    await recordToggles(page);
+    await item(page, "Find").hover();
+    await expect(menu(page, "Find")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(menu(page, "Find")).toBeHidden();
+    expect(await toggles(page)).toEqual([]);
+  });
+});
+
+test.describe("opening from code", () => {
+  test("show() opens with the first item focused and hide() returns focus to the trigger", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    const el = page.locator("#menu");
+    await el.evaluate((m) => (m as unknown as { show(): void }).show());
+    await expect(menu(page)).toBeVisible();
+    await expect(item(page, "Undo ⌘Z")).toBeFocused();
+    await expect(trigger(page)).toHaveAttribute("aria-expanded", "true");
+    await el.evaluate((m) => (m as unknown as { hide(): void }).hide());
+    await expect(menu(page)).toBeHidden();
+    await expect(trigger(page)).toBeFocused();
+  });
+
+  test("the open property and attribute open it with the first item focused", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    const el = page.locator("#menu");
+    await el.evaluate((m) => {
+      (m as unknown as { open: boolean }).open = true;
+    });
+    await expect(menu(page)).toBeVisible();
+    await expect(item(page, "Undo ⌘Z")).toBeFocused();
+    await el.evaluate((m) => m.removeAttribute("open"));
+    await expect(menu(page)).toBeHidden();
+    await el.evaluate((m) => m.setAttribute("open", ""));
+    await expect(menu(page)).toBeVisible();
+    await expect(item(page, "Undo ⌘Z")).toBeFocused();
+  });
+
+  test("show() on an open menu focuses its first item again", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    await trigger(page).click();
+    await page.keyboard.press("ArrowDown");
+    await expect(item(page, "Redo ⇧⌘Z")).toBeFocused();
+    await page
+      .locator("#menu")
+      .evaluate((m) => (m as unknown as { show(): void }).show());
+    await expect(item(page, "Undo ⌘Z")).toBeFocused();
+  });
+
+  test("the story opened by show() is open", async ({ page }) => {
+    await gotoStory(page, story("from-code"));
+    await expect(menu(page)).toBeVisible();
+    await expect(item(page, "Undo ⌘Z")).toBeFocused();
+  });
+});
+
+test.describe("choosing an item", () => {
+  test("dispatches click on the item, then pl-select with the item in its detail", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    await page.evaluate(() => {
+      const log: string[] = [];
+      (window as unknown as { order: string[] }).order = log;
+      const copy = document.querySelector("pl-menu-item:nth-of-type(3)")!;
+      copy.addEventListener("click", () => log.push("click"));
+      document.addEventListener("pl-select", (e) => {
+        const { item, value } = (
+          e as CustomEvent<{ item: Element; value: string }>
+        ).detail;
+        log.push(`select ${value} ${item === copy}`);
+      });
+    });
+    await openByKey(page, "ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await expect(item(page, "Copy ⌘C")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(menu(page)).toBeHidden();
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { order: string[] }).order,
+      ),
+    ).toEqual(["click", "select Copy true"]);
+  });
+});
