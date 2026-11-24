@@ -159,7 +159,7 @@ export const listboxStyles = css`
     overflow-y: auto;
     overscroll-behavior: contain;
     max-block-size: min(
-      calc(var(--pl-size-hit-min) * 8),
+      calc(var(--pl-size-row) * 8),
       calc(100dvh - var(--pl-space-4))
     );
     min-inline-size: var(--_min-inline-size);
@@ -203,7 +203,7 @@ export const optionStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--pl-size-hit-min);
+    min-block-size: var(--pl-size-row);
     border-radius: var(--pl-radius-row);
     padding-inline: var(--_label) var(--pl-pad-item);
     outline: none;

@@ -204,6 +204,11 @@
        minimum. */
     --pl-touch-min: 2.75rem;
     --pl-size-hit-min: max(1.5rem, var(--pl-visual-md));
+
+    /* A row in a menu or list popup stays compact, as menus do on macOS:
+       WCAG's 24px target with a fine pointer, the touch size with a coarse
+       one. */
+    --pl-size-row: calc(var(--pl-spacing) * 6);
     --pl-spacing: 0.25rem;
 
     /* Radii by role, larger for a coarse pointer, as Apple's controls grow
@@ -363,6 +368,7 @@
       --pl-size-lg: max(var(--pl-touch-min), var(--pl-visual-lg));
       --pl-size-xl: max(var(--pl-touch-min), var(--pl-visual-xl));
       --pl-size-hit-min: var(--pl-touch-min);
+      --pl-size-row: var(--pl-touch-min);
       --pl-radius-control: calc(var(--pl-spacing) * 3);
     }
   }
