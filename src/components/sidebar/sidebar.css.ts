@@ -143,7 +143,7 @@ export const sidebarStyles = [
     nav {
       flex: 1 1 auto;
       min-block-size: 0;
-      overflow-y: auto;
+      overflow: clip auto;
     }
 
     /* A narrow screen shows the sidebar as a modal panel on the start edge over
@@ -154,15 +154,6 @@ export const sidebarStyles = [
     }
 
     dialog {
-      --_scrim: light-dark(
-        color-mix(
-          in srgb,
-          color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
-          transparent
-        ),
-        color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
-      );
-
       display: flex;
       box-sizing: border-box;
       inline-size: calc(var(--pl-spacing) * 64);
@@ -193,7 +184,7 @@ export const sidebarStyles = [
     }
 
     dialog::backdrop {
-      background: var(--_scrim);
+      background: var(--pl-color-scrim);
     }
 
     dialog:not([open]) {
@@ -365,7 +356,6 @@ export const itemStyles = [
 
     :host([data-dragging]) {
       z-index: 2;
-      opacity: 0.9;
       box-shadow: var(--pl-elevation-panel);
       border-radius: var(--pl-radius-row);
       background: var(--pl-material-sidebar);

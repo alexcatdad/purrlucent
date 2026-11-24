@@ -21,14 +21,6 @@ export const drawerStyles = css`
     --_dir: 1;
     --_off: 0 100%;
     --_top-gap: var(--pl-space-10);
-    --_scrim: light-dark(
-      color-mix(
-        in srgb,
-        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
-        transparent
-      ),
-      color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
-    );
 
     box-sizing: border-box;
     inline-size: 100%;
@@ -107,7 +99,7 @@ export const drawerStyles = css`
   }
 
   dialog::backdrop {
-    background: var(--_scrim);
+    background: var(--pl-color-scrim);
     opacity: 1;
     transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }

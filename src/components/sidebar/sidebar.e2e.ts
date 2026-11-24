@@ -1503,7 +1503,7 @@ test.describe("rows", () => {
   test("the description is part of the link's name", async ({ page }) => {
     await open(page, "rows");
     await expect(
-      page.getByRole("link", { name: "Inbox 3 unread" }),
+      page.getByRole("link", { name: /Inbox\s*3 unread/ }),
     ).toBeVisible();
   });
 

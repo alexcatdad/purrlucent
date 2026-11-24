@@ -27,6 +27,14 @@
     --pl-color-sea-green: #2d7a4f;
     --pl-color-saffron: #e9a23b;
     --pl-color-shade: color-mix(in srgb, var(--pl-color-ink), black 42%);
+    --pl-color-scrim: light-dark(
+      color-mix(
+        in srgb,
+        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
+        transparent
+      ),
+      color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
+    );
 
     /* The accent fill is the pink itself under ink, as white on it is under
        3:1. Pink text on a light page is the same hue and chroma at a lower

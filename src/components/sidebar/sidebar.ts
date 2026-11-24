@@ -89,7 +89,9 @@ export class PlSidebar extends LitElement {
 
   set collapseBelow(value: number | null | undefined) {
     const old = this.#collapseBelow;
-    this.#collapseBelow = value ?? 600;
+    this.#collapseBelow = Number.isFinite(value)
+      ? Math.max(0, value as number)
+      : 600;
     this.requestUpdate("collapseBelow", old);
     if (this.isConnected) this.#watchNarrow();
   }
@@ -290,6 +292,8 @@ export class PlSidebar extends LitElement {
     from: number;
     to: number;
     y: number;
+    min: number;
+    max: number;
   };
 
   #onPointerdown = (event: PointerEvent) => {
@@ -308,7 +312,20 @@ export class PlSidebar extends LitElement {
     const peers = this.#peers(item);
     const from = peers.indexOf(item);
     grip.setPointerCapture(event.pointerId);
-    this.#drag = { item, peers, from, to: from, y: event.clientY };
+    // The item stays inside the navigation, so the drag never grows its scroll area.
+    const box = item.getBoundingClientRect();
+    const nav = this.renderRoot.querySelector("nav")?.getBoundingClientRect();
+    this.#drag = {
+      item,
+      peers,
+      from,
+      to: from,
+      y: event.clientY,
+      // The start position is always in range, even for an item partly
+      // scrolled out of the nav or taller than it.
+      min: nav ? Math.min(0, nav.top - box.top) : -Infinity,
+      max: nav ? Math.max(0, nav.bottom - box.bottom) : Infinity,
+    };
     item.toggleAttribute("data-dragging", true);
     // Keeps the press from selecting text or starting a native drag.
     event.preventDefault();
@@ -317,7 +334,8 @@ export class PlSidebar extends LitElement {
   #onPointermove = (event: PointerEvent) => {
     const drag = this.#drag;
     if (!drag) return;
-    drag.item.style.setProperty("translate", `0 ${event.clientY - drag.y}px`);
+    const dy = Math.min(Math.max(event.clientY - drag.y, drag.min), drag.max);
+    drag.item.style.setProperty("translate", `0 ${dy}px`);
     // Its place is the number of other items whose middle is above the pointer.
     drag.to = drag.peers.filter((peer) => {
       const box = peer.getBoundingClientRect();
