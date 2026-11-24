@@ -927,9 +927,11 @@ test("a slotted action option is always listed and fires pl-action instead of ch
   expect(await recorded(page)).toEqual([["pl-action", { query: "zzz" }]]);
   // With nothing typed the query is empty and the row still comes last.
   await combo(page).fill("");
-  await page.keyboard.press("ArrowUp");
-  expect(await activeDescendant(page)).toBe("Add a variety…");
-  await page.keyboard.press("Enter");
+  // Clearing may already open the list; the chevron would close it again.
+  if (!(await listbox(page).isVisible())) await chevron(page).click();
+  await expect(listbox(page)).toBeVisible();
+  expect((await listed(page)).at(-1)).toBe("Add a variety…");
+  await option(page, "Add a variety…").click();
   expect(await recorded(page)).toEqual([
     ["pl-action", { query: "zzz" }],
     ["pl-action", { query: "" }],
