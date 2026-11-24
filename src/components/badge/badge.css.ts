@@ -27,6 +27,12 @@ export const badgeStyles = css`
     vertical-align: middle;
   }
 
+  /* The label sets its own color, so a container that colors slotted content
+     (a sidebar item's detail slot) cannot take the text off its fill. */
+  [part="label"] {
+    color: var(--_text);
+  }
+
   :host([hidden]) {
     display: none;
   }
@@ -43,6 +49,8 @@ export const badgeStyles = css`
 
   @media (forced-colors: active) {
     :host {
+      --_text: ButtonText;
+
       border-color: ButtonText;
       background: ButtonFace;
       color: ButtonText;
