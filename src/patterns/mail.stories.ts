@@ -756,7 +756,7 @@ export const Default: Story = {
 export const Narrow: Story = {
   render: () =>
     page(
-      html`<div style="inline-size:calc(var(--pl-spacing) * 100)">
+      html`<div style="inline-size:min(100%, calc(var(--pl-spacing) * 100))">
         <mail-demo></mail-demo>
       </div>`,
     ),
