@@ -81,12 +81,14 @@ const conversation: Row[] = [
     body: html`<pl-message-group label="You">
       <pl-message align="end">
         <pl-bubble align="end"
-          >Can you review the release notes before I publish?</pl-bubble
+          ><bdi
+            >Can you review the release notes before I publish?</bdi
+          ></pl-bubble
         >
       </pl-message>
       <pl-message align="end">
         <pl-bubble align="end"
-          >I attached the draft and the checklist.</pl-bubble
+          ><bdi>I attached the draft and the checklist.</bdi></pl-bubble
         >
         <pl-attachment-group label="Attachments">
           <pl-attachment size="sm" state="uploading">
@@ -110,7 +112,7 @@ const conversation: Row[] = [
       <pl-message>
         ${avatar}
         <pl-bubble variant="ghost">
-          <div class="prose">
+          <div class="prose" dir="ltr">
             <p>
               The notes are clear and the order is right. Two changes before you
               publish:
@@ -133,7 +135,7 @@ bun publish</code></pre>
     body: html`<pl-message-group label="You">
       <pl-message align="end">
         <pl-bubble align="end"
-          >Thanks, that is clearer.
+          ><bdi>Thanks, that is clearer.</bdi>
           <pl-bubble-reactions slot="reactions" align="start" label="1 like"
             >👍 1</pl-bubble-reactions
           >
@@ -148,7 +150,7 @@ bun publish</code></pre>
       <pl-message>
         ${avatar}
         <pl-bubble variant="ghost"
-          ><p>Glad it helps. Tell me when it ships.</p></pl-bubble
+          ><p dir="ltr">Glad it helps. Tell me when it ships.</p></pl-bubble
         >
       </pl-message>
     </pl-message-group>`,
@@ -249,7 +251,7 @@ class ChatDemo extends LitElement {
         return html`<pl-message-group label="You">
           <pl-message align="end">
             <pl-bubble align="end"
-              ><span class="sent">${row.text}</span></pl-bubble
+              ><span class="sent" dir="ltr">${row.text}</span></pl-bubble
             >
           </pl-message>
         </pl-message-group>`;
@@ -264,7 +266,9 @@ class ChatDemo extends LitElement {
           : html`<pl-message-group label="Assistant">
               <pl-message>
                 ${avatar}
-                <pl-bubble variant="ghost"><p>${row.text}</p></pl-bubble>
+                <pl-bubble variant="ghost"
+                  ><p dir="ltr">${row.text}</p></pl-bubble
+                >
               </pl-message>
             </pl-message-group>`;
     }

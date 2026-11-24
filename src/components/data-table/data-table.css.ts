@@ -74,7 +74,7 @@ export const dataTableStyles = css`
   }
 
   th:not([aria-sort]) svg {
-    opacity: 0.5;
+    color: var(--pl-color-muted-foreground);
   }
 
   /* The selection column holds only a checkbox. */
@@ -391,7 +391,7 @@ export const dataTableStyles = css`
     }
 
     th:not([aria-sort]) svg {
-      opacity: 1;
+      color: ButtonText;
     }
   }
 `;

@@ -458,6 +458,23 @@ test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("default")));
 });
 
+test("calendar ja: day labels are one line", async ({ page }) => {
+  await gotoStory(page, story("locales"));
+  const labels = await page.locator("#ja [part=day]").evaluateAll((cells) =>
+    cells.map((cell) => {
+      const range = document.createRange();
+      range.selectNodeContents(cell);
+      return [cell.textContent!.trim(), range.getClientRects().length] as const;
+    }),
+  );
+  expect(labels).toHaveLength(30);
+  // The Japanese 日 suffix is left out: the cell shows the number, on one line.
+  for (const [text, lines] of labels) {
+    expect(text).toMatch(/^\d{1,2}$/);
+    expect(lines).toBe(1);
+  }
+});
+
 test.describe("coarse pointer on a wide screen", () => {
   test.use({ viewport: { width: 1440, height: 900 }, hasTouch: true });
 

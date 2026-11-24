@@ -75,6 +75,24 @@ test("the entry shows the day as the locale writes it", async ({ page }) => {
   expect(await value(page, "#de")).toBe("2026-11-18");
 });
 
+test("date-picker ar locale shows a well-ordered value", async ({ page }) => {
+  await gotoStory(page, story("locales"));
+  const expected = await page.evaluate(() =>
+    new Intl.DateTimeFormat("ar", {
+      calendar: "gregory",
+      timeZone: "UTC",
+    }).format(Date.UTC(2026, 10, 18)),
+  );
+  await expect(field(page, "#ar")).toHaveValue(expected);
+  expect(await value(page, "#ar")).toBe("2026-11-18");
+  // The locale's own digits read back as the same day.
+  await field(page, "#ar").fill("");
+  await field(page, "#ar").fill(expected);
+  await field(page, "#ar").blur();
+  expect(await value(page, "#ar")).toBe("2026-11-18");
+  await expect(field(page, "#ar")).toHaveValue(expected);
+});
+
 test("a slotted label names the entry and a click on it focuses the field", async ({
   page,
 }) => {

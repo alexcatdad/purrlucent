@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
+import { isolate } from "../../../.storybook/isolate.ts";
 import "./tabs.ts";
 import type { PlTabs } from "./tabs.ts";
 
@@ -10,16 +11,25 @@ export default meta;
 
 type Story = StoryObj;
 
-const render = () => html`
+const tabs = (rtl: boolean) => html`
   <pl-tabs id="control" label="Account">
     <pl-tab value="profile">Profile</pl-tab>
     <pl-tab value="security">Security</pl-tab>
     <pl-tab value="billing">Billing</pl-tab>
-    <pl-tab-panel value="profile">Your name and photo.</pl-tab-panel>
-    <pl-tab-panel value="security">Password and sign-in.</pl-tab-panel>
-    <pl-tab-panel value="billing">Plan and invoices.</pl-tab-panel>
+    <pl-tab-panel value="profile"
+      >${isolate(rtl, "Your name and photo.")}</pl-tab-panel
+    >
+    <pl-tab-panel value="security"
+      >${isolate(rtl, "Password and sign-in.")}</pl-tab-panel
+    >
+    <pl-tab-panel value="billing"
+      >${isolate(rtl, "Plan and invoices.")}</pl-tab-panel
+    >
   </pl-tabs>
 `;
+
+const render = () => tabs(false);
+const renderRtl = () => tabs(true);
 
 const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlTabs>("#control")!;
@@ -85,7 +95,7 @@ export const Dark: Story = { render, globals: { theme: "dark" } };
 export const MoreContrast: Story = { render, globals: { contrast: "more" } };
 
 /** Under right-to-left the tabs mirror. */
-export const Rtl: Story = { render, globals: { dir: "rtl" } };
+export const Rtl: Story = { render: renderRtl, globals: { dir: "rtl" } };
 
 /** Tab enters on the selected tab, and ArrowRight selects the next. */
 export const Keyboard: Story = {
@@ -103,7 +113,7 @@ export const Keyboard: Story = {
 
 /** Under right-to-left, the arrow keys follow the visual direction. */
 export const KeyboardRtl: Story = {
-  render,
+  render: renderRtl,
   globals: { dir: "rtl" },
   play: async ({ canvasElement }) => {
     const el = await control(canvasElement);

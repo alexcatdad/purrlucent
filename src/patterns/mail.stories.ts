@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, type PropertyValues } from "lit";
+import { plaintextRtl } from "../../.storybook/isolate.ts";
 import { repeat } from "lit/directives/repeat.js";
 import "../components/badge/badge.ts";
 import "../components/button/button.ts";
@@ -595,6 +596,8 @@ class MailDemo extends LitElement {
   }
 
   static override styles = css`
+    ${plaintextRtl}
+
     :host {
       display: block;
       box-sizing: border-box;

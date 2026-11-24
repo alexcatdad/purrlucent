@@ -156,6 +156,12 @@ export const boxStyles = css`
     --_off: var(--pl-color-muted-3);
   }
 
+  /* An empty disabled box keeps an outline, so it still reads against the page. */
+  :host(:state(disabled):not(:is(:state(checked), :state(indeterminate))))
+    [part="box"] {
+    box-shadow: inset 0 0 0 1px var(--pl-color-disabled-foreground);
+  }
+
   :host(:state(disabled):is(:state(checked), :state(indeterminate)))
     [part="box"] {
     --_off: var(--pl-color-selected);
