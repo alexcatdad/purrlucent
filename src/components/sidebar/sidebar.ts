@@ -45,6 +45,7 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * @attr {number} collapse-below - The viewport width in px at and below which the sidebar collapses on its own and opens as a modal panel. `0` turns this off. Defaults to 600.
  * @attr {boolean} no-toggle - Hides the built-in toggle button; a collapsed sidebar then takes no space at all. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.
  * @attr {boolean} reorderable - Level 1 items show a grip, on hover and keyboard focus or always on a touch screen, and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
+ * @attr {string} chevron - Where the disclosure chevron of a group sits: `end` (default), after the label and the detail, so icons and labels line up with plain rows, or `start`, before the icon.
  * @attr {string} shortcut - A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known. A key press needs `mod`, `ctrl` or `alt` to count, so typing is never taken.
  * @attr {string} toggle-label - The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.
  * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
@@ -67,6 +68,7 @@ export class PlSidebar extends LitElement {
     toggleLabel: { attribute: "toggle-label" },
     noToggle: { type: Boolean, attribute: "no-toggle", reflect: true },
     reorderable: { type: Boolean, reflect: true },
+    chevron: { reflect: true },
     shortcut: {},
     collapseBelow: {
       type: Number,
@@ -84,6 +86,8 @@ export class PlSidebar extends LitElement {
   declare toggleLabel: string;
   declare noToggle: boolean;
   declare reorderable: boolean;
+  /** `end` (default) or `start`, where a group's disclosure chevron sits. */
+  declare chevron: "end" | "start";
   declare shortcut: string;
   declare _narrow: boolean;
 
@@ -123,6 +127,7 @@ export class PlSidebar extends LitElement {
     this.toggleLabel = "";
     this.noToggle = false;
     this.reorderable = false;
+    this.chevron = "end";
     this.shortcut = "";
     this._narrow = false;
   }
@@ -144,6 +149,7 @@ export class PlSidebar extends LitElement {
       // A group of level 2 items never reaches across a section boundary.
       if (item.parentElement !== items[i - 1]?.parentElement)
         parent = undefined;
+      item.chevron = this.chevron;
       if (item.level === 1) {
         parent = item;
         const next = items[i + 1];
@@ -509,7 +515,7 @@ export class PlSidebar extends LitElement {
     )
       this.#refocus = true;
     this.#wasOverlay = overlay;
-    if (changed.has("reorderable")) this.#sync();
+    if (changed.has("reorderable") || changed.has("chevron")) this.#sync();
   }
 
   protected override updated() {

@@ -353,14 +353,22 @@ export const itemStyles = [
       padding-inline-start: calc(var(--pl-pad-item) + var(--pl-indent));
     }
 
+    /* A label that does not fit ends in an ellipsis; the item then offers the
+       full text as its title. */
     .label {
       grid-column: 3;
-      overflow-wrap: anywhere;
+      min-inline-size: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
-    /* The second line is muted and smaller than the label. */
+    /* The second line is muted and smaller than the label, and truncates too. */
     ::slotted([slot="description"]) {
       display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       font-size: var(--pl-text-xs);
       line-height: var(--pl-leading-tight);
       font-weight: 400;
@@ -395,14 +403,12 @@ export const itemStyles = [
       block-size: var(--_s);
     }
 
-    /* The grip of a reorderable item sits at the trailing end, past the
-       detail; the control leaves room for it. */
+    /* The grip of a reorderable item floats over the trailing end of the row,
+       so it takes no room from the label while hidden. Its width comes from the
+       icon, not the row; a coarse pointer gets the touch size from its hit area.
+       Shown, it fades in over the trailing padding and the detail. */
     :host([reorderable]) {
       position: relative;
-    }
-
-    :host([reorderable]) .control {
-      padding-inline-end: calc(var(--pl-pad-item) + var(--pl-size-hit-min));
     }
 
     .handle {
@@ -412,7 +418,12 @@ export const itemStyles = [
       z-index: 1;
       display: grid;
       place-items: center;
-      inline-size: var(--pl-size-hit-min);
+      inline-size: calc(var(--pl-icon-md) + var(--pl-space-2));
+      background: linear-gradient(
+        to left,
+        var(--pl-material-sidebar) 60%,
+        transparent
+      );
       color: var(--pl-color-muted-foreground);
       cursor: grab;
       touch-action: none;
@@ -438,6 +449,22 @@ export const itemStyles = [
       .handle {
         opacity: 1;
       }
+    }
+
+    :host(:dir(rtl)) .handle {
+      background-image: linear-gradient(
+        to right,
+        var(--pl-material-sidebar) 60%,
+        transparent
+      );
+    }
+
+    /* The hit area reaches the minimum size toward the label. */
+    .handle::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: min(0px, calc(100% - var(--pl-size-hit-min))) 0;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -493,6 +520,93 @@ export const itemStyles = [
 
     :host(:dir(rtl)[expanded]) .chevron {
       transform: scaleX(-1) rotate(90deg);
+    }
+
+    /* By default the chevron follows the label and the detail, so the icons
+       and labels of group and plain rows share their edges. With
+       chevron="start" the leading column above stays. Beside a link, the
+       disclosure button takes the trailing end and the link leaves room. */
+    :host(:not([chevron="start"])) {
+      --_chev-w: calc(
+        var(--pl-icon-md) + var(--pl-space-1) + var(--pl-pad-item)
+      );
+    }
+
+    :host(:not([chevron="start"])[expandable][href]:not([action])) {
+      --_chev-w: max(
+        var(--pl-size-hit-min),
+        calc(var(--pl-icon-md) + var(--pl-space-1) + var(--pl-pad-item))
+      );
+    }
+
+    :host(:not([chevron="start"])) .control,
+    :host(:not([chevron="start"])) .disclosure {
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+    }
+
+    :host(:not([chevron="start"])) .icon {
+      grid-column: 1;
+    }
+
+    :host(:not([chevron="start"])) .label {
+      grid-column: 2;
+    }
+
+    :host(:not([chevron="start"])) ::slotted([slot="detail"]) {
+      grid-column: 3;
+    }
+
+    :host(:not([chevron="start"])) .control > .chevron {
+      grid-column: 4;
+      margin-inline-start: var(--pl-space-1);
+    }
+
+    :host(:not([chevron="start"])[expandable][href]:not([action])) .control {
+      padding-inline-end: calc(var(--pl-pad-item) + var(--_chev-w));
+    }
+
+    :host(:not([chevron="start"])) .disclosure {
+      inset-inline: auto 0;
+      inline-size: var(--_chev-w);
+      justify-content: flex-end;
+      padding-inline: 0 var(--pl-pad-item);
+    }
+
+    /* The grip stays clear of the chevron. */
+    :host(:not([chevron="start"])[expandable]) .handle {
+      inset-inline-end: var(--_chev-w);
+    }
+
+    /* Where the grip is always shown, its width is reserved in the row, so it
+       never covers the label, its ellipsis or the detail. */
+    @media (pointer: coarse), (hover: none) {
+      :host([reorderable]) {
+        --_grip-w: calc(var(--pl-icon-md) + var(--pl-space-2));
+      }
+
+      :host([reorderable]) .control {
+        padding-inline-end: calc(var(--pl-pad-item) + var(--_grip-w));
+      }
+
+      :host(
+          :not([chevron="start"])[reorderable][expandable][href]:not([action])
+        )
+        .control {
+        padding-inline-end: calc(
+          var(--pl-pad-item) + var(--_chev-w) + var(--_grip-w)
+        );
+      }
+
+      :host(:not([chevron="start"])[reorderable][expandable]:not([href]))
+        .control
+        > .chevron {
+        margin-inline-start: calc(var(--pl-space-1) + var(--_grip-w));
+      }
+
+      :host(:not([chevron="start"])[reorderable][expandable]:not([href]))
+        .control {
+        padding-inline-end: var(--pl-pad-item);
+      }
     }
 
     /* The fill alone is faint, so increased contrast adds a stroke. */

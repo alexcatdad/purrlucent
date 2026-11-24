@@ -106,8 +106,11 @@ const inbox = html`<svg
   <path d="M4 13h4l1.5 3h5l1.5-3h4M5 5h14l2 8v6H3v-6z" />
 </svg>`;
 
-const folders = ({ size = "md" }: { size?: "md" | "lg" } = {}) => html`
-  <pl-sidebar id="sidebar" label="Library" size=${size}>
+const folders = ({
+  size = "md",
+  chevron = "end",
+}: { size?: "md" | "lg"; chevron?: "end" | "start" } = {}) => html`
+  <pl-sidebar id="sidebar" label="Library" size=${size} chevron=${chevron}>
     <pl-sidebar-section id="library" label="Library">
       <pl-sidebar-item id="inbox" href="#inbox" selected
         >${inbox}Inbox<span slot="detail">Detail</span></pl-sidebar-item
@@ -144,6 +147,11 @@ export const Sections: Story = {
       canvasElement.querySelector("#archive")?.hasAttribute("expandable"),
     ).toBe(false);
   },
+};
+
+/** The group chevron before the icon, as in earlier versions. */
+export const ChevronStart: Story = {
+  render: () => folders({ chevron: "start" }),
 };
 
 /** Larger rows, headings and icons. */
@@ -236,6 +244,32 @@ export const Reorderable: Story = {
       <pl-sidebar-item id="second" href="#second">Second</pl-sidebar-item>
       <pl-sidebar-item id="third" href="#third">Third</pl-sidebar-item>
     </pl-sidebar>
+  `,
+};
+
+/** A label and a description wider than the row end in an ellipsis; the full text shows as a title only then. A reorderable sidebar keeps the same label width while its grip is hidden. */
+export const TruncatedLabels: Story = {
+  render: () => html`
+    <div style="display: flex; gap: var(--pl-space-4)">
+      <pl-sidebar id="plain" label="Plain">
+        <pl-sidebar-item id="long" href="#long"
+          >Compliance Analytics and Regulatory Reporting for Every Region<span
+            slot="description"
+            >Quarterly filings and audit trails across all business units</span
+          ></pl-sidebar-item
+        >
+        <pl-sidebar-item id="short" href="#short">Home</pl-sidebar-item>
+      </pl-sidebar>
+      <pl-sidebar id="sortable" label="Sortable" reorderable>
+        <pl-sidebar-item id="sortable-long" href="#sortable-long"
+          >Compliance Analytics and Regulatory Reporting for Every
+          Region</pl-sidebar-item
+        >
+        <pl-sidebar-item id="sortable-short" href="#sortable-short"
+          >Home</pl-sidebar-item
+        >
+      </pl-sidebar>
+    </div>
   `,
 };
 
