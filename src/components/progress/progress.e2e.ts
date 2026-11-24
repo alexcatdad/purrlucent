@@ -38,6 +38,27 @@ test("each tone colors the fill differently, and the name still says the state",
   ).toHaveAttribute("tone", "success");
 });
 
+test("the bar is as wide as its container and adds no space below it", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const box = await page.locator("#progress").evaluate((el) => {
+    const wrap = el.ownerDocument.createElement("div");
+    wrap.style.inlineSize = "300px";
+    el.before(wrap);
+    wrap.append(el);
+    const bar = el.getBoundingClientRect();
+    const outer = wrap.getBoundingClientRect();
+    return {
+      bar: bar.width,
+      wrap: outer.width,
+      gap: outer.height - bar.height,
+    };
+  });
+  expect(box.bar).toBeCloseTo(box.wrap, 0);
+  expect(box.gap).toBeLessThan(1);
+});
+
 test("a value sets aria-valuenow and the fill width", async ({ page }) => {
   await gotoStory(page, story("determinate"));
   const widths: number[] = [];
