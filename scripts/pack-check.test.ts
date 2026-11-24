@@ -59,6 +59,16 @@ beforeAll(async () => {
 
 afterAll(() => rmSync(app, { recursive: true, force: true }));
 
+test("the package runs no install scripts in an app", () => {
+  const { scripts = {} } = JSON.parse(
+    readFileSync(join(installed, "package.json"), "utf8"),
+  ) as { scripts?: Record<string, string> };
+  const lifecycle = ["preinstall", "install", "postinstall", "prepare"];
+  expect(
+    Object.keys(scripts).filter((name) => lifecycle.includes(name)),
+  ).toEqual([]);
+});
+
 test("every export points at a file in the package", () => {
   const missing = Object.values(manifest.exports)
     .flatMap((target) =>

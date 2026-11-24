@@ -291,7 +291,6 @@
     "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\" && bun scripts/style-check.ts",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
-    "prepare": "lefthook install",
     "hig:check": "bun scripts/hig-check.ts check",
     "hig:rubric": "bun scripts/hig-check.ts rubric",
     "hig:review": "bun scripts/rubric-prompt.ts review origin/main",
