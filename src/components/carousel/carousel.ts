@@ -20,6 +20,10 @@ export class PlCarouselItem extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute("role", "group");
+  }
+
+  // Every update, so the role word follows a change of language.
+  protected override updated() {
     this.setAttribute("aria-roledescription", messages(this).slide);
   }
 
@@ -99,7 +103,6 @@ export class PlCarousel extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute("role", "region");
-    this.setAttribute("aria-roledescription", messages(this).carousel);
   }
 
   override disconnectedCallback() {
@@ -118,8 +121,10 @@ export class PlCarousel extends LitElement {
     }
   }
 
-  protected override updated(changed: PropertyValues<this>) {
-    if (changed.has("slideLabel")) this.#nameSlides();
+  protected override updated() {
+    // Every update, so the role word and the slide names follow a change of language.
+    this.setAttribute("aria-roledescription", messages(this).carousel);
+    this.#nameSlides();
     // A step button that was focused may have just become disabled at an end.
     const step = this.#focusedStep;
     if (!step) return;

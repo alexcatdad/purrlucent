@@ -120,10 +120,9 @@ export class PlBreadcrumb extends LitElement {
     this.setAttribute("role", "navigation");
   }
 
-  protected override willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("label")) {
-      this.setAttribute("aria-label", this.label || messages(this).breadcrumb);
-    }
+  protected override willUpdate() {
+    // Every update, so the built-in name follows a change of language.
+    this.setAttribute("aria-label", this.label || messages(this).breadcrumb);
   }
 
   #onSlotChange(event: Event) {
