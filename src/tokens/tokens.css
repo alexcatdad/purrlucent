@@ -433,15 +433,36 @@
 
   @supports (backdrop-filter: blur(1px)) {
     [pl-material="glass"] {
-      --pl-material-bar: var(--pl-color-overlay);
-      --pl-material-capsule: var(--pl-color-overlay);
-      --pl-material-sidebar: var(--pl-color-overlay);
-      --pl-material-panel: var(--pl-color-overlay);
-      --pl-material-sheet: var(--pl-color-overlay);
-      --pl-material-bar-filter: blur(var(--pl-blur-md)) saturate(125%);
-      --pl-material-sidebar-filter: blur(var(--pl-blur-md)) saturate(125%);
-      --pl-material-panel-filter: blur(var(--pl-blur-lg)) saturate(125%);
-      --pl-material-sheet-filter: blur(var(--pl-blur-lg)) saturate(125%);
+      /* The glass fill: translucent enough that what is behind shows through
+         the blur, and boosted in color, as a material is. The solid overlay
+         stays for surfaces that are not glass. */
+      --pl-material-glass: light-dark(
+        rgb(255 255 255 / 64%),
+        color-mix(
+          in srgb,
+          color-mix(
+              in srgb,
+              var(--pl-color-oxford-navy),
+              var(--pl-color-honeydew) 10%
+            )
+            74%,
+          transparent
+        )
+      );
+      --pl-material-saturate: saturate(160%);
+      --pl-material-bar: var(--pl-material-glass);
+      --pl-material-capsule: var(--pl-material-glass);
+      --pl-material-sidebar: var(--pl-material-glass);
+      --pl-material-panel: var(--pl-material-glass);
+      --pl-material-sheet: var(--pl-material-glass);
+      --pl-material-bar-filter: blur(var(--pl-blur-md))
+        var(--pl-material-saturate);
+      --pl-material-sidebar-filter: blur(var(--pl-blur-md))
+        var(--pl-material-saturate);
+      --pl-material-panel-filter: blur(var(--pl-blur-lg))
+        var(--pl-material-saturate);
+      --pl-material-sheet-filter: blur(var(--pl-blur-lg))
+        var(--pl-material-saturate);
       --pl-material-highlight: light-dark(
         color-mix(in srgb, #fff 45%, transparent),
         color-mix(in srgb, #fff 22%, transparent)
@@ -449,19 +470,20 @@
       --pl-material-edge:
         inset 0 1px 0 0 var(--pl-material-highlight),
         inset 0 0 0 1px var(--pl-color-overlay-border);
-      --pl-material-control: var(--pl-color-overlay);
+      --pl-material-control: var(--pl-material-glass);
       --pl-material-control-pressed: color-mix(
         in srgb,
-        var(--pl-color-overlay),
+        var(--pl-material-glass),
         var(--pl-color-foreground) 12%
       );
-      --pl-material-control-filter: blur(var(--pl-blur-md)) saturate(125%);
+      --pl-material-control-filter: blur(var(--pl-blur-md))
+        var(--pl-material-saturate);
       --pl-material-field: color-mix(
         in srgb,
         var(--pl-color-input) 70%,
         transparent
       );
-      --pl-material-float: var(--pl-color-overlay);
+      --pl-material-float: var(--pl-material-glass);
       --pl-elevation-control: 0 calc(var(--pl-spacing) / 4)
         calc(var(--pl-spacing) * 2) color-mix(in srgb, #000 18%, transparent);
       --pl-color-edge: var(--pl-color-overlay-border);
