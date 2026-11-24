@@ -48,6 +48,24 @@ test("a click, Enter and Space flip the state and fire pl-change", async ({
   expect(await changes(page)).toEqual([true, false, true]);
 });
 
+test("pl-change is cancelable and runs before the state is applied", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const toggle = page.getByRole("button", { name: "Favorite" });
+  await page.locator("#toggle").evaluate((el) => {
+    el.addEventListener("pl-change", (event) => event.preventDefault());
+  });
+  await toggle.click();
+  await expect(toggle).not.toHaveAttribute("pressed");
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  expect(
+    await page
+      .locator("#toggle")
+      .evaluate((el) => (el as HTMLElement & { pressed: boolean }).pressed),
+  ).toBe(false);
+});
+
 test("setting pressed from script fires no pl-change", async ({ page }) => {
   await gotoStory(page, story("default"));
   await listen(page);
