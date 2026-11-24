@@ -38,6 +38,10 @@
       "types": "./dist/types/typography/typography.css.d.ts",
       "default": "./dist/typography.js"
     },
+    "./locale": {
+      "types": "./dist/types/behaviors/locale.d.ts",
+      "default": "./dist/locale.js"
+    },
     "./accordion": {
       "types": "./dist/types/components/accordion/accordion.d.ts",
       "default": "./dist/accordion.js"

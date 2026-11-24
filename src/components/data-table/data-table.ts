@@ -266,10 +266,12 @@ export class PlDataTable extends LitElement {
     );
   }
 
-  /** The built-in text in the table's language, with the label attributes set on it on top. */
-  get #text() {
+  /** The built-in text in the table's language, with the label attributes set on it on top. Resolved once per update. */
+  #text = messages(this);
+
+  protected override willUpdate() {
     const own = messages(this);
-    return {
+    this.#text = {
       ...own,
       filter: this.filterLabel || own.filter,
       noResults: this.emptyLabel || own.noResults,
@@ -281,9 +283,6 @@ export class PlDataTable extends LitElement {
       resize: this.resizeLabel || own.resize,
       rowOptions: this.rowMenuLabel || own.rowOptions,
     };
-  }
-
-  protected override willUpdate() {
     // A filter that leaves fewer rows than the page needs moves to the last page.
     if (!this.model && this.pageSize > 0)
       this.page = clampPage(this.page, this.#pages(this.#view.length));

@@ -68,6 +68,14 @@ test("every export points at a file in the package", () => {
   expect(missing).toEqual([]);
 });
 
+test("purrlucent/locale loads without defining any element", async () => {
+  // No DOM here: an entry that defined an element would throw on customElements.
+  const locale = (await import(join(installed, "dist/locale.js"))) as {
+    setMessages?: unknown;
+  };
+  expect(typeof locale.setMessages).toBe("function");
+});
+
 test("the agent skill ships with the docs it reads", () => {
   const missing = [
     "SKILL.md",

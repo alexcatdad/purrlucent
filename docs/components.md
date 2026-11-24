@@ -145,17 +145,17 @@ import "purrlucent/attachment";
 
 A file or other item attached to a message or a draft: media, a title, a description and actions. With an `href` or `clickable` the whole card is one target, named by the title; buttons in the `actions` slot stay separate. While `uploading` or `processing` the title shimmers (still under reduced motion), and in `error` the card uses the destructive colors; keep the reason in the description text, since color alone does not say it. A hidden status word is added to the title's name for the states that need one.
 
-| Attribute      | Type                         | Default        | Description                                                                                                                        |
-| -------------- | ---------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `state`        | `PlAttachmentState`          | `"done"`       | `idle`, `uploading`, `processing`, `error` or `done` (default). Idle looks like done.                                              |
-| `media`        | `"icon" \| "image"`          | `"icon"`       | What the `media` slot holds: `icon` (default) in a tile, or `image`, which fills it.                                               |
-| `size`         | `PlAttachmentSize`           | `"default"`    | `default`, `sm` or `xs`.                                                                                                           |
-| `orientation`  | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`, with the media above the text.                                                               |
-| `href`         | `string \| null`             | `null`         | Makes the card a link to this address.                                                                                             |
-| `target`       | `string \| null`             | `null`         | Where the link opens, as on `a`.                                                                                                   |
-| `rel`          | `string \| null`             | `null`         | The link's relationship, as on `a`.                                                                                                |
-| `clickable`    | `boolean`                    | `false`        | Makes the card a button that fires `pl-press`. Ignored when there is an `href`.                                                    |
-| `status-label` | `string \| null`             | `null`         | The hidden word added to the name while the state is `uploading`, `processing` or `error`. Set it when the page is not in English. |
+| Attribute      | Type                         | Default        | Description                                                                                                                                                                                           |
+| -------------- | ---------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`        | `PlAttachmentState`          | `"done"`       | `idle`, `uploading`, `processing`, `error` or `done` (default). Idle looks like done.                                                                                                                 |
+| `media`        | `"icon" \| "image"`          | `"icon"`       | What the `media` slot holds: `icon` (default) in a tile, or `image`, which fills it.                                                                                                                  |
+| `size`         | `PlAttachmentSize`           | `"default"`    | `default`, `sm` or `xs`.                                                                                                                                                                              |
+| `orientation`  | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`, with the media above the text.                                                                                                                                  |
+| `href`         | `string \| null`             | `null`         | Makes the card a link to this address.                                                                                                                                                                |
+| `target`       | `string \| null`             | `null`         | Where the link opens, as on `a`.                                                                                                                                                                      |
+| `rel`          | `string \| null`             | `null`         | The link's relationship, as on `a`.                                                                                                                                                                   |
+| `clickable`    | `boolean`                    | `false`        | Makes the card a button that fires `pl-press`. Ignored when there is an `href`.                                                                                                                       |
+| `status-label` | `string \| null`             | `null`         | The hidden word added to the name while the state is `uploading`, `processing` or `error`. Defaults to the page language's text (see `setMessages`), in English "Uploading", "Processing" or "Error". |
 
 **Slots**
 
@@ -296,9 +296,9 @@ One step of the trail. With an `href` it is a link; without, it is plain text. T
 
 The path to the current page: a navigation landmark holding an ordered list of `pl-breadcrumb-item`s. The last item is the current page and carries `aria-current="page"`. The chevrons between items are decorative and hidden from assistive technology. Long trails shrink their items to ellipses, each offering its full text. Put it in the window body, not in a toolbar or status bar.
 
-| Attribute | Type     | Default | Description                                   |
-| --------- | -------- | ------- | --------------------------------------------- |
-| `label`   | `string` | `""`    | Accessible name of the landmark. Localize it. |
+| Attribute | Type     | Default | Description                                                                                                         |
+| --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| `label`   | `string` | `""`    | Accessible name of the landmark. Defaults to the page language's text (see `setMessages`), in English "Breadcrumb". |
 
 **Slots**
 

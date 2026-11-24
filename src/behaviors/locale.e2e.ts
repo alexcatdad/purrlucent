@@ -12,9 +12,7 @@ test("components inside a registered lang use its text", async ({ page }) => {
   await expect(
     page.getByRole("navigation", { name: "Sidnumrering" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Föregående sida" }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Nästa sida" })).toBeVisible();
 });
 
 test("a component inside another one's shadow root reads the outer lang", async ({
@@ -22,9 +20,10 @@ test("a component inside another one's shadow root reads the outer lang", async 
 }) => {
   await gotoStory(page, story);
   await page.getByRole("button", { name: "Välj datum" }).click();
-  const dialog = page.getByRole("dialog", { name: "Välj datum" });
+  await expect(page.getByRole("dialog", { name: "Välj datum" })).toBeVisible();
+  // The calendar is slotted into the popover, so it is found from the page.
   await expect(
-    dialog.getByRole("button", { name: "Föregående månad" }),
+    page.getByRole("button", { name: "Föregående månad" }),
   ).toBeVisible();
 });
 

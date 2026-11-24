@@ -83,7 +83,8 @@ const registered = new Map<string, PlMessages>();
  * wins over both.
  */
 export function setMessages(lang: string, text: PlMessages) {
-  registered.set(lang.toLowerCase(), text);
+  // English fills any key a table leaves out, such as one added in a later version.
+  registered.set(lang.toLowerCase(), { ...en, ...text });
 }
 
 /** The closest `lang` above an element, looking through the hosts of the shadow roots it sits in. */

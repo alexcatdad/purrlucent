@@ -107,7 +107,7 @@ export class PlBreadcrumb extends LitElement {
   static override styles = breadcrumbStyles;
   static override properties = { label: { type: String } };
 
-  /** Accessible name of the landmark. Localize it. */
+  /** Accessible name of the landmark. Defaults to the page language's text (see `setMessages`), in English "Breadcrumb". */
   declare label: string;
 
   constructor() {

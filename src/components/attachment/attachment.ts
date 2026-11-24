@@ -34,7 +34,7 @@ const interactive =
  * @attr {string} target - Where the link opens, as on `a`.
  * @attr {string} rel - The link's relationship, as on `a`.
  * @attr {boolean} clickable - Makes the card a button that fires `pl-press`. Ignored when there is an `href`.
- * @attr {string} status-label - The hidden word added to the name while the state is `uploading`, `processing` or `error`. Set it when the page is not in English.
+ * @attr {string} status-label - The hidden word added to the name while the state is `uploading`, `processing` or `error`. Defaults to the page language's text (see `setMessages`), in English "Uploading", "Processing" or "Error".
  * @fires {CustomEvent<{}>} pl-press - When a `clickable` card is activated by pointer, Enter or Space. Presses of buttons in the `actions` slot do not reach the card.
  * @slot media - An svg icon, or an image when `media="image"`. Give an image `alt=""` when the title says the same.
  * @slot title - The attachment's name. It names the link or button when the card is one.
