@@ -37,7 +37,7 @@ export const menuStyles = css`
     inset: auto;
     margin: var(--pl-space-1) 0;
     border: 0;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     padding: var(--pl-pad-surface);
     background: var(--pl-material-panel);
     backdrop-filter: var(--pl-material-panel-filter);
@@ -84,7 +84,7 @@ export const itemStyles = css`
     box-sizing: border-box;
     block-size: var(--pl-size-md);
     min-block-size: var(--pl-size-hit-min);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-row);
     padding-inline: var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
@@ -240,7 +240,7 @@ export const separatorStyles = css`
     display: block;
     block-size: 1px;
     margin: var(--pl-space-1) var(--pl-pad-item);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-row);
     background: color-mix(in srgb, var(--pl-color-foreground) 12%, transparent);
   }
 

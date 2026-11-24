@@ -75,7 +75,7 @@ export const tabStyles = css`
   }
 
   :host::before {
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
   }
 
   [part="label"] {

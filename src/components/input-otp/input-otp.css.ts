@@ -98,7 +98,7 @@ export const inputOtpStyles = css`
     display: grid;
     place-items: center;
     block-size: var(--_h);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: var(--pl-material-field);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow:

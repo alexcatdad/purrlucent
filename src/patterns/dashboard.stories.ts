@@ -464,7 +464,7 @@ class DashboardDemo extends LitElement {
     .frame {
       container-type: inline-size;
       border: 1px solid var(--pl-color-border);
-      border-radius: var(--pl-radius-lg);
+      border-radius: var(--pl-radius-panel);
       background: var(--pl-color-background);
       color: var(--pl-color-foreground);
       font: 400 var(--pl-text-base) / var(--pl-leading-normal)

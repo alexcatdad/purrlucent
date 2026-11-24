@@ -42,8 +42,8 @@ export const drawerStyles = css`
     margin-block: auto 0;
     margin-inline: auto;
     border: 0;
-    border-start-start-radius: calc(var(--pl-radius-lg) * 2);
-    border-start-end-radius: calc(var(--pl-radius-lg) * 2);
+    border-start-start-radius: var(--pl-radius-panel);
+    border-start-end-radius: var(--pl-radius-panel);
     padding: 0;
     overflow: hidden;
     background: var(--_material);
@@ -95,16 +95,16 @@ export const drawerStyles = css`
     --_off: calc(var(--_dir) * -100%) 0;
 
     margin-inline: 0 auto;
-    border-start-end-radius: var(--pl-radius-lg);
-    border-end-end-radius: var(--pl-radius-lg);
+    border-start-end-radius: var(--pl-radius-panel);
+    border-end-end-radius: var(--pl-radius-panel);
   }
 
   :host([side="end"]) dialog {
     --_off: calc(var(--_dir) * 100%) 0;
 
     margin-inline: auto 0;
-    border-start-start-radius: var(--pl-radius-lg);
-    border-end-start-radius: var(--pl-radius-lg);
+    border-start-start-radius: var(--pl-radius-panel);
+    border-end-start-radius: var(--pl-radius-panel);
   }
 
   dialog:not([open]) {

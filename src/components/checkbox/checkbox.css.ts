@@ -218,7 +218,7 @@ export const boxStyles = css`
 
 export const checkboxStyles = css`
   :host {
-    --_r: calc(var(--pl-radius) / 2);
+    --_r: calc(var(--pl-radius-control-inner) / 2);
   }
 
   /* A field marks its control invalid; the message beside it says why. */

@@ -63,7 +63,7 @@ export const chartStyles = css`
     --ts-chart-tooltip-background: var(--pl-material-panel);
     --ts-chart-tooltip-color: var(--pl-color-foreground);
     --ts-chart-tooltip-border: 1px solid var(--pl-color-edge);
-    --ts-chart-tooltip-border-radius: var(--pl-radius);
+    --ts-chart-tooltip-border-radius: var(--pl-radius-control);
     --ts-chart-tooltip-padding: var(--pl-space-1-5) var(--pl-space-2);
     --ts-chart-tooltip-max-width: calc(var(--pl-spacing) * 60);
     --ts-chart-tooltip-shadow:

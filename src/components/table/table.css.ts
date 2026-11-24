@@ -98,7 +98,7 @@ export const tableStyles = css`
     overflow: auto;
     max-block-size: inherit;
     border: 1px solid var(--pl-color-border);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
   }
 
   [part="scroller"]:focus-visible {

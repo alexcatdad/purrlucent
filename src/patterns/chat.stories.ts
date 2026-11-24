@@ -339,7 +339,7 @@ class ChatDemo extends LitElement {
       inline-size: min(100%, calc(var(--pl-spacing) * 180));
       margin-inline: auto;
       border: 1px solid var(--pl-color-border);
-      border-radius: var(--pl-radius-lg);
+      border-radius: var(--pl-radius-panel);
       background: var(--pl-color-background);
       color: var(--pl-color-foreground);
       font: 400 var(--pl-text-base) / var(--pl-leading-loose)
@@ -378,7 +378,7 @@ class ChatDemo extends LitElement {
     pre {
       margin: 0;
       padding: var(--pl-space-3);
-      border-radius: var(--pl-radius);
+      border-radius: var(--pl-radius-control);
       background: var(--pl-color-muted-1);
       color: var(--pl-color-foreground);
       font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-mono);

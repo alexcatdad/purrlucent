@@ -26,7 +26,7 @@ export const attachmentStyles = css`
     background: var(--pl-color-background);
     backdrop-filter: none;
     border: 1px solid var(--pl-color-border);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
@@ -82,7 +82,7 @@ export const attachmentStyles = css`
     inline-size: var(--_media);
     block-size: var(--_media);
     overflow: hidden;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: var(--pl-color-muted-1);
     color: var(--_detail);
   }
@@ -290,7 +290,7 @@ export const attachmentGroupStyles = css`
     scrollbar-width: thin;
     scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
     scroll-padding-inline: var(--pl-space-8);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
     mask-image: linear-gradient(
       to right,
       transparent,

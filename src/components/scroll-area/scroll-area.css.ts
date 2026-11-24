@@ -12,7 +12,7 @@ export const scrollAreaStyles = css`
     overflow: hidden;
     scrollbar-width: thin;
     scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
   }
 
   :host([hidden]) {

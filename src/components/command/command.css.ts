@@ -51,7 +51,7 @@ export const itemStyles = css`
     align-items: center;
     box-sizing: border-box;
     min-block-size: var(--pl-size-hit-min);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-row);
     padding-block: max(0px, calc((var(--pl-size-hit-min) - 1lh) / 2));
     padding-inline: var(--pl-pad-item);
     cursor: default;

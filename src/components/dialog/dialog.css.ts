@@ -38,7 +38,7 @@ export const dialogStyles = css`
     max-block-size: calc(100dvh - var(--pl-space-8));
     margin: auto;
     border: 0;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     padding: 0;
     background: var(--_material);
     backdrop-filter: var(--_filter);
@@ -111,7 +111,7 @@ export const dialogStyles = css`
     inline-size: var(--_icon);
     block-size: var(--_icon);
     padding: calc(var(--_icon) / 4);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background: linear-gradient(
       color-mix(in srgb, var(--pl-color-accent), var(--pl-color-honeydew) 25%),
       var(--pl-color-accent)

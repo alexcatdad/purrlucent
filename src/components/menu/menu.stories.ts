@@ -184,7 +184,7 @@ export const ContextMenu: Story = {
         id="area"
         tabindex="0"
         aria-label="File area with a context menu"
-        style="box-sizing:border-box;color:var(--pl-color-foreground);font:var(--pl-text-sm) var(--pl-font-sans);inline-size:calc(var(--pl-spacing) * 90);block-size:calc(var(--pl-spacing) * 57.5);padding:var(--pl-space-3);border:1px dashed var(--pl-color-muted-foreground);border-radius:var(--pl-radius)"
+        style="box-sizing:border-box;color:var(--pl-color-foreground);font:var(--pl-text-sm) var(--pl-font-sans);inline-size:calc(var(--pl-spacing) * 90);block-size:calc(var(--pl-spacing) * 57.5);padding:var(--pl-space-3);border:1px dashed var(--pl-color-muted-foreground);border-radius:var(--pl-radius-control)"
         @contextmenu=${(event: MouseEvent) => {
           event.preventDefault();
           menuOf(document.body).showAt(event.clientX, event.clientY);

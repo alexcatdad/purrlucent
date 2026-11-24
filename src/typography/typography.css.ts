@@ -92,7 +92,7 @@ export const proseStyles = css`
 
   .pl-prose :not(pre) > code {
     padding: var(--pl-space-0-5) var(--pl-space-1);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control-inner);
     background: var(--pl-color-track);
     font-family: var(--pl-font-mono);
     font-size: var(--pl-text-sm);
@@ -156,7 +156,7 @@ export const proseStyles = css`
 
   .pl-prose mark {
     padding-inline: var(--pl-space-0-5);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control-inner);
     background-color: var(--pl-color-selected);
     color: var(--pl-color-selected-foreground);
   }
@@ -198,7 +198,7 @@ export const proseStyles = css`
     min-inline-size: calc(var(--pl-leading-normal) + var(--pl-space-1));
     padding-inline: var(--pl-space-1-5);
     border: 1px solid var(--pl-color-border);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: var(--pl-color-muted-2);
     color: var(--pl-color-foreground);
     font: 500 var(--pl-text-xs) /
@@ -231,7 +231,7 @@ export const proseStyles = css`
     display: block;
     max-inline-size: 100%;
     block-size: auto;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
   }
 
   .pl-prose figcaption {
@@ -266,7 +266,7 @@ export const proseStyles = css`
     margin-block: var(--pl-space-2) var(--pl-space-4);
     padding: var(--pl-space-3) var(--pl-space-4);
     overflow-x: auto;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
     background-color: var(--pl-color-track);
     font-family: var(--pl-font-mono);
     font-size: var(--pl-text-sm);
@@ -278,7 +278,7 @@ export const proseStyles = css`
     margin-block: var(--pl-space-2) var(--pl-space-4);
     padding-inline: var(--pl-space-3);
     border: 1px solid var(--pl-color-border);
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-control);
   }
 
   .pl-prose summary {

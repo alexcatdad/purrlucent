@@ -27,7 +27,7 @@ const face = css`
     position: absolute;
     inset: 0;
     z-index: -1;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-row);
     background-color: var(--_face, transparent);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }

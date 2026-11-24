@@ -135,8 +135,8 @@ export const numberFieldStyles = [
 
     [part="increment"]::before {
       inset-block-end: 0;
-      border-start-start-radius: var(--pl-radius);
-      border-start-end-radius: var(--pl-radius);
+      border-start-start-radius: var(--pl-radius-control);
+      border-start-end-radius: var(--pl-radius-control);
     }
 
     [part="stepper"] [part="decrement"] {
@@ -147,8 +147,8 @@ export const numberFieldStyles = [
 
     [part="decrement"]::before {
       inset-block-start: 0;
-      border-end-start-radius: var(--pl-radius);
-      border-end-end-radius: var(--pl-radius);
+      border-end-start-radius: var(--pl-radius-control);
+      border-end-end-radius: var(--pl-radius-control);
     }
 
     /* Inside, the start side meets the field and stays square. */

@@ -63,7 +63,7 @@ export const comboboxStyles = css`
     block-size: 100%;
     margin: 0;
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     padding: 0;
     background: none;
     color: inherit;
@@ -74,7 +74,7 @@ export const comboboxStyles = css`
     content: "";
     position: absolute;
     inset: var(--_inset);
-    border-radius: var(--pl-radius);
+    border-radius: calc(var(--pl-radius-control) - var(--_inset));
     background: var(--_face);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }

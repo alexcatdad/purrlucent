@@ -11,8 +11,8 @@ export const bubbleStyles = css`
     --_fill: var(--pl-color-accent);
     --_fg: var(--pl-color-accent-foreground);
     --_edge: transparent;
-    --_radius: calc(var(--pl-radius-lg) * 2);
-    --_radius-tight: var(--pl-radius);
+    --_radius: var(--pl-radius-panel);
+    --_radius-tight: var(--pl-radius-control-inner);
     --_start: flex-start;
     --pl-bubble-max-inline-size: 80%;
 

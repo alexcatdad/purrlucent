@@ -28,7 +28,7 @@ const region = (unavailable = false, rtl = false) => html`
   <pl-context-menu id="context">
     <div
       id="area"
-      style="box-sizing:border-box;display:grid;justify-items:start;gap:var(--pl-space-3);inline-size:min(100%, calc(var(--pl-spacing) * 90));padding:var(--pl-space-4);border:1px dashed var(--pl-color-muted-foreground);border-radius:var(--pl-radius);color:var(--pl-color-foreground);font:var(--pl-text-sm) var(--pl-font-sans)"
+      style="box-sizing:border-box;display:grid;justify-items:start;gap:var(--pl-space-3);inline-size:min(100%, calc(var(--pl-spacing) * 90));padding:var(--pl-space-4);border:1px dashed var(--pl-color-muted-foreground);border-radius:var(--pl-radius-control);color:var(--pl-color-foreground);font:var(--pl-text-sm) var(--pl-font-sans)"
     >
       <pl-button>Report.pdf</pl-button>
       <span

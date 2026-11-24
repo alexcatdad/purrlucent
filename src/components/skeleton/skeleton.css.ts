@@ -9,7 +9,7 @@ export const skeletonStyles = css`
     display: block;
     inline-size: 100%;
     block-size: calc(var(--pl-spacing) * 4);
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: var(--pl-color-muted-1);
   }
 

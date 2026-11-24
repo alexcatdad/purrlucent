@@ -26,7 +26,7 @@ export const collapsibleStyles = css`
     min-block-size: var(--pl-size-hit-min);
     padding: var(--pl-space-1) var(--pl-pad-item);
     border: 0;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: transparent;
     color: inherit;
     font: inherit;

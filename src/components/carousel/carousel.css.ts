@@ -26,7 +26,7 @@ export const carouselStyles = css`
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
   }
 
   [part="viewport"]::-webkit-scrollbar {
@@ -83,7 +83,7 @@ export const carouselStyles = css`
   /* Under glass the arrows are capsules; solid leaves them without a fill. */
   [part="previous"],
   [part="next"] {
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: var(--pl-material-capsule);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);

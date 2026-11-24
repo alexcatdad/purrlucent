@@ -11,7 +11,7 @@ export const popoverStyles = css`
     --_arrow-w: calc(var(--pl-spacing) * 5);
     --_arrow-h: calc(var(--pl-spacing) * 2.5);
     /* The arrow stays this far from a corner, so it never rides the rounding. */
-    --_corner: calc(var(--pl-radius-lg) + var(--_arrow-w) / 2);
+    --_corner: calc(var(--pl-radius-panel) + var(--_arrow-w) / 2);
 
     display: inline-block;
   }
@@ -32,7 +32,7 @@ export const popoverStyles = css`
     inset: auto;
     margin: calc(var(--_arrow-h) + var(--pl-space-1));
     border: 0;
-    border-radius: var(--pl-radius-lg);
+    border-radius: var(--pl-radius-panel);
     padding: var(--pl-pad-panel);
     overflow: visible;
     background: var(--pl-material-panel);

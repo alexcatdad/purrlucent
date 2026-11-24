@@ -188,7 +188,7 @@ export const toolbarGroupStyles = css`
     box-sizing: border-box;
     min-block-size: var(--_ctl);
     padding: var(--_pad) max(0px, calc(var(--_pad) - var(--_gap)));
-    border-radius: var(--pl-radius);
+    border-radius: var(--pl-radius-control);
     background-color: var(--pl-color-overlay);
     box-shadow: 0 0 0 1px var(--pl-color-overlay-border);
   }
