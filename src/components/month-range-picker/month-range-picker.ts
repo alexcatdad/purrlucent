@@ -368,7 +368,7 @@ export class PlMonthRangePicker extends LitElement {
         @click=${() => this.#pick(index)}
       >
         <span aria-hidden="true">${short.format(monthTime(index))}</span
-        ><span class="name">${long.format(monthTime(index))}</span>
+        ><span class="name"><span>${long.format(monthTime(index))}</span></span>
       </td>`;
     };
 

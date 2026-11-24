@@ -121,7 +121,7 @@ export const monthRangePickerStyles = css`
     background: var(--pl-color-muted-pressed);
   }
 
-  /* The full month and year, for assistive technology; the short name is what shows. */
+  /* The full month and year, for assistive technology; the short name is what shows. The text sits in a child, so the strip clips it as an ancestor. */
   .name {
     position: absolute;
     inset-block-start: 0;
