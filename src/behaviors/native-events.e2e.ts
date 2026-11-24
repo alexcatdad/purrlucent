@@ -17,12 +17,12 @@ const listen = (host: Locator) =>
     for (const type of ["pl-input", "input", "pl-change", "change"])
       el.addEventListener(type, (event) => {
         if (event.target !== el) return;
-        // A cancelable pl-change fires before the state changes: its detail holds the new value.
+        // The toggle group's pl-change fires before the choice is applied: its detail holds it.
         const detail = (event as CustomEvent).detail as
-          { value?: unknown } | undefined;
+          { selected?: string[] } | undefined;
         const state =
-          type === "pl-change" && detail && "value" in detail
-            ? detail.value
+          type === "pl-change" && detail?.selected
+            ? detail.selected[0]
             : control.type === "checkbox"
               ? control.checked
               : control.value;
