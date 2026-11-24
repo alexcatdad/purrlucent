@@ -1325,30 +1325,39 @@ import "purrlucent/menu";
 
 ### `<pl-menu-item>`
 
-One command in a `pl-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `pl-menu` in the `submenu` slot makes it open a submenu.
+One command in a `pl-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `pl-menu` in the `submenu` slot makes it open a submenu. With `href` it is a link: a real anchor covers the row, so middle-click, open in a new tab and copy link work. Choosing an item dispatches a `click` event on the item itself, then the menu fires `pl-select`.
 
-| Attribute     | Type                          | Default | Description                                               |
-| ------------- | ----------------------------- | ------- | --------------------------------------------------------- |
-| `value`       | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.          |
-| `type`        | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.         |
-| `checked`     | `boolean`                     | `false` | Checked, for a checkbox or radio item.                    |
-| `disabled`    | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.          |
-| `destructive` | `boolean`                     | `false` | The command deletes or discards something.                |
-| `detail`      | `string`                      | `""`    | Trailing text such as a shortcut. The `detail` slot wins. |
-| `indent`      | `boolean`                     | `false` | Reserves the check column. The menu sets it.              |
-| `hasSubmenu`  | `boolean`                     | `false` |                                                           |
+| Attribute            | Type                          | Default | Description                                                                          |
+| -------------------- | ----------------------------- | ------- | ------------------------------------------------------------------------------------ |
+| `value`              | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.                                     |
+| `type`               | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.                                    |
+| `checked`            | `boolean`                     | `false` | Checked, for a checkbox or radio item.                                               |
+| `disabled`           | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.                                     |
+| `destructive`        | `boolean`                     | `false` | The command deletes or discards something.                                           |
+| `detail`             | `string`                      | `""`    | Trailing text such as a shortcut. The `detail` slot wins.                            |
+| `description`        | `string`                      | `""`    | A second, muted line under the label. The `description` slot wins.                   |
+| `href`               | `string`                      | `""`    | Makes the item a link to this URL. Choosing it closes the menu and follows the link. |
+| `target`             | `string`                      | `""`    | Where the link opens, such as `_blank`.                                              |
+| `rel`                | `string`                      | `""`    | The link's relationship, such as `noopener`.                                         |
+| `indent`             | `boolean`                     | `false` | Reserves the check column. The menu sets it.                                         |
+| `hasSubmenu`         | `boolean`                     | `false` |                                                                                      |
+| `hasDescriptionSlot` | `boolean`                     | `false` |                                                                                      |
 
 **Slots**
 
 - default: The label.
 - `icon`: A leading svg.
+- `description`: A second, muted line under the label.
 - `detail`: Trailing content, such as a shortcut.
 - `submenu`: A nested `pl-menu`.
 
 **Parts**
 
 - `check`: The check mark.
+- `link`: The anchor of a link item.
+- `text`: The label and description column.
 - `label`: The label wrapper.
+- `description`: The description wrapper.
 - `detail`: The trailing text wrapper.
 - `chevron`: The submenu arrow.
 
@@ -1362,25 +1371,30 @@ A section header inside a `pl-menu`. Its text is the heading.
 
 ### `<pl-menu>`
 
-A menu: a list of commands that opens from a trigger (the menu button pattern), at a point (a context menu, see `showAt`) or from a parent item (a submenu, `slot="submenu"`). The items are the light-DOM children, so focus moves to them while the menu is open and returns to the trigger on close. Arrow keys move with wrap, Home and End jump, typing jumps to a label, Enter and Space activate, Escape closes one level, Tab closes all of them. Activating an item closes every level and fires `pl-select`.
+A menu: a list of commands that opens from a trigger (the menu button pattern), at a point (a context menu, see `showAt`) or from a parent item (a submenu, `slot="submenu"`). The items are the light-DOM children, so focus moves to them while the menu is open and returns to the trigger on close. Arrow keys move with wrap, Home and End jump, typing jumps to a label, Enter and Space activate, Escape closes one level, Tab closes all of them. Activating an item dispatches `click` on the item, closes every level and fires `pl-select`. `show()` and `open` open it from code with the first item focused, as a keyboard open does.
 
-| Attribute | Type      | Default | Description                      |
-| --------- | --------- | ------- | -------------------------------- |
-| `label`   | `string`  | `""`    | The accessible name of the menu. |
-| `open`    | `boolean` | `false` | The menu is showing.             |
+| Attribute   | Type            | Default          | Description                                                                                                                                                  |
+| ----------- | --------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`     | `string`        | `""`             | The accessible name of the menu.                                                                                                                             |
+| `open`      | `boolean`       | `false`          | The menu is showing.                                                                                                                                         |
+| `placement` | `MenuPlacement` | `"bottom-start"` | Where the menu opens from its trigger: `bottom-start` (default), `bottom-end`, `top-start`, `top-end`, `start` or `end`. It flips when the side has no room. |
+| `hasHeader` | `boolean`       | `false`          |                                                                                                                                                              |
 
 **Slots**
 
 - `trigger`: A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
+- `header`: Non-interactive content above the items, such as a name and email block or an empty state.
 - default: The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
 
 **Parts**
 
 - `menu`: The popup.
+- `header`: The wrapper of the header content.
 
 **Events**
 
-- `pl-select`: An item was activated. `detail.value` holds its value.
+- `pl-select`: An item was activated. `detail.value` holds its value and `detail.item` the item element.
+- `pl-toggle`: The menu opened or closed. `detail.open` says which. A submenu fires it on itself and it does not bubble.
 
 ## Menubar
 
