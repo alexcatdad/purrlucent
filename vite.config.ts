@@ -9,6 +9,37 @@ const components = readdirSync(resolve(root, "src/components"), {
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
 
+/**
+ * The purrlucent/tailwind.css export. Tailwind's preflight resets margin,
+ * padding and border on every element, and a rule from the page outranks a
+ * component's own :host rule. Imported after Tailwind, this reverts the
+ * preflight for every element the library defines, in Tailwind's base layer.
+ */
+const tailwindCss = () => {
+  const tags = components
+    .flatMap((name) =>
+      readdirSync(resolve(root, "src/components", name))
+        .filter((file) => /^[a-z-]+\.ts$/.test(file))
+        .flatMap((file) => [
+          ...readFileSync(
+            resolve(root, "src/components", name, file),
+            "utf8",
+          ).matchAll(/customElements\.define\(\s*"(pl-[a-z-]+)"/g),
+        ])
+        .map((match) => match[1]),
+    )
+    .sort();
+  return `/* Import after Tailwind: hands margin, padding and border back to purrlucent's elements, which Tailwind's preflight resets. */
+@layer base {
+  :is(${tags.join(", ")}) {
+    margin: revert-layer;
+    padding: revert-layer;
+    border: revert-layer;
+  }
+}
+`;
+};
+
 export default defineConfig({
   plugins: [
     {
@@ -21,6 +52,11 @@ export default defineConfig({
           type: "asset",
           fileName: "tokens.css",
           source: readFileSync(resolve(root, "src/tokens/tokens.css")),
+        });
+        this.emitFile({
+          type: "asset",
+          fileName: "tailwind.css",
+          source: tailwindCss(),
         });
       },
     },
