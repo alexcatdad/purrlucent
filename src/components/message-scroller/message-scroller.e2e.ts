@@ -24,6 +24,25 @@ const frames = (page: Page) =>
     await new Promise(requestAnimationFrame);
   });
 
+/**
+ * Waits until the scroll offset and content height hold for three frames, for
+ * at most 60 frames. WebKit gives rows skipped by content-visibility their real
+ * size a row or two per frame, and at the end each shrink pulls the offset
+ * back. The cap counts frames, not time, so a stalled frame does not trip it.
+ */
+const settled = (el: Locator) =>
+  el.evaluate(async (e) => {
+    let last = "";
+    for (let frame = 0, still = 0; still < 3; frame++) {
+      if (frame === 60)
+        throw new Error(`The scroller did not settle in 60 frames (${last})`);
+      await new Promise(requestAnimationFrame);
+      const now = `scrollTop ${e.scrollTop}, scrollHeight ${e.scrollHeight}`;
+      still = now === last ? still + 1 : 0;
+      last = now;
+    }
+  });
+
 /** How far a row's top is below the top of the viewport. */
 const rowTop = (el: Locator, id: string) =>
   el.evaluate((e, id) => {
@@ -369,7 +388,7 @@ test.describe("placement", () => {
     await gotoStory(page, story("default"));
     const el = scroller(page);
     await el.evaluate((e) => (e.scrollTop = e.scrollHeight));
-    await frames(page);
+    await settled(el);
     const before = await el.evaluate((e) => e.scrollTop);
     await append(el, [{ id: "plain", lines: 5 }]);
     await frames(page);
