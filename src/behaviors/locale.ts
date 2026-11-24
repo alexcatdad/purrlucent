@@ -18,6 +18,7 @@ const en = {
   showOptionsFor: "{label}, show options",
   showItemsFor: "{label}, show items",
   noResults: "No results",
+  addQuery: "Add {query}",
   sidebar: "Sidebar",
   sidebarFor: "{label} sidebar",
   breadcrumb: "Breadcrumb",
