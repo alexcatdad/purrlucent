@@ -27,16 +27,108 @@ test("aria snapshot", async ({ page }) => {
   await expect(root).toMatchAriaSnapshot(`
     - article:
       - heading "Caring for a cat" [level=1]
-      - paragraph
+      - heading "Text styles" [level=2]
+      - heading "Fifth level" [level=5]
+      - heading "Sixth level" [level=6]
       - heading "Daily routine" [level=2]
-      - list
-      - list
       - blockquote
       - heading "Meals" [level=3]
       - table
       - heading "Notes" [level=4]
-      - paragraph: Wash the bowls after every meal.
+      - figure
+      - separator
+      - group
+      - heading "Text colors" [level=2]
   `);
+});
+
+const elements = [
+  "mark",
+  "del",
+  "ins",
+  "s",
+  "sub",
+  "sup",
+  "abbr[title]",
+  "q",
+  "cite",
+  "kbd",
+  "time",
+  "dl",
+  "dt",
+  "dd",
+  "figure",
+  "figcaption",
+  "hr",
+  "address",
+  "details",
+  "summary",
+  "pre",
+  "small",
+  ".lead",
+];
+
+test("the article uses every listed element", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  for (const selector of elements)
+    await expect(
+      page.locator(`#prose ${selector}`).first(),
+      selector,
+    ).toBeAttached();
+});
+
+// cite and s are left out: the .pl-prose rules for them repeat the browser
+// default (italic, line-through), so no computed property can tell them apart.
+const compared = elements.filter(
+  (selector) => !["cite", "s"].includes(selector),
+);
+
+test("every prose element is styled", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const same = await page.locator("#prose").evaluate((prose, selectors) => {
+    const props = [
+      "display",
+      "font-size",
+      "font-style",
+      "font-weight",
+      "line-height",
+      "color",
+      "background-color",
+      "text-decoration-line",
+      "text-decoration-style",
+      "text-underline-offset",
+      "cursor",
+      "margin-block-start",
+      "padding-block-start",
+      "padding-inline-start",
+      "border-top-width",
+    ];
+    // The clone sits outside .pl-prose, inside a wrapper that passes on the
+    // text settings .pl-prose sets, so only the element's own prose rule can
+    // make the two differ.
+    const container = getComputedStyle(prose);
+    const wrapper = document.createElement("div");
+    wrapper.style.color = container.color;
+    wrapper.style.fontFamily = container.fontFamily;
+    wrapper.style.fontSize = container.fontSize;
+    wrapper.style.fontWeight = container.fontWeight;
+    wrapper.style.lineHeight = container.lineHeight;
+    document.body.append(wrapper);
+    const unstyled: string[] = [];
+    for (const selector of selectors) {
+      const el = prose.querySelector(selector)!;
+      const clone = el.cloneNode(true) as Element;
+      wrapper.append(clone);
+      const a = getComputedStyle(el);
+      const b = getComputedStyle(clone);
+      if (props.every((p) => a.getPropertyValue(p) === b.getPropertyValue(p)))
+        unstyled.push(selector);
+      clone.remove();
+    }
+    wrapper.remove();
+    return unstyled;
+  }, compared);
+  expect(same).toEqual([]);
 });
 
 test("headings step down in size and every heading is bold", async ({
@@ -47,7 +139,7 @@ test("headings step down in size and every heading is bold", async ({
     await style(page, "#prose h1"),
     await style(page, "#prose h2"),
     await style(page, "#prose h3"),
-    await style(page, "#prose > p"),
+    await style(page, "#prose > p:not(.lead)"),
   ];
   expect(h1.size).toBeGreaterThan(h2.size);
   expect(h2.size).toBeGreaterThan(h3.size - 0.01);
@@ -70,7 +162,9 @@ test("body text is at least 13 CSS pixels and code is not smaller than 12", asyn
   page,
 }) => {
   await gotoStory(page, story("default"));
-  expect((await style(page, "#prose > p")).size).toBeGreaterThanOrEqual(13);
+  expect(
+    (await style(page, "#prose > p:not(.lead)")).size,
+  ).toBeGreaterThanOrEqual(13);
   expect((await style(page, "#prose code")).size).toBeGreaterThanOrEqual(12);
 });
 
@@ -78,7 +172,7 @@ test("paragraphs use loose leading and every line height clears the font size", 
   page,
 }) => {
   await gotoStory(page, story("default"));
-  const p = await style(page, "#prose > p");
+  const p = await style(page, "#prose > p:not(.lead)");
   const li = await style(page, "#prose li");
   expect(p.lineHeight).toBeGreaterThan(li.lineHeight);
   const rows = await page
