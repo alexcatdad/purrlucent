@@ -293,14 +293,24 @@ export class PlDialog extends LitElement {
   #onClose = () => {
     // Reopened before this event ran: the dialog is open again.
     if (this.#dialog!.open) return;
+    // Read focus in the dialog's own root, so a dialog inside another
+    // component's shadow root still sees focus that sits inside it.
+    const active = document.activeElement;
+    const local = (this.getRootNode() as Document | ShadowRoot).activeElement;
+    const focusWasHere =
+      !active ||
+      active === document.body ||
+      (!!local && (local === this || this.contains(local)));
     if (this.#dialog!.matches(":popover-open")) this.#dialog!.hidePopover();
     this.open = false;
     this.#unlock();
     this.#returnValue = this.#dialog!.returnValue;
     const reason = this.#reason;
     this.#reason = "programmatic";
-    // The native dialog restores focus only when it is modal.
-    if (this.nonmodal) (this.#opener as HTMLElement | null)?.focus?.();
+    // The native dialog restores focus only when it is modal. A nonmodal one
+    // leaves focus alone when the user moved it to the page.
+    if (this.nonmodal && focusWasHere)
+      (this.#opener as HTMLElement | null)?.focus?.();
     this.#opener = null;
     this.#emit("pl-close", { returnValue: this.#returnValue, reason });
   };

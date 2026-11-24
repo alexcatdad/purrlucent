@@ -866,6 +866,7 @@ test("a slotted description wins over the description attribute", async ({
 test.describe("nonmodal", () => {
   test("opens without blocking the page, the scrim or the scroll lock", async ({
     page,
+    browserName,
   }) => {
     await gotoStory(page, story("open-nonmodal"));
     await expect(sheet(page)).toBeVisible();
@@ -877,6 +878,14 @@ test.describe("nonmodal", () => {
     expect(
       await page.evaluate(() => document.documentElement.style.overflow),
     ).toBe("");
+    // The scrim is read through getComputedStyle, which this check does not
+    // rely on in WebKit.
+    if (browserName !== "webkit")
+      expect(
+        await dialogEl(page)
+          .locator("dialog")
+          .evaluate((el) => getComputedStyle(el, "::backdrop").backgroundColor),
+      ).toBe("rgba(0, 0, 0, 0)");
     await page.evaluate(() => {
       const button = document.querySelector("#page-button")!;
       (window as unknown as { clicks: number }).clicks = 0;
@@ -892,6 +901,19 @@ test.describe("nonmodal", () => {
       ),
     ).toBe(1);
     await expect(sheet(page)).toBeVisible();
+  });
+
+  test("closing leaves focus where the user moved it on the page", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await expect(sheet(page)).toBeVisible();
+    await page.locator("#page-button").focus();
+    await dialogEl(page).evaluate((el) =>
+      (el as unknown as { close(): void }).close(),
+    );
+    await expect(sheet(page)).toBeHidden();
+    await expect(page.locator("#page-button")).toBeFocused();
   });
 
   test("stays above page content with a higher z-index", async ({ page }) => {

@@ -65,7 +65,7 @@ export const dialogStyles = css`
     block-size: fit-content;
   }
 
-  dialog::backdrop {
+  dialog:modal::backdrop {
     background: var(--_scrim);
     transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
@@ -76,7 +76,7 @@ export const dialogStyles = css`
       scale: 0.96;
     }
 
-    dialog[open]::backdrop {
+    dialog:modal[open]::backdrop {
       opacity: 0;
     }
   }
