@@ -1906,9 +1906,12 @@ test.describe("chevron placement", () => {
         .evaluate((el) => el.getBoundingClientRect().left),
     ]);
     expect(chevron.right).toBeLessThanOrEqual(icon + 1);
-    expect(await iconLeft(page, "work")).toBeGreaterThan(
-      await iconLeft(page, "archive"),
-    );
+    // Every row reserves the leading chevron column, so icons still align.
+    expect(
+      Math.abs(
+        (await iconLeft(page, "work")) - (await iconLeft(page, "archive")),
+      ),
+    ).toBeLessThanOrEqual(1);
   });
 });
 
@@ -1942,7 +1945,7 @@ test.describe("truncated labels", () => {
     });
     expect(lines).toBe(1);
     await expect(
-      page.getByRole("link", { name: new RegExp(`^${long}`) }),
+      page.locator("#long").getByRole("link", { name: new RegExp(`^${long}`) }),
     ).toBeVisible();
   });
 

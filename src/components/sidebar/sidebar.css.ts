@@ -406,9 +406,44 @@ export const itemStyles = [
     /* The grip of a reorderable item floats over the trailing end of the row,
        so it takes no room from the label while hidden. Its width comes from the
        icon, not the row; a coarse pointer gets the touch size from its hit area.
-       Shown, it fades in over the trailing padding and the detail. */
+       Shown, the label and detail fade out beneath it. */
     :host([reorderable]) {
+      --_grip: calc(var(--pl-icon-md) + var(--pl-space-2));
+      /* How far the label and detail fade under a shown grip; hidden, the fade
+         sits past their end, so they show whole. The text fades rather than
+         a fill covering it, so any row fill or glass shows through unchanged. */
+      --_fade: calc(var(--pl-space-2) * -1);
+
       position: relative;
+    }
+
+    :host([reorderable]) .label,
+    :host([reorderable]) ::slotted([slot="detail"]) {
+      mask-image: linear-gradient(
+        to left,
+        transparent var(--_fade),
+        Canvas calc(var(--_fade) + var(--pl-space-2))
+      );
+    }
+
+    :host([reorderable]:dir(rtl)) .label,
+    :host([reorderable]:dir(rtl)) ::slotted([slot="detail"]) {
+      mask-image: linear-gradient(
+        to right,
+        transparent var(--_fade),
+        Canvas calc(var(--_fade) + var(--pl-space-2))
+      );
+    }
+
+    :host([reorderable]:focus-within),
+    :host([reorderable][data-dragging]) {
+      --_fade: var(--_grip);
+    }
+
+    @media (hover: hover) {
+      :host([reorderable]:hover) {
+        --_fade: var(--_grip);
+      }
     }
 
     .handle {
@@ -418,12 +453,7 @@ export const itemStyles = [
       z-index: 1;
       display: grid;
       place-items: center;
-      inline-size: calc(var(--pl-icon-md) + var(--pl-space-2));
-      background: linear-gradient(
-        to left,
-        var(--pl-material-sidebar) 60%,
-        transparent
-      );
+      inline-size: var(--_grip);
       color: var(--pl-color-muted-foreground);
       cursor: grab;
       touch-action: none;
@@ -449,14 +479,6 @@ export const itemStyles = [
       .handle {
         opacity: 1;
       }
-    }
-
-    :host(:dir(rtl)) .handle {
-      background-image: linear-gradient(
-        to right,
-        var(--pl-material-sidebar) 60%,
-        transparent
-      );
     }
 
     /* The hit area reaches the minimum size toward the label. */
@@ -580,12 +602,15 @@ export const itemStyles = [
     /* Where the grip is always shown, its width is reserved in the row, so it
        never covers the label, its ellipsis or the detail. */
     @media (pointer: coarse), (hover: none) {
-      :host([reorderable]) {
-        --_grip-w: calc(var(--pl-icon-md) + var(--pl-space-2));
+      :host([reorderable]) .label,
+      :host([reorderable]) ::slotted([slot="detail"]),
+      :host([reorderable]:dir(rtl)) .label,
+      :host([reorderable]:dir(rtl)) ::slotted([slot="detail"]) {
+        mask-image: none;
       }
 
       :host([reorderable]) .control {
-        padding-inline-end: calc(var(--pl-pad-item) + var(--_grip-w));
+        padding-inline-end: calc(var(--pl-pad-item) + var(--_grip));
       }
 
       :host(
@@ -593,14 +618,14 @@ export const itemStyles = [
         )
         .control {
         padding-inline-end: calc(
-          var(--pl-pad-item) + var(--_chev-w) + var(--_grip-w)
+          var(--pl-pad-item) + var(--_chev-w) + var(--_grip)
         );
       }
 
       :host(:not([chevron="start"])[reorderable][expandable]:not([href]))
         .control
         > .chevron {
-        margin-inline-start: calc(var(--pl-space-1) + var(--_grip-w));
+        margin-inline-start: calc(var(--pl-space-1) + var(--_grip));
       }
 
       :host(:not([chevron="start"])[reorderable][expandable]:not([href]))

@@ -6,8 +6,12 @@ const story = "foundations-density--controls";
 /** The border box and the type of each element the Density story measures. */
 const measure = (page: Page) =>
   page.evaluate(() => {
-    const pick = (selector: string) => {
-      const el = document.querySelector(selector)!;
+    // A part is read inside the host's shadow root.
+    const pick = (selector: string, part?: string) => {
+      const host = document.querySelector(selector)!;
+      const el = part
+        ? host.shadowRoot!.querySelector(`[part=${part}]`)!
+        : host;
       const { width, height } = el.getBoundingClientRect();
       const { fontSize, paddingInlineStart, paddingBlockStart, lineHeight } =
         getComputedStyle(el);
@@ -22,8 +26,8 @@ const measure = (page: Page) =>
     };
     return {
       button: pick("pl-button"),
-      input: pick("pl-input [part=field]"),
-      select: pick("pl-select [part=trigger]"),
+      input: pick("pl-input", "field"),
+      select: pick("pl-select", "trigger"),
       cell: pick("pl-table tbody td"),
     };
   });

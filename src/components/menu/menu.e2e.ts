@@ -869,8 +869,15 @@ test.describe("item icons", () => {
         "#kinds",
       )!;
       menu.open = true;
-      await (menu as unknown as { updateComplete: Promise<unknown> })
-        .updateComplete;
+      type Lit = { updateComplete: Promise<unknown> };
+      await (menu as unknown as Lit).updateComplete;
+      await Promise.all(
+        [...menu.children].map(
+          (item) => (item as unknown as Lit).updateComplete,
+        ),
+      );
+      // The icon gap lands after slotchange, a task after first render.
+      await new Promise(requestAnimationFrame);
       const probe = document.createElement("div");
       probe.style.inlineSize = "var(--pl-gap-icon)";
       document.body.append(probe);
