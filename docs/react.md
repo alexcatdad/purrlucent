@@ -89,6 +89,16 @@ const { register, handleSubmit } = useForm<{ name: string; news: boolean }>();
 </form>;
 ```
 
+## Language
+
+Register each language's text once with `setMessages` from `purrlucent/locale`; the [install guide](./install.md#languages) lists the keys. To switch language while the app runs, set `lang` and leave the rest to the elements: they update their text and messages without a re-render from React.
+
+```tsx
+function setLanguage(lang: "en" | "sv") {
+  document.documentElement.lang = lang;
+}
+```
+
 ## Styling
 
 Change the look with tokens first: every `--pl-*` custom property reaches inside the elements. Set them in your global CSS or on any element. For one part of an element, use `::part()`; the [component reference](./components.md) lists each element's parts:

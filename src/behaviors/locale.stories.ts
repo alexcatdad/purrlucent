@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../components/banner/banner.ts";
+import "../components/checkbox/checkbox.ts";
 import "../components/combobox/combobox.ts";
 import "../components/date-picker/date-picker.ts";
 import "../components/pagination/pagination.ts";
@@ -12,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The library ships its built-in text in English. An app registers another language once, with `setMessages("sv", { … })`, and every component inside an element with that `lang` uses it, also inside other components. An attribute such as `close-label` still wins.',
+          'The library ships its built-in text in English. An app registers another language once, with `setMessages("sv", { … })`, and every component inside an element with that `lang` uses it, also inside other components. Changing `lang` or calling `setMessages` later updates the components already on the page. An attribute such as `close-label` still wins.',
       },
     },
   },
@@ -33,12 +34,17 @@ const swedish = {
   pagination: "Sidnumrering",
   previousPage: "Föregående sida",
   nextPage: "Nästa sida",
+  checkRequired: "Markera rutan för att fortsätta.",
 } as PlMessages;
+
+// Registered after the page has rendered, by the button in the story.
+const german = { dismiss: "Schließen" } as PlMessages;
 
 export const Swedish: Story = {
   render: () => {
     setMessages("sv", swedish);
     return html`<div
+      id="lang"
       lang="sv"
       style="display:grid;justify-items:start;gap:var(--pl-space-3);padding:var(--pl-space-4)"
     >
@@ -52,6 +58,14 @@ export const Swedish: Story = {
       </pl-combobox>
       <pl-date-picker label="Datum"></pl-date-picker>
       <pl-pagination total="5"></pl-pagination>
+      <pl-checkbox id="terms" required>Villkor</pl-checkbox>
+      <button
+        id="add-german"
+        type="button"
+        @click=${() => setMessages("de", german)}
+      >
+        Register German
+      </button>
     </div>`;
   },
 };

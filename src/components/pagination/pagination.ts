@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
+import { LitElement, html, nothing, svg } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { paginationStyles } from "./pagination.css.ts";
 import { clampPage, pageItems, wholeTotal } from "./pages.ts";
@@ -75,12 +75,11 @@ export class PlPagination extends LitElement {
     this.setAttribute("role", "navigation");
   }
 
-  protected override willUpdate(changed: PropertyValues<this>) {
+  protected override willUpdate() {
     this.total = wholeTotal(this.total);
     this.page = clampPage(this.page, this.total);
-    if (changed.has("label")) {
-      this.setAttribute("aria-label", this.label || messages(this).pagination);
-    }
+    // Every update, so the built-in name follows a change of language.
+    this.setAttribute("aria-label", this.label || messages(this).pagination);
   }
 
   #href(page: number) {

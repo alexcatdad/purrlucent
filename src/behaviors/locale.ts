@@ -2,7 +2,8 @@
  * The page language and the built-in text in it. The library ships English;
  * an app registers other languages with setMessages. Every component resolves
  * its words at render from the closest `lang`, crossing shadow roots, so a
- * component inside another one reads the language its host sits in. An
+ * component inside another one reads the language its host sits in, and
+ * renders again when that language or the registered text changes. An
  * attribute on the component still wins over the built-in text.
  */
 
@@ -89,6 +90,38 @@ const registered = new Map<string, PlMessages>();
 export function setMessages(lang: string, text: PlMessages) {
   // English fills any key a table leaves out, such as one added in a later version.
   registered.set(lang.toLowerCase(), { ...en, ...text });
+  refresh();
+}
+
+type Renderable = Element & { requestUpdate?: () => void };
+
+// Every element that has read its language, held weakly so a removed one is
+// not kept alive. They render again when a `lang` attribute in the document,
+// the browser's language or the registered text changes.
+const known = new WeakSet<Element>();
+let readers: WeakRef<Renderable>[] = [];
+let observer: MutationObserver | undefined;
+
+function refresh() {
+  readers = readers.filter((ref) => {
+    const host = ref.deref();
+    if (host?.isConnected) host.requestUpdate?.();
+    return !!host;
+  });
+}
+
+function track(host: Element) {
+  if (known.has(host)) return;
+  known.add(host);
+  readers.push(new WeakRef(host));
+  if (observer) return;
+  observer = new MutationObserver(refresh);
+  observer.observe(document, {
+    attributes: true,
+    attributeFilter: ["lang"],
+    subtree: true,
+  });
+  addEventListener("languagechange", refresh);
 }
 
 /** The closest `lang` above an element, looking through the hosts of the shadow roots it sits in. */
@@ -104,6 +137,7 @@ function langOf(host: Element) {
 
 /** The locale to use: the one asked for, else the closest lang, else the document's, else the browser's. */
 export function localeOf(host: Element, asked?: string) {
+  track(host);
   const locale =
     asked ||
     langOf(host) ||
