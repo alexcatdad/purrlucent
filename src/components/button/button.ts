@@ -20,7 +20,9 @@ export type PlButtonSize = "md" | "lg" | "xl";
  * copying the address work as on any link. The `click` reaches the host and
  * can be cancelled with `preventDefault()` for client-side routing; otherwise
  * the browser follows the link. A disabled link has no address and cannot be
- * focused. An icon link's `aria-label` moves to the inner link.
+ * focused. An icon link's `aria-label` moves to the inner link; set it again
+ * to rename the link. `focus()` focuses the inner link. A link does not take
+ * part in a toolbar's arrow-key focus yet, so keep it out of `pl-toolbar`.
  *
  * In a dialog, `default` marks the button Return activates (not from a
  * multi-line text field) and `cancel` the one Escape or Command-Period
@@ -101,6 +103,18 @@ export class PlButton extends LitElement {
     this.target = null;
     this.rel = null;
     this.download = null;
+    // A disabled or busy link stops its click here, so neither the browser
+    // nor a router listening on the host acts on it.
+    this.addEventListener(
+      "click",
+      (event) => {
+        if (this.href && (this.busy || this.matches(":disabled"))) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      },
+      { capture: true },
+    );
     // Like a native button: submit or reset the form the button belongs to.
     this.addEventListener("pl-press", () => {
       if (this.href) return;
@@ -112,10 +126,17 @@ export class PlButton extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    if (!this.hasAttribute("role")) {
-      this.setAttribute("role", "button");
-      this.#ownRole = true;
-    }
+    if (!this.hasAttribute("role")) this.#ownRole = true;
+    // A link moved in the page gets no role back.
+    if (this.#ownRole && !this.href) this.setAttribute("role", "button");
+  }
+
+  override focus(options?: FocusOptions) {
+    const link = this.href
+      ? this.renderRoot?.querySelector<HTMLElement>('[part="link"]')
+      : null;
+    if (link) link.focus(options);
+    else super.focus(options);
   }
 
   static override get observedAttributes() {
@@ -133,6 +154,16 @@ export class PlButton extends LitElement {
 
   formDisabledCallback() {
     this.requestUpdate();
+  }
+
+  // An icon link's name moves to the inner link before it renders.
+  protected override willUpdate() {
+    if (!this.href) return;
+    const label = this.getAttribute("aria-label");
+    if (label !== null) {
+      this.#linkLabel = label;
+      this.removeAttribute("aria-label");
+    }
   }
 
   // After the update, so a changed `disabled` attribute is already reflected.
@@ -168,22 +199,11 @@ export class PlButton extends LitElement {
   /** The inner link is the control: the host has no role, tab stop or name of its own. */
   #asLink() {
     if (this.#ownRole) this.removeAttribute("role");
-    const label = this.getAttribute("aria-label");
-    if (label !== null) {
-      this.#linkLabel = label;
-      this.removeAttribute("aria-label");
-      this.requestUpdate();
-    }
     this.removeAttribute("tabindex");
     this.removeAttribute("aria-disabled");
     this.#off = false;
     this.#tabindex = null;
   }
-
-  // A busy link keeps its address but ignores presses, as a busy button does.
-  #onLinkClick = (event: Event) => {
-    if (this.busy) event.preventDefault();
-  };
 
   override render() {
     const label = html`<span part="label"
@@ -204,7 +224,6 @@ export class PlButton extends LitElement {
       target=${ifDefined(this.target ?? undefined)}
       rel=${ifDefined(this.rel ?? undefined)}
       download=${ifDefined(this.download ?? undefined)}
-      @click=${this.#onLinkClick}
       >${label}</a
     >`;
   }

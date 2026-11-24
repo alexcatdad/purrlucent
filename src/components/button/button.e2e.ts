@@ -428,6 +428,46 @@ test.describe("links", () => {
     await expect(inner).not.toBeFocused();
   });
 
+  test("a disabled or busy link keeps its click from a router on the host", async ({
+    page,
+  }) => {
+    await gotoStory(page, story);
+    await page.evaluate(() => {
+      const w = window as unknown as { seen: string[] };
+      w.seen = [];
+      for (const id of ["link-disabled", "link"])
+        document
+          .getElementById(id)!
+          .addEventListener("click", () => w.seen.push(id));
+    });
+    await page.locator("#link").evaluate((el) => el.setAttribute("busy", ""));
+    await page.locator("#link-disabled").click({ force: true });
+    await page.locator("#link").click({ force: true });
+    await page.locator("#link a").focus();
+    await page.keyboard.press("Enter");
+    expect(
+      await page.evaluate(() => (window as unknown as { seen: string[] }).seen),
+    ).toEqual([]);
+    expect(await hash(page)).toBe("");
+  });
+
+  test("a link moved in the page stays a link", async ({ page }) => {
+    const root = await gotoStory(page, story);
+    await page.locator("#link").evaluate((el) => el.parentElement!.append(el));
+    await expect(root.getByRole("button")).toHaveCount(0);
+    await expect(
+      root.getByRole("link", { name: "Open in Contracts" }),
+    ).toBeVisible();
+  });
+
+  test("focus() focuses the inner link", async ({ page }) => {
+    await gotoStory(page, story);
+    await page
+      .locator("#link-ghost")
+      .evaluate((el) => (el as HTMLElement).focus());
+    await expect(page.locator("#link-ghost a")).toBeFocused();
+  });
+
   test("the keyboard focus ring is drawn around the face", async ({ page }) => {
     await gotoStory(page, story);
     await page.locator("#link a").focus();
