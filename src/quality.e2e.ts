@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
-import { ignoresSpacing, lowContrastText } from "../e2e/helpers/rendered.ts";
+import {
+  ignoresSpacing,
+  lowContrastText,
+  overflowsRoot,
+} from "../e2e/helpers/rendered.ts";
 import { gotoStory } from "../e2e/helpers/story.ts";
 
 // Checks that apply to every story, so a new component is covered without
@@ -25,6 +29,22 @@ for (const id of stories)
       await page.evaluate(() => document.fonts.ready);
       expect(await lowContrastText(page)).toEqual([]);
     });
+
+// Layout that fits is not a matter of engine or theme: one browser covers it.
+test.describe("pattern layout", () => {
+  test.skip(({ browserName }) => browserName !== "chromium", "Chromium only");
+
+  for (const id of stories.filter((story) => story.startsWith("patterns-")))
+    for (const width of [320, 768])
+      test(`no story element overflows its parent at ${width}px: ${id}`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await gotoStory(page, id);
+        await page.evaluate(() => document.fonts.ready);
+        expect(await overflowsRoot(page)).toEqual([]);
+      });
+});
 
 test.describe("spacing base", () => {
   // It checks how the CSS derives sizes from the spacing token, which does not

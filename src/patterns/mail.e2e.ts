@@ -187,3 +187,17 @@ test("under rtl the reading pane sits at the left of the list", async ({
     .boundingBox())!;
   expect(reading.x).toBeLessThan(list.x);
 });
+
+test("mail: sidebar fits its column", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  const pane = page.locator("mail-demo .folders-pane");
+  const [scrolls, sidebar, column] = await Promise.all([
+    pane.evaluate((el) => el.scrollWidth > el.clientWidth),
+    page.locator("mail-demo pl-sidebar").boundingBox(),
+    pane.boundingBox(),
+  ]);
+  expect(scrolls).toBe(false);
+  expect(sidebar!.x + sidebar!.width).toBeLessThanOrEqual(
+    column!.x + column!.width + 0.5,
+  );
+});

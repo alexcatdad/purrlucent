@@ -7,6 +7,24 @@ import { gotoStory } from "../../../e2e/helpers/story.ts";
 
 const story = (name: string) => `cards-lists-attachment--${name}`;
 
+test("attachment group: no card is clipped at rest", async ({ page }) => {
+  for (const name of ["group", "group-presentational", "group-few"]) {
+    await gotoStory(page, story(name));
+    const clipped = await page.locator("pl-attachment-group").evaluate((el) => {
+      const group = el.getBoundingClientRect();
+      const first = el.firstElementChild!.getBoundingClientRect();
+      return [...el.children]
+        .map((card) => card.getBoundingClientRect())
+        .filter(
+          (box) => box.top < group.top - 0.5 || box.bottom > group.bottom + 0.5,
+        )
+        .map(() => "vertical")
+        .concat(first.left < group.left - 0.5 ? ["start"] : []);
+    });
+    expect(clipped, name).toEqual([]);
+  }
+});
+
 test("aria snapshot of a link card", async ({ page }) => {
   const root = await gotoStory(page, story("link"));
   await expect(root).toMatchAriaSnapshot(`

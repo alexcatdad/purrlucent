@@ -14,6 +14,9 @@ export const messageScrollerStyles = css`
     --_peek: calc(var(--pl-spacing) * 16);
     --_fade: calc(var(--pl-spacing) * 8);
 
+    /* The jump button is a medium icon button. */
+    --_button: var(--pl-size-md);
+
     /* The reach of a focus ring, which the rows inherit. */
     --_bleed: calc(var(--pl-ring-width) + var(--pl-ring-offset));
     --_ms-fade-start: 0px;
@@ -33,6 +36,9 @@ export const messageScrollerStyles = css`
 
     /* The previous item's peek: a scroll target sits this far below the top. */
     scroll-padding-block-start: var(--_peek);
+
+    /* A message scrolled into view stops above the jump button, not under it. */
+    scroll-padding-block-end: var(--_button);
     scrollbar-width: thin;
     scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
     mask-image: linear-gradient(
