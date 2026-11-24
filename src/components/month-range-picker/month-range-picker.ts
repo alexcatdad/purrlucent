@@ -155,7 +155,9 @@ export class PlMonthRangePicker extends LitElement {
     const range = parseRange(this.value);
     // A value is always stored ordered and complete, or empty.
     this.value = range ? toRange(...range) : "";
-    if (range) this._focus = range[0];
+    // A new range from outside shows its start; the picker's own keeps the year on show.
+    if (range && !(this._focus >= range[0] && this._focus <= range[1]))
+      this._focus = range[0];
   }
 
   protected override updated(changed: PropertyValues<this>) {
@@ -178,14 +180,12 @@ export class PlMonthRangePicker extends LitElement {
     return parseMonth(this.max);
   }
 
-  /** The month with the tab stop: the anchor, else the last focused, else the start, else this month, inside min and max. */
+  /** The month with the tab stop: the last chosen or moved to, else the start, else this month, inside min and max. */
   get #focusMonth() {
     const start =
-      this._anchor >= 0
-        ? this._anchor
-        : this._focus >= 0
-          ? this._focus
-          : (parseRange(this.value)?.[0] ?? thisMonth());
+      this._focus >= 0
+        ? this._focus
+        : (parseRange(this.value)?.[0] ?? thisMonth());
     return clampMonth(start, this.#min, this.#max);
   }
 
@@ -257,7 +257,7 @@ export class PlMonthRangePicker extends LitElement {
   }
 
   #shift(years: number) {
-    if (this.#navOff(years)) return;
+    if (this.#off || this.#navOff(years)) return;
     this._focus = clampMonth(
       this.#focusMonth + years * 12,
       this.#min,
@@ -293,11 +293,22 @@ export class PlMonthRangePicker extends LitElement {
     }
   };
 
+  /** A pointer is down inside the panel. Safari does not focus a pressed button, so focus leaves with no target. */
+  #pressing = false;
+
+  #onPointerdown = () => {
+    this.#pressing = true;
+    const release = () => (this.#pressing = false);
+    addEventListener("pointerup", release, { once: true, capture: true });
+    addEventListener("pointercancel", release, { once: true, capture: true });
+  };
+
   // Inline, leaving the picker after one month chooses that month.
   #onFocusout = (event: FocusEvent) => {
     if (!this.inline) return;
     const next = event.relatedTarget as Node | null;
-    if (next && (next === this || this.renderRoot.contains(next))) return;
+    if (next ? next === this || this.renderRoot.contains(next) : this.#pressing)
+      return;
     this.#settle();
   };
 
@@ -361,7 +372,11 @@ export class PlMonthRangePicker extends LitElement {
       </td>`;
     };
 
-    return html`<div part="panel" @focusout=${this.#onFocusout}>
+    return html`<div
+      part="panel"
+      @focusout=${this.#onFocusout}
+      @pointerdown=${this.#onPointerdown}
+    >
       <div part="header">
         <button
           part="nav"

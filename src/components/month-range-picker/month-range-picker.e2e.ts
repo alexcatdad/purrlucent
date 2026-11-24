@@ -105,7 +105,7 @@ test("closing the popover after one month chooses that month alone", async ({
   await month(page, 2026, 11).click();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
-  expect(await value(page)).toBe("2026-11/2026-11");
+  await expect.poll(() => value(page)).toBe("2026-11/2026-11");
   await expect(
     page.getByRole("button", { name: "Period, Nov 2026" }),
   ).toBeVisible();
@@ -117,7 +117,25 @@ test("the second month closes the popover with the range", async ({ page }) => {
   await month(page, 2026, 3).click();
   await month(page, 2026, 1).click();
   await expect(page.getByRole("dialog")).toBeHidden();
-  expect(await value(page)).toBe("2026-01/2026-03");
+  await expect.poll(() => value(page)).toBe("2026-01/2026-03");
+});
+
+test("a range can span years: the year buttons and Page keys work after the first month", async ({
+  page,
+}) => {
+  await gotoStory(page, story("inline"));
+  await month(page, 2026, 11).click();
+  await page.locator("#picker [part=nav]").nth(1).click();
+  await expect(title(page)).toHaveText("2027");
+  await month(page, 2027, 2).click();
+  expect(await value(page)).toBe("2026-11/2027-02");
+  await expect(title(page)).toHaveText("2027");
+  await month(page, 2027, 3).focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("PageUp");
+  await expect(month(page, 2026, 3)).toBeFocused();
+  await page.keyboard.press("Enter");
+  expect(await value(page)).toBe("2026-03/2027-03");
 });
 
 test("arrows move by a month and a row, Home and End to January and December, Page keys by a year", async ({
@@ -182,8 +200,12 @@ test("months outside min and max cannot be chosen and the year buttons stop", as
 }) => {
   await gotoStory(page, story("with-range"));
   await expect(month(page, 2026, 4)).toHaveAttribute("aria-disabled", "true");
-  await month(page, 2026, 4).click();
-  await page.locator("#picker [part=nav]").nth(1).click();
+  await record(page);
+  // aria-disabled controls fail Playwright's enabled check; force the click
+  await month(page, 2026, 4).click({ force: true });
+  await month(page, 2026, 4).click({ force: true });
+  expect(await recorded(page)).toEqual([]);
+  await page.locator("#picker [part=nav]").nth(1).click({ force: true });
   await expect(title(page)).toHaveText("2026");
   await expect(page.locator("#picker [part=nav]").nth(1)).toHaveAttribute(
     "aria-disabled",
@@ -215,7 +237,7 @@ test("the form gets the range and a reset returns it", async ({ page }) => {
   await page.getByRole("button", { name: /^Period/ }).click();
   await page.locator('[data-month="24318"]').click();
   await page.keyboard.press("Escape");
-  expect(await submitted()).toBe("2026-07/2026-07");
+  await expect.poll(submitted).toBe("2026-07/2026-07");
   await page.getByRole("button", { name: "Reset" }).click();
   await expect.poll(submitted).toBe("2026-02/2026-05");
 });

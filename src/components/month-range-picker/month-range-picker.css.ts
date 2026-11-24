@@ -124,11 +124,11 @@ export const monthRangePickerStyles = css`
   /* The full month and year, for assistive technology; the short name is what shows. */
   .name {
     position: absolute;
-    inline-size: 1px;
+    inset-block-start: 0;
+    inset-inline: 0;
     block-size: 1px;
-    overflow: hidden;
+    overflow: clip;
     clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   pl-popover::part(panel) {
@@ -144,23 +144,23 @@ export const monthRangePickerStyles = css`
   }
 
   /* The months between the ends join them into one band. */
-  [part~="between"] {
+  [part~="month"][part~="between"] {
     border-radius: 0;
     background: color-mix(in srgb, var(--pl-color-selected) 18%, transparent);
   }
 
-  [part~="start"]:not([part~="end"]) {
+  [part~="month"][part~="start"]:not([part~="end"]) {
     border-start-end-radius: 0;
     border-end-end-radius: 0;
   }
 
-  [part~="end"]:not([part~="start"]) {
+  [part~="month"][part~="end"]:not([part~="start"]) {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
   }
 
-  [part~="start"],
-  [part~="end"] {
+  [part~="month"][part~="start"],
+  [part~="month"][part~="end"] {
     background: var(--pl-color-selected);
     color: var(--pl-color-selected-foreground);
   }
@@ -186,14 +186,14 @@ export const monthRangePickerStyles = css`
       color: GrayText;
     }
 
-    [part~="start"],
-    [part~="end"] {
+    [part~="month"][part~="start"],
+    [part~="month"][part~="end"] {
       background: Highlight;
       color: HighlightText;
       forced-color-adjust: none;
     }
 
-    [part~="between"] {
+    [part~="month"][part~="between"] {
       outline: 1px solid Highlight;
       outline-offset: -1px;
     }
