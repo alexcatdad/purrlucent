@@ -59,6 +59,27 @@ test("the forwarded description follows the referenced text and ID", async ({
   );
 });
 
+test("a referenced element inserted after load is picked up", async ({
+  page,
+}) => {
+  await gotoStory(page, story("host-aria"));
+  const inner = page.locator("#input input");
+  // Only the late reference describes the field: drop the story's error.
+  await page.locator("#input").evaluate((el) => {
+    el.removeAttribute("aria-invalid");
+    el.removeAttribute("aria-errormessage");
+    el.setAttribute("aria-describedby", "late");
+  });
+  await expect(inner).not.toHaveAttribute("aria-description");
+  await page.locator("#input").evaluate((el) => {
+    const late = document.createElement("p");
+    late.id = "late";
+    late.textContent = "Added later.";
+    el.after(late);
+  });
+  await expect(inner).toHaveAttribute("aria-description", "Added later.");
+});
+
 test("Return in a form without a submit button presses the dialog's default action", async ({
   page,
 }) => {
@@ -73,7 +94,9 @@ test("Return in a form without a submit button presses the dialog's default acti
     );
   });
   await expect(page.getByRole("dialog", { name: "Rename" })).toBeVisible();
-  await page.getByRole("textbox", { name: "Name" }).focus();
+  const textbox = page.getByRole("textbox", { name: "Name" });
+  await textbox.focus();
+  await expect(textbox).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Rename" })).toBeHidden();
   expect(

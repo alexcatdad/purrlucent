@@ -145,6 +145,17 @@ export const Types: Story = {
 
 /** A form that validates itself sets `aria-required`, `aria-describedby`, `aria-invalid` and `aria-errormessage` on the host; the field forwards them to its native textarea. */
 export const HostAria: Story = {
+  parameters: {
+    // The host attributes are forwarded to the inner control, which is where they apply.
+    a11y: {
+      options: {
+        rules: {
+          "aria-allowed-attr": { enabled: false },
+          "aria-valid-attr-value": { enabled: false },
+        },
+      },
+    },
+  },
   render: () =>
     column(html`
       <pl-textarea

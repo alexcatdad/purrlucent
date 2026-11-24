@@ -19,9 +19,9 @@ function dialogDefault(el: Element): HTMLElement | null {
 /**
  * Native implicit submission: press the form's default button, or submit
  * when the field that was entered is the only one that could. A form without
- * a submit button inside a pl-dialog presses the dialog's default action
- * instead. The Enter that submitted is consumed, so a dialog around the form
- * does not act on it too.
+ * a submit button and with several text fields, inside a pl-dialog, presses
+ * the dialog's default action instead. The Enter that submitted is consumed,
+ * so a dialog around the form does not act on it too.
  */
 export function submitImplicitly(form: HTMLFormElement | null, event: Event) {
   if (!form) return;
@@ -33,10 +33,10 @@ export function submitImplicitly(form: HTMLFormElement | null, event: Event) {
     if (!button.matches(":disabled")) button.click();
     return;
   }
-  const action = dialogDefault(form);
-  if (action) {
-    if (!action.matches(":disabled")) action.click();
-  } else if (form.querySelectorAll(textFields).length <= 1) {
+  if (form.querySelectorAll(textFields).length <= 1) {
     form.requestSubmit();
+    return;
   }
+  const action = dialogDefault(form);
+  if (action && !action.matches(":disabled")) action.click();
 }

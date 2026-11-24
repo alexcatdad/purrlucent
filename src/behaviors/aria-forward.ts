@@ -65,9 +65,11 @@ export class AriaWatch {
           subtree: true,
           characterData: true,
         });
-    // A referenced ID may be added to, or moved onto, another element.
+    // A referenced ID may be added to, or moved onto, another element, or the
+    // element inserted after the host connected.
     this.#observer.observe(host.getRootNode(), {
       attributeFilter: ["id"],
+      childList: true,
       subtree: true,
     });
   }
