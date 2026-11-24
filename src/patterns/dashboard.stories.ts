@@ -489,8 +489,11 @@ class DashboardDemo extends LitElement {
       }
     }
 
+    /* An implicit column would grow to its widest tile's minimum; this one
+       takes the room there is, so the tiles wrap instead of spilling. */
     main {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: var(--pl-space-4);
       min-inline-size: 0;
     }
