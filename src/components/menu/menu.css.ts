@@ -148,18 +148,10 @@ export const itemStyles = css`
 
   /* A link lays its content out like the row itself, and its ::after covers the whole row. */
   [part="link"] {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    color: inherit;
-    text-decoration: none;
-    outline: none;
-  }
-
-  [part="link"]::after {
-    content: "";
     position: absolute;
     inset: 0;
+    border-radius: inherit;
+    outline: none;
   }
 
   /* The gap sits here: the detail below is ltr, so its own inline start is always the left. */

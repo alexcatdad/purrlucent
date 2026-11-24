@@ -179,18 +179,20 @@ export class PlMenuItem extends LitElement {
           ></span
         ></span
       ><span part="detail"><slot name="detail">${this.detail}</slot></span>`;
-    return html`${
+    // A link item's anchor is an empty layer over the row, so the row keeps
+    // its name from its own text and the link still opens in a new tab or
+    // copies its address like any link.
+    return html`${body}${
         this.href && !this.disabled
           ? html`<a
               part="link"
-              role="none"
               tabindex="-1"
+              aria-hidden="true"
               href=${this.href}
               target=${this.target || nothing}
               rel=${this.rel || nothing}
-              >${body}</a
-            >`
-          : body
+            ></a>`
+          : nothing
       }${
         this.hasSubmenu
           ? html`<svg part="chevron" viewBox="0 0 24 24" aria-hidden="true">

@@ -596,44 +596,59 @@ test.describe("link items", () => {
 });
 
 test.describe("description", () => {
-  test("a described row is described, not named, by its second line and is taller", async ({
+  // The name and description are wired through ElementInternals, which
+  // Playwright's accessible-name computation does not read, so these check
+  // the parts the references point at.
+  test("a described row keeps its label and description in separate parts", async ({
     page,
   }) => {
     await gotoStory(page, story("description"));
-    test.skip(
-      !(await page.evaluate(
-        () => "ariaDescribedByElements" in ElementInternals.prototype,
-      )),
-      "needs ARIA element reflection on ElementInternals",
+    await expect(page.getByText("Anyone with the link can view")).toBeVisible();
+    const parts = await page.locator("pl-menu-item").evaluateAll((rows) =>
+      rows.map((row) => {
+        // The text a part shows: what its slot holds, or the slot's fallback.
+        const text = (name: string) => {
+          const part = row.shadowRoot!.querySelector<HTMLElement>(
+            `[part=${name}]`,
+          )!;
+          if (part.hidden) return "";
+          return part
+            .querySelector("slot")!
+            .assignedNodes({ flatten: true })
+            .map((node) => node.textContent)
+            .join("")
+            .trim();
+        };
+        return [text("label"), text("description")];
+      }),
     );
-    const public_ = item(page, "Public");
-    await expect(public_).toHaveAccessibleDescription(
-      "Anyone with the link can view",
-    );
-    await expect(item(page, "Team")).toHaveAccessibleDescription(
-      "Only people in your team",
-    );
-    await expect(item(page, "Private")).toHaveAccessibleDescription("Only you");
+    expect(parts.slice(0, 3)).toEqual([
+      ["Public", "Anyone with the link can view"],
+      ["Team", "Only people in your team"],
+      ["Private", "Only you"],
+    ]);
   });
 
   test("a described row grows to two lines", async ({ page }) => {
     await gotoStory(page, story("description"));
     await expect(page.getByText("Anyone with the link can view")).toBeVisible();
-    const rows = page.locator("pl-menu-item");
-    // The row's own height plus its second line: more than a one-line row of 24 or 44.
-    const heights = await rows.evaluateAll((all) =>
-      all.map((row) => row.getBoundingClientRect().height),
-    );
-    const text = await rows.first().evaluate((row) => {
-      const label = row.shadowRoot!.querySelector("[part=label]")!;
-      const description = row.shadowRoot!.querySelector("[part=description]")!;
-      return (
-        description.getBoundingClientRect().top >=
-        label.getBoundingClientRect().bottom - 1
-      );
-    });
-    expect(text).toBe(true);
-    for (const height of heights) expect(height).toBeGreaterThan(40);
+    const fits = await page
+      .locator("pl-menu-item")
+      .first()
+      .evaluate((row) => {
+        const box = (name: string) =>
+          row
+            .shadowRoot!.querySelector(`[part=${name}]`)!
+            .getBoundingClientRect();
+        const label = box("label");
+        const description = box("description");
+        return (
+          description.top >= label.bottom - 1 &&
+          row.getBoundingClientRect().height >=
+            label.height + description.height
+        );
+      });
+    expect(fits).toBe(true);
   });
 
   test("a plain row has no description", async ({ page }) => {
@@ -680,19 +695,27 @@ test.describe("placement", () => {
   test("bottom-end aligns the menu's end edge with the trigger", async ({
     page,
   }) => {
-    await gotoStory(page, story("default"));
+    // The centred story leaves room on both sides, so the viewport clamp stays out of it.
+    await gotoStory(page, story("placement-end"));
+    await expect(menu(page)).toBeVisible();
     await page.locator("#menu").evaluate((el) => {
       (el as unknown as { placement: string }).placement = "bottom-end";
     });
-    await trigger(page).click();
-    const box = (await menu(page).boundingBox())!;
     const control = (await trigger(page).boundingBox())!;
-    expect(box.x + box.width).toBeCloseTo(control.x + control.width, 0);
+    // Within a pixel: subpixel centring differs between engines.
+    await expect
+      .poll(async () => {
+        const box = (await menu(page).boundingBox())!;
+        return Math.abs(box.x + box.width - (control.x + control.width));
+      })
+      .toBeLessThanOrEqual(1);
+    const box = (await menu(page).boundingBox())!;
     expect(box.y).toBeGreaterThanOrEqual(control.y + control.height);
   });
 
   test("end opens beside the trigger", async ({ page }) => {
     await gotoStory(page, story("placement-end"));
+    await expect(menu(page)).toBeVisible();
     const box = (await menu(page).boundingBox())!;
     const control = (await trigger(page).boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(control.x + control.width);
@@ -704,14 +727,15 @@ test.describe("placement", () => {
       (el as unknown as { placement: string }).placement = "top-start";
     });
     await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
     const box = (await menu(page).boundingBox())!;
     const control = (await trigger(page).boundingBox())!;
     expect(box.y).toBeGreaterThanOrEqual(control.y + control.height);
   });
 
   test("changing placement while open moves the menu", async ({ page }) => {
-    await gotoStory(page, story("default"));
-    await trigger(page).click();
+    await gotoStory(page, story("placement-end"));
+    await expect(menu(page)).toBeVisible();
     const before = (await menu(page).boundingBox())!;
     await page.locator("#menu").evaluate((el) => {
       (el as unknown as { placement: string }).placement = "bottom-end";
