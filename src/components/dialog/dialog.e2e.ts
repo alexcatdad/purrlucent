@@ -278,6 +278,35 @@ test("closing a sheet and showing another in one tick does not warn", async ({
   ).toHaveLength(0);
 });
 
+test("Escape in a dialog opened inside another closes only the inner one", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"));
+  await expect(sheet(page)).toBeVisible();
+  await page.evaluate(async () => {
+    const outer = document.querySelector("pl-dialog")!;
+    const inner = document.createElement("pl-dialog") as HTMLElement & {
+      show(): void;
+      updateComplete: Promise<unknown>;
+    };
+    inner.id = "inner";
+    inner.setAttribute("variant", "alert");
+    inner.setAttribute("label", "Discard changes?");
+    inner.innerHTML = `<pl-button slot="actions" default data-close="ok">OK</pl-button>`;
+    outer.append(inner);
+    inner.show();
+    await inner.updateComplete;
+  });
+  const inner = page.locator("#inner");
+  await expect(inner).toHaveJSProperty("open", true);
+  await page.keyboard.press("Escape");
+  await expect(inner).toHaveJSProperty("open", false);
+  await expect(page.locator("pl-dialog").first()).toHaveJSProperty(
+    "open",
+    true,
+  );
+});
+
 test("a destructive default is not used and warns", async ({ page }) => {
   const warnings: string[] = [];
   page.on("console", (message) => {

@@ -351,6 +351,11 @@ export class PlDialog extends LitElement {
   // button. A focused button, a multi-line field and an IME keep their Enter.
   #onKeydown = (event: KeyboardEvent) => {
     if (event.defaultPrevented || event.isComposing) return;
+    // A key pressed in a dialog opened inside this one belongs to that dialog.
+    const layer = event
+      .composedPath()
+      .find((el) => el instanceof HTMLDialogElement);
+    if (layer && layer !== this.#dialog) return;
     let button: HTMLElement | null | undefined;
     const cancels =
       event.key === "Escape" || (event.metaKey && event.key === ".");
