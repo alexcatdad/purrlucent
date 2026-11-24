@@ -42,6 +42,14 @@ export const tooltipStyles = css`
     }
   }
 
+  /* Above or below, an edge-aligned bubble has no side to bridge: the face, not the invisible box, lines up with the target's edge. */
+  :host([align="start"]:is([placement="top"], [placement="bottom"]))
+    [part="bubble"],
+  :host([align="end"]:is([placement="top"], [placement="bottom"]))
+    [part="bubble"] {
+    padding-inline: 0;
+  }
+
   [part="face"] {
     inline-size: max-content;
     max-inline-size: 100%;

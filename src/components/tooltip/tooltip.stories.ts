@@ -75,15 +75,16 @@ export const Rich: Story = {
     stage(
       html`<pl-tooltip id="rich">
         <pl-button>Shortcuts</pl-button>
-        <dl
-          slot="content"
-          style="display:grid;grid-template-columns:auto auto;gap:var(--pl-space-0-5) var(--pl-space-3);margin:0"
-        >
-          <dt>Copy</dt>
-          <dd style="margin:0">Cmd C</dd>
-          <dt>Paste</dt>
-          <dd style="margin:0">Cmd V</dd>
-        </dl>
+        <div slot="content">
+          <dl
+            style="display:grid;grid-template-columns:auto auto;gap:var(--pl-space-0-5) var(--pl-space-3);margin:0"
+          >
+            <dt>Copy</dt>
+            <dd style="margin:0">Cmd C</dd>
+            <dt>Paste</dt>
+            <dd style="margin:0">Cmd V</dd>
+          </dl>
+        </div>
       </pl-tooltip>`,
     ),
   play: showByFocus,

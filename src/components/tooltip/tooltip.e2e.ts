@@ -11,6 +11,8 @@ const target = (page: Page, scope = "") =>
   page.locator(`${scope} pl-button`.trim());
 const bubble = (page: Page, scope = "") =>
   page.locator(`${scope} [part=bubble]`.trim());
+const face = (page: Page, scope = "") =>
+  page.locator(`${scope} [part=face]`.trim());
 const box = async (locator: ReturnType<Page["locator"]>) =>
   (await locator.boundingBox())!;
 
@@ -338,9 +340,9 @@ test("rich content in the content slot is the tooltip the target is described by
     const named = document.getElementById(el.getAttribute("aria-describedby")!);
     return { role: named?.role, tag: named?.tagName, slot: named?.slot };
   });
-  expect(described).toEqual({ role: "tooltip", tag: "DL", slot: "content" });
+  expect(described).toEqual({ role: "tooltip", tag: "DIV", slot: "content" });
   await expect(page.getByRole("tooltip")).toHaveCount(1);
-  await expect(page.locator("dl[slot=content] dt").first()).toBeVisible();
+  await expect(page.locator("[slot=content] dt").first()).toBeVisible();
 });
 
 test("the browser exposes the rich content as the target's accessible description", async ({
@@ -437,7 +439,7 @@ test("align start and end line the bubble's edge up with the target's, center it
   await gotoStory(page, story("align"));
   for (const align of ["center", "start", "end"]) {
     await expect(bubble(page, `#${align}`)).toBeVisible();
-    const b = await box(bubble(page, `#${align}`));
+    const b = await box(face(page, `#${align}`));
     const t = await box(target(page, `#${align}`));
     if (align === "start") expect(Math.abs(b.x - t.x)).toBeLessThan(1.5);
     if (align === "end") {
@@ -454,7 +456,7 @@ test("align start and end line the bubble's edge up with the target's, center it
 test("under rtl align start is the right-hand edge", async ({ page }) => {
   await gotoStory(page, story("align-rtl"));
   await expect(bubble(page)).toBeVisible();
-  const b = await box(bubble(page));
+  const b = await box(face(page));
   const t = await box(target(page));
   expect(Math.abs(b.x + b.width - (t.x + t.width))).toBeLessThan(1.5);
 });

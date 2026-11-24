@@ -17,8 +17,9 @@ let count = 0;
  * The bubble is a `role="tooltip"` element that the tooltip adds to its own
  * children, so the target can name it in `aria-describedby`: an id reference
  * cannot reach into a shadow root. For more than a line of text, put one
- * non-interactive element (a `<dl>`, several lines) in the `content` slot: it
- * becomes the `role="tooltip"` element and `text` is not used. The bubble
+ * non-interactive element (a `<div>` holding a `<dl>` or several lines) in the
+ * `content` slot: it becomes the `role="tooltip"` element and `text` is not
+ * used. Not the `<dl>` itself: `role="tooltip"` on it breaks its list semantics. The bubble
  * wraps at `--pl-tooltip-max-inline-size`.
  *
  * @attr {string} text - What the bubble says. Required unless the `content` slot is used.
