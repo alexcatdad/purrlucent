@@ -40,15 +40,16 @@ export const groupStyles = css`
   }
 
   /* Items as wide as their text, on one line; a track wider than its room
-     scrolls sideways, and a focused item scrolls into view. */
-  /* max-content, not auto: an auto track shrinks to the item's own minimum
-     size and lets the text spill instead of scrolling. */
+     scrolls sideways, and a focused item scrolls into view. max-content, not
+     auto: an auto track shrinks to the item's own minimum size and lets the
+     text spill instead of scrolling. No scrollbar: a classic one draws a line
+     under the labels, and the edge fade already shows there is more; touch,
+     a trackpad, Shift and the wheel, and the arrow keys all still scroll it. */
   :host([fit-content]) {
     grid-auto-columns: max-content;
     overflow: auto hidden;
     overscroll-behavior-inline: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
+    scrollbar-width: none;
   }
 
   :host([fit-content]) ::slotted(*) {
