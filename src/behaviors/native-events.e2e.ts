@@ -17,8 +17,15 @@ const listen = (host: Locator) =>
     for (const type of ["pl-input", "input", "pl-change", "change"])
       el.addEventListener(type, (event) => {
         if (event.target !== el) return;
+        // A cancelable pl-change fires before the state changes: its detail holds the new value.
+        const detail = (event as CustomEvent).detail as
+          { value?: unknown } | undefined;
         const state =
-          control.type === "checkbox" ? control.checked : control.value;
+          type === "pl-change" && detail && "value" in detail
+            ? detail.value
+            : control.type === "checkbox"
+              ? control.checked
+              : control.value;
         log.push(`${type}:${String(state)}`);
       });
   });
