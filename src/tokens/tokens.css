@@ -472,10 +472,10 @@
       );
       --pl-material-edge:
         inset 0 1px 0 0 var(--pl-material-highlight),
+        inset 0 -1px 0 0 var(--pl-material-rim-low),
         inset 0 0 0 1px var(--pl-color-overlay-border),
-        inset 0 calc(var(--pl-spacing) * 3) calc(var(--pl-spacing) * 4)
-          calc(var(--pl-spacing) * -3) var(--pl-material-glow),
-        inset 0 -1px 0 0 var(--pl-material-rim-low);
+        inset 0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 2)
+          calc(var(--pl-spacing) * -2) var(--pl-material-glow);
       --pl-material-control: var(--pl-material-glass);
       --pl-material-control-pressed: color-mix(
         in srgb,
@@ -495,8 +495,8 @@
       --pl-elevation-control:
         0 calc(var(--pl-spacing) / 4) calc(var(--pl-spacing) / 2)
           color-mix(in srgb, #000 12%, transparent),
-        0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 5)
-          color-mix(in srgb, #000 16%, transparent);
+        0 var(--pl-spacing) calc(var(--pl-spacing) * 3)
+          color-mix(in srgb, #000 14%, transparent);
       --pl-color-edge: var(--pl-color-overlay-border);
       --pl-color-secondary: color-mix(
         in srgb,
