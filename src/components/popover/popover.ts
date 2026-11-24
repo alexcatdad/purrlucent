@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { AnchoredController } from "../../behaviors/anchored.ts";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import type { Placement, Side } from "../../behaviors/position.ts";
 import { popoverStyles } from "./popover.css.ts";
 
@@ -39,6 +40,9 @@ export class PlPopover extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, () =>
+      this.renderRoot.querySelector<HTMLElement>("[part=panel]"),
+    );
     this.label = "";
     this.placement = "bottom";
     this.open = false;

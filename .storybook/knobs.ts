@@ -26,10 +26,10 @@ export type Knob = {
     }
 );
 
-// Both fill knobs write the whole thin fill (bars, capsules, controls), which
-// reads whichever is set.
+// Both fill knobs write the whole thin fill (everything glass but the strong
+// controls), which reads whichever is set.
 const thin =
-  "light-dark(rgb(240 240 240 / var(--sb-glass-light, 60%)), color-mix(in srgb, var(--pl-color-ink) var(--sb-glass-dark, 66%), transparent))";
+  "light-dark(color-mix(in srgb, color-mix(in srgb, var(--pl-color-paper), black 8.5%) var(--sb-glass-light, 53%), transparent), color-mix(in srgb, color-mix(in srgb, var(--pl-color-ink), white 5%) var(--sb-glass-dark, 70%), transparent))";
 
 export const knobs: Knob[] = [
   {
@@ -97,7 +97,7 @@ export const knobs: Knob[] = [
     max: 100,
     step: 1,
     unit: "%",
-    shipped: 60,
+    shipped: 53,
     apply: (v) => ({
       "--sb-glass-light": `${v}%`,
       "--pl-material-fill-thin": thin,
@@ -112,7 +112,7 @@ export const knobs: Knob[] = [
     max: 100,
     step: 1,
     unit: "%",
-    shipped: 66,
+    shipped: 70,
     apply: (v) => ({
       "--sb-glass-dark": `${v}%`,
       "--pl-material-fill-thin": thin,
@@ -120,19 +120,15 @@ export const knobs: Knob[] = [
   },
   {
     key: "knobBlur",
-    label: "Blur, thin",
+    label: "Blur",
     group: "Glass",
     kind: "range",
     min: 0,
     max: 40,
     step: 1,
     unit: "px",
-    shipped: 10,
-    apply: (v) => ({
-      "--pl-blur-sm": `${v}px`,
-      "--pl-blur-md": `${v * 2}px`,
-      "--pl-blur-lg": `${v * 3}px`,
-    }),
+    shipped: 4,
+    apply: (v) => ({ "--pl-blur-sm": `${v}px` }),
   },
   {
     key: "knobSaturate",

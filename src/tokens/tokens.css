@@ -267,7 +267,7 @@
     --pl-icon-sm: calc(var(--pl-spacing) * 3);
     --pl-icon-md: calc(var(--pl-spacing) * 4);
     --pl-icon-lg: calc(var(--pl-spacing) * 5);
-    --pl-blur-sm: calc(var(--pl-spacing) * 2.5);
+    --pl-blur-sm: var(--pl-spacing);
     --pl-blur-md: calc(var(--pl-spacing) * 5);
     --pl-blur-lg: calc(var(--pl-spacing) * 7.5);
     --pl-font-sans: "Inter", system-ui, sans-serif;
@@ -417,7 +417,7 @@
        backdrop, and on every solid ground. Increased contrast gives them its
        own ring and selection colors. */
     --pl-material-ring: light-dark(
-      oklch(from var(--pl-color-hot-pink) 32% c h),
+      oklch(from var(--pl-color-hot-pink) 26% c h),
       color-mix(in srgb, var(--pl-color-hot-pink), white 55%)
     );
     --pl-material-selected: var(--pl-material-ring);
@@ -434,13 +434,22 @@
     --pl-material-tone-rest: 21%;
     --pl-material-tone-pressed: 28%;
 
-    /* The thin glass fill: a pale film in light and an ink one in dark, as
-       clear as primary text on it allows over any backdrop, black to white.
-       Under a small blur and a strong color boost, the backdrop's shapes and
-       colors show through it, as in Apple's small glass. */
+    /* The thin glass fill: a pale grey film in light and an ink one in dark,
+       under a 4px frost and a strong color boost, so the shapes and colors
+       behind show through, as in Apple's glass. The film also dims and
+       flattens what is behind it, which keeps primary text at 3.5:1 or more
+       over any backdrop, black to white. */
     --pl-material-fill-thin: light-dark(
-      rgb(240 240 240 / 60%),
-      color-mix(in srgb, var(--pl-color-ink) 66%, transparent)
+      color-mix(
+        in srgb,
+        color-mix(in srgb, var(--pl-color-paper), black 8.5%) 53%,
+        transparent
+      ),
+      color-mix(
+        in srgb,
+        color-mix(in srgb, var(--pl-color-ink), white 5%) 70%,
+        transparent
+      )
     );
 
     /* The neutral control face. Glass makes it stronger. */
@@ -467,15 +476,13 @@
 
   @supports (backdrop-filter: blur(1px)) {
     [pl-material="glass"] {
-      /* Two tiers, as Apple's small glass is clearer than its large glass.
-         Bars, capsules and controls, which carry primary text, take the thin
-         fill; sidebars, panels and sheets, and the strong capsule and control
-         that carry grey, pink or red text, take the thick one, the overlay.
-         Each fill is as clear as its text allows over any backdrop, black to
-         white (HIG materials). An app that controls what sits behind its
-         glass may set clearer fills. A tint mixes a color into the fills, at
-         0% by default; set both on the pl-material="glass" element or above
-         it. Apple tints glass sparingly. */
+      /* Bars, capsules, controls, sidebars, panels and sheets take the thin
+         fill, which holds primary text at 3.5:1 or more over any backdrop.
+         The strong capsule and control, for tabs, breadcrumbs, pagination,
+         the select and tinted buttons, keep the thick one, the overlay, so
+         their grey, pink and red text keeps 4.5:1. A tint mixes a color into
+         the fills, at 0% by default; set both on the pl-material="glass"
+         element or above it. Apple tints glass sparingly. */
       --pl-material-glass: color-mix(
         in srgb,
         var(--pl-color-overlay),
@@ -492,17 +499,14 @@
       --pl-material-bar: var(--pl-material-glass-thin);
       --pl-material-capsule: var(--pl-material-glass-thin);
       --pl-material-capsule-strong: var(--pl-material-glass);
-      --pl-material-sidebar: var(--pl-material-glass);
-      --pl-material-panel: var(--pl-material-glass);
-      --pl-material-sheet: var(--pl-material-glass);
+      --pl-material-sidebar: var(--pl-material-glass-thin);
+      --pl-material-panel: var(--pl-material-glass-thin);
+      --pl-material-sheet: var(--pl-material-glass-thin);
       --pl-material-bar-filter: blur(var(--pl-blur-sm))
         var(--pl-material-saturate);
-      --pl-material-sidebar-filter: blur(var(--pl-blur-md))
-        var(--pl-material-saturate);
-      --pl-material-panel-filter: blur(var(--pl-blur-lg))
-        var(--pl-material-saturate);
-      --pl-material-sheet-filter: blur(var(--pl-blur-lg))
-        var(--pl-material-saturate);
+      --pl-material-sidebar-filter: var(--pl-material-bar-filter);
+      --pl-material-panel-filter: var(--pl-material-bar-filter);
+      --pl-material-sheet-filter: var(--pl-material-bar-filter);
 
       /* The text color for text-only buttons on a thin bar. A bar or toolbar
          hands it to the buttons in it as --pl-material-ghost-text, so a
@@ -514,10 +518,9 @@
       --pl-color-selected: var(--pl-material-selected);
 
       /* Light on the glass, as Apple's material catches it: a specular line
-         along the top rim, the hairline, a glow inside the top edge and a
-         fainter catch light along the bottom rim. Insets only, so the
-         surface keeps its size; the glow is light and stays near the rim,
-         away from the text. */
+         along the top rim, a faint catch light around the other edges and a
+         glow inside the top edge. Insets only, so the surface keeps its size;
+         the glow is light and stays near the rim, away from the text. */
       --pl-material-highlight: light-dark(
         color-mix(in srgb, #fff 75%, transparent),
         color-mix(in srgb, #fff 42%, transparent)
@@ -532,15 +535,14 @@
       );
       --pl-material-edge:
         inset 0 1px 0 0 var(--pl-material-highlight),
-        inset 0 -1px 0 0 var(--pl-material-rim-low),
-        inset 0 0 0 1px var(--pl-color-overlay-border),
-        inset 0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 2)
-          calc(var(--pl-spacing) * -2) var(--pl-material-glow);
+        inset 0 0 0 1px var(--pl-material-rim-low),
+        inset 0 calc(var(--pl-spacing) * 4) calc(var(--pl-spacing) * 6)
+          calc(var(--pl-spacing) * -4) var(--pl-material-glow);
       --pl-material-control: var(--pl-material-glass-thin);
 
       /* Pressed, the thin face thickens halfway to the thick fill and takes a
-         little of the text color, so the press shows and its text keeps
-         4.5:1 over any backdrop. */
+         little of the text color, so the press shows and its text gains
+         contrast. */
       --pl-material-control-pressed: color-mix(
         in srgb,
         color-mix(
@@ -567,13 +569,20 @@
       );
       --pl-material-float: var(--pl-material-glass-thin);
 
-      /* A contact shadow under the control and a soft one that lifts it. */
+      /* A contact shadow under glass and a deep soft one that lifts it off
+         the page. */
+      --pl-material-drop: light-dark(
+        color-mix(in srgb, var(--pl-color-ink) 18%, transparent),
+        color-mix(in srgb, #000 40%, transparent)
+      );
       --pl-elevation-control:
         0 calc(var(--pl-spacing) / 4) calc(var(--pl-spacing) / 2)
-          color-mix(in srgb, #000 12%, transparent),
-        0 var(--pl-spacing) calc(var(--pl-spacing) * 3)
-          color-mix(in srgb, #000 14%, transparent);
-      --pl-color-edge: var(--pl-color-overlay-border);
+          var(--pl-material-drop),
+        0 calc(var(--pl-spacing) * 3) calc(var(--pl-spacing) * 8)
+          var(--pl-material-drop);
+      --pl-elevation-panel: var(--pl-elevation-control);
+      --pl-elevation-sheet: var(--pl-elevation-control);
+      --pl-color-edge: var(--pl-material-rim-low);
       --pl-color-secondary: color-mix(
         in srgb,
         var(--pl-color-foreground) 17%,
@@ -667,6 +676,8 @@
       --pl-material-field: var(--pl-color-input);
       --pl-material-float: var(--pl-color-background);
       --pl-elevation-control: none;
+      --pl-elevation-panel: var(--pl-shadow-lg);
+      --pl-elevation-sheet: var(--pl-shadow-lg);
       --pl-color-edge: transparent;
       --pl-color-secondary: var(--pl-color-muted-2);
       --pl-color-secondary-pressed: var(--pl-color-muted-pressed);
@@ -679,8 +690,11 @@
     }
   }
 
+  /* Increased contrast outlines floating surfaces, glass ones included, as
+     the glass block above sets its own panel shadow. */
   @media (prefers-contrast: more) {
-    :root {
+    :root,
+    [pl-material="glass"] {
       --pl-material-ring: light-dark(var(--pl-color-ink), #fff);
       --pl-material-selected: light-dark(
         var(--pl-color-accent-text),

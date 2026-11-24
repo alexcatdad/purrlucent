@@ -129,50 +129,77 @@ const resizes =
       })
     : undefined;
 
-/** Gives the host a lens sized to its border box, in Chromium. */
+/**
+ * Gives an element a lens sized to its border box, in Chromium: the host, or
+ * the element in its shadow root that draws the glass, such as a popup panel.
+ * The element's own backdrop-filter reads --pl-lens.
+ */
 export class LensController implements ReactiveController {
   #host: ReactiveControllerHost & HTMLElement;
+  #target: () => HTMLElement | null;
+  #element: HTMLElement | null = null;
   #lens: Lens | undefined;
 
-  constructor(host: ReactiveControllerHost & HTMLElement) {
+  constructor(
+    host: ReactiveControllerHost & HTMLElement,
+    target: () => HTMLElement | null = () => host,
+  ) {
     this.#host = host;
+    this.#target = target;
     host.addController(this);
   }
 
   hostConnected() {
-    if (!resizes) return;
-    hosts.set(this.#host, this);
-    resizes.observe(this.#host);
+    this.#observe();
+  }
+
+  /** A target in the shadow root exists only once the host has rendered. */
+  hostUpdated() {
+    this.#observe();
   }
 
   hostDisconnected() {
-    if (!resizes) return;
-    resizes.unobserve(this.#host);
-    hosts.delete(this.#host);
+    const element = this.#element;
+    if (!resizes || !element) return;
+    resizes.unobserve(element);
+    hosts.delete(element);
     this.#use(undefined);
+    this.#element = null;
   }
 
-  /** Builds the lens on each resize, and drops it where the host draws no
-   * backdrop (solid material, a ghost button, a fallback). A host that turns
-   * glass without resizing gets its lens on its next resize. */
+  #observe() {
+    const element = resizes && this.#host.isConnected ? this.#target() : null;
+    if (element === this.#element) return;
+    this.hostDisconnected();
+    if (!element) return;
+    this.#element = element;
+    hosts.set(element, this);
+    resizes!.observe(element);
+  }
+
+  /** Builds the lens on each resize, and drops it where the element draws no
+   * backdrop (solid material, a ghost button, a fallback). An element that
+   * turns glass without resizing gets its lens on its next resize. */
   update() {
-    const host = this.#host;
-    const w = host.offsetWidth;
-    const h = host.offsetHeight;
-    const style = getComputedStyle(host);
+    const element = this.#element;
+    if (!element) return;
+    const w = element.offsetWidth;
+    const h = element.offsetHeight;
+    const style = getComputedStyle(element);
     if (!w || !h || style.backdropFilter === "none")
       return this.#use(undefined);
     const radius = Number.parseFloat(style.borderTopLeftRadius);
     const r = Math.round(Math.min(radius || 0, w / 2, h / 2));
-    this.#use(lensFor(host.getRootNode() as Tree, w, h, r));
+    this.#use(lensFor(element.getRootNode() as Tree, w, h, r));
   }
 
   /** The variable is set after its filter is in place and cleared before the filter goes. */
   #use(lens: Lens | undefined) {
     const previous = this.#lens;
-    if (lens)
-      this.#host.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
-    else this.#host.style.removeProperty("--pl-lens");
+    const element = this.#element;
+    if (lens && element)
+      element.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
+    else element?.style.removeProperty("--pl-lens");
     this.#lens = lens;
     if (previous) release(previous);
   }

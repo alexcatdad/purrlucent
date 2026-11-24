@@ -1,4 +1,5 @@
 import { LitElement, html, nothing } from "lit";
+import { LensController } from "../../behaviors/lens.ts";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { drawerStyles } from "./drawer.css.ts";
 import { parseDetents, settle, stepDetent, type Detent } from "./detents.ts";
@@ -121,6 +122,9 @@ export class PlDrawer extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, () =>
+      this.renderRoot.querySelector<HTMLElement>("dialog"),
+    );
     this.open = false;
     this.side = "bottom";
     this.detents = "";

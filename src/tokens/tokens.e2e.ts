@@ -303,15 +303,15 @@ const rootToken = (page: Page, name: string) =>
 for (const theme of ["light", "dark"] as const)
   test(`glass edge carries a highlight in ${theme}`, async ({ page }) => {
     await openMaterials(page, "glass", theme);
-    // The token holds four inset shadows: the top highlight, the low rim,
-    // the hairline and the inner glow.
+    // The token holds three inset shadows: the top highlight, the faint rim
+    // around the other edges and the inner glow.
     expect(
       (await rootToken(page, "--pl-material-edge")).match(/inset/g),
-    ).toHaveLength(4);
+    ).toHaveLength(3);
     const shadow = await (
       await addControl(page)
     ).evaluate((el) => getComputedStyle(el).boxShadow);
-    expect(shadow.match(/inset/g)).toHaveLength(4);
+    expect(shadow.match(/inset/g)).toHaveLength(3);
   });
 
 test("glass controls cast a shadow", async ({ page }) => {

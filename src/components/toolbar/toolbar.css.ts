@@ -34,6 +34,13 @@ export const toolbarStyles = css`
     --_stack-gap: var(--pl-gap-icon);
   }
 
+  /* A floating bar is a capsule lifted off the content, as Apple's glass
+     toolbars are. */
+  :host([floating]) {
+    border-radius: var(--pl-radius-full);
+    box-shadow: var(--pl-material-edge), var(--pl-elevation-control);
+  }
+
   /* A search field takes the capsule material of the group beside it. */
   ::slotted(pl-input[type="search"]) {
     --pl-color-input: var(--pl-color-overlay);

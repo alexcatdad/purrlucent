@@ -64,7 +64,7 @@ export const panelSurface = css`
     display: block;
     box-sizing: border-box;
     background: var(--pl-material-panel);
-    backdrop-filter: var(--pl-material-panel-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-panel-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
     border-radius: var(--pl-radius-panel);
     color: var(--pl-color-foreground);
@@ -80,7 +80,7 @@ export const sheetSurface = css`
     display: block;
     box-sizing: border-box;
     background: var(--pl-material-sheet);
-    backdrop-filter: var(--pl-material-sheet-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-sheet-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-sheet);
     border-radius: var(--pl-radius-panel);
     color: var(--pl-color-foreground);
