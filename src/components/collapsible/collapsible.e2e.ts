@@ -172,10 +172,7 @@ test.describe("slotted trigger", () => {
       const t = el.querySelector("#trigger") as HTMLElement & {
         ariaControlsElements?: Element[];
       };
-      const panel = el.shadowRoot!.querySelector("#content");
-      return t.ariaControlsElements
-        ? t.ariaControlsElements[0] === panel
-        : t.getAttribute("aria-controls") === "content";
+      return t.ariaControlsElements?.[0] === el.querySelector("#body");
     });
 
   test("it replaces the built-in button and is wired with aria-expanded and aria-controls", async ({
@@ -202,6 +199,55 @@ test.describe("slotted trigger", () => {
     await page.keyboard.press("Space");
     await expect(slotted(page)).toHaveAttribute("aria-expanded", "true");
     await expect(page.locator("#control")).toHaveAttribute("open", "");
+  });
+
+  test("a role=button trigger toggles on click, Enter and Space", async ({
+    page,
+  }) => {
+    await open(page, "containers-collapsible--slotted-trigger");
+    await page.locator("#control").evaluate((el) => {
+      const t = document.createElement("span");
+      t.id = "role-trigger";
+      t.slot = "trigger";
+      t.tabIndex = 0;
+      t.setAttribute("role", "button");
+      t.textContent = "Role";
+      el.querySelector("#trigger")!.replaceWith(t);
+    });
+    const t = page.locator("#role-trigger");
+    await t.click();
+    await expect(t).toHaveAttribute("aria-expanded", "true");
+    await t.focus();
+    await page.keyboard.press("Enter");
+    await expect(t).toHaveAttribute("aria-expanded", "false");
+    await page.keyboard.press("Space");
+    await expect(t).toHaveAttribute("aria-expanded", "true");
+  });
+
+  test("a link trigger toggles on click and Space and keeps the consumer's aria-current", async ({
+    page,
+  }) => {
+    await open(page, "containers-collapsible--slotted-trigger");
+    await page.locator("#control").evaluate(async (el) => {
+      const a = document.createElement("a");
+      a.id = "link-trigger";
+      a.slot = "trigger";
+      a.href = "#section";
+      a.setAttribute("aria-current", "page");
+      a.textContent = "Link";
+      el.querySelector("#trigger")!.replaceWith(a);
+      (el as HTMLElement & { current: boolean }).current = true;
+      await (el as unknown as { updateComplete: Promise<boolean> })
+        .updateComplete;
+    });
+    const a = page.locator("#link-trigger");
+    await expect(a).toHaveAttribute("aria-current", "page");
+    await a.click();
+    await expect(a).toHaveAttribute("aria-expanded", "true");
+    expect(page.url()).toContain("#section");
+    await a.focus();
+    await page.keyboard.press("Space");
+    await expect(a).toHaveAttribute("aria-expanded", "false");
   });
 
   test("axe finds no violations", async ({ page }) => {

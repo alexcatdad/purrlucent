@@ -13,8 +13,7 @@ const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill
  * `aria-expanded` and `aria-controls`. Space and Enter toggle it, as on any
  * button. To use your own trigger, such as a sidebar row, slot a `button`, an
  * `a[href]` or an element with `role="button"` as `slot="trigger"`: it replaces
- * the built-in button and the collapsible sets `aria-expanded`, `aria-controls`
- * and `aria-current` on it, and toggles on click, Enter and Space. The content grows and shrinks in height with `--pl-duration`; under
+ * the built-in button and the collapsible sets `aria-expanded` and `aria-controls` on it, and `aria-current` and `aria-disabled` when it has none, and toggles on click, Enter and Space. A link trigger toggles and also follows its `href`; to only toggle, use a `button`. The content grows and shrinks in height with `--pl-duration`; under
  * reduced motion it shows and hides at once. Closed content is hidden from
  * focus and assistive technology. For several disclosures that open one at a
  * time, handle `pl-toggle` in the app.
@@ -62,16 +61,13 @@ export class PlCollapsible extends LitElement {
     if (trigger && event.composedPath().includes(trigger)) this.#toggle();
   };
 
-  /** A slotted trigger that is not a native button answers Enter and Space itself. */
+  /** A slotted trigger that is not a native button answers Enter and Space itself; a link answers Enter by navigating (and toggling, as a click) and Space here. */
   #onKeydown = (event: KeyboardEvent) => {
     const trigger = this.#slotted;
-    if (
-      !trigger ||
-      trigger.matches("button, a[href]") ||
-      event.target !== trigger ||
-      (event.key !== "Enter" && event.key !== " ")
-    )
+    if (!trigger || event.target !== trigger || trigger.matches("button"))
       return;
+    const keys = trigger.matches("a[href]") ? [" "] : ["Enter", " "];
+    if (!keys.includes(event.key)) return;
     event.preventDefault();
     this.#toggle();
   };
@@ -92,18 +88,32 @@ export class PlCollapsible extends LitElement {
     this.removeEventListener("keydown", this.#onKeydown);
   }
 
-  /** The slotted trigger is in the light DOM, the content is not: wire them by element. */
+  #wired: HTMLElement | undefined;
+  #added = new Set<string>();
+
+  /** Sets an ARIA state on the consumer's trigger only when it has none, and removes only what was added here. */
+  #mark(trigger: HTMLElement, name: string, on: boolean) {
+    if (on) {
+      if (trigger.hasAttribute(name)) return;
+      trigger.setAttribute(name, "true");
+      this.#added.add(name);
+    } else if (this.#added.delete(name)) trigger.removeAttribute(name);
+  }
+
+  /** The trigger and the content are both in the light DOM: wire them by element. */
   #wire(trigger: HTMLElement) {
+    if (this.#wired !== trigger) {
+      this.#wired = trigger;
+      this.#added.clear();
+    }
     trigger.setAttribute("aria-expanded", String(this.open));
-    const panel = this.renderRoot.querySelector("#content");
-    if ("ariaControlsElements" in trigger && panel)
+    const content = [...this.children].filter((c) => !c.slot);
+    if ("ariaControlsElements" in trigger && content.length)
       (
         trigger as HTMLElement & { ariaControlsElements: Element[] }
-      ).ariaControlsElements = [panel];
-    if (this.current) trigger.setAttribute("aria-current", "true");
-    else trigger.removeAttribute("aria-current");
-    if (this.disabled) trigger.setAttribute("aria-disabled", "true");
-    else trigger.removeAttribute("aria-disabled");
+      ).ariaControlsElements = content;
+    this.#mark(trigger, "aria-current", this.current);
+    this.#mark(trigger, "aria-disabled", this.disabled);
   }
 
   protected override updated(changed: PropertyValues<this>) {
