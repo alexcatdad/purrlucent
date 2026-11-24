@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.16.1
+
+### Patch Changes
+
+- 9314e8d: A toolbar that holds only a title centers it vertically; it sat at the top of the bar. The calendar's weekday names lose the browser's dotted underline and keep their full names as titles.
+
 ## 0.16.0
 
 ### Minor Changes
