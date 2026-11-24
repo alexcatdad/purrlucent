@@ -45,6 +45,20 @@ export const collapsibleStyles = css`
     background-color: var(--pl-color-muted-pressed);
   }
 
+  /* A slotted trigger brings its own look: the wrapper only carries the current fill. */
+  .head {
+    border-radius: var(--pl-radius-control);
+  }
+
+  :host([current]) .trigger,
+  :host([current]) .head {
+    background-color: var(--pl-color-muted-3);
+  }
+
+  :host([current]) .trigger:active:not(:disabled) {
+    background-color: var(--pl-color-muted-pressed);
+  }
+
   .trigger:disabled,
   .trigger:disabled .chevron {
     color: var(--pl-color-disabled-foreground);
@@ -126,6 +140,21 @@ export const collapsibleStyles = css`
     .trigger:disabled,
     .trigger:disabled .chevron {
       color: GrayText;
+    }
+
+    :host([current]) .trigger,
+    :host([current]) .trigger:active:not(:disabled),
+    :host([current]) .head {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    :host([current]) .trigger {
+      forced-color-adjust: none;
+    }
+
+    :host([current]) .chevron {
+      color: inherit;
     }
 
     .trigger:focus-visible {

@@ -83,6 +83,26 @@ export const DisabledTab: Story = {
   `,
 };
 
+/** `hide-scrollbar` hides the scrollbar of a tab list that overflows; it still scrolls. */
+export const HideScrollbar: Story = {
+  render: () => html`
+    <div style="inline-size:16rem">
+      <pl-tabs id="control" label="Account" hide-scrollbar>
+        <pl-tab value="profile">Profile</pl-tab>
+        <pl-tab value="security">Security</pl-tab>
+        <pl-tab value="billing">Billing</pl-tab>
+        <pl-tab value="notifications">Notifications</pl-tab>
+        <pl-tab value="integrations">Integrations</pl-tab>
+        <pl-tab-panel value="profile">Your name and photo.</pl-tab-panel>
+        <pl-tab-panel value="security">Password and sign-in.</pl-tab-panel>
+        <pl-tab-panel value="billing">Plan and invoices.</pl-tab-panel>
+        <pl-tab-panel value="notifications">Email and push.</pl-tab-panel>
+        <pl-tab-panel value="integrations">Connected apps.</pl-tab-panel>
+      </pl-tabs>
+    </div>
+  `,
+};
+
 export const Glass: Story = {
   render,
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },

@@ -111,6 +111,7 @@ export class PlTabPanel extends LitElement {
  * @attr {string} value - The value of the selected tab. Defaults to the first enabled tab; a value no tab has selects the first.
  * @attr {string} orientation - `horizontal` (default) or `vertical`.
  * @attr {string} label - The accessible name of the tab list.
+ * @attr {boolean} hide-scrollbar - Hides the scrollbar of a tab list that overflows. The list stays scrollable by touch, wheel and keyboard.
  * @slot - `pl-tab-panel` elements. `pl-tab` elements go in the tab list on their own.
  * @csspart list - The tab list.
  * @csspart panels - The wrapper around the panels.
@@ -124,8 +125,14 @@ export class PlTabs extends LitElement {
     value: { type: String, reflect: true },
     orientation: { reflect: true },
     label: { type: String },
+    hideScrollbar: {
+      type: Boolean,
+      attribute: "hide-scrollbar",
+      reflect: true,
+    },
   };
   declare value: string;
+  declare hideScrollbar: boolean;
   declare orientation: "horizontal" | "vertical";
   declare label: string;
   readonly #roving: RovingFocusController;
@@ -137,6 +144,7 @@ export class PlTabs extends LitElement {
     this.value = "";
     this.orientation = "horizontal";
     this.label = "";
+    this.hideScrollbar = false;
     const vertical = () => this.orientation === "vertical";
     this.#roving = new RovingFocusController(this, {
       items: () => this.#enabled,
