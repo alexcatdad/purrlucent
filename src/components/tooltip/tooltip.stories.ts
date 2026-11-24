@@ -69,6 +69,78 @@ export const Placements: Story = {
     ),
 };
 
+/** Rich, non-interactive content in the `content` slot, in place of `text`. */
+export const Rich: Story = {
+  render: () =>
+    stage(
+      html`<pl-tooltip id="rich">
+        <pl-button>Shortcuts</pl-button>
+        <dl
+          slot="content"
+          style="display:grid;grid-template-columns:auto auto;gap:var(--pl-space-0-5) var(--pl-space-3);margin:0"
+        >
+          <dt>Copy</dt>
+          <dd style="margin:0">Cmd C</dd>
+          <dt>Paste</dt>
+          <dd style="margin:0">Cmd V</dd>
+        </dl>
+      </pl-tooltip>`,
+    ),
+  play: showByFocus,
+};
+
+/** A long text wraps at `--pl-tooltip-max-inline-size` instead of running on in one line. */
+export const LongText: Story = {
+  render: () =>
+    stage(
+      html`<pl-tooltip
+        id="long"
+        text="Adds a new item to the end of the list, copying the settings of the item that is selected now, and keeps the list in its current order."
+      >
+        <pl-button>Add</pl-button>
+      </pl-tooltip>`,
+    ),
+  play: showByFocus,
+};
+
+/** The bubble lines up with the start or end edge of a wide target instead of its middle. */
+export const Align: Story = {
+  play: async ({ canvasElement }) => {
+    for (const el of canvasElement.querySelectorAll<PlTooltip>("pl-tooltip")) {
+      await el.updateComplete;
+      el.shown = true;
+    }
+  },
+  render: () =>
+    stage(
+      html`<div
+        style="display:grid;grid-template-columns:repeat(2,max-content);gap:calc(var(--pl-spacing) * 30) calc(var(--pl-spacing) * 70);justify-content:center"
+      >
+        ${(["center", "start", "end"] as const).map(
+          (align) =>
+            html`<pl-tooltip id=${align} text="Add a new item" align=${align}>
+              <pl-button style="inline-size:calc(var(--pl-spacing) * 60)"
+                >Add</pl-button
+              >
+            </pl-tooltip>`,
+        )}
+      </div>`,
+    ),
+};
+
+export const AlignRtl: Story = {
+  render: () =>
+    stage(
+      html`<pl-tooltip id="start" text="Add a new item" align="start">
+        <pl-button style="inline-size:calc(var(--pl-spacing) * 60)"
+          >Add</pl-button
+        >
+      </pl-tooltip>`,
+    ),
+  play: showByFocus,
+  globals: { dir: "rtl" },
+};
+
 export const Rtl: Story = {
   render: () => stage(tip("start")),
   play: showByFocus,

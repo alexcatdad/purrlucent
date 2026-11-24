@@ -249,6 +249,8 @@
     --pl-pad-surface: var(--pl-space-1);
     --pl-pad-item: var(--pl-space-2);
     --pl-pad-panel: var(--pl-space-4);
+    --pl-popover-max-inline-size: calc(var(--pl-spacing) * 45);
+    --pl-tooltip-max-inline-size: calc(var(--pl-spacing) * 60);
     --pl-indent: var(--pl-space-4);
     --pl-ring-width: calc(var(--pl-spacing) / 2);
     --pl-ring-offset: calc(var(--pl-ring-width) / 2);

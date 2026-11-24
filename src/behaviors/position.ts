@@ -11,6 +11,18 @@ export type Placement =
 /** The side of the anchor the overlay ended up on, after flipping. */
 export type Side = "top" | "bottom" | "left" | "right";
 
+/** Which edge of the anchor an overlay above or below it lines up with: its middle, or its start or end edge (mirrored under rtl). */
+export type Align = "center" | "start" | "end";
+
+/** The placement for a side and an alignment. `start` and `end` sides sit beside the anchor, centred, so they take no alignment. */
+export const withAlign = (
+  placement: "top" | "bottom" | "start" | "end",
+  align: Align,
+): Placement =>
+  align !== "center" && (placement === "top" || placement === "bottom")
+    ? (`${placement}-${align}` as Placement)
+    : placement;
+
 const INSET = 8;
 
 const clamp = (value: number, size: number, viewport: number) =>
@@ -68,8 +80,8 @@ export function position(
   const left = !tail
     ? a.left + a.width / 2 - outerW / 2
     : (tail === "start") !== rtl
-      ? a.left
-      : a.right - width;
+      ? a.left - margin("Left")
+      : a.right - width - margin("Left");
   overlay.style.top = `${clamp(top, outerH, clientHeight)}px`;
   overlay.style.left = `${clamp(left, tail ? width : outerW, clientWidth)}px`;
   return top === above ? "top" : "bottom";

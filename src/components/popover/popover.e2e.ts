@@ -569,3 +569,68 @@ test.describe("coarse pointer on a wide screen", () => {
     }
   });
 });
+
+test("align start and end line the panel's edge up with the trigger's, center its middle", async ({
+  page,
+}) => {
+  for (const align of ["start", "end"]) {
+    await gotoStory(page, story(`align-${align}`));
+    await expect(page.locator("#popover [part=panel]")).toBeVisible();
+    const p = await box(page.locator("#popover [part=panel]"));
+    const t = await box(trigger(page));
+    if (align === "start") expect(Math.abs(p.x - t.x)).toBeLessThan(1.5);
+    else expect(Math.abs(p.x + p.width - (t.x + t.width))).toBeLessThan(1.5);
+  }
+  await gotoStory(page, story("open"));
+  await expect(page.locator("#popover [part=panel]")).toBeVisible();
+  const p = await box(page.locator("#popover [part=panel]"));
+  const t = await box(trigger(page));
+  expect(Math.abs(p.x + p.width / 2 - (t.x + t.width / 2))).toBeLessThan(1.5);
+});
+
+test("under rtl align start is the right-hand edge, and the arrow still points at the trigger", async ({
+  page,
+}) => {
+  await gotoStory(page, story("align-start-rtl"));
+  await expect(page.locator("#popover [part=panel]")).toBeVisible();
+  const p = await box(page.locator("#popover [part=panel]"));
+  const t = await box(trigger(page));
+  expect(Math.abs(p.x + p.width - (t.x + t.width))).toBeLessThan(1.5);
+});
+
+test("changing align while open moves the panel", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  await expect(page.locator("#popover [part=panel]")).toBeVisible();
+  await page.locator("#popover").evaluate((el) => {
+    el.setAttribute("align", "start");
+  });
+  await expect
+    .poll(async () => {
+      const p = await box(page.locator("#popover [part=panel]"));
+      const t = await box(trigger(page));
+      return Math.abs(p.x - t.x) < 1.5;
+    })
+    .toBe(true);
+});
+
+test("--pl-popover-max-inline-size defaults to the old cap and sets the widest panel", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open"));
+  await expect(page.locator("#popover [part=panel]")).toBeVisible();
+  const result = await page.locator("#popover").evaluate(async (el) => {
+    const host = el as HTMLElement & { updateComplete: Promise<boolean> };
+    const panel = host.shadowRoot!.querySelector("[part=panel]")!;
+    const fallback = getComputedStyle(panel).maxInlineSize;
+    const probe = document.createElement("div");
+    probe.style.inlineSize = "calc(var(--pl-spacing) * 45)";
+    document.body.append(probe);
+    const cap = probe.getBoundingClientRect().width;
+    probe.remove();
+    host.style.setProperty("--pl-popover-max-inline-size", "150px");
+    const narrowed = panel.getBoundingClientRect().width;
+    return { fallback, cap, narrowed };
+  });
+  expect(parseFloat(result.fallback)).toBeCloseTo(result.cap, 0);
+  expect(result.narrowed).toBeLessThanOrEqual(150);
+});
