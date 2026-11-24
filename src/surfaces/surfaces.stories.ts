@@ -103,7 +103,7 @@ export const Tinted: Story = {
   render: () => html`
     <div
       pl-material="glass"
-      style="--pl-material-tint: var(--pl-color-cerulean); --pl-material-tint-strength: 18%"
+      style="--pl-material-tint: var(--pl-color-hot-pink); --pl-material-tint-strength: 18%"
     >
       ${render()}
     </div>

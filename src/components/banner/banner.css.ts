@@ -58,7 +58,7 @@ export const bannerStyles = css`
     padding: calc(var(--_tile) / 4);
     border-radius: var(--pl-radius-control);
     background: linear-gradient(
-      color-mix(in srgb, var(--_tone), var(--pl-color-honeydew) 25%),
+      color-mix(in srgb, var(--_tone), var(--pl-color-paper) 25%),
       var(--_tone)
     );
     color: var(--_glyph, var(--pl-color-accent-foreground));

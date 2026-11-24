@@ -7,10 +7,10 @@ import { css, unsafeCSS } from "lit";
 //
 // Each hue is mixed to 20% over the background, so the whole scene stays in a
 // narrow luminance band of --pl-color-background. Worst case is light mode,
-// where the darkest pixel is cerulean at 20% (about #cfe1de, luminance 0.72);
-// muted-foreground text (navy at 80%, luminance about 0.1) keeps about 5:1
-// there. Dark mode is wider: the brightest pixel (honeydew at 20% over navy)
-// is still dark, and muted text is frosted blue.
+// where the darkest pixel is the red at 20% (about #f2d1cf, luminance 0.69);
+// muted-foreground text (ink at 80%) keeps about 7:1 there. Dark mode is
+// wider: the brightest pixel (paper at 20% over ink) is still dark, and muted
+// text is paper at 72%.
 const hue = (color: string) =>
   unsafeCSS(
     `color-mix(in srgb, var(--pl-color-${color}) 20%, var(--pl-color-background))`,
@@ -19,13 +19,9 @@ const hue = (color: string) =>
 export const backdrop = css`
   body[data-backdrop] {
     background:
-      radial-gradient(circle at 20% 15%, ${hue("cerulean")} 0, transparent 45%),
-      radial-gradient(
-        circle at 80% 30%,
-        ${hue("punch-red")} 0,
-        transparent 40%
-      ),
-      radial-gradient(circle at 45% 85%, ${hue("honeydew")} 0, transparent 50%),
+      radial-gradient(circle at 20% 15%, ${hue("hot-pink")} 0, transparent 45%),
+      radial-gradient(circle at 80% 30%, ${hue("red")} 0, transparent 40%),
+      radial-gradient(circle at 45% 85%, ${hue("paper")} 0, transparent 50%),
       repeating-linear-gradient(
         45deg,
         color-mix(in srgb, var(--pl-color-foreground) 5%, transparent) 0 1px,

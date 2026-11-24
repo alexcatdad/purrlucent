@@ -1,4 +1,4 @@
-/* Purrlucent tokens. Five palette colors, two status colors and one spacing
+/* Purrlucent tokens. Three palette colors, three tone colors and one spacing
    base; everything else is calculated from them. Colors are light-dark() pairs and follow the
    page's color-scheme. Every token sits in a cascade layer, so app styles
    override it. */
@@ -6,43 +6,38 @@
   :root {
     color-scheme: light dark;
 
-    --pl-color-punch-red: #e63946;
-    --pl-color-honeydew: #f1faee;
-    --pl-color-frosted-blue: #a8dadc;
-    --pl-color-cerulean: #457b9d;
-    --pl-color-oxford-navy: #1d3557;
+    /* The accent, and the near-neutral ink and paper that the page, text and
+       fills are mixed from. Ink and paper lean faintly toward the accent. */
+    --pl-color-hot-pink: #ff69b4;
+    --pl-color-ink: #1d1b1e;
+    --pl-color-paper: #f7f6f7;
 
-    /* Status: done or healthy, and needing attention. */
+    /* Tones: destructive, done or healthy, and needing attention. The red
+       leans to orange, away from the pink. */
+    --pl-color-red: #e03e2d;
     --pl-color-sea-green: #2d7a4f;
     --pl-color-saffron: #e9a23b;
-    --pl-color-shade: color-mix(
-      in srgb,
-      var(--pl-color-oxford-navy),
-      black 42%
-    );
-    --pl-color-accent: color-mix(in srgb, var(--pl-color-cerulean) 88%, black);
+    --pl-color-shade: color-mix(in srgb, var(--pl-color-ink), black 42%);
+
+    /* The accent fill is the pink itself under ink, as white on it is under
+       3:1. Pink text on a light page is the same hue and chroma at a lower
+       lightness, which holds 4.5:1 on every fill and on glass over white; on
+       a dark page it is the pink lifted toward white. */
+    --pl-color-accent: var(--pl-color-hot-pink);
     --pl-color-accent-text: light-dark(
-      color-mix(
-        in srgb,
-        var(--pl-color-cerulean),
-        var(--pl-color-oxford-navy) 50%
-      ),
-      var(--pl-color-frosted-blue)
+      oklch(from var(--pl-color-hot-pink) 48% c h),
+      color-mix(in srgb, var(--pl-color-hot-pink), white 45%)
     );
-    --pl-color-destructive: color-mix(
-      in srgb,
-      var(--pl-color-punch-red) 90%,
-      black
-    );
+    --pl-color-destructive: color-mix(in srgb, var(--pl-color-red) 90%, black);
     --pl-color-destructive-text: light-dark(
-      color-mix(in srgb, var(--pl-color-punch-red) 62%, black),
-      color-mix(in srgb, var(--pl-color-punch-red), white 72%)
+      color-mix(in srgb, var(--pl-color-red) 62%, black),
+      color-mix(in srgb, var(--pl-color-red), white 72%)
     );
-    --pl-color-accent-foreground: #fff;
+    --pl-color-accent-foreground: var(--pl-color-ink);
     --pl-color-destructive-foreground: #fff;
 
     /* Success is a green fill under white text; warning an amber fill under
-       navy text, as a light fill takes dark text. Each -text color is for
+       ink text, as a light fill takes dark text. Each -text color is for
        the tone's text on the page. */
     --pl-color-success: var(--pl-color-sea-green);
     --pl-color-success-foreground: #fff;
@@ -51,22 +46,25 @@
       color-mix(in srgb, var(--pl-color-sea-green), white 55%)
     );
     --pl-color-warning: var(--pl-color-saffron);
-    --pl-color-warning-foreground: var(--pl-color-oxford-navy);
+    --pl-color-warning-foreground: var(--pl-color-ink);
     --pl-color-warning-text: light-dark(
       color-mix(in srgb, var(--pl-color-saffron) 52%, black),
       color-mix(in srgb, var(--pl-color-saffron), white 25%)
     );
 
     /* Marks: small saturated shapes (a status dot) that keep each tone's hue
-       and 3:1 on the page, lightened in dark. */
+       and 3:1 on the page, lightened in dark. The accent mark on a light page
+       is the pink at the lightest lightness that still holds 3:1 on a pressed
+       fill and 4.5:1 under white, so the focus ring, the selection and chart
+       marks share it, and the deeper text pink stays with text. */
     --pl-color-neutral-mark: color-mix(
       in srgb,
       var(--pl-color-foreground) 50%,
       transparent
     );
     --pl-color-accent-mark: light-dark(
-      var(--pl-color-accent),
-      color-mix(in srgb, var(--pl-color-cerulean), white 25%)
+      oklch(from var(--pl-color-hot-pink) 57% c h),
+      var(--pl-color-hot-pink)
     );
     --pl-color-success-mark: light-dark(
       var(--pl-color-sea-green),
@@ -78,110 +76,88 @@
     );
     --pl-color-destructive-mark: light-dark(
       var(--pl-color-destructive),
-      color-mix(in srgb, var(--pl-color-punch-red), white 20%)
+      color-mix(in srgb, var(--pl-color-red), white 20%)
     );
-    --pl-color-selected: light-dark(
-      var(--pl-color-accent),
-      var(--pl-color-frosted-blue)
-    );
-    --pl-color-selected-foreground: light-dark(
-      var(--pl-color-accent-foreground),
-      var(--pl-color-oxford-navy)
-    );
-    --pl-color-ring: light-dark(
-      var(--pl-color-cerulean),
-      var(--pl-color-frosted-blue)
-    );
+    --pl-color-selected: var(--pl-color-accent-mark);
+    --pl-color-selected-foreground: light-dark(#fff, var(--pl-color-ink));
+    --pl-color-ring: var(--pl-color-accent-mark);
     --pl-color-input: light-dark(
       #fff,
-      color-mix(
-        in srgb,
-        var(--pl-color-oxford-navy),
-        var(--pl-color-honeydew) 7%
-      )
+      color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 7%)
     );
     --pl-color-input-border: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 62%, transparent),
-      color-mix(in srgb, var(--pl-color-frosted-blue) 68%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 62%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 50%, transparent)
     );
     --pl-color-popover: light-dark(
       rgb(255 255 255 / 82%),
-      color-mix(
-        in srgb,
-        var(--pl-color-oxford-navy),
-        var(--pl-color-honeydew) 16%
-      )
+      color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 16%)
     );
     --pl-color-foreground: light-dark(
-      var(--pl-color-oxford-navy),
-      var(--pl-color-honeydew)
+      var(--pl-color-ink),
+      var(--pl-color-paper)
     );
     --pl-color-muted-foreground: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 80%, transparent),
-      var(--pl-color-frosted-blue)
+      color-mix(in srgb, var(--pl-color-ink) 80%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 72%, transparent)
     );
     --pl-color-disabled-foreground: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 35%, transparent),
-      color-mix(in srgb, var(--pl-color-frosted-blue) 40%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 35%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 40%, transparent)
     );
     --pl-color-foreground-faint: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 12%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 12%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 12%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 12%, transparent)
     );
     --pl-color-foreground-ghost: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 6%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 6%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 6%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 6%, transparent)
     );
     --pl-color-muted-1: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 12%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 12%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 12%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 12%, transparent)
     );
     --pl-color-muted-2: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 9%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 9%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 9%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 9%, transparent)
     );
     --pl-color-muted-3: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 6%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 6%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 6%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 6%, transparent)
     );
     --pl-color-muted-4: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 4%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 4%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 4%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 4%, transparent)
     );
     --pl-color-muted-5: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 2%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 2%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 2%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 2%, transparent)
     );
     --pl-color-muted-pressed: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 18%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 13%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 18%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 13%, transparent)
     );
     --pl-color-muted-disabled: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 4%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 4%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 4%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 4%, transparent)
     );
     --pl-color-border: light-dark(
-      color-mix(in srgb, var(--pl-color-oxford-navy) 22%, transparent),
-      color-mix(in srgb, var(--pl-color-honeydew) 18%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 22%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 18%, transparent)
     );
     --pl-color-background: light-dark(
-      var(--pl-color-honeydew),
-      var(--pl-color-oxford-navy)
+      var(--pl-color-paper),
+      var(--pl-color-ink)
     );
     --pl-color-sidebar: light-dark(
       color-mix(
         in srgb,
-        color-mix(
-            in srgb,
-            var(--pl-color-oxford-navy),
-            var(--pl-color-honeydew) 93.7%
-          )
-          80%,
+        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 93.7%) 80%,
         transparent
       ),
       color-mix(
         in srgb,
-        color-mix(in srgb, var(--pl-color-oxford-navy), black 26%) 85%,
+        color-mix(in srgb, var(--pl-color-ink), black 26%) 85%,
         transparent
       )
     );
@@ -189,19 +165,24 @@
       rgb(255 255 255 / 82%),
       color-mix(
         in srgb,
-        color-mix(
-            in srgb,
-            var(--pl-color-oxford-navy),
-            var(--pl-color-honeydew) 10%
-          )
-          92%,
+        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 10%) 92%,
         transparent
       )
     );
     --pl-color-overlay-border: light-dark(
-      var(--pl-color-frosted-blue),
-      color-mix(in srgb, var(--pl-color-honeydew) 16%, transparent)
+      color-mix(in srgb, var(--pl-color-ink) 14%, transparent),
+      color-mix(in srgb, var(--pl-color-paper) 16%, transparent)
     );
+
+    /* A content surface (a card, a table box) on the page. In light it is
+       white on paper behind a hairline frame; in dark it is lifted toward
+       paper and the fill alone separates it, so the frame is clear. Increased
+       contrast and forced colors give the frame back. */
+    --pl-color-raised: light-dark(
+      #fff,
+      color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 6%)
+    );
+    --pl-color-frame: light-dark(var(--pl-color-border), transparent);
     --pl-visual-md: calc(var(--pl-spacing) * 6);
     --pl-visual-lg: calc(var(--pl-spacing) * 7);
     --pl-visual-xl: calc(var(--pl-spacing) * 9);
@@ -277,8 +258,8 @@
         color-mix(in srgb, var(--pl-color-shade) 30%, transparent),
       0 0 0 0.5px
         light-dark(
-          color-mix(in srgb, var(--pl-color-oxford-navy) 14%, transparent),
-          color-mix(in srgb, var(--pl-color-honeydew) 18%, transparent)
+          color-mix(in srgb, var(--pl-color-ink) 14%, transparent),
+          color-mix(in srgb, var(--pl-color-paper) 18%, transparent)
         );
   }
 
@@ -286,87 +267,79 @@
   @media (prefers-contrast: more) {
     :root {
       --pl-color-input-border: light-dark(
-        var(--pl-color-oxford-navy),
-        var(--pl-color-honeydew)
+        var(--pl-color-ink),
+        var(--pl-color-paper)
       );
-      --pl-color-ring: light-dark(var(--pl-color-oxford-navy), #fff);
+      --pl-color-ring: light-dark(var(--pl-color-ink), #fff);
       --pl-color-selected: light-dark(
-        var(--pl-color-accent),
-        var(--pl-color-honeydew)
-      );
-      --pl-color-accent: color-mix(
-        in srgb,
-        var(--pl-color-cerulean),
-        var(--pl-color-oxford-navy) 50%
+        var(--pl-color-accent-text),
+        var(--pl-color-paper)
       );
       --pl-color-accent-text: light-dark(
-        var(--pl-color-oxford-navy),
-        color-mix(in srgb, var(--pl-color-frosted-blue), white 45%)
+        oklch(from var(--pl-color-hot-pink) 40% c h),
+        color-mix(in srgb, var(--pl-color-hot-pink), white 70%)
       );
+      --pl-color-frame: var(--pl-color-border);
       --pl-color-destructive: color-mix(
         in srgb,
-        var(--pl-color-punch-red) 76%,
+        var(--pl-color-red) 76%,
         black
       );
       --pl-color-destructive-text: light-dark(
-        color-mix(in srgb, var(--pl-color-punch-red) 56%, black),
-        color-mix(in srgb, var(--pl-color-punch-red), white 88%)
+        color-mix(in srgb, var(--pl-color-red) 56%, black),
+        color-mix(in srgb, var(--pl-color-red), white 88%)
       );
       --pl-color-foreground: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy), black 45%),
+        color-mix(in srgb, var(--pl-color-ink), black 45%),
         #fff
       );
       --pl-color-muted-foreground: light-dark(
-        var(--pl-color-oxford-navy),
-        var(--pl-color-honeydew)
+        var(--pl-color-ink),
+        var(--pl-color-paper)
       );
       --pl-color-disabled-foreground: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 62%, transparent),
-        color-mix(in srgb, var(--pl-color-frosted-blue) 60%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 62%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 60%, transparent)
       );
       --pl-color-muted-1: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 18%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 20%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 18%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 20%, transparent)
       );
       --pl-color-muted-2: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 15%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 16%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 15%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 16%, transparent)
       );
       --pl-color-muted-3: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 11%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 12%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 11%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 12%, transparent)
       );
       --pl-color-muted-4: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 8%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 9%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 8%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 9%, transparent)
       );
       --pl-color-muted-5: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 5%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 6%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 5%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 6%, transparent)
       );
       --pl-color-muted-pressed: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 24%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 20%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 24%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 20%, transparent)
       );
       --pl-color-border: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 60%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 55%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 60%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 55%, transparent)
       );
       --pl-color-sidebar: light-dark(
-        color-mix(
-          in srgb,
-          var(--pl-color-oxford-navy),
-          var(--pl-color-honeydew) 93.7%
-        ),
-        color-mix(in srgb, var(--pl-color-oxford-navy), black 26%)
+        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 93.7%),
+        color-mix(in srgb, var(--pl-color-ink), black 26%)
       );
       --pl-color-overlay: light-dark(
         rgb(255 255 255 / 94%),
-        color-mix(in srgb, var(--pl-color-oxford-navy) 94%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 94%, transparent)
       );
       --pl-color-overlay-border: light-dark(
-        color-mix(in srgb, var(--pl-color-oxford-navy) 60%, transparent),
-        color-mix(in srgb, var(--pl-color-honeydew) 55%, transparent)
+        color-mix(in srgb, var(--pl-color-ink) 60%, transparent),
+        color-mix(in srgb, var(--pl-color-paper) 55%, transparent)
       );
     }
   }
@@ -427,7 +400,7 @@
     /* The groove of a switch or slider, and the knob that moves in it. */
     --pl-color-track: light-dark(
       var(--pl-color-muted-1),
-      color-mix(in srgb, var(--pl-color-honeydew) 26%, transparent)
+      color-mix(in srgb, var(--pl-color-paper) 26%, transparent)
     );
     --pl-color-thumb: light-dark(#fff, rgb(255 255 255 / 85%));
 
@@ -583,7 +556,7 @@
       --pl-color-secondary-disabled: var(--pl-color-muted-disabled);
       --pl-color-track: light-dark(
         var(--pl-color-muted-1),
-        color-mix(in srgb, var(--pl-color-honeydew) 26%, transparent)
+        color-mix(in srgb, var(--pl-color-paper) 26%, transparent)
       );
       --pl-color-thumb: light-dark(#fff, rgb(255 255 255 / 85%));
     }

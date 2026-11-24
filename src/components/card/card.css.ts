@@ -1,7 +1,9 @@
 import { css } from "lit";
 
 /*
- * A content surface: solid, with a hairline edge and no material. The header,
+ * A content surface: solid and raised off the page, with no material. Its
+ * frame is a hairline in light and clear in dark, where the fill alone
+ * separates it. The header,
  * content and footer are stacked sections; a section with nothing in it is
  * hidden, so it adds neither height nor gap.
  */
@@ -11,9 +13,9 @@ export const cardStyles = css`
     flex-direction: column;
     gap: var(--pl-space-4);
     box-sizing: border-box;
-    background: var(--pl-color-background);
+    background: var(--pl-color-raised);
     backdrop-filter: none;
-    border: 1px solid var(--pl-color-border);
+    border: 1px solid var(--pl-color-frame);
     border-radius: var(--pl-radius-control);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
