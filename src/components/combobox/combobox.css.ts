@@ -26,7 +26,7 @@ export const comboboxStyles = css`
 
   :host([size="xl"]) {
     --_glyph: var(--pl-icon-md);
-    --_button: calc(var(--pl-spacing) * 7.5);
+    --_button: calc(var(--pl-visual-xl) - var(--pl-spacing) * 1.5);
     --_inset: var(--pl-space-1);
   }
 
