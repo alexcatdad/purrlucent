@@ -89,7 +89,7 @@ export class PlToggleGroupItem extends LitElement {
  * @attr {string} name - The name submitted with a form.
  * @attr {string} label - The accessible name of the group.
  * @attr {string} size - `md` (default), `lg` or `xl`.
- * @attr {boolean} fit-content - Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways. For many items of different lengths.
+ * @attr {boolean} fit-content - Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways, fading the edges that have more items past them. For many items of different lengths.
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `pl-toggle-group-item` elements.
  * @fires {CustomEvent<{ selected: string[] }>} pl-change - The selection changed by the user. `detail.selected` is a one-item array.
@@ -190,12 +190,36 @@ export class PlToggleGroup extends LitElement {
     if (!this.hasAttribute("role")) this.setAttribute("role", "radiogroup");
     // After the roving focus controller's own keydown listener, so focus has moved.
     this.addEventListener("keydown", this.#onKeydown);
+    this.addEventListener("scroll", this.#edges, { passive: true });
+    this.#resize.observe(this);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this.#onKeydown);
+    this.removeEventListener("scroll", this.#edges);
+    this.#resize.disconnect();
   }
+
+  readonly #resize = new ResizeObserver(() => this.#edges());
+
+  /**
+   * Mirrors the edges a fit-content group can scroll toward to
+   * `data-scrollable` ("start", "end" or both), which fades them. scrollLeft
+   * runs negative under rtl, so its size is the distance from the start.
+   */
+  #edges = () => {
+    const room = this.scrollWidth - this.clientWidth;
+    const from = Math.abs(this.scrollLeft);
+    const value =
+      this.fitContent && room > 1
+        ? [from > 1 && "start", from < room - 1 && "end"]
+            .filter(Boolean)
+            .join(" ")
+        : "";
+    if (value) this.setAttribute("data-scrollable", value);
+    else this.removeAttribute("data-scrollable");
+  };
 
   /**
    * A key that moved focus also selects the item that now has it. Up and
@@ -257,6 +281,8 @@ export class PlToggleGroup extends LitElement {
     this.#own("aria-disabled", off ? "true" : null);
     this.#own("aria-label", this.label || null);
     this.#internals.setFormValue(off ? null : this.value || null);
+    // Items or fit-content may have changed the width without a resize.
+    this.#edges();
   }
 
   override render() {

@@ -417,6 +417,21 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
   });
 }
 
+test("fit-content: the edges with more items past them fade", async ({
+  page,
+}) => {
+  await open(page, "actions-toggle-group--fit-content");
+  const group = page.locator("#control");
+  await expect(group).toHaveAttribute("data-scrollable", "end");
+  await group.evaluate((el) => (el.scrollLeft = el.scrollWidth));
+  await expect(group).toHaveAttribute("data-scrollable", "start");
+  await group.evaluate((el) => (el.scrollLeft = 20));
+  await expect(group).toHaveAttribute("data-scrollable", "start end");
+  expect(
+    await group.evaluate((el) => getComputedStyle(el).maskImage),
+  ).toContain("gradient");
+});
+
 test("fit-content: items take their text's width on one line, and the group scrolls to a focused item", async ({
   page,
 }) => {

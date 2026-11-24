@@ -13,11 +13,13 @@ export const progressStyles = css`
     --_p: 0;
     --_fill: var(--pl-color-selected);
 
-    display: inline-block;
-    inline-size: calc(var(--pl-spacing) * 35);
+    /* A block as wide as its container, like a row of the layout: no line box
+       adds space under it, and marks placed by percent of the container line
+       up with the bar. Set inline-size to make it shorter. */
+    display: block;
+    inline-size: 100%;
     block-size: var(--_h);
     overflow: hidden;
-    vertical-align: middle;
     border-radius: var(--pl-radius-full);
     background-color: var(--pl-color-track);
   }

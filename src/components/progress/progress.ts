@@ -3,7 +3,8 @@ import { progressStyles } from "./progress.css.ts";
 
 /**
  * A progress bar. With a `value` it shows how far along the work is; without
- * one it shows that work is going on. Name it with `label`.
+ * one it shows that work is going on. Name it with `label`. It is a block as
+ * wide as its container; set `inline-size` on it for a shorter bar.
  *
  * @attr {number} value - How much is done, from 0 to `max`. Leave it out for indeterminate.
  * @attr {number} max - The value that means done. Defaults to 100.
