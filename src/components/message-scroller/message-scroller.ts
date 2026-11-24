@@ -99,7 +99,7 @@ customElements.define("pl-message-scroller-item", PlMessageScrollerItem);
  * `start`, `end`, both separated by a space, or absent. The edges of the
  * viewport fade where there is more to see.
  *
- * @attr {string} label - The accessible name of the region. Defaults to the page language's text (see `setMessages`), in English "Messages".
+ * @attr {string} label - The accessible name of the region. Defaults to the page language's text (see `setMessages`), in English "Messages". Removed or empty, the host is no region.
  * @attr {boolean} busy - A reply is streaming; the log is `aria-busy`, so assistive technology waits for the reply before reading it.
  * @attr {boolean} auto-scroll - Follow new content while the reader is at the end. Off by default.
  * @attr {string} default-scroll-position - Where the first non-empty render opens, once: `start` (default), `end` or `last-anchor`, the last row with `scroll-anchor`, or the end when that row and what follows fit the viewport.
@@ -124,7 +124,7 @@ export class PlMessageScroller extends LitElement {
     buttonLabel: { attribute: "button-label" },
   };
 
-  declare label: string | undefined;
+  declare label: string | null | undefined;
   declare busy: boolean;
   declare autoScroll: boolean;
   declare defaultScrollPosition: PlMessageScrollerPosition;
@@ -246,7 +246,9 @@ export class PlMessageScroller extends LitElement {
   }
 
   protected override updated(changed: PropertyValues<this>) {
-    const label = this.label ?? messages(this).messages;
+    // Unset names the region with the built-in text; a removed or empty label drops the role.
+    const label =
+      this.label === undefined ? messages(this).messages : (this.label ?? "");
     if (label) {
       this.setAttribute("role", "region");
       this.setAttribute("aria-label", label);
