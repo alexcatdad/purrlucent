@@ -15,6 +15,8 @@ import { fileInputStyles } from "./file-input.css.ts";
  * `FileList` or an array. It takes part in forms like a native file input: it
  * submits the files under `name`, a reset clears it, a disabled fieldset
  * disables it, and `required` makes the form invalid while nothing is chosen.
+ * It carries its own label, description and message, so do not wrap it in a
+ * `pl-field`.
  *
  * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} name - The name the files are submitted under.
@@ -282,7 +284,9 @@ export class PlFileInput extends LitElement {
         >
           ${this.multiple ? text.chooseFiles : text.chooseFile}
         </button>
-        <span part="names" id="names">${names || text.noFileChosen}</span>
+        <span part="names" id="names" role="status"
+          >${names || text.noFileChosen}</span
+        >
       </div>
       ${fieldMessage}`;
   }
