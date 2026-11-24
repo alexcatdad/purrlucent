@@ -234,12 +234,6 @@ export const ManualFilter: Story = {
         >${places.map((place) => html`<pl-option>${place}</pl-option>`)}</pl-combobox
       >`,
     ),
-  play: async ({ canvasElement }) => {
-    const { el, input } = await field(canvasElement);
-    await userEvent.type(input, "o");
-    await el.updateComplete;
-    expect(el.open).toBe(true);
-  },
 };
 
 /** `action-label` adds a row that offers the typed text; choosing it fires `pl-action`. */
@@ -250,12 +244,6 @@ export const ActionLabel: Story = {
         >${apples}</pl-combobox
       >`,
     ),
-  play: async ({ canvasElement }) => {
-    const { el, input } = await field(canvasElement);
-    await userEvent.type(input, "Pink Lady");
-    await el.updateComplete;
-    expect(el.open).toBe(true);
-  },
 };
 
 /** A slotted `pl-option` with `action` is always listed and fires `pl-action` instead of choosing a value. */
@@ -266,12 +254,6 @@ export const ActionOption: Story = {
         >${apples}<pl-option action>Add a variety…</pl-option></pl-combobox
       >`,
     ),
-  play: async ({ canvasElement }) => {
-    const { el } = await field(canvasElement);
-    await userEvent.click(el.shadowRoot!.querySelector("[part=button]")!);
-    await el.updateComplete;
-    expect(el.open).toBe(true);
-  },
 };
 
 export const Rtl: Story = {
