@@ -1,4 +1,4 @@
-const textFields =
+export const textFields =
   "pl-input, pl-number-field, pl-combobox, input:is(:not([type]), [type=text], [type=search], [type=email], [type=url], [type=tel], [type=password], [type=number])";
 
 /**
