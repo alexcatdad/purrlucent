@@ -228,6 +228,130 @@ export const dataTableStyles = css`
     font-variant-numeric: tabular-nums;
   }
 
+  /* The filter and the Columns menu share a row above the table. */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--pl-space-3);
+    margin-block-end: var(--pl-space-3);
+  }
+
+  .toolbar .filter {
+    flex: 1 1 calc(var(--pl-spacing) * 40);
+    margin-block-end: 0;
+  }
+
+  /* A heading holds its label and its menu; a filter and the resize handle follow. */
+  table.model th {
+    position: relative;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--pl-gap-icon);
+  }
+
+  /* The heading and row menus are icon buttons. */
+  .menu-button {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--pl-size-hit-min);
+    block-size: var(--pl-size-hit-min);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--pl-radius);
+    background: none;
+    color: var(--pl-color-muted-foreground);
+    cursor: default;
+  }
+
+  .menu-button svg {
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* An unsorted heading dims its glyph; the menu icon is not that glyph. */
+  th .menu-button svg {
+    opacity: 1;
+  }
+
+  @media (hover: hover) {
+    .menu-button:hover {
+      color: var(--pl-color-foreground);
+    }
+  }
+
+  .menu-button:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
+  .row-menu {
+    margin-inline-start: auto;
+  }
+
+  .column-filter {
+    display: block;
+    inline-size: 100%;
+    min-inline-size: 0;
+    margin-block-start: var(--pl-space-1);
+    font-weight: 400;
+  }
+
+  /* The handle has the strip at the heading's trailing edge to itself, wide enough to grab. */
+  table.model th[data-resizable] {
+    padding-inline-end: var(--pl-size-hit-min);
+  }
+
+  .resize {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: var(--pl-size-hit-min);
+    cursor: col-resize;
+    touch-action: none;
+  }
+
+  .resize::after {
+    content: "";
+    position: absolute;
+    inset-block: var(--pl-space-2);
+    inset-inline-end: calc(var(--pl-spacing) / 2);
+    inline-size: 1px;
+    background: var(--pl-color-border);
+  }
+
+  .resize:hover::after,
+  .resize:focus-visible::after {
+    inline-size: calc(var(--pl-spacing) / 2);
+    background: var(--pl-color-ring);
+  }
+
+  .resize:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
+  }
+
+  /* Selecting a range with shift must not also select text. */
+  td[data-cell] {
+    user-select: none;
+  }
+
+  td[data-cell]:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
+  }
+
   @media (forced-colors: active) {
     table.model [data-pin],
     table.model tr[data-row-pin] > :is(td, th),
@@ -238,8 +362,24 @@ export const dataTableStyles = css`
       background-color: Canvas;
     }
 
-    button.expand:focus-visible {
+    button.expand:focus-visible,
+    .menu-button:focus-visible,
+    .resize:focus-visible,
+    td[data-cell]:focus-visible {
       outline-color: Highlight;
+    }
+
+    .menu-button {
+      color: ButtonText;
+    }
+
+    .resize::after {
+      background: CanvasText;
+    }
+
+    .resize:hover::after,
+    .resize:focus-visible::after {
+      background: Highlight;
     }
 
     th button {
