@@ -18,6 +18,8 @@ import { textareaStyles } from "./textarea.css.ts";
  * disabled fieldset disables it, and the native validity (`required`,
  * `minlength`, `maxlength`) is the element's validity.
  *
+ * The default width is 60 spacing units (240px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+ *
  * @attr {string} value - The starting value. The `value` property holds the current one.
  * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} name - The name submitted with a form.

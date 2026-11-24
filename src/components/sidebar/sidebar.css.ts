@@ -78,7 +78,7 @@ const face = css`
 const rowMd = css`
   --_text: var(--pl-text-sm);
   --_leading: var(--pl-leading-normal);
-  --_row: max(calc(var(--pl-spacing) * 8), var(--pl-size-hit-min));
+  --_row: max(var(--pl-size-nav), var(--pl-size-hit-min));
   --_glyph: var(--pl-icon-md);
   --_head: calc(var(--pl-spacing) * 4.5);
   --_head-text: var(--pl-text-xs);
@@ -88,7 +88,7 @@ const rowMd = css`
 const rowLg = css`
   --_text: var(--pl-text-lg);
   --_leading: var(--pl-leading-loose);
-  --_row: max(calc(var(--pl-spacing) * 10), var(--pl-size-hit-min));
+  --_row: max(var(--pl-size-nav-lg), var(--pl-size-hit-min));
   --_glyph: calc(var(--pl-spacing) * 4.5);
   --_head: var(--pl-icon-lg);
   --_head-text: var(--pl-text-sm);

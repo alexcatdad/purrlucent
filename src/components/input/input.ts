@@ -27,6 +27,8 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * disables it, and the native validity (`required`, `pattern`, `type=email`...)
  * is the element's validity. Enter submits the form.
  *
+ * The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+ *
  * @attr {string} type - `text` (default), `search`, `password`, `email`, `url`, `tel` or `number`. A search field gets a magnifier and a clear button, and Escape clears it.
  * @attr {string} value - The starting value. The `value` property holds the current one.
  * @attr {string} label - The accessible name when there is no slotted label.
