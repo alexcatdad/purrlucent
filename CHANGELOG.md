@@ -1,5 +1,15 @@
 # purrlucent
 
+## 0.11.0
+
+### Minor Changes
+
+- 8978d1b: Clear glass and tint. `pl-glass="clear"` on a container inside glass gives its controls Apple's clear variant for photos and video: a dark film over a dimmed backdrop, with light text in both color schemes, solid again under reduced transparency or more contrast. `--pl-material-tint` and `--pl-material-tint-strength` mix a color into the glass fill. The Surfaces stories show both, plus a prototype of edge lensing through an SVG filter, which only Chromium renders.
+
+### Patch Changes
+
+- 8978d1b: Glass picks up more color from what is behind it: `--pl-material-saturate` raises the boost from 125% to 160%. Glass surfaces read their fill from a new `--pl-material-glass` token, which stays as opaque as text on glass needs over any backdrop; an app that controls what sits behind its glass may set it clearer. The install guide says glass needs varied content behind it, shows a background that gives it some, and how to tell when the system's reduced-transparency setting is keeping it solid.
+
 ## 0.10.2
 
 ### Patch Changes
