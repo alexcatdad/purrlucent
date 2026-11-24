@@ -79,7 +79,7 @@ type CloseReason = "user" | "programmatic";
  * @slot description - A short explanation under the sheet's title.
  * @slot - The alert's message, or the sheet's scrolling body.
  * @slot actions - `pl-button` elements, in the order they are shown.
- * @slot actions-start - Non-button content, such as a status line, at the start of a sheet's row of actions.
+ * @slot actions-start - Content at the start of a sheet's row of actions: a status line, or a secondary `pl-button` such as Reset. A button here is neither the default nor the cancel action, so Return and Escape never click it, and it is not the initial focus.
  * @csspart dialog - The native dialog.
  * @csspart surface - The padded panel inside it.
  * @csspart header - The icon and title.

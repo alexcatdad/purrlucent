@@ -51,7 +51,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * on a server. A `pl-option` with the `action` attribute is a row that fires
  * `pl-action` instead of choosing a value; it is always listed, and the
  * `action-label` attribute adds such a row ("Add" and the typed text) while
- * text has been typed.
+ * text has been typed. While the app's lookup is running, `busy` keeps the "no
+ * results" row from showing.
  *
  * @attr {string} value - The chosen option's value, or the custom text.
  * @attr {string} text - The visible text of the field.
@@ -66,6 +67,7 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {string} toggle-label - The chevron button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Show options", which becomes "<label>, show options" when the field has a label.
  * @attr {string} empty-label - The text shown when no option matches. Defaults to the page language's text (see `setMessages`), in English "No results".
  * @attr {boolean} manual-filter - The app filters the options; the typed text does not narrow the list.
+ * @attr {boolean} busy - The app's lookup is running: the "no results" row is not shown, only the action row.
  * @attr {string} action-label - Shows an action row while text is typed. Its text defaults to the page language's text (see `setMessages`), in English "Add {query}"; `{query}` stands for the typed text.
  * @slot - The `pl-option` children.
  * @slot label - The visible label.
@@ -77,7 +79,7 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart listbox - The popup.
  * @csspart empty - The "no results" row.
  * @csspart message - The validation message below the field.
- * @fires {CustomEvent<{ text: string }>} pl-input - The text changed through typing or Escape. `detail.text` holds it.
+ * @fires {CustomEvent<{ text: string }>} pl-input - The text changed through typing, Escape, or leaving the field (the text was cleared or restored). `detail.text` holds it.
  * @fires {CustomEvent<{ value: string }>} pl-change - The value changed. `detail.value` holds it.
  * @fires {CustomEvent<{ query: string }>} pl-action - An action row was chosen. `detail.query` holds the typed text, empty when nothing was typed.
  * @fires input - After each pl-input, as a native input fires it.
@@ -107,6 +109,7 @@ export class PlCombobox extends LitElement {
     toggleLabel: { attribute: "toggle-label" },
     emptyLabel: { attribute: "empty-label" },
     manualFilter: { type: Boolean, reflect: true, attribute: "manual-filter" },
+    busy: { type: Boolean, reflect: true },
     actionLabel: { attribute: "action-label" },
     _active: { state: true },
     _labelled: { state: true },
@@ -125,6 +128,7 @@ export class PlCombobox extends LitElement {
   declare toggleLabel: string;
   declare emptyLabel: string;
   declare manualFilter: boolean;
+  declare busy: boolean;
   declare actionLabel: string | null;
   declare _active: PlOption | null;
   declare _labelled: boolean;
@@ -162,6 +166,7 @@ export class PlCombobox extends LitElement {
     this.toggleLabel = "";
     this.emptyLabel = "";
     this.manualFilter = false;
+    this.busy = false;
     this.actionLabel = null;
     this._active = null;
     this._labelled = false;
@@ -299,6 +304,15 @@ export class PlCombobox extends LitElement {
 
   // Resolves the typed text into a value when the user is done with it.
   #commit() {
+    const before = this.text;
+    this.#resolve();
+    // An app that mirrors the text must learn that leaving changed it.
+    if (this.text === before) return;
+    this.#emit("pl-input", { text: this.text });
+    fireNative(this, "input");
+  }
+
+  #resolve() {
     const text = this.text;
     const hit = this.#options.find(
       (o) =>
@@ -488,7 +502,10 @@ export class PlCombobox extends LitElement {
   override render() {
     const disabled = this.matches(":disabled");
     const empty =
-      this.open && this.#filtering && this.#listed.every((o) => o.action);
+      this.open &&
+      this.#filtering &&
+      !this.busy &&
+      this.#listed.every((o) => o.action);
     const query = this.text.trim();
     const add = this.actionLabel !== null && this.#filtering && query;
     const name = this._labelled

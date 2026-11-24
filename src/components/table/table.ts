@@ -27,9 +27,15 @@ function adoptTableStyles(root: Node) {
  * `z-index: 1` to stay above its overlay. The page owns the role and the
  * Enter/Space handling of a focusable `data-interactive` row. A
  * `<th aria-sort>` holding a `<button>` is styled as a sort control, with a
- * glyph that follows `aria-sort`; the page owns the sorting.
+ * glyph that follows `aria-sort`; the page owns the sorting. A row with
+ * `aria-selected="true"` or `data-selected` gets the selection tint. A `td` or
+ * `th` with `align="end"` or `data-numeric` is right-aligned with tabular
+ * figures. A plain link in a cell takes the accent colour, is semibold and
+ * underlines on hover; an `a[data-stretched]` link keeps the row behaviour.
  *
  * @attr {string} label - The accessible name of the scroll area. Defaults to the table's caption.
+ * @attr {boolean} striped - Even body rows get a faint alternate fill; hover and selection override it.
+ * @attr {"regular" | "compact"} density - Row height and cell padding. Defaults to `regular`.
  * @attr {boolean} sticky-header - The header cells stay at the top while the rows scroll.
  * @slot - A native `<table>`.
  * @csspart scroller - The scroll container.
@@ -38,12 +44,16 @@ export class PlTable extends LitElement {
   static override styles = tableStyles;
   static override properties = {
     label: {},
+    striped: { type: Boolean, reflect: true },
+    density: { reflect: true },
     stickyHeader: { type: Boolean, reflect: true, attribute: "sticky-header" },
     _scrollable: { state: true },
     _caption: { state: true },
   };
 
   declare label: string | undefined;
+  declare striped: boolean;
+  declare density: "regular" | "compact";
   declare stickyHeader: boolean;
   declare _scrollable: boolean;
   declare _caption: string;
@@ -53,6 +63,8 @@ export class PlTable extends LitElement {
 
   constructor() {
     super();
+    this.striped = false;
+    this.density = "regular";
     this.stickyHeader = false;
     this._scrollable = false;
     this._caption = "";

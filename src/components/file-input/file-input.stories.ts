@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import "../field/field.ts";
 import "./file-input.ts";
 import type { PlFileInput } from "./file-input.ts";
 
@@ -102,6 +103,47 @@ export const InForm: Story = {
       </fieldset>
     </form>
   `,
+};
+
+/** The host's `aria-*` attributes reach the button, as they do on `pl-input`. */
+export const AriaForwarded: Story = {
+  parameters: {
+    // The host attributes are forwarded to the inner button, which is where they apply.
+    a11y: {
+      options: {
+        rules: {
+          "aria-allowed-attr": { enabled: false },
+          "aria-valid-attr-value": { enabled: false },
+        },
+      },
+    },
+  },
+  render: () =>
+    column(html`
+      <label for="file">Resume</label>
+      <pl-file-input
+        id="file"
+        aria-required="true"
+        aria-invalid="true"
+        aria-describedby="hint"
+        aria-errormessage="problem"
+      ></pl-file-input>
+      <span id="hint">A PDF, up to 5 MB.</span>
+      <span id="problem">Choose a file.</span>
+    `),
+};
+
+/** Inside a `pl-field` the field supplies the label, description and error. */
+export const InField: Story = {
+  render: () =>
+    column(
+      html`<pl-field id="field" invalid>
+        <label slot="label">Resume</label>
+        <pl-file-input id="file" accept=".pdf"></pl-file-input>
+        <span slot="description">A PDF, up to 5 MB.</span>
+        <span slot="error">Choose a file.</span>
+      </pl-field>`,
+    ),
 };
 
 export const Rtl: Story = {

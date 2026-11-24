@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { expect, waitFor } from "storybook/test";
 import "./table.ts";
 import type { PlTable } from "./table.ts";
@@ -228,6 +229,156 @@ export const InteractiveRows: Story = {
             <th scope="row">Mary Jackson</th>
             <td>Engineer</td>
           </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+const body = (selectedRow = -1) =>
+  people.map(
+    ([name, role, age], i) =>
+      html`<tr
+        id=${`row-${i + 1}`}
+        aria-selected=${ifDefined(i === selectedRow ? "true" : undefined)}
+      >
+        <th scope="row">${name}</th>
+        <td>${role}</td>
+        <td data-numeric>${age}</td>
+      </tr>`,
+  );
+
+const header = html`<thead>
+  <tr>
+    <th scope="col">Name</th>
+    <th scope="col">Role</th>
+    <th scope="col" data-numeric>Age</th>
+  </tr>
+</thead>`;
+
+/** Even body rows get a faint fill; hover and selection override it. */
+export const Striped: Story = {
+  render: () => html`
+    <pl-table id="control" striped label="Pioneers">
+      <table>
+        ${header}
+        <tbody>
+          ${body(3)}
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** `aria-selected="true"` and `data-selected` give the same selection tint. */
+export const SelectedRows: Story = {
+  render: () => html`
+    <pl-table id="control" label="Pioneers">
+      <table>
+        ${header}
+        <tbody>
+          <tr id="row-aria" aria-selected="true">
+            <th scope="row">Ada Lovelace</th>
+            <td>Mathematician</td>
+            <td data-numeric>36</td>
+          </tr>
+          <tr id="row-data" data-selected>
+            <th scope="row">Grace Hopper</th>
+            <td>Rear admiral</td>
+            <td data-numeric>85</td>
+          </tr>
+          <tr id="row-plain">
+            <th scope="row">Mary Jackson</th>
+            <td>Engineer</td>
+            <td data-numeric>76</td>
+          </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** Plain links take the accent and underline on hover; a stretched link keeps the row. */
+export const Links: Story = {
+  render: () => html`
+    <pl-table id="control" label="Pioneers">
+      <table>
+        ${header}
+        <tbody>
+          <tr>
+            <th scope="row">
+              <a href="#ada" id="plain-link">Ada Lovelace</a>
+            </th>
+            <td>Mathematician</td>
+            <td data-numeric>36</td>
+          </tr>
+          <tr id="row-linked">
+            <th scope="row">
+              <a href="#grace" data-stretched id="row-link">Grace Hopper</a>
+            </th>
+            <td>Rear admiral</td>
+            <td data-numeric>85</td>
+          </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** `density="compact"` tightens the row height and padding. */
+export const Compact: Story = {
+  render: () => html`
+    <pl-table id="control" density="compact" label="Pioneers">
+      <table>
+        ${header}
+        <tbody>
+          ${body()}
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** The default density, for comparison. */
+export const Regular: Story = {
+  render: () => html`
+    <pl-table id="control" label="Pioneers">
+      <table>
+        ${header}
+        <tbody>
+          ${body()}
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** Visually hidden text in a header cell stays inside the scroll area, so the page does not scroll sideways. */
+export const ScreenReaderCell: Story = {
+  render: () => html`
+    <pl-table id="control" label="Pioneers">
+      <table style="min-inline-size: calc(var(--pl-spacing) * 150)">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">
+              <span
+                style="position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap"
+                >Actions</span
+              >
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${people.map(
+            ([name, role]) =>
+              html`<tr>
+                <th scope="row">${name}</th>
+                <td>${role}</td>
+                <td><a href="#edit">Edit</a></td>
+              </tr>`,
+          )}
         </tbody>
       </table>
     </pl-table>

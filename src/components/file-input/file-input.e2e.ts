@@ -338,8 +338,62 @@ test("the button shows a focus ring from the keyboard", async ({ page }) => {
     .toBe("solid");
 });
 
+test("the host's aria attributes are forwarded to the button", async ({
+  page,
+}) => {
+  await gotoStory(page, story("aria-forwarded"));
+  const button = page.locator("#file").getByRole("button", {
+    name: "Choose file",
+    exact: true,
+  });
+  // A button cannot be required in ARIA, so that one is not forwarded.
+  await expect(button).not.toHaveAttribute("aria-required");
+  await expect(button).toHaveAttribute("aria-invalid", "true");
+  await expect(button).toHaveAttribute(
+    "aria-description",
+    "A PDF, up to 5 MB. Choose a file.",
+  );
+  // The label names the group, which holds the button.
+  await expect(
+    page.locator("#file").getByRole("group", { name: "Resume" }),
+  ).toBeVisible();
+  await page
+    .locator("#file")
+    .evaluate((el) => el.removeAttribute("aria-invalid"));
+  await expect(button).not.toHaveAttribute("aria-invalid");
+  await expect(button).toHaveAttribute(
+    "aria-description",
+    "A PDF, up to 5 MB.",
+  );
+});
+
+test("inside a pl-field the field names, describes and marks the button invalid", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-field"));
+  const host = page.locator("#file");
+  await expect(host.getByRole("group", { name: "Resume" })).toBeVisible();
+  const button = host.getByRole("button", { name: "Choose file", exact: true });
+  await expect(button).toHaveAttribute("aria-invalid", "true");
+  await expect(button).toHaveAttribute("aria-description", /A PDF, up to 5 MB/);
+  await expect(button).toHaveAttribute("aria-description", /Choose a file/);
+  // Clicking the label focuses the control's button.
+  await page.getByText("Resume", { exact: true }).click();
+  await expect(button).toBeFocused();
+  // The control fills the field's column instead of keeping its own width.
+  const [fieldBox, hostBox] = await Promise.all([
+    page.locator("pl-field [part=control]").boundingBox(),
+    host.boundingBox(),
+  ]);
+  expect(hostBox!.width).toBeGreaterThanOrEqual(fieldBox!.width - 1);
+});
+
 test("the control is accessible", async ({ page }) => {
   await expectAccessible(await gotoStory(page, story("labelled")));
+});
+
+test("the aria and field stories are accessible", async ({ page }) => {
+  await expectAccessible(await gotoStory(page, story("in-field")));
 });
 
 test("the states are accessible", async ({ page }) => {

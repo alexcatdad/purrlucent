@@ -236,6 +236,20 @@ export const ManualFilter: Story = {
     ),
 };
 
+/** While the app's lookup runs, `busy` keeps the "No results" row away; the action row still shows. */
+export const Busy: Story = {
+  render: () =>
+    column(
+      html`<pl-combobox
+        id="combo"
+        label="City"
+        manual-filter
+        busy
+        action-label
+      ></pl-combobox>`,
+    ),
+};
+
 /** `action-label` adds a row that offers the typed text; choosing it fires `pl-action`. */
 export const ActionLabel: Story = {
   render: () =>

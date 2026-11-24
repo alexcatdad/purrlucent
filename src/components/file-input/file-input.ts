@@ -1,6 +1,8 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { AriaWatch, forwardAria } from "../../behaviors/aria-forward.ts";
 import { fieldMessage } from "../../behaviors/field-message.ts";
+import { labelText } from "../../behaviors/labels.ts";
 import { messages } from "../../behaviors/locale.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
@@ -15,8 +17,11 @@ import { fileInputStyles } from "./file-input.css.ts";
  * `FileList` or an array. It takes part in forms like a native file input: it
  * submits the files under `name`, a reset clears it, a disabled fieldset
  * disables it, and `required` makes the form invalid while nothing is chosen.
- * It carries its own label, description and message, so do not wrap it in a
- * `pl-field`.
+ * It carries its own label, description and message, and also works inside a
+ * `pl-field`: the host's `aria-invalid`, `aria-describedby` and
+ * `aria-errormessage` are forwarded to the button, and a `<label for>`
+ * pointing at it names the group. `aria-required` is not, since a button
+ * cannot be required in ARIA.
  *
  * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} name - The name the files are submitted under.
@@ -62,6 +67,7 @@ export class PlFileInput extends LitElement {
 
   readonly #internals = this.attachInternals();
   readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
+  readonly #ariaWatch = new AriaWatch(this, () => this.requestUpdate());
   #files: File[] = [];
   #touched = false;
 
@@ -124,12 +130,14 @@ export class PlFileInput extends LitElement {
       subtree: true,
       characterData: true,
     });
+    this.#ariaWatch.observe();
     this.#syncLabelled();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#labelWatch.disconnect();
+    this.#ariaWatch.disconnect();
   }
 
   formResetCallback() {
@@ -180,6 +188,12 @@ export class PlFileInput extends LitElement {
       "aria-describedby",
       invalid ? `${described} message` : described,
     );
+    // The host's own aria-invalid is forwarded; none left over once it goes.
+    button.removeAttribute("aria-invalid");
+    forwardAria(this, button);
+    // A button cannot be required in ARIA; `required` on the element still
+    // makes the form invalid while nothing is chosen.
+    button.removeAttribute("aria-required");
   }
 
   #toggleState(state: string, on: boolean) {
@@ -262,7 +276,11 @@ export class PlFileInput extends LitElement {
         part="field"
         role="group"
         aria-labelledby=${ifDefined(this._labelled ? "label" : undefined)}
-        aria-label=${this._labelled ? nothing : ifDefined(this.label)}
+        aria-label=${
+          this._labelled
+            ? nothing
+            : ifDefined(this.label || labelText(this.labels))
+        }
         aria-disabled=${this.matches(":disabled") ? "true" : nothing}
         @dragenter=${this.#onDragOver}
         @dragover=${this.#onDragOver}

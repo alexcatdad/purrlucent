@@ -262,6 +262,229 @@ test("a sortable header is a sort control with a glyph that follows aria-sort", 
   await expectAccessible(root);
 });
 
+type Page = import("@playwright/test").Page;
+
+/** Resolves `property: value` (a token expression) to its computed value. */
+const resolve = (page: Page, property: string, value: string) =>
+  page.evaluate(
+    ([p, v]) => {
+      const probe = document.createElement("div");
+      probe.style.setProperty(p!, v!);
+      document.body.append(probe);
+      const resolved = getComputedStyle(probe).getPropertyValue(p!);
+      probe.remove();
+      return resolved;
+    },
+    [property, value],
+  );
+
+const background = (page: Page, selector: string) =>
+  page
+    .locator(selector)
+    .first()
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+
+test("hidden text in a header cell does not widen the page at 390px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await open(page, "data-table--screen-reader-cell");
+  const widths = await page.evaluate(() => ({
+    scroll: document.documentElement.scrollWidth,
+    inner: window.innerWidth,
+  }));
+  expect(widths.scroll).toBeLessThanOrEqual(widths.inner);
+  const scroller = page.locator("pl-table >> [part=scroller]");
+  expect(await scroller.evaluate((el) => getComputedStyle(el).position)).toBe(
+    "relative",
+  );
+});
+
+test("the sticky header still sticks inside the positioned scroll area", async ({
+  page,
+}) => {
+  await open(page, "data-table--sticky-header");
+  const cell = page.locator("pl-table thead th").first();
+  expect(await cell.evaluate((el) => getComputedStyle(el).position)).toBe(
+    "sticky",
+  );
+});
+
+test("striped fills even body rows, and selection overrides the fill", async ({
+  page,
+}) => {
+  await open(page, "data-table--striped");
+  await expect(page.locator("pl-table")).toHaveAttribute("striped", "");
+  const [odd, even, selected] = await Promise.all([
+    background(page, "#row-1 > td"),
+    background(page, "#row-2 > td"),
+    background(page, "#row-4 > td"),
+  ]);
+  expect(even).not.toBe(odd);
+  expect(selected).not.toBe(even);
+  expect(await background(page, "#row-3 > td")).toBe(odd);
+});
+
+test("a row without striped has no alternate fill", async ({ page }) => {
+  await open(page);
+  expect(
+    await page
+      .locator("pl-table tbody tr:nth-child(2) > td")
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundColor),
+  ).toBe(
+    await page
+      .locator("pl-table tbody tr:nth-child(1) > td")
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundColor),
+  );
+});
+
+test("aria-selected and data-selected rows share the selection tint", async ({
+  page,
+}) => {
+  await open(page, "data-table--selected-rows");
+  const [aria, data, plain] = await Promise.all([
+    background(page, "#row-aria > td"),
+    background(page, "#row-data > td"),
+    background(page, "#row-plain > td"),
+  ]);
+  expect(aria).toBe(data);
+  expect(aria).not.toBe(plain);
+});
+
+test("the table is a framed, raised panel with a hairline under the header", async ({
+  page,
+}) => {
+  await open(page);
+  const scroller = page.locator("pl-table >> [part=scroller]");
+  const frame = await scroller.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return {
+      width: s.borderTopWidth,
+      radius: s.borderTopLeftRadius,
+      background: s.backgroundColor,
+    };
+  });
+  expect(frame.width).toBe("1px");
+  expect(frame.radius).toBe(
+    await resolve(page, "border-radius", "var(--pl-radius-panel)"),
+  );
+  expect(frame.background).toBe(
+    await resolve(page, "background-color", "var(--pl-color-raised)"),
+  );
+  const rule = await page
+    .locator("pl-table thead th")
+    .first()
+    .evaluate((el) => {
+      const s = getComputedStyle(el);
+      return [s.borderBottomWidth, s.borderBottomStyle];
+    });
+  expect(rule).toEqual(["1px", "solid"]);
+});
+
+test("header cells are small, semibold and secondary; rows keep a minimum size", async ({
+  page,
+}) => {
+  await open(page, "data-table--regular");
+  const head = await page
+    .locator("pl-table thead th")
+    .first()
+    .evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { size: s.fontSize, weight: s.fontWeight, color: s.color };
+    });
+  const cellSize = await page
+    .locator("pl-table tbody td")
+    .first()
+    .evaluate((el) => getComputedStyle(el).fontSize);
+  expect(head.size).toBe(await resolve(page, "font-size", "var(--pl-text-xs)"));
+  expect(Number.parseFloat(head.size)).toBeLessThan(
+    Number.parseFloat(cellSize),
+  );
+  expect(Number(head.weight)).toBeGreaterThanOrEqual(600);
+  expect(head.color).toBe(
+    await resolve(page, "color", "var(--pl-color-muted-foreground)"),
+  );
+  const min = Number.parseFloat(
+    await resolve(page, "block-size", "var(--pl-size-md)"),
+  );
+  const row = (await page.locator("#row-1").boundingBox())!;
+  expect(row.height).toBeGreaterThanOrEqual(min - 1);
+});
+
+test("data-numeric aligns like align=end with tabular figures", async ({
+  page,
+}) => {
+  await open(page, "data-table--regular");
+  for (const selector of [
+    "pl-table thead th[data-numeric]",
+    "#row-1 > td[data-numeric]",
+  ]) {
+    const style = await page.locator(selector).evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { align: s.textAlign, figures: s.fontVariantNumeric };
+    });
+    expect(style.align).toBe("end");
+    expect(style.figures).toContain("tabular-nums");
+  }
+  const end = await page
+    .locator("pl-table tbody td")
+    .first()
+    .evaluate((el) => getComputedStyle(el).textAlign);
+  expect(end).toBe("start");
+});
+
+test("a plain link takes the accent, and underlines on hover", async ({
+  page,
+}) => {
+  await open(page, "data-table--links");
+  const link = page.locator("#plain-link");
+  const style = await link.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { color: s.color, weight: s.fontWeight, line: s.textDecorationLine };
+  });
+  expect(style.color).toBe(
+    await resolve(page, "color", "var(--pl-color-accent-text)"),
+  );
+  expect(Number(style.weight)).toBeGreaterThanOrEqual(600);
+  expect(style.line).toBe("none");
+  await link.hover();
+  await expect
+    .poll(() => link.evaluate((el) => getComputedStyle(el).textDecorationLine))
+    .toBe("underline");
+  expect(
+    await page
+      .locator("#row-link")
+      .evaluate((el) => getComputedStyle(el).color),
+  ).not.toBe(style.color);
+});
+
+test("a stretched link still covers its row beside plain links", async ({
+  page,
+}) => {
+  await open(page, "data-table--links");
+  const box = (await page.locator("#row-linked").boundingBox())!;
+  const covers = await page.evaluate(
+    ([x, y]) => document.elementFromPoint(x!, y!)?.id,
+    [box.x + box.width - 4, box.y + box.height / 2],
+  );
+  expect(covers).toBe("row-link");
+});
+
+test("compact density gives shorter rows than regular", async ({ page }) => {
+  await open(page, "data-table--regular");
+  const regular = (await page.locator("#row-1").boundingBox())!.height;
+  await open(page, "data-table--compact");
+  await expect(page.locator("pl-table")).toHaveAttribute("density", "compact");
+  const compact = (await page.locator("#row-1").boundingBox())!.height;
+  expect(compact).toBeLessThan(regular);
+  const min = Number.parseFloat(
+    await resolve(page, "block-size", "var(--pl-size-row)"),
+  );
+  expect(compact).toBeGreaterThanOrEqual(min - 1);
+});
+
 test("a sort button shows a focus ring", async ({ page }) => {
   await open(page, "data-table--sortable-headers");
   await page.keyboard.press("Tab");
