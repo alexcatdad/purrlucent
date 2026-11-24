@@ -369,9 +369,8 @@ test("after the first month, hovering another previews the band up to it, backwa
   await expect(month(page, 2026, 8)).toHaveAttribute("part", /\bbetween\b/);
   await expect(month(page, 2026, 9)).toHaveAttribute("part", /\bend\b/);
   await expect(month(page, 2026, 11)).not.toHaveAttribute("part", inBand);
-  expect(await background(month(page, 2026, 7))).toBe(
-    await background(month(page, 2026, 9)),
-  );
+  const end = await background(month(page, 2026, 9));
+  await expect.poll(() => background(month(page, 2026, 7))).toBe(end);
 });
 
 test("moving focus with the keyboard previews the band the same way", async ({
@@ -412,7 +411,9 @@ test("a range across years keeps its band on each year's page and the field show
   await expect(inline(2026, 1)).toHaveAttribute("part", /\bbetween\b/);
   await expect(inline(2026, 2)).toHaveAttribute("part", /\bend\b/);
   await expect(inline(2026, 3)).not.toHaveAttribute("part", inBand);
-  expect(await background(inline(2026, 1))).not.toBe("rgba(0, 0, 0, 0)");
+  await expect
+    .poll(() => background(inline(2026, 1)))
+    .not.toBe("rgba(0, 0, 0, 0)");
 });
 
 test("a range within one year shows the year once", async ({ page }) => {

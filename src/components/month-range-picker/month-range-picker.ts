@@ -602,14 +602,14 @@ export class PlMonthRangePicker extends LitElement {
     const shown = this.#text();
     const hint = this.placeholder || (this._labelled ? "" : name);
     const value = shown || hint;
-    // The text alone does not name the field when a label sits above it.
+    // The text alone does not name the field when a label sits above it or a placeholder replaces the name.
     const label = shown
       ? fill(text.labelValue, { label: name, value: shown })
-      : this._labelled
-        ? hint
-          ? fill(text.labelValue, { label: name, value: hint })
-          : name
-        : undefined;
+      : hint && hint !== name
+        ? fill(text.labelValue, { label: name, value: hint })
+        : this._labelled
+          ? name
+          : undefined;
     return html`<span
         part="label"
         @click=${() => !this.#off && this.#trigger?.focus()}
