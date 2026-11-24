@@ -62,20 +62,61 @@ jobs:
           bun-version: ${{ env.BUN_VERSION }}
       - run: bun run build
 
-  # Installing the browsers' system packages sometimes takes over 15 minutes,
-  # so the test steps carry the limits and the job limit only stops a hang.
-  unit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+  # The browser-test image (.github/e2e-image): browsers, their system packages
+  # and fonts preinstalled, so the browser jobs pull it instead of installing.
+  # Tagged with a hash of its Dockerfile and built only when that tag is
+  # missing, natively on each architecture the tests use. It is public, so
+  # pulling needs no login. Job containers cannot read `env`, so the name is
+  # written out where it is used.
+  image:
+    name: image (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    strategy:
+      matrix:
+        include:
+          - { arch: amd64, runner: ubuntu-latest }
+          - { arch: arm64, runner: ubuntu-26.04-arm }
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - id: tag
+        env:
+          HASH: ${{ hashFiles('.github/e2e-image/Dockerfile') }}
+        run: echo "tag=${HASH:0:16}" >> "$GITHUB_OUTPUT"
+      - env:
+          REF: ghcr.io/alexcatdad/purrlucent-e2e:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GITHUB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          if docker manifest inspect "$REF" > /dev/null 2>&1; then
+            echo "$REF exists"
+            exit 0
+          fi
+          docker build --tag "$REF" .github/e2e-image
+          docker push "$REF"
+
+  unit:
+    needs: image
+    # Fails, rather than skips, when the image is missing: unit is required.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/alexcatdad/purrlucent-e2e:${{ needs.image.outputs.tag }}-amd64
+      options: --user 1001 --ipc=host
+    # The test steps carry the limits; the job limit only stops a hang.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      # No bun-version: the image has Bun.
       - uses: ./.github/actions/setup
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
       # Before bun test: the package check renders the packed build in Chromium.
-      - uses: ./.github/actions/playwright
-        with:
-          browsers: chromium firefox webkit
       - run: bun test
         timeout-minutes: 5
       - run: bun run test:unit
@@ -96,40 +137,59 @@ jobs:
           bun-version: ${{ env.BUN_VERSION }}
 
   e2e-browser:
-    name: e2e (${{ matrix.browser }} ${{ matrix.shard }}/${{ matrix.of }})
-    needs: changes
+    name: e2e (${{ matrix.browser }} ${{ matrix.part }} ${{ matrix.shard }}/${{ matrix.of }})
+    needs: [changes, image]
     # Runs unless the change is known to be inert, so a failed `changes` job runs everything.
-    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
-    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && needs.image.result == 'success' }}
+    # Firefox ran 11-25% faster on arm in two trials; Chromium and WebKit ran
+    # 5-9% slower there in one, so they stay on x64.
+    runs-on: ${{ matrix.browser == 'firefox' && 'ubuntu-26.04-arm' || 'ubuntu-latest' }}
+    container:
+      image: ghcr.io/alexcatdad/purrlucent-e2e:${{ needs.image.outputs.tag }}-${{ matrix.browser == 'firefox' && 'arm64' || 'amd64' }}
+      options: --user 1001 --ipc=host
     # The limits are on the steps, as for unit.
-    timeout-minutes: 45
+    timeout-minutes: 30
     strategy:
       fail-fast: false
-      # WebKit and Firefox take about one and a half times as long as Chromium.
-      # Each shard should finish well inside its step's 20 minutes.
+      # Sized from measured times so every job takes about three minutes of
+      # tests, and kept at 16 jobs: with unit, the screen readers and CodeQL
+      # that fills the 20 jobs GitHub runs at once. The generated checks over
+      # every story (tag @quality) get their own jobs, because Playwright
+      # splits shards by test count and those tests are far cheaper.
       matrix:
-        browser: [webkit, firefox]
-        shard: [1, 2, 3]
-        of: [3]
         include:
-          - { browser: chromium, shard: 1, of: 2 }
-          - { browser: chromium, shard: 2, of: 2 }
+          - { browser: chromium, part: behavior, shard: 1, of: 3 }
+          - { browser: chromium, part: behavior, shard: 2, of: 3 }
+          - { browser: chromium, part: behavior, shard: 3, of: 3 }
+          - { browser: chromium, part: quality, shard: 1, of: 1 }
+          - { browser: webkit, part: behavior, shard: 1, of: 5 }
+          - { browser: webkit, part: behavior, shard: 2, of: 5 }
+          - { browser: webkit, part: behavior, shard: 3, of: 5 }
+          - { browser: webkit, part: behavior, shard: 4, of: 5 }
+          - { browser: webkit, part: behavior, shard: 5, of: 5 }
+          - { browser: webkit, part: quality, shard: 1, of: 2 }
+          - { browser: webkit, part: quality, shard: 2, of: 2 }
+          - { browser: firefox, part: behavior, shard: 1, of: 4 }
+          - { browser: firefox, part: behavior, shard: 2, of: 4 }
+          - { browser: firefox, part: behavior, shard: 3, of: 4 }
+          - { browser: firefox, part: behavior, shard: 4, of: 4 }
+          - { browser: firefox, part: quality, shard: 1, of: 1 }
+    env:
+      # The quality jobs select their file, which keeps the config's per-project
+      # filters; the behavior jobs leave out the tests tagged @quality.
+      TESTS: ${{ matrix.part == 'quality' && 'src/quality.e2e.ts' || '--grep-invert=@quality' }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      # No bun-version: the image has Bun.
       - uses: ./.github/actions/setup
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-      - uses: ./.github/actions/playwright
-        with:
-          browsers: ${{ matrix.browser }}
       - run: bun run build-storybook
         timeout-minutes: 10
-      - run: bun run test:e2e --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/${{ matrix.of }}
+      - run: bun run test:e2e --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/${{ matrix.of }} "$TESTS"
         timeout-minutes: 20
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: blob-report-${{ matrix.browser }}-${{ matrix.shard }}
+          name: blob-report-${{ matrix.browser }}-${{ matrix.part }}-${{ matrix.shard }}
           path: blob-report/
           retention-days: 7
           if-no-files-found: ignore

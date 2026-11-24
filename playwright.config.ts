@@ -16,18 +16,32 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+  // A CI runner is all ours: one worker per core.
+  workers: process.env.CI ? "100%" : undefined,
   // Each CI shard writes a blob report; the e2e-report job merges them.
   reporter: process.env.CI ? [["github"], ["blob"]] : "list",
   use: {
     baseURL: `http://localhost:${port}`,
     trace: "retain-on-failure",
   },
-  // Firefox runs only in CI; locally Chromium and WebKit.
+  // Firefox runs only in CI; locally Chromium and WebKit. The spacing-base
+  // check runs in Chromium only; leaving it out here, not skipping it at run
+  // time, keeps it out of the other projects' shard balancing.
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+      grepInvert: /follow the spacing base/,
+    },
     ...(process.env.CI
-      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }]
+      ? [
+          {
+            name: "firefox",
+            use: { ...devices["Desktop Firefox"] },
+            grepInvert: /follow the spacing base/,
+          },
+        ]
       : []),
   ],
   // Serves a prebuilt storybook-static; run build-storybook before test:e2e.
