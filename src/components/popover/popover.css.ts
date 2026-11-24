@@ -36,9 +36,10 @@ export const popoverStyles = css`
     padding: var(--pl-pad-panel);
     overflow: visible;
     background: var(--pl-material-panel);
-    backdrop-filter: var(--pl-material-panel-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-panel-filter);
     overflow-wrap: anywhere;
     box-shadow:
+      var(--pl-material-edge),
       inset 0 0 0 1px var(--pl-color-edge),
       var(--pl-elevation-panel);
     color: var(--pl-color-foreground);

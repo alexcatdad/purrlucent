@@ -171,7 +171,7 @@ export const listboxStyles = css`
     border-radius: var(--pl-radius-panel);
     padding: var(--pl-pad-surface);
     background: var(--pl-material-panel);
-    backdrop-filter: var(--pl-material-panel-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-panel-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

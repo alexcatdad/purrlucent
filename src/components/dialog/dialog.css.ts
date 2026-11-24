@@ -36,7 +36,7 @@ export const dialogStyles = css`
     border-radius: var(--pl-radius-panel);
     padding: 0;
     background: var(--_material);
-    backdrop-filter: var(--_filter);
+    backdrop-filter: var(--pl-lens,) var(--_filter);
     box-shadow: var(--pl-material-edge), var(--_elevation);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

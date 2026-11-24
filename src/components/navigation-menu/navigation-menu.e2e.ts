@@ -393,5 +393,12 @@ test("the panel has a backdrop blur under glass and none when solid", async ({
   await gotoStory(page, story("open"));
   expect(await filter()).toBe("none");
   await gotoStory(page, story("open"), "material:glass");
-  expect(await filter()).toMatch(/^blur\([\d.]+px\) saturate\(/);
+  // Chromium refracts first through the panel's own lens filter.
+  await expect
+    .poll(filter)
+    .toMatch(
+      test.info().project.name === "chromium"
+        ? /^url\("#pl-lens-\d+"\) blur\([\d.]+px\) saturate\(/
+        : /^blur\([\d.]+px\) saturate\(/,
+    );
 });

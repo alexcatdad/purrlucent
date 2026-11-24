@@ -2425,6 +2425,7 @@ A bar of controls with one tab stop and arrow-key navigation. A `<pl-input type=
 | `label`    | `string`       | `""`    | Accessible name. Required.                                             |
 | `scrolled` | `boolean`      | `false` | Set while content is scrolled beneath the bar; shows the scroll edge.  |
 | `size`     | `"md" \| "xl"` | `"xl"`  | `xl` (default) or the compact `md`. Give the controls the same `size`. |
+| `floating` | `boolean`      | `false` | A capsule that floats over the content, with a shadow under glass.     |
 
 **Slots**
 

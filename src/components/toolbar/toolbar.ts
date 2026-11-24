@@ -163,10 +163,13 @@ export class PlToolbar extends LitElement {
     label: { type: String },
     scrolled: { type: Boolean, reflect: true },
     size: { reflect: true },
+    floating: { type: Boolean, reflect: true },
   };
 
   /** Accessible name. Required. */
   declare label: string;
+  /** A capsule that floats over the content, with a shadow under glass. */
+  declare floating: boolean;
   /** `xl` (default) or the compact `md`. Give the controls the same `size`. */
   declare size: "md" | "xl";
   /** Set while content is scrolled beneath the bar; shows the scroll edge. */
@@ -186,6 +189,7 @@ export class PlToolbar extends LitElement {
     this.label = "";
     this.scrolled = false;
     this.size = "xl";
+    this.floating = false;
   }
 
   #slotted(): Element[] {

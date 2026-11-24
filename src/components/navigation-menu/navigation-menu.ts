@@ -44,6 +44,9 @@ export class PlNavigationItem extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, () =>
+      this.renderRoot.querySelector<HTMLElement>("[part=panel]"),
+    );
     this.current = false;
     this.open = false;
     new DismissController(this, {

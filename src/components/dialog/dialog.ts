@@ -1,4 +1,5 @@
 import { LitElement, html, nothing } from "lit";
+import { LensController } from "../../behaviors/lens.ts";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { dialogStyles } from "./dialog.css.ts";
 
@@ -97,6 +98,9 @@ export class PlDialog extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, () =>
+      this.renderRoot.querySelector<HTMLElement>("dialog"),
+    );
     this.open = false;
     this.variant = "sheet";
     this.label = "";

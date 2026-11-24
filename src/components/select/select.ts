@@ -1,6 +1,7 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
@@ -145,6 +146,9 @@ export class PlSelect extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, () =>
+      this.renderRoot.querySelector<HTMLElement>("[part=listbox]"),
+    );
     this.value = "";
     this.name = "";
     this.label = "";

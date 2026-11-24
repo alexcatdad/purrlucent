@@ -145,7 +145,7 @@ Surfaces are solid by default. To turn on glass, set `pl-material="glass"` on an
 
 Glass applies only to controls and navigation. Content stays plain in both modes. A surface falls back to solid when the browser has no `backdrop-filter`, or when the user asks for reduced transparency or more contrast.
 
-Glass shows what is behind it, blurred. Over a page of one flat color there is nothing to blur, so a glass bar looks almost solid. It shows over varied content: a photo, a gradient, a scrolling list passing under a bar or sidebar. For a page with little of that, give the background some variation, and keep text on glass at 4.5:1 where the background is strongest:
+Glass shows what is behind it, lightly frosted. Over a page of one flat color there is nothing to show, so a glass bar looks almost solid. It shows over varied content: a photo, a gradient, a scrolling list passing under a bar or sidebar. For a page with little of that, give the background some variation:
 
 ```css
 body {
@@ -165,14 +165,11 @@ body {
 }
 ```
 
-Each glass fill is as clear as the text on it allows over any backdrop, black to white, at 4.5:1. There are two tiers, as Apple's small glass is clearer than its large glass:
+Glass is thin, as Apple's is: a pale film in light and an ink one in dark, `--pl-material-glass-thin`, under a 4px frost and a strong color boost, with a rim light and a soft shadow. Bars, controls, sidebars, panels, popups and sheets all take it. Over any backdrop, black to white, primary text on it holds 3.5:1 and the focus ring and selection 3:1; over mid-grey and lighter backdrops in light, and over any backdrop in dark, primary text reaches 4.5:1. Grey, pink and red text drop lower over dark backdrops, so keep them for text that is not essential, or give the area behind the glass a lighter tone. Tabs, breadcrumbs, pagination, the select and tinted and destructive buttons keep a thicker fill, `--pl-material-glass`, so their colored text holds 4.5:1.
 
-- Bars, capsules and controls with primary text take the thin fill, `--pl-material-glass-thin`, under a small blur and a strong color boost, so the shapes and colors behind it show through. A text-only button in a glass bar takes the primary text color for the same reason. On glass the focus ring and the selection are a deeper pink in light and a lighter one in dark, so they hold 3:1 on the thin fill.
-- Sidebars, panels, sheets, and controls that show grey, pink or red text (tabs, breadcrumbs, pagination, the select, tinted and destructive buttons) take the thick fill, `--pl-material-glass`.
+A text-only button in a glass bar takes the primary text color. On glass the focus ring and the selection are a deep pink in light and a light one in dark. A toolbar with `floating` becomes a capsule that floats over the content.
 
-If you control what sits behind your glass, you may set clearer fills on the `pl-material="glass"` element, and then check text contrast over your own backdrop. Put only primary text on the thin tier.
-
-In Chromium, toolbars, menubars, navigation menus, buttons and segmented controls also refract: each bends what is behind its rim through an SVG filter sized to it, which the component adds to its own tree. Safari and Firefox keep the frosted glass, as they cannot draw an SVG filter in `backdrop-filter`.
+In Chromium, toolbars, menubars, navigation menus, buttons, segmented controls, popovers, menus, the select's list, dialogs and drawers also refract: each bends what is behind its rim through an SVG filter sized to it, which the component adds to its own tree. Safari and Firefox keep the frosted glass, as they cannot draw an SVG filter in `backdrop-filter`.
 
 ### Clear glass
 

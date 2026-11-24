@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, type CSSResult } from "lit";
 import { expect } from "storybook/test";
+import { LensController } from "../behaviors/lens.ts";
 import "../components/button/button.ts";
 import "../components/toggle-group/toggle-group.ts";
 import "../components/toolbar/toolbar.ts";
@@ -30,6 +31,21 @@ const defineDemo = (tag: string, surface: CSSResult) =>
       }
     },
   );
+
+/** A panel that refracts, as a popover or dialog does, for the picture story. */
+customElements.define(
+  "pl-glass-panel-demo",
+  class extends LitElement {
+    static override styles = panelSurface;
+    constructor() {
+      super();
+      new LensController(this);
+    }
+    override render() {
+      return html`<slot></slot>`;
+    }
+  },
+);
 
 defineDemo("pl-bar-demo", barSurface);
 defineDemo("pl-panel-demo", panelSurface);
@@ -120,42 +136,56 @@ const scene = encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" preserveAspectRatio="xMidYMid slice"><defs><pattern id="s" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="3" height="14" fill="#1d1b1e" fill-opacity=".16"/></pattern><pattern id="c" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#f7f6f7"/><rect width="20" height="20" fill="#1d1b1e"/><rect x="20" y="20" width="20" height="20" fill="#1d1b1e"/></pattern><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc2df"/><stop offset=".45" stop-color="#ffd59a"/><stop offset="1" stop-color="#9fe3d0"/></linearGradient></defs><rect width="1200" height="560" fill="url(#g)"/><rect width="1200" height="560" fill="url(#s)"/><rect x="470" y="300" width="260" height="200" fill="url(#c)"/><circle cx="170" cy="150" r="130" fill="#ff69b4"/><circle cx="1030" cy="120" r="110" fill="#7b5cff"/><circle cx="380" cy="470" r="120" fill="#e9a23b"/><circle cx="900" cy="440" r="140" fill="#2d7a4f"/><circle cx="640" cy="120" r="70" fill="#e03e2d"/><text x="600" y="330" text-anchor="middle" font-family="system-ui, sans-serif" font-size="190" font-weight="800" fill="#1d1b1e" fill-opacity=".85" letter-spacing="-8">purrlucent</text></svg>`,
 );
 
-/** Glass chrome over a picture: thin glass on the bar and controls, thick glass on the panel. */
+/** Glass over a picture: a floating bar, a panel and round buttons that
+ * refract (in Chromium) over stripes, letters and a checkerboard. */
 export const OverAPicture: Story = {
   render: () => html`
     <div
-      style="display: grid; align-content: start; gap: 24px; min-block-size: 560px; padding: 16px; box-sizing: border-box; background: linear-gradient(light-dark(transparent, rgb(0 0 0 / 55%)), light-dark(transparent, rgb(0 0 0 / 55%))), url('data:image/svg+xml;utf8,${scene}') center / cover"
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); min-block-size: 460px; border-radius: var(--pl-radius-panel); overflow: hidden; background: linear-gradient(light-dark(transparent, rgb(0 0 0 / 55%)), light-dark(transparent, rgb(0 0 0 / 55%))), url('data:image/svg+xml;utf8,${scene}') center / cover"
     >
-      <pl-toolbar label="Mail">
-        <pl-button variant="ghost">Inbox</pl-button>
-        <pl-button variant="ghost">Flagged</pl-button>
-        <pl-button variant="ghost">Sent</pl-button>
-        <pl-toolbar-spacer></pl-toolbar-spacer>
-        <pl-button variant="primary" size="xl">Compose</pl-button>
-      </pl-toolbar>
-      <pl-panel-demo
-        style="display: grid; gap: 8px; max-inline-size: 360px; padding: 16px"
+      <div></div>
+      <div
+        style="display: grid; align-content: start; gap: 18px; padding: 20px; min-inline-size: 0"
       >
-        <strong>Trip itinerary</strong>
-        <span style="color: var(--pl-color-muted-foreground)"
-          >Train on Friday, coast walk on Saturday, market on Sunday.</span
-        >
-        <span style="display: flex; gap: 8px">
-          <pl-button variant="primary">Reply</pl-button>
-          <pl-button>Forward</pl-button>
-        </span>
-      </pl-panel-demo>
-      <span style="display: flex; flex-wrap: wrap; gap: 12px">
-        <pl-toggle-group label="Calendar range">
-          <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
-          <pl-toggle-group-item value="week" selected
-            >Week</pl-toggle-group-item
+        <pl-toolbar label="Mail" floating size="md">
+          <pl-button variant="ghost">Inbox</pl-button>
+          <pl-button variant="ghost">Flagged</pl-button>
+          <pl-button variant="ghost">Sent</pl-button>
+        </pl-toolbar>
+        <pl-glass-panel-demo style="display: grid; gap: 6px; padding: 16px">
+          <strong>Trip itinerary</strong>
+          <span
+            >Train on Friday, coast walk on Saturday, market on Sunday.</span
           >
-          <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
-        </pl-toggle-group>
-        <pl-button>Cancel</pl-button>
-        <pl-button>Share</pl-button>
-      </span>
+          <span style="display: flex; gap: 8px; margin-block-start: 6px">
+            <pl-button variant="primary">Reply</pl-button>
+            <pl-button>Forward</pl-button>
+          </span>
+        </pl-glass-panel-demo>
+        <span
+          style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px"
+        >
+          <pl-button
+            icon
+            aria-label="Add"
+            style="inline-size: 56px; block-size: 56px; min-block-size: 56px"
+            >+</pl-button
+          >
+          <pl-button
+            icon
+            aria-label="Like"
+            style="inline-size: 56px; block-size: 56px; min-block-size: 56px"
+            >&#9829;</pl-button
+          >
+          <pl-toggle-group label="Calendar range">
+            <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
+            <pl-toggle-group-item value="week" selected
+              >Week</pl-toggle-group-item
+            >
+            <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
+          </pl-toggle-group>
+        </span>
+      </div>
     </div>
   `,
   globals: { material: "glass" },

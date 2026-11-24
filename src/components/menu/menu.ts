@@ -1,6 +1,7 @@
 import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import { position } from "../../behaviors/position.ts";
 import { matchIndex } from "../select/match.ts";
 import {
@@ -194,6 +195,9 @@ export class PlMenu extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, () =>
+      this.renderRoot.querySelector<HTMLElement>("[part=menu]"),
+    );
     this.label = "";
     this.open = false;
     // Only the root listens: a press on a parent row must not close its submenu.
