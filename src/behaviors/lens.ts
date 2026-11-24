@@ -152,14 +152,17 @@ export class LensController implements ReactiveController {
     this.#use(undefined);
   }
 
+  /** Builds the lens on each resize, and drops it where the host draws no
+   * backdrop (solid material, a ghost button, a fallback). A host that turns
+   * glass without resizing gets its lens on its next resize. */
   update() {
     const host = this.#host;
     const w = host.offsetWidth;
     const h = host.offsetHeight;
-    if (!w || !h) return this.#use(undefined);
-    const radius = Number.parseFloat(
-      getComputedStyle(host).borderTopLeftRadius,
-    );
+    const style = getComputedStyle(host);
+    if (!w || !h || style.backdropFilter === "none")
+      return this.#use(undefined);
+    const radius = Number.parseFloat(style.borderTopLeftRadius);
     const r = Math.round(Math.min(radius || 0, w / 2, h / 2));
     this.#use(lensFor(host.getRootNode() as Tree, w, h, r));
   }

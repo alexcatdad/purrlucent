@@ -162,7 +162,8 @@ export const OverAPicture: Story = {
 };
 
 /*
- * Lensing prototype, not part of the library. The backdrop is displaced at the
+ * The first lensing prototype, with one fixed map; the library's lens
+ * (behaviors/lens.ts) sizes its map to each control. The backdrop is displaced at the
  * edges through an SVG filter, as Apple's glass bends what is behind it. The
  * map's red channel runs left to right and its green top to bottom, so the
  * centre (128, 128) does not move and the edges pull outward; a blurred
