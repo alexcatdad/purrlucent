@@ -26,7 +26,7 @@ export const comboboxStyles = css`
 
   :host([size="xl"]) {
     --_glyph: var(--pl-icon-md);
-    --_button: calc(var(--pl-spacing) * 7.5);
+    --_button: calc(var(--pl-visual-xl) - var(--pl-spacing) * 1.5);
     --_inset: var(--pl-space-1);
   }
 
@@ -48,7 +48,7 @@ export const comboboxStyles = css`
   /* A long option wraps; the padding keeps a one-line row the hit height. */
   ::slotted(pl-option),
   [part="empty"] {
-    padding-block: max(0px, calc((var(--pl-size-hit-min) - 1lh) / 2));
+    padding-block: max(0px, calc((var(--pl-size-row) - 1lh) / 2));
     white-space: normal;
     overflow-wrap: anywhere;
   }
@@ -120,7 +120,7 @@ export const comboboxStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--pl-size-hit-min);
+    min-block-size: var(--pl-size-row);
     padding-inline: var(--_label) var(--pl-pad-item);
     color: var(--pl-color-muted-foreground);
   }

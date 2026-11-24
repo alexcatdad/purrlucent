@@ -17,9 +17,7 @@ export const commandStyles = css`
     box-sizing: border-box;
     overflow-y: auto;
     overscroll-behavior: contain;
-    max-block-size: calc(
-      var(--pl-size-hit-min) * 8 + var(--pl-pad-surface) * 2
-    );
+    max-block-size: calc(var(--pl-size-row) * 8 + var(--pl-pad-surface) * 2);
     padding: var(--pl-pad-surface);
   }
 
@@ -27,7 +25,7 @@ export const commandStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--pl-size-hit-min);
+    min-block-size: var(--pl-size-row);
     padding-inline: var(--pl-pad-item);
     color: var(--pl-color-muted-foreground);
   }
@@ -50,9 +48,9 @@ export const itemStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--pl-size-hit-min);
+    min-block-size: var(--pl-size-row);
     border-radius: var(--pl-radius-row);
-    padding-block: max(0px, calc((var(--pl-size-hit-min) - 1lh) / 2));
+    padding-block: max(0px, calc((var(--pl-size-row) - 1lh) / 2));
     padding-inline: var(--pl-pad-item);
     cursor: default;
     transition:
@@ -130,7 +128,7 @@ export const groupStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    min-block-size: var(--pl-size-md);
+    min-block-size: var(--pl-size-row);
     padding-inline: var(--pl-pad-item);
     color: var(--pl-color-muted-foreground);
     font-weight: 700;

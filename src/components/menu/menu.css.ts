@@ -82,8 +82,8 @@ export const itemStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    block-size: var(--pl-size-md);
-    min-block-size: var(--pl-size-hit-min);
+    block-size: var(--pl-size-row);
+    min-block-size: var(--pl-size-row);
     border-radius: var(--pl-radius-row);
     padding-inline: var(--pl-pad-item);
     outline: none;
@@ -257,7 +257,7 @@ export const labelStyles = css`
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    block-size: var(--pl-size-md);
+    block-size: var(--pl-size-row);
     padding-inline: var(--pl-pad-item);
     color: var(--pl-color-muted-foreground);
     font-weight: 700;

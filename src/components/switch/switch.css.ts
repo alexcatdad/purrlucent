@@ -1,8 +1,10 @@
 import { css } from "lit";
 
 /*
- * Each size sets the track width and height and the thumb inset; everything
- * else is calculated from them. The thumb is 4/3 as wide as the track is tall.
+ * Each size sets the track height and the thumb inset; everything else is
+ * calculated from them. The track has its own heights, smaller than the
+ * control heights, and is 2.25 times as wide as it is tall, so the thumb, 4/3
+ * as wide as the track is tall, always has room to travel.
  * While pressed it grows about its own center, to 0.92 of the track width.
  * The track keeps its drawn size with a coarse pointer; the host, which is the
  * hit region, grows around it. A label that wraps grows the row downwards: the
@@ -10,8 +12,8 @@ import { css } from "lit";
  */
 export const switchStyles = css`
   :host {
-    --_w: calc(var(--pl-spacing) * 13.5);
-    --_h: var(--pl-visual-md);
+    --_h: calc(var(--pl-spacing) * 6);
+    --_w: calc(var(--_h) * 2.25);
     --_in: var(--pl-space-0-5);
     --_kh: calc(var(--_h) - var(--_in) * 2);
     --_kw: calc(var(--_h) * 4 / 3);
@@ -37,13 +39,11 @@ export const switchStyles = css`
   }
 
   :host([size="lg"]) {
-    --_w: calc(var(--pl-spacing) * 16);
-    --_h: var(--pl-visual-lg);
+    --_h: calc(var(--pl-spacing) * 7);
   }
 
   :host([size="xl"]) {
-    --_w: calc(var(--pl-spacing) * 20);
-    --_h: var(--pl-visual-xl);
+    --_h: calc(var(--pl-spacing) * 9);
     --_in: calc(var(--pl-spacing) * 0.75);
   }
 

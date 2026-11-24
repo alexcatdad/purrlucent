@@ -335,7 +335,7 @@ class ChatDemo extends LitElement {
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      block-size: calc(var(--pl-spacing) * 150);
+      block-size: calc(var(--pl-spacing) * 172);
       inline-size: min(100%, calc(var(--pl-spacing) * 180));
       margin-inline: auto;
       border: 1px solid var(--pl-color-border);
