@@ -143,6 +143,23 @@ export const Types: Story = {
   },
 };
 
+/** A form that validates itself sets `aria-required`, `aria-describedby`, `aria-invalid` and `aria-errormessage` on the host; the field forwards them to its native textarea. */
+export const HostAria: Story = {
+  render: () =>
+    column(html`
+      <pl-textarea
+        id="area"
+        label="Message"
+        aria-required="true"
+        aria-invalid="true"
+        aria-describedby="hint"
+        aria-errormessage="problem"
+      ></pl-textarea>
+      <p id="hint" style="margin:0">Plain text only.</p>
+      <p id="problem" style="margin:0">Write a message.</p>
+    `),
+};
+
 export const Rtl: Story = {
   render: () =>
     column(html`<pl-textarea label="Message" value="Value"></pl-textarea>`),
