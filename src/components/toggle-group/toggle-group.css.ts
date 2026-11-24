@@ -55,6 +55,35 @@ export const groupStyles = css`
     white-space: nowrap;
   }
 
+  /* An edge with more items past it fades out, so a cut item reads as more to
+     scroll to. The group sets data-scrollable to the edges that can scroll. */
+  :host([fit-content]) {
+    --_fade: calc(var(--pl-spacing) * 6);
+    --_fade-dir: to right;
+    --_fade-start: 0px;
+    --_fade-end: 0px;
+
+    mask-image: linear-gradient(
+      var(--_fade-dir),
+      transparent,
+      Canvas var(--_fade-start),
+      Canvas calc(100% - var(--_fade-end)),
+      transparent
+    );
+  }
+
+  :host([fit-content]:dir(rtl)) {
+    --_fade-dir: to left;
+  }
+
+  :host([data-scrollable~="start"]) {
+    --_fade-start: var(--_fade);
+  }
+
+  :host([data-scrollable~="end"]) {
+    --_fade-end: var(--_fade);
+  }
+
   /* Increased contrast outlines the track instead of lighting its edge. */
   @media (prefers-contrast: more) {
     :host {
@@ -66,6 +95,7 @@ export const groupStyles = css`
   @media (forced-colors: active) {
     :host {
       outline: 1px solid CanvasText;
+      mask-image: none;
     }
   }
 `;
