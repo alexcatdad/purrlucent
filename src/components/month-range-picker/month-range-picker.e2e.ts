@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { expectAccessible } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
 
@@ -249,4 +249,232 @@ test("inline and open popover pass the accessibility check", async ({
   const root = await gotoStory(page, story("default"));
   await page.getByRole("button", { name: /^Period/ }).click();
   await expectAccessible(root);
+});
+
+const styles = (locator: Locator, props: string[]) =>
+  locator.evaluate((el, names) => {
+    const style = getComputedStyle(el);
+    return names.map((name) => style.getPropertyValue(name));
+  }, props);
+/** The corner radii in px: start-start, end-start, start-end, end-end. */
+const radii = async (locator: Locator) =>
+  (
+    await styles(locator, [
+      "border-start-start-radius",
+      "border-end-start-radius",
+      "border-start-end-radius",
+      "border-end-end-radius",
+    ])
+  ).map(parseFloat);
+const background = async (locator: Locator) =>
+  (await styles(locator, ["background-color"]))[0];
+const inBand = /\b(start|end|between)\b/;
+
+test("the trigger is as tall as a select beside it and the labels line up", async ({
+  page,
+}) => {
+  await gotoStory(page, story("with-select"));
+  const box = (selector: string) => page.locator(selector).boundingBox();
+  const select = await box("#select [part=trigger]");
+  const trigger = await box("#picker [part=trigger]");
+  expect(Math.abs(select!.height - trigger!.height)).toBeLessThanOrEqual(1);
+  expect(Math.abs(select!.y - trigger!.y)).toBeLessThanOrEqual(1);
+  const selectLabel = await box("#select [part=label]");
+  const pickerLabel = await box("#picker [part=label]");
+  expect(Math.abs(selectLabel!.y - pickerLabel!.y)).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(selectLabel!.height - pickerLabel!.height),
+  ).toBeLessThanOrEqual(1);
+  await expect(
+    page.getByRole("button", { name: /^Period, Feb\s*\S\s*May 2026$/ }),
+  ).toBeVisible();
+});
+
+test("the trigger is a field with a calendar icon, a chevron and a muted placeholder", async ({
+  page,
+}) => {
+  await gotoStory(page, story("placeholder"));
+  const trigger = page.locator("#picker [part=trigger]");
+  await expect(trigger.locator("[part=icon]")).toBeVisible();
+  await expect(trigger.locator("[part=glyph]")).toBeVisible();
+  await expect(trigger.locator("[part=value]")).toHaveText("Choose a period");
+  const [text] = await styles(trigger, ["color"]);
+  const [hint] = await styles(trigger.locator("[part=value]"), ["color"]);
+  expect(hint).not.toBe(text);
+  await expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+});
+
+test("the range is one band: the ends are caps, the months between join, and the band rounds at row ends", async ({
+  page,
+}) => {
+  await gotoStory(page, story("inline"));
+  // February to May: a cap, the end of row one, the start of row two, a cap.
+  const feb = month(page, 2026, 2);
+  const mar = month(page, 2026, 3);
+  const apr = month(page, 2026, 4);
+  const may = month(page, 2026, 5);
+  await expect(feb).toHaveAttribute("part", /\bstart\b/);
+  await expect(mar).toHaveAttribute("part", /\bbetween\b/);
+  await expect(apr).toHaveAttribute("part", /\bbetween\b/);
+  await expect(may).toHaveAttribute("part", /\bend\b/);
+  expect(await background(mar)).toBe(await background(apr));
+  expect(await background(feb)).toBe(await background(may));
+  expect(await background(feb)).not.toBe(await background(mar));
+  expect(await background(mar)).not.toBe("rgba(0, 0, 0, 0)");
+  expect(await background(month(page, 2026, 1))).toBe("rgba(0, 0, 0, 0)");
+  expect(await background(month(page, 2026, 6))).toBe("rgba(0, 0, 0, 0)");
+  const febRadii = await radii(feb);
+  const marRadii = await radii(mar);
+  const aprRadii = await radii(apr);
+  const mayRadii = await radii(may);
+  expect(febRadii[0]).toBeGreaterThan(0);
+  expect(febRadii[2]).toBe(0);
+  expect(marRadii[0]).toBe(0);
+  expect(marRadii[2]).toBeGreaterThan(0);
+  expect(aprRadii[0]).toBeGreaterThan(0);
+  expect(aprRadii[2]).toBe(0);
+  expect(mayRadii[0]).toBe(0);
+  expect(mayRadii[2]).toBeGreaterThan(0);
+});
+
+test("a range of one month is a single rounded cap", async ({ page }) => {
+  await gotoStory(page, story("single-month"));
+  const mar = month(page, 2026, 3);
+  await expect(mar).toHaveAttribute("part", /\bstart\b/);
+  await expect(mar).toHaveAttribute("part", /\bend\b/);
+  expect((await radii(mar)).every((radius) => radius > 0)).toBe(true);
+  expect(await background(mar)).not.toBe(
+    await background(month(page, 2026, 4)),
+  );
+  await expect(page.locator('#picker [part~="between"]')).toHaveCount(0);
+});
+
+test("after the first month, hovering another previews the band up to it, backwards too", async ({
+  page,
+}) => {
+  await gotoStory(page, story("inline"));
+  await month(page, 2026, 9).click();
+  await month(page, 2026, 11).hover();
+  await expect(month(page, 2026, 9)).toHaveAttribute("part", /\bstart\b/);
+  await expect(month(page, 2026, 10)).toHaveAttribute("part", /\bbetween\b/);
+  await expect(month(page, 2026, 11)).toHaveAttribute("part", /\bend\b/);
+  // The preview is not a choice.
+  await expect(month(page, 2026, 11)).toHaveAttribute("aria-selected", "false");
+  expect(await value(page)).toBe("2026-02/2026-05");
+  await month(page, 2026, 7).hover();
+  await expect(month(page, 2026, 7)).toHaveAttribute("part", /\bstart\b/);
+  await expect(month(page, 2026, 8)).toHaveAttribute("part", /\bbetween\b/);
+  await expect(month(page, 2026, 9)).toHaveAttribute("part", /\bend\b/);
+  await expect(month(page, 2026, 11)).not.toHaveAttribute("part", inBand);
+  expect(await background(month(page, 2026, 7))).toBe(
+    await background(month(page, 2026, 9)),
+  );
+});
+
+test("moving focus with the keyboard previews the band the same way", async ({
+  page,
+}) => {
+  await gotoStory(page, story("inline"));
+  await month(page, 2026, 8).focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("ArrowLeft");
+  await page.keyboard.press("ArrowLeft");
+  await expect(month(page, 2026, 6)).toBeFocused();
+  await expect(month(page, 2026, 6)).toHaveAttribute("part", /\bstart\b/);
+  await expect(month(page, 2026, 7)).toHaveAttribute("part", /\bbetween\b/);
+  await expect(month(page, 2026, 8)).toHaveAttribute("part", /\bend\b/);
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await expect(month(page, 2026, 9)).toHaveAttribute("part", /\bend\b/);
+  await expect(month(page, 2026, 8)).toHaveAttribute("part", /\bstart\b/);
+  expect(await value(page)).toBe("2026-02/2026-05");
+});
+
+test("a range across years keeps its band on each year's page and the field shows both years", async ({
+  page,
+}) => {
+  await gotoStory(page, story("cross-year"));
+  await expect(page.locator("#picker [part=value]")).toHaveText(
+    /^Nov 2025\s*\S\s*Feb 2026$/,
+  );
+  const inline = (year: number, number: number) =>
+    page.locator(`#inline [data-month="${year * 12 + number - 1}"]`);
+  await expect(page.locator("#inline [part=title]")).toHaveText("2025");
+  await expect(inline(2025, 11)).toHaveAttribute("part", /\bstart\b/);
+  await expect(inline(2025, 12)).toHaveAttribute("part", /\bbetween\b/);
+  await expect(inline(2025, 10)).not.toHaveAttribute("part", inBand);
+  await page.locator("#inline [part=nav]").nth(1).click();
+  await expect(page.locator("#inline [part=title]")).toHaveText("2026");
+  await expect(inline(2026, 1)).toHaveAttribute("part", /\bbetween\b/);
+  await expect(inline(2026, 2)).toHaveAttribute("part", /\bend\b/);
+  await expect(inline(2026, 3)).not.toHaveAttribute("part", inBand);
+  expect(await background(inline(2026, 1))).not.toBe("rgba(0, 0, 0, 0)");
+});
+
+test("a range within one year shows the year once", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await expect(page.locator("#picker [part=value]")).toHaveText(
+    /^Feb\s*\S\s*May 2026$/,
+  );
+});
+
+test("this month has a dot, not bold accent text", async ({ page }) => {
+  await gotoStory(page, story("empty"));
+  const now = page.locator('#picker [part~="month"][aria-current="date"]');
+  await expect(now).toHaveCount(1);
+  const [weight, color] = await styles(now, ["font-weight", "color"]);
+  expect(Number(weight)).toBeLessThan(600);
+  const other = page
+    .locator('#picker [part~="month"]:not([aria-current="date"])')
+    .first();
+  expect((await styles(other, ["color"]))[0]).toBe(color);
+  const dot = await now.evaluate((el) => {
+    const style = getComputedStyle(el, "::after");
+    return [style.content, style.backgroundColor, style.width];
+  });
+  expect(dot[0]).not.toBe("none");
+  expect(dot[1]).not.toBe("rgba(0, 0, 0, 0)");
+  expect(parseFloat(dot[2]!)).toBeGreaterThan(0);
+});
+
+test("Clear is enabled while there is a value and disabled without one", async ({
+  page,
+}) => {
+  await gotoStory(page, story("inline"));
+  await expect(page.getByRole("button", { name: "Clear" })).toBeEnabled();
+  await gotoStory(page, story("empty"));
+  await expect(page.getByRole("button", { name: "Clear" })).toBeDisabled();
+  await page.locator("#picker [data-month]").first().click();
+  await expect(page.getByRole("button", { name: "Clear" })).toBeEnabled();
+});
+
+test("a preset sets the range, fires the change events and closes", async ({
+  page,
+}) => {
+  await gotoStory(page, story("presets"));
+  await record(page);
+  await page.getByRole("button", { name: /^Period/ }).click();
+  await expect(page.getByRole("dialog", { name: "Period" })).toBeVisible();
+  await expect(page.locator("#picker [part=preset]")).toHaveCount(3);
+  await page.getByRole("button", { name: "Second quarter" }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  expect(await value(page)).toBe("2026-04/2026-06");
+  expect(await recorded(page)).toEqual([
+    "pl-change:2026-04/2026-06:2026-04:2026-06",
+    "input",
+    "change",
+  ]);
+  await expect(page.locator("#picker [part=value]")).toHaveText(
+    /^Apr\s*\S\s*Jun 2026$/,
+  );
+});
+
+test("without presets there is no list", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await page.getByRole("button", { name: /^Period/ }).click();
+  await expect(page.locator("#picker [part=presets]")).toHaveCount(0);
 });

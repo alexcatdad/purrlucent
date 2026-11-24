@@ -26,6 +26,7 @@ const en = {
   nextMonth: "Next month",
   chooseDate: "Choose date",
   chooseMonths: "Choose months",
+  presets: "Presets",
   previousYear: "Previous year",
   nextYear: "Next year",
   labelValue: "{label}, {value}",

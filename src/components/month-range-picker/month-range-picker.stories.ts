@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import "../select/select.ts";
 import "./month-range-picker.ts";
 
 const meta = {
@@ -27,6 +28,93 @@ export const Default: Story = {
         id="picker"
         label="Period"
         value="2026-02/2026-05"
+      ></pl-month-range-picker>`,
+    ),
+};
+
+/** The field takes the select's height and label, so the two line up in one row. */
+export const WithSelect: Story = {
+  render: () =>
+    row(
+      html`<pl-select id="select" placeholder="Choose a variety">
+          <span slot="label">Variety</span>
+          <pl-option>McIntosh</pl-option>
+          <pl-option>Fuji</pl-option>
+        </pl-select>
+        <pl-month-range-picker id="picker" value="2026-02/2026-05">
+          <span slot="label">Period</span>
+        </pl-month-range-picker>`,
+    ),
+};
+
+/** Without a value the field shows its placeholder. */
+export const Placeholder: Story = {
+  render: () =>
+    row(
+      html`<pl-month-range-picker
+        id="picker"
+        label="Period"
+        placeholder="Choose a period"
+      ></pl-month-range-picker>`,
+    ),
+};
+
+/** A range across two years shows both years in the field, and its band on each year's page. */
+export const CrossYear: Story = {
+  render: () =>
+    row(
+      html`<pl-month-range-picker
+          id="picker"
+          label="Period"
+          value="2025-11/2026-02"
+        ></pl-month-range-picker>
+        <pl-month-range-picker
+          id="inline"
+          inline
+          label="Period"
+          value="2025-11/2026-02"
+        ></pl-month-range-picker>`,
+    ),
+};
+
+/** A range of one month is a single rounded cap. */
+export const SingleMonth: Story = {
+  render: () =>
+    row(
+      html`<pl-month-range-picker
+        id="picker"
+        inline
+        label="Period"
+        value="2026-03/2026-03"
+      ></pl-month-range-picker>`,
+    ),
+};
+
+/** Without a value, the Clear button is disabled and this month has a dot. */
+export const Empty: Story = {
+  render: () =>
+    row(
+      html`<pl-month-range-picker
+        id="picker"
+        inline
+        clearable
+        label="Period"
+      ></pl-month-range-picker>`,
+    ),
+};
+
+/** Presets choose a ready-made range and close the popover. */
+export const Presets: Story = {
+  render: () =>
+    row(
+      html`<pl-month-range-picker
+        id="picker"
+        label="Period"
+        .presets=${[
+          { label: "First quarter", start: "2026-01", end: "2026-03" },
+          { label: "Second quarter", start: "2026-04", end: "2026-06" },
+          { label: "Year to date", start: "2026-01", end: "2026-11" },
+        ]}
       ></pl-month-range-picker>`,
     ),
 };
