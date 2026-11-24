@@ -83,6 +83,6 @@ export function position(
       ? a.left - margin("Left")
       : a.right - width - margin("Left");
   overlay.style.top = `${clamp(top, outerH, clientHeight)}px`;
-  overlay.style.left = `${clamp(left, tail ? width : outerW, clientWidth)}px`;
+  overlay.style.left = `${clamp(left, outerW, clientWidth)}px`;
   return top === above ? "top" : "bottom";
 }

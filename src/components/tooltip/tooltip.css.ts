@@ -8,7 +8,6 @@ import { css } from "lit";
 export const tooltipStyles = css`
   :host {
     --_gap: var(--pl-space-1-5);
-    --pl-tooltip-open-delay: 560ms;
 
     display: inline-block;
     /* Read by the element, not used: its computed value is the hover delay. A fixed time, not a motion token: the delay is behaviour and must survive reduced motion. */
