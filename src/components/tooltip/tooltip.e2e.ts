@@ -423,7 +423,11 @@ test("--pl-tooltip-open-delay sets how long a hover waits", async ({
     .evaluate((el) =>
       getComputedStyle(el).getPropertyValue("--pl-tooltip-open-delay").trim(),
     );
-  expect(fallback).toBe("560ms");
+  // Engines serialize a time differently: "560ms" or ".56s".
+  const ms = fallback.endsWith("ms")
+    ? parseFloat(fallback)
+    : parseFloat(fallback) * 1000;
+  expect(ms).toBeCloseTo(560, 5);
   await page.locator("pl-tooltip").evaluate((el) => {
     el.style.setProperty("--pl-tooltip-open-delay", "1500ms");
   });

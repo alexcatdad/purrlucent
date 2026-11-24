@@ -17,8 +17,15 @@ const listen = (host: Locator) =>
     for (const type of ["pl-input", "input", "pl-change", "change"])
       el.addEventListener(type, (event) => {
         if (event.target !== el) return;
+        // The toggle group's pl-change fires before the choice is applied: its detail holds it.
+        const detail = (event as CustomEvent).detail as
+          { selected?: string[] } | undefined;
         const state =
-          control.type === "checkbox" ? control.checked : control.value;
+          type === "pl-change" && detail?.selected
+            ? detail.selected[0]
+            : control.type === "checkbox"
+              ? control.checked
+              : control.value;
         log.push(`${type}:${String(state)}`);
       });
   });
