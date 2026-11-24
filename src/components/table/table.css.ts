@@ -46,6 +46,99 @@ export const tableDocumentStyles = css`
     border-block-end: 0;
   }
 
+  /*
+   * Interactive rows: a row marked data-interactive, or one holding a stretched
+   * link (a[data-stretched], whose hit area covers the row), tints on hover,
+   * rings on keyboard focus and shows a pointer.
+   */
+  pl-table tr:is([data-interactive], :has(a[data-stretched])) {
+    position: relative;
+    cursor: pointer;
+  }
+
+  pl-table a[data-stretched]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The row carries the ring instead of the link. */
+  pl-table a[data-stretched]:focus-visible {
+    outline: none;
+  }
+
+  @media (hover: hover) {
+    pl-table
+      tr:is([data-interactive], :has(a[data-stretched])):not(
+        [data-selected]
+      ):hover
+      > :is(th, td) {
+      background: var(--pl-color-muted-3);
+    }
+  }
+
+  pl-table
+    tr:is([data-interactive], :has(a[data-stretched])):is(
+      :focus-visible,
+      :has(:focus-visible)
+    ) {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
+  }
+
+  /* A sortable heading holds a button; the cell keeps its th role. The glyph
+     follows aria-sort and is a mask, so it takes the text color. */
+  pl-table th[aria-sort] > button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--pl-gap-icon);
+    min-block-size: var(--pl-size-hit-min);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--pl-radius-control);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    transition: color var(--pl-duration-fast) var(--pl-ease-out);
+  }
+
+  pl-table th[aria-sort="ascending"] > button,
+  pl-table th[aria-sort="descending"] > button {
+    color: var(--pl-color-foreground);
+  }
+
+  @media (hover: hover) {
+    pl-table th[aria-sort] > button:hover {
+      color: var(--pl-color-foreground);
+    }
+  }
+
+  pl-table th[aria-sort] > button:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
+  pl-table th[aria-sort] > button::after {
+    content: "";
+    flex: none;
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+    background: currentColor;
+    mask: var(--_sort-glyph) center / 100% 100% no-repeat;
+    --_sort-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 9l4-4l4 4M16 15l-4 4l-4-4'/%3E%3C/svg%3E");
+  }
+
+  pl-table th[aria-sort="ascending"] > button::after {
+    --_sort-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 15l6-6l6 6'/%3E%3C/svg%3E");
+  }
+
+  pl-table th[aria-sort="descending"] > button::after {
+    --_sort-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6-6'/%3E%3C/svg%3E");
+  }
+
   pl-table tr[data-selected] > :is(th, td) {
     background: color-mix(in srgb, var(--pl-color-selected) 16%, transparent);
   }
@@ -73,6 +166,19 @@ export const tableDocumentStyles = css`
 
     pl-table[sticky-header] thead th {
       background: Canvas;
+    }
+
+    pl-table th[aria-sort] > button::after {
+      forced-color-adjust: none;
+      background: ButtonText;
+    }
+
+    pl-table
+      tr:is([data-interactive], :has(a[data-stretched])):is(
+        :focus-visible,
+        :has(:focus-visible)
+      ) {
+      outline-color: Highlight;
     }
 
     pl-table tr[data-selected] > :is(th, td) {
