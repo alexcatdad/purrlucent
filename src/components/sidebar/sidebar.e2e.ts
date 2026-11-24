@@ -272,7 +272,8 @@ test("right-to-left mirrors the chevron and the indent", async ({ page }) => {
       };
     });
   const albums = await side("albums");
-  expect(albums.chevronAtEnd).toBe(true);
+  // The chevron trails the label, so under rtl it sits on the left.
+  expect(albums.chevronAtEnd).toBe(false);
   const recent = await side("recent");
   expect(parseFloat(recent.paddingRight ?? "0")).toBeGreaterThan(
     parseFloat(recent.paddingLeft ?? "0"),
@@ -434,9 +435,9 @@ test("a parent row's link and chevron button are both tab stops, and arrows pass
   await page.locator("#home a").focus();
   await page.keyboard.press("Tab");
   expect(await focusedId(page)).toBe("albums");
-  expect(await part()).toBe("disclosure");
-  await page.keyboard.press("Tab");
   expect(await part()).toBe("control");
+  await page.keyboard.press("Tab");
+  expect(await part()).toBe("disclosure");
   await page.keyboard.press("Tab");
   expect(await focusedId(page)).toBe("settings");
   await page.keyboard.press("ArrowUp");
@@ -1815,6 +1816,199 @@ test.describe("reorder grips", () => {
       ).toBe(true);
       for (const id of ["first", "second", "third"])
         await expect(grip(page, id)).toHaveCSS("opacity", "1");
+    });
+  });
+});
+
+test.describe("chevron placement", () => {
+  /** Left and right edges of the part `selector` inside an item's shadow tree or the item. */
+  const edges = (page: Page, id: string, selector: string) =>
+    page.locator(`#${id}`).evaluate((host, sel) => {
+      const el = host.shadowRoot!.querySelector(sel) ?? host;
+      const box = el.getBoundingClientRect();
+      return { left: box.left, right: box.right };
+    }, selector);
+  const iconLeft = (page: Page, id: string) =>
+    page.locator(`#${id} svg[slot=icon]`).evaluate((el) => {
+      return el.getBoundingClientRect().left;
+    });
+
+  test("the icon of a group and of a plain row share an edge", async ({
+    page,
+  }) => {
+    await open(page, "sections");
+    expect(
+      Math.abs(
+        (await iconLeft(page, "work")) - (await iconLeft(page, "archive")),
+      ),
+    ).toBeLessThanOrEqual(1);
+  });
+
+  test("the chevron follows the label", async ({ page }) => {
+    await open(page, "sections");
+    const [label, chevron] = await Promise.all([
+      edges(page, "work", ".label"),
+      edges(page, "work", ".chevron"),
+    ]);
+    expect(chevron.left).toBeGreaterThanOrEqual(label.right - 1);
+  });
+
+  test("under rtl the chevron is on the left, after the label", async ({
+    page,
+  }) => {
+    await open(page, "sections", "dir:rtl");
+    const [label, chevron] = await Promise.all([
+      edges(page, "work", ".label"),
+      edges(page, "work", ".chevron"),
+    ]);
+    expect(chevron.right).toBeLessThanOrEqual(label.left + 1);
+  });
+
+  test("the grip does not cover the chevron", async ({ page }) => {
+    await open(page, "sections");
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.setAttribute("reorderable", ""));
+    const [grip, chevron] = await Promise.all([
+      edges(page, "work", ".handle"),
+      edges(page, "work", ".chevron"),
+    ]);
+    expect(grip.right).toBeLessThanOrEqual(chevron.left + 1);
+  });
+
+  test("the disclosure button of a link follows the link in the tab order", async ({
+    page,
+  }) => {
+    await open(page, "parent-link");
+    const [link, button] = await Promise.all([
+      edges(page, "albums", ".control"),
+      edges(page, "albums", ".disclosure"),
+    ]);
+    expect(button.left).toBeGreaterThanOrEqual(link.left);
+    expect(button.right).toBeLessThanOrEqual(link.right + 1);
+    expect(
+      await page
+        .locator("#albums")
+        .evaluate((el) =>
+          [...el.shadowRoot!.querySelectorAll("a, button")].map(
+            (c) => c.className,
+          ),
+        ),
+    ).toEqual(["control", "disclosure"]);
+  });
+
+  test("chevron=start keeps the chevron before the icon", async ({ page }) => {
+    await open(page, "chevron-start");
+    const [chevron, icon] = await Promise.all([
+      edges(page, "work", ".chevron"),
+      page
+        .locator("#work svg[slot=icon]")
+        .evaluate((el) => el.getBoundingClientRect().left),
+    ]);
+    expect(chevron.right).toBeLessThanOrEqual(icon + 1);
+    expect(await iconLeft(page, "work")).toBeGreaterThan(
+      await iconLeft(page, "archive"),
+    );
+  });
+});
+
+test.describe("truncated labels", () => {
+  const long = "Compliance Analytics and Regulatory Reporting for Every Region";
+  const control = (page: Page, id: string) => page.locator(`#${id} .control`);
+  /** The width the label has, from the shadow tree of an item. */
+  const labelWidth = (page: Page, id: string) =>
+    page
+      .locator(`#${id}`)
+      .evaluate((el) => el.shadowRoot!.querySelector(".label")!.clientWidth);
+
+  test("a long label stays on one line with an ellipsis and keeps its full name", async ({
+    page,
+  }) => {
+    await open(page, "truncated-labels");
+    const label = page.locator("#long .label");
+    await expect(label).toHaveCSS("text-overflow", "ellipsis");
+    await expect(label).toHaveCSS("white-space", "nowrap");
+    expect(await label.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(
+      true,
+    );
+    const lines = await page.locator("#long").evaluate((el) => {
+      const text = [...el.childNodes].find(
+        (node) => node.nodeType === Node.TEXT_NODE,
+      )!;
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      return new Set([...range.getClientRects()].map((r) => Math.round(r.top)))
+        .size;
+    });
+    expect(lines).toBe(1);
+    await expect(
+      page.getByRole("link", { name: new RegExp(`^${long}`) }),
+    ).toBeVisible();
+  });
+
+  test("the description truncates too", async ({ page }) => {
+    await open(page, "truncated-labels");
+    const description = page.locator("#long [slot=description]");
+    await expect(description).toHaveCSS("text-overflow", "ellipsis");
+    expect(
+      await description.evaluate((el) => el.scrollWidth > el.clientWidth),
+    ).toBe(true);
+  });
+
+  test("the full text is a title only while the label is truncated", async ({
+    page,
+  }) => {
+    await open(page, "truncated-labels");
+    await page.locator("#long").hover();
+    await expect(control(page, "long")).toHaveAttribute(
+      "title",
+      new RegExp(`^${long}`),
+    );
+    await page.locator("#short").hover();
+    await expect(control(page, "short")).not.toHaveAttribute("title");
+  });
+
+  test.describe("reorder grip at a 36px row", () => {
+    test.beforeEach(async ({ page }) => {
+      await open(page, "truncated-labels");
+      await page
+        .locator("pl-sidebar")
+        .evaluateAll((all) =>
+          all.forEach((el) =>
+            (el as HTMLElement).style.setProperty("--pl-size-hit-min", "36px"),
+          ),
+        );
+    });
+
+    test("is a fixed width that does not follow the row", async ({ page }) => {
+      const row = await page.locator("#sortable-short .control").boundingBox();
+      expect(row!.height).toBeGreaterThanOrEqual(35);
+      const grip = await page
+        .locator("#sortable-short [part=handle]")
+        .boundingBox();
+      expect(grip!.width).toBeCloseTo(
+        parseFloat(
+          await resolve(
+            page,
+            "width",
+            "calc(var(--pl-icon-md) + var(--pl-space-2))",
+          ),
+        ),
+        0,
+      );
+    });
+
+    test("takes no room from the label while hidden", async ({ page }) => {
+      await page.mouse.move(0, 0);
+      await expect(page.locator("#sortable-long [part=handle]")).toHaveCSS(
+        "opacity",
+        "0",
+      );
+      const [plain, sortable] = await Promise.all([
+        labelWidth(page, "long"),
+        labelWidth(page, "sortable-long"),
+      ]);
+      expect(Math.abs(plain - sortable)).toBeLessThanOrEqual(1);
     });
   });
 });
