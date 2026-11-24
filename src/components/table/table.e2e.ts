@@ -179,3 +179,96 @@ test("axe finds no violations in an overflowing table", async ({ page }) => {
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await open(page));
 });
+
+test("an interactive row shows a pointer and tints on hover", async ({
+  page,
+}) => {
+  await open(page, "data-table--interactive-rows");
+  for (const id of ["#row-interactive", "#row-linked"])
+    expect(
+      await page.locator(id).evaluate((el) => getComputedStyle(el).cursor),
+    ).toBe("pointer");
+  expect(
+    await page
+      .locator("#row-plain")
+      .evaluate((el) => getComputedStyle(el).cursor),
+  ).not.toBe("pointer");
+  const cell = page.locator("#row-interactive > td");
+  const before = await cell.evaluate(
+    (el) => getComputedStyle(el).backgroundColor,
+  );
+  await page.locator("#row-interactive").hover();
+  await expect
+    .poll(() => cell.evaluate((el) => getComputedStyle(el).backgroundColor))
+    .not.toBe(before);
+});
+
+test("an interactive row rings on keyboard focus", async ({ page }) => {
+  await open(page, "data-table--interactive-rows");
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#row-interactive")).toBeFocused();
+  expect(
+    await page
+      .locator("#row-interactive")
+      .evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).toBe("solid");
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#row-link")).toBeFocused();
+  expect(
+    await page
+      .locator("#row-linked")
+      .evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).toBe("solid");
+});
+
+test("a stretched link covers its row", async ({ page }) => {
+  await open(page, "data-table--interactive-rows");
+  const box = (await page.locator("#row-linked").boundingBox())!;
+  const link = (await page.locator("#row-link").boundingBox())!;
+  expect(link.width).toBeLessThan(box.width);
+  const covers = await page.evaluate(
+    ([x, y]) => document.elementFromPoint(x!, y!)?.id,
+    [box.x + box.width - 4, box.y + box.height / 2],
+  );
+  expect(covers).toBe("row-link");
+});
+
+test("a sortable header is a sort control with a glyph that follows aria-sort", async ({
+  page,
+}) => {
+  const root = await open(page, "data-table--sortable-headers");
+  const glyphs = await page
+    .locator("pl-table th[aria-sort] > button")
+    .evaluateAll((buttons) =>
+      buttons.map((b) => {
+        const after = getComputedStyle(b, "::after");
+        return {
+          content: after.content,
+          width: after.width,
+          cursor: getComputedStyle(b).cursor,
+          mask: after.maskImage || after.webkitMaskImage,
+        };
+      }),
+    );
+  for (const glyph of glyphs) {
+    expect(glyph.content).toBe('""');
+    expect(glyph.width).not.toBe("0px");
+    expect(glyph.cursor).toBe("pointer");
+  }
+  expect(new Set(glyphs.map((g) => g.mask)).size).toBe(3);
+  await expect(
+    page.getByRole("columnheader", { name: "Name" }),
+  ).toHaveAttribute("aria-sort", "ascending");
+  await expectAccessible(root);
+});
+
+test("a sort button shows a focus ring", async ({ page }) => {
+  await open(page, "data-table--sortable-headers");
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#sort-name")).toBeFocused();
+  expect(
+    await page
+      .locator("#sort-name")
+      .evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).toBe("solid");
+});

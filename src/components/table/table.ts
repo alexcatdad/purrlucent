@@ -21,6 +21,10 @@ function adoptTableStyles(root: Node) {
  * `label`, or else by the table's caption; without either, the scroll area
  * has no accessible name. Set a `max-block-size` on the element to make
  * `sticky-header` useful. A static table is not a grid: do not add `role=grid`.
+ * A row with `data-interactive`, or one holding an `a[data-stretched]` link
+ * that covers the row, gets a hover tint, a focus ring and a pointer. A
+ * `<th aria-sort>` holding a `<button>` is styled as a sort control, with a
+ * glyph that follows `aria-sort`; the page owns the sorting.
  *
  * @attr {string} label - The accessible name of the scroll area. Defaults to the table's caption.
  * @attr {boolean} sticky-header - The header cells stay at the top while the rows scroll.

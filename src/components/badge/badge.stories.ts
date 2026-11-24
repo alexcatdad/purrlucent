@@ -43,6 +43,47 @@ export const Status: Story = {
     </div>`,
 };
 
+/** `appearance` sets how a variant is drawn: solid (default), soft or outline. */
+export const Appearances: Story = {
+  render: () =>
+    html`<div
+      style="display:grid;gap:var(--pl-space-3);padding:var(--pl-space-4)"
+    >
+      ${(["solid", "soft", "outline"] as const).map(
+        (appearance) =>
+          html`<div style=${row.replace("padding:var(--pl-space-4)", "")}>
+            <pl-badge id="${appearance}-neutral" appearance=${appearance}
+              >Draft</pl-badge
+            >
+            <pl-badge
+              id="${appearance}-accent"
+              variant="accent"
+              appearance=${appearance}
+              >New</pl-badge
+            >
+            <pl-badge
+              id="${appearance}-success"
+              variant="success"
+              appearance=${appearance}
+              >Done</pl-badge
+            >
+            <pl-badge
+              id="${appearance}-warning"
+              variant="warning"
+              appearance=${appearance}
+              >Behind</pl-badge
+            >
+            <pl-badge
+              id="${appearance}-destructive"
+              variant="destructive"
+              appearance=${appearance}
+              >Failed</pl-badge
+            >
+          </div>`,
+      )}
+    </div>`,
+};
+
 export const Counts: Story = {
   render: () =>
     html`<div style=${row}>

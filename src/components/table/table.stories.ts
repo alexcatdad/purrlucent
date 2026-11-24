@@ -201,3 +201,68 @@ export const Rtl: Story = {
   `,
   globals: { dir: "rtl" },
 };
+
+/** A row with `data-interactive`, or a stretched link, tints on hover and rings on focus. */
+export const InteractiveRows: Story = {
+  render: () => html`
+    <pl-table id="control" label="Pioneers">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-interactive tabindex="0" id="row-interactive">
+            <th scope="row">Ada Lovelace</th>
+            <td>Mathematician</td>
+          </tr>
+          <tr id="row-linked">
+            <th scope="row">
+              <a href="#grace" data-stretched id="row-link">Grace Hopper</a>
+            </th>
+            <td>Rear admiral</td>
+          </tr>
+          <tr id="row-plain">
+            <th scope="row">Mary Jackson</th>
+            <td>Engineer</td>
+          </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
+/** A `th[aria-sort]` holding a button is a sort control; the glyph follows `aria-sort`. */
+export const SortableHeaders: Story = {
+  render: () => html`
+    <pl-table id="control" label="Pioneers">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" aria-sort="ascending">
+              <button type="button" id="sort-name">Name</button>
+            </th>
+            <th scope="col" aria-sort="none">
+              <button type="button" id="sort-role">Role</button>
+            </th>
+            <th scope="col" aria-sort="descending" align="end">
+              <button type="button" id="sort-age">Age</button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${people.map(
+            ([name, role, age]) =>
+              html`<tr>
+                <th scope="row">${name}</th>
+                <td>${role}</td>
+                <td align="end">${age}</td>
+              </tr>`,
+          )}
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
