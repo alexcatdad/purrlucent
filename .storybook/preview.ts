@@ -1,6 +1,7 @@
 import type { Preview } from "@storybook/web-components-vite";
 import "../src/tokens/tokens.css";
 import { backdrop } from "./backdrop.css.ts";
+import { applyKnobs, knobs } from "./knobs.ts";
 
 if (backdrop.styleSheet)
   document.adoptedStyleSheets = [
@@ -32,12 +33,17 @@ const preview: Preview = {
     theme: toolbar("Color theme", ["system", "light", "dark"]),
     contrast: toolbar("Contrast", ["normal", "more"]),
     dir: toolbar("Text direction", ["ltr", "rtl"]),
+    // The token knobs live in the Tokens panel (manager.ts), not the toolbar.
+    ...Object.fromEntries(
+      knobs.map((knob) => [knob.key, { description: knob.label }]),
+    ),
   },
   initialGlobals: {
     material: "solid",
     theme: "system",
     contrast: "normal",
     dir: "ltr",
+    ...Object.fromEntries(knobs.map((knob) => [knob.key, ""])),
   },
   parameters: {
     // Storybook reads storySort statically, so the order is a literal here;
@@ -74,6 +80,7 @@ const preview: Preview = {
       }
       document.documentElement.style.colorScheme =
         globals.theme === "system" ? "" : globals.theme;
+      applyKnobs(document.documentElement, globals);
       // Control fills are translucent and tint whatever is behind them, so the
       // page paints the background token, as an app does. Glass paints the
       // backdrop scene instead (backdrop.css.ts), so the inline paint steps aside.
