@@ -18,14 +18,6 @@ export const dialogStyles = css`
     --_elevation: var(--pl-elevation-sheet);
     --_width: var(--pl-dialog-width, calc(var(--pl-spacing) * 97.5));
     --_icon: calc(var(--pl-spacing) * 16);
-    --_scrim: light-dark(
-      color-mix(
-        in srgb,
-        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
-        transparent
-      ),
-      color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
-    );
 
     box-sizing: border-box;
     inline-size: var(--_width);
@@ -66,7 +58,7 @@ export const dialogStyles = css`
   }
 
   dialog:modal::backdrop {
-    background: var(--_scrim);
+    background: var(--pl-color-scrim);
     transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
 

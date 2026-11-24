@@ -74,11 +74,34 @@ const face = css`
   }
 `;
 
+/** Row and heading metrics; the items and sections inherit them. */
+const rowMd = css`
+  --_text: var(--pl-text-sm);
+  --_leading: var(--pl-leading-normal);
+  --_row: max(calc(var(--pl-spacing) * 8), var(--pl-size-hit-min));
+  --_glyph: var(--pl-icon-md);
+  --_head: calc(var(--pl-spacing) * 4.5);
+  --_head-text: var(--pl-text-xs);
+  --_head-leading: var(--pl-leading-tight);
+`;
+
+const rowLg = css`
+  --_text: var(--pl-text-lg);
+  --_leading: var(--pl-leading-loose);
+  --_row: max(calc(var(--pl-spacing) * 10), var(--pl-size-hit-min));
+  --_glyph: calc(var(--pl-spacing) * 4.5);
+  --_head: var(--pl-icon-lg);
+  --_head-text: var(--pl-text-sm);
+  --_head-leading: var(--pl-leading-normal);
+`;
+
 export const sidebarStyles = [
   sidebarSurface,
   face,
   css`
     :host {
+      display: flex;
+      flex-direction: column;
       inline-size: calc(var(--pl-spacing) * 64);
       max-inline-size: 100%;
       padding: 0 var(--pl-space-3) var(--pl-space-4);
@@ -89,33 +112,82 @@ export const sidebarStyles = [
       display: none;
     }
 
-    /* Row and heading metrics; the items and sections inherit them. */
     :host {
-      --_text: var(--pl-text-sm);
-      --_leading: var(--pl-leading-normal);
-      --_row: max(calc(var(--pl-spacing) * 8), var(--pl-size-hit-min));
-      --_glyph: var(--pl-icon-md);
-      --_head: calc(var(--pl-spacing) * 4.5);
-      --_head-text: var(--pl-text-xs);
-      --_head-leading: var(--pl-leading-tight);
+      ${rowMd}
     }
 
     :host([size="lg"]) {
-      --_text: var(--pl-text-lg);
-      --_leading: var(--pl-leading-loose);
-      --_row: max(calc(var(--pl-spacing) * 10), var(--pl-size-hit-min));
-      --_glyph: calc(var(--pl-spacing) * 4.5);
-      --_head: var(--pl-icon-lg);
-      --_head-text: var(--pl-text-sm);
-      --_head-leading: var(--pl-leading-normal);
+      ${rowLg}
     }
 
-    :host([collapsed]) {
+    :host([collapsed]),
+    :host([data-overlay]) {
       inline-size: fit-content;
       padding-block-end: 0;
     }
 
-    :host([collapsed]) nav {
+    :host([collapsed]) nav,
+    :host([collapsed]) [part="header"],
+    :host([collapsed]) [part="footer"] {
+      display: none;
+    }
+
+    /* The header and footer hold what the app pins to the top and bottom, such
+       as a logo or the signed-in person; the navigation scrolls between them. */
+    [part="header"],
+    [part="footer"] {
+      flex: none;
+      padding: var(--pl-space-2) var(--pl-pad-item);
+    }
+
+    nav {
+      flex: 1 1 auto;
+      min-block-size: 0;
+      overflow: clip auto;
+    }
+
+    /* A narrow screen shows the sidebar as a modal panel on the start edge over
+       a scrim; the sidebar itself keeps the collapsed bar's place. The toggle
+       in the panel is the one the page can reach. */
+    :host([data-overlay]) .toggle:not(.in-dialog) {
+      visibility: hidden;
+    }
+
+    dialog {
+      display: flex;
+      box-sizing: border-box;
+      inline-size: calc(var(--pl-spacing) * 64);
+      max-inline-size: calc(100vw - var(--pl-space-10));
+      block-size: 100dvh;
+      max-block-size: 100dvh;
+      margin: 0;
+      margin-inline: 0 auto;
+      border: 0;
+      border-start-end-radius: var(--pl-radius-panel);
+      border-end-end-radius: var(--pl-radius-panel);
+      padding: 0;
+      overflow: hidden;
+      background: var(--pl-material-sidebar);
+      backdrop-filter: var(--pl-material-sidebar-filter);
+      box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
+      color: var(--pl-color-foreground);
+      font: inherit;
+    }
+
+    .panel {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      box-sizing: border-box;
+      min-inline-size: 0;
+      padding: 0 var(--pl-space-3) var(--pl-space-4);
+    }
+
+    dialog::backdrop {
+      background: var(--pl-color-scrim);
+    }
+
+    dialog:not([open]) {
       display: none;
     }
 
@@ -145,13 +217,9 @@ export const sidebarStyles = [
       block-size: var(--pl-icon-md);
     }
 
-    /* Narrow screen, any pointer: the sidebar starts collapsed (see
-       sidebar.ts); shown again, it fills the width, square and flat. */
-    @media (max-width: 600px) {
-      :host(:not([collapsed])) {
-        inline-size: 100%;
-        border-radius: 0;
-        box-shadow: none;
+    @media (forced-colors: active) {
+      dialog {
+        border: var(--pl-ring-width) solid CanvasText;
       }
     }
   `,
@@ -166,6 +234,20 @@ export const itemStyles = [
 
     :host([hidden]) {
       display: none;
+    }
+
+    /* An item's own size replaces the sidebar's; the font is computed on the
+       sidebar, so it is set again here from the item's metrics. */
+    :host([size="md"]) {
+      ${rowMd}
+
+      font: 400 var(--_text) / var(--_leading) var(--pl-font-sans);
+    }
+
+    :host([size="lg"]) {
+      ${rowLg}
+
+      font: 400 var(--_text) / var(--_leading) var(--pl-font-sans);
     }
 
     /* Every row reserves the chevron column, so level 1 labels share a leading
@@ -219,6 +301,15 @@ export const itemStyles = [
       overflow-wrap: anywhere;
     }
 
+    /* The second line is muted and smaller than the label. */
+    ::slotted([slot="description"]) {
+      display: block;
+      font-size: var(--pl-text-xs);
+      line-height: var(--pl-leading-tight);
+      font-weight: 400;
+      color: var(--pl-color-muted-foreground);
+    }
+
     /* An empty slot adds no column width and no margin. */
     ::slotted([slot="icon"]) {
       grid-column: 2;
@@ -226,6 +317,52 @@ export const itemStyles = [
       block-size: var(--_glyph);
       margin-inline-end: var(--pl-gap-icon);
       color: var(--pl-color-accent-text);
+    }
+
+    /* An avatar is a person's picture, not a glyph: it takes the larger share
+       of the row and sets its own initials from that size. */
+    ::slotted(pl-avatar[slot="icon"]) {
+      --_s: calc(var(--_glyph) * 1.5);
+    }
+
+    /* The grip of a reorderable item sits at the trailing end, past the
+       detail; the control leaves room for it. */
+    :host([reorderable]) {
+      position: relative;
+    }
+
+    :host([reorderable]) .control {
+      padding-inline-end: calc(var(--pl-pad-item) + var(--pl-size-hit-min));
+    }
+
+    .handle {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      inline-size: var(--pl-size-hit-min);
+      color: var(--pl-color-muted-foreground);
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .handle svg {
+      inline-size: var(--pl-icon-md);
+      block-size: var(--pl-icon-md);
+    }
+
+    :host([data-dragging]) {
+      z-index: 2;
+      box-shadow: var(--pl-elevation-panel);
+      border-radius: var(--pl-radius-row);
+      background: var(--pl-material-sidebar);
+    }
+
+    :host([data-dragging]) .handle {
+      cursor: grabbing;
     }
 
     ::slotted([slot="detail"]) {

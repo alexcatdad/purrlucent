@@ -660,10 +660,10 @@ test("virtual screen reader speaks every item", async ({ page }) => {
 test.describe("phone width with a coarse pointer", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
-  test("the sidebar collapses on a narrow screen and opens full width", async ({
+  test("the sidebar collapses on a narrow screen and opens as a panel", async ({
     page,
   }) => {
-    const root = await open(page);
+    await open(page);
     expect(
       await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
     ).toBe(true);
@@ -671,9 +671,12 @@ test.describe("phone width with a coarse pointer", () => {
     await expect(page.locator("#home")).toBeHidden();
     await page.getByRole("button", { name: "Library sidebar" }).click();
     await expect(page.locator("#home")).toBeVisible();
-    const sidebar = await page.locator("#sidebar").boundingBox();
-    const rootBox = await root.boundingBox();
-    expect(sidebar?.width).toBeCloseTo(rootBox?.width ?? 0, 0);
+    const panel = await page
+      .getByRole("dialog", { name: "Library" })
+      .boundingBox();
+    // A panel on the start edge, narrower than the screen, not a full-width bar.
+    expect(panel?.x).toBe(0);
+    expect(panel?.width).toBeLessThan(390);
   });
 });
 
@@ -1037,4 +1040,613 @@ forEachViewport(({ name, pointer, width }) => {
       else expect(filter).toBe("none");
     });
   }
+});
+
+/** The ids of the items in the page, in order. */
+const order = (page: Page) =>
+  page
+    .locator("pl-sidebar-item")
+    .evaluateAll((items) => items.map((item) => item.id));
+
+/** Collects the `detail` of `name` events on the sidebar in `window.heard`. */
+const listen = (page: Page, name: string) =>
+  page.evaluate((type) => {
+    const events: unknown[] = [];
+    (window as unknown as { heard: unknown[] }).heard = events;
+    document
+      .querySelector("#sidebar")
+      ?.addEventListener(type, (event) =>
+        events.push((event as CustomEvent).detail),
+      );
+  }, name);
+
+const heard = (page: Page) =>
+  page.evaluate(() => (window as unknown as { heard: unknown[] }).heard);
+
+type Controlled = HTMLElement & { collapsed: boolean; hide(): void };
+
+test.describe("header and footer", () => {
+  test("sit outside the navigation landmark, above and below it", async ({
+    page,
+  }) => {
+    await open(page, "header-footer");
+    const nav = page.getByRole("navigation", { name: "Library" });
+    await expect(nav.getByRole("link")).toHaveCount(2);
+    for (const id of ["brand", "version"]) {
+      await expect(page.locator(`#${id}`)).toBeVisible();
+      expect(
+        await page
+          .locator(`#${id}`)
+          .evaluate((el) => el.assignedSlot?.closest("nav") ?? null),
+      ).toBeNull();
+    }
+    const [head, list, foot] = await Promise.all([
+      page.locator("#brand").boundingBox(),
+      nav.boundingBox(),
+      page.locator("#version").boundingBox(),
+    ]);
+    expect(head!.y + head!.height).toBeLessThanOrEqual(list!.y + 1);
+    expect(foot!.y).toBeGreaterThanOrEqual(list!.y + list!.height - 1);
+  });
+
+  test("the footer stays at the bottom of a tall sidebar", async ({ page }) => {
+    await open(page, "header-footer");
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => (el.style.height = "400px"));
+    const [sidebar, foot] = await Promise.all([
+      page.locator("#sidebar").boundingBox(),
+      page.locator("#version").boundingBox(),
+    ]);
+    const gap = sidebar!.y + sidebar!.height - (foot!.y + foot!.height);
+    expect(gap).toBeLessThan(48);
+  });
+
+  test("collapsing hides them with the navigation", async ({ page }) => {
+    await open(page, "header-footer");
+    await page.locator("#sidebar").evaluate((el: Controlled) => el.hide());
+    await expect(page.locator("#brand")).toBeHidden();
+    await expect(page.locator("#version")).toBeHidden();
+  });
+
+  test("an empty header and footer take no room", async ({ page }) => {
+    await open(page, "default");
+    const heights = await page
+      .locator("#sidebar")
+      .evaluate((el) =>
+        [
+          ...el.shadowRoot!.querySelectorAll("[part=header], [part=footer]"),
+        ].map((part) => part.getBoundingClientRect().height),
+      );
+    expect(heights).toEqual([0, 0]);
+  });
+
+  test("axe finds no WCAG 2.2 AA violations", async ({ page }) => {
+    await expectAccessible(await open(page, "header-footer"));
+  });
+});
+
+test.describe("narrow screen as a modal panel", () => {
+  test.use({ viewport: { width: 500, height: 800 } });
+
+  test("opening shows a dialog and moves focus to the selected item", async ({
+    page,
+  }) => {
+    await open(page);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog", { name: "Library" })).toBeVisible();
+    await expect.poll(() => focusedId(page)).toBe("home");
+  });
+
+  test("the page behind the panel is inert", async ({ page }) => {
+    await open(page);
+    await page
+      .locator("#sidebar")
+      .evaluate((el) =>
+        el.insertAdjacentHTML(
+          "afterend",
+          '<button id="outside">Outside</button>',
+        ),
+      );
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    const reached = await page.locator("#outside").evaluate((el) => {
+      el.focus();
+      return document.activeElement === el;
+    });
+    expect(reached).toBe(false);
+  });
+
+  test("Escape closes the panel, fires pl-collapse and focuses the toggle", async ({
+    page,
+  }) => {
+    await open(page);
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await listen(page, "pl-collapse");
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Library sidebar" }),
+    ).toBeFocused();
+    expect(await heard(page)).toEqual([{ collapsed: true }]);
+  });
+
+  test("a press on the scrim closes the panel", async ({ page }) => {
+    await open(page);
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    // The panel is 256px wide; the scrim covers the rest of the 500px screen.
+    await page.mouse.click(450, 400);
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+
+  test("a press inside the panel keeps it open", async ({ page }) => {
+    await open(page);
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await page.locator("#settings a").click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+  });
+
+  test("Escape inside an open group closes the group, not the panel", async ({
+    page,
+  }) => {
+    await open(page, "group-open");
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.locator("#recent a").focus();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#albums button")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    await expect(page.getByRole("dialog")).toBeVisible();
+  });
+
+  test("the toggle in the panel closes it and focus returns to the toggle", async ({
+    page,
+  }) => {
+    await open(page);
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Library sidebar" }),
+    ).toBeFocused();
+  });
+
+  test("pl-collapse fires for the first automatic collapse", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const events: boolean[] = [];
+      (window as unknown as { collapses: boolean[] }).collapses = events;
+      document.addEventListener("pl-collapse", (event) =>
+        events.push((event as CustomEvent).detail.collapsed),
+      );
+    });
+    await open(page);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => (window as unknown as { collapses: boolean[] }).collapses,
+        ),
+      )
+      .toEqual([true]);
+  });
+
+  test("collapse-below=0 keeps a narrow sidebar open and inline", async ({
+    page,
+  }) => {
+    await open(page, "external-control");
+    await expect(page.locator("#sidebar")).not.toHaveAttribute("collapsed");
+    await expect(page.locator("#home")).toBeVisible();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+});
+
+test.describe("collapse-below", () => {
+  test.use({ viewport: { width: 800, height: 800 } });
+
+  test("collapses at its own width and reopens when the screen widens", async ({
+    page,
+  }) => {
+    await open(page, "collapse-below");
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await page.setViewportSize({ width: 1000, height: 800 });
+    await expect(page.locator("#home")).toBeVisible();
+  });
+
+  test("the default stays 600: the same width does not collapse it", async ({
+    page,
+  }) => {
+    await open(page);
+    await expect(page.locator("#sidebar")).not.toHaveAttribute("collapsed");
+    await expect(page.locator("#home")).toBeVisible();
+  });
+
+  test("changing collapse-below applies at once", async ({ page }) => {
+    await open(page);
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.setAttribute("collapse-below", "900"));
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.setAttribute("collapse-below", "0"));
+    await expect(page.locator("#home")).toBeVisible();
+  });
+});
+
+test.describe("external control", () => {
+  test("no-toggle hides the built-in button", async ({ page }) => {
+    await open(page, "external-control");
+    await expect(
+      page.getByRole("button", { name: /Library sidebar/ }),
+    ).toHaveCount(0);
+    await expect(page.locator("#home")).toBeVisible();
+  });
+
+  test("toggle(), show() and hide() change the state and fire pl-collapse", async ({
+    page,
+  }) => {
+    await open(page, "external-control");
+    await listen(page, "pl-collapse");
+    await page.locator("#toggle").click();
+    await expect(page.locator("#home")).toBeHidden();
+    await page.locator("#hide").click();
+    await expect(page.locator("#home")).toBeHidden();
+    await page.locator("#show").click();
+    await expect(page.locator("#home")).toBeVisible();
+    await page.locator("#show").click();
+    await page.locator("#hide").click();
+    await expect(page.locator("#home")).toBeHidden();
+    // Hiding a hidden sidebar and showing a shown one change nothing.
+    expect(await heard(page)).toEqual([
+      { collapsed: true },
+      { collapsed: false },
+      { collapsed: true },
+    ]);
+  });
+
+  test("setting collapsed fires no pl-collapse", async ({ page }) => {
+    await open(page, "external-control");
+    await listen(page, "pl-collapse");
+    await page.locator("#sidebar").evaluate((el: Controlled) => {
+      el.collapsed = true;
+    });
+    await expect(page.locator("#home")).toBeHidden();
+    expect(await heard(page)).toEqual([]);
+  });
+
+  test("the shortcut toggles from anywhere in the page", async ({ page }) => {
+    await open(page, "external-control");
+    await page.locator("#show").focus();
+    await page.keyboard.press("ControlOrMeta+b");
+    await expect(page.locator("#home")).toBeHidden();
+    await page.keyboard.press("ControlOrMeta+b");
+    await expect(page.locator("#home")).toBeVisible();
+  });
+
+  test("another key, or the same key without the modifier, does nothing", async ({
+    page,
+  }) => {
+    await open(page, "external-control");
+    await page.locator("#show").focus();
+    await page.keyboard.press("b");
+    await page.keyboard.press("ControlOrMeta+n");
+    await expect(page.locator("#home")).toBeVisible();
+  });
+});
+
+test.describe("router-aware links", () => {
+  test("a plain click fires a cancelable pl-navigate that can stop the navigation", async ({
+    page,
+  }) => {
+    await open(page);
+    await page.evaluate(() => {
+      const events: string[] = [];
+      (window as unknown as { heard: string[] }).heard = events;
+      document
+        .querySelector("#sidebar")
+        ?.addEventListener("pl-navigate", (event) => {
+          events.push((event as CustomEvent).detail.href);
+          event.preventDefault();
+        });
+    });
+    await page.locator("#settings a").click();
+    expect(await heard(page)).toEqual(["#settings"]);
+    expect(await page.evaluate(() => location.hash)).toBe("");
+    // The item still takes the selection.
+    await expect(page.locator("#settings a")).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
+
+  test("without preventDefault the browser navigates", async ({ page }) => {
+    await open(page);
+    await listen(page, "pl-navigate");
+    await page.locator("#settings a").click();
+    expect(await heard(page)).toEqual([{ href: "#settings" }]);
+    expect(await page.evaluate(() => location.hash)).toBe("#settings");
+  });
+
+  test("Enter on a link fires it too", async ({ page }) => {
+    await open(page);
+    await listen(page, "pl-navigate");
+    await page.locator("#settings a").focus();
+    await page.keyboard.press("Enter");
+    expect(await heard(page)).toEqual([{ href: "#settings" }]);
+  });
+
+  test("a modified click is left to the browser", async ({ page }) => {
+    await open(page);
+    await listen(page, "pl-navigate");
+    await page.locator("#settings a").evaluate((link) => {
+      // The page stays put whatever the click would have done.
+      document.addEventListener("click", (event) => event.preventDefault());
+      link.dispatchEvent(
+        new MouseEvent("click", {
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+          ctrlKey: true,
+        }),
+      );
+    });
+    expect(await heard(page)).toEqual([]);
+  });
+});
+
+test.describe("rows", () => {
+  test("an action item is a button that never takes the selection", async ({
+    page,
+  }) => {
+    await open(page, "rows");
+    await expect(page.locator("#new button")).toBeVisible();
+    await expect(page.locator("#new a")).toHaveCount(0);
+    await listen(page, "pl-change");
+    await page.locator("#new button").click();
+    await page.locator("#account button").click();
+    expect(await heard(page)).toEqual([]);
+    await expect(page.locator("#new button")).not.toHaveAttribute(
+      "aria-current",
+    );
+    await expect(page.locator("#new")).not.toHaveAttribute("selected");
+  });
+
+  test("an action item's click reaches the app", async ({ page }) => {
+    await open(page, "rows");
+    await page.evaluate(() => {
+      const clicks: string[] = [];
+      (window as unknown as { clicks: string[] }).clicks = clicks;
+      document
+        .querySelector("#new")
+        ?.addEventListener("click", () => clicks.push("new"));
+    });
+    await page.locator("#new button").click();
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { clicks: string[] }).clicks,
+      ),
+    ).toEqual(["new"]);
+  });
+
+  test("selected on an action item is dropped", async ({ page }) => {
+    await open(page, "rows");
+    await page
+      .locator("#new")
+      .evaluate((el) => el.setAttribute("selected", ""));
+    await expect(page.locator("#new")).not.toHaveAttribute("selected");
+  });
+
+  test("an item's own size overrides the sidebar's", async ({ page }) => {
+    await open(page, "rows");
+    const measure = (id: string) =>
+      page.locator(`#${id}`).evaluate((el) => ({
+        row: el.getBoundingClientRect().height,
+        text: parseFloat(
+          getComputedStyle(el.shadowRoot!.querySelector(".control")!).fontSize,
+        ),
+      }));
+    const [md, lg] = [await measure("inbox"), await measure("big")];
+    expect(lg.text).toBeGreaterThan(md.text);
+    expect(lg.row).toBeGreaterThan(md.row);
+  });
+
+  test("a description shows as a smaller muted line under the label", async ({
+    page,
+  }) => {
+    await open(page, "rows");
+    const labelBottom = await page.locator("#inbox").evaluate((el) => {
+      const text = [...el.childNodes].find(
+        (node) =>
+          node.nodeType === Node.TEXT_NODE &&
+          node.textContent?.trim() === "Inbox",
+      )!;
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      return range.getBoundingClientRect().bottom;
+    });
+    const description = await page
+      .locator("#inbox [slot=description]")
+      .boundingBox();
+    expect(description!.y).toBeGreaterThanOrEqual(labelBottom - 1);
+    const style = (selector: string, property: string) =>
+      page
+        .locator(selector)
+        .evaluate(
+          (el, name) => getComputedStyle(el).getPropertyValue(name),
+          property,
+        );
+    expect(
+      parseFloat(await style("#inbox [slot=description]", "font-size")),
+    ).toBeLessThan(
+      await page
+        .locator("#inbox")
+        .evaluate((el) =>
+          parseFloat(
+            getComputedStyle(el.shadowRoot!.querySelector(".control")!)
+              .fontSize,
+          ),
+        ),
+    );
+    expect(await style("#inbox [slot=description]", "color")).toBe(
+      await resolve(page, "color", "var(--pl-color-muted-foreground)"),
+    );
+  });
+
+  test("the description is part of the link's name", async ({ page }) => {
+    await open(page, "rows");
+    await expect(
+      page.getByRole("link", { name: /Inbox\s*3 unread/ }),
+    ).toBeVisible();
+  });
+
+  test("an avatar in the icon slot is sized to the row", async ({ page }) => {
+    await open(page, "rows");
+    const [avatar, glyph, row] = await Promise.all([
+      page.locator("#account pl-avatar").boundingBox(),
+      page.locator("#inbox svg").boundingBox(),
+      page.locator("#account button").boundingBox(),
+    ]);
+    expect(avatar!.width).toBeCloseTo(avatar!.height, 0);
+    expect(avatar!.width).toBeGreaterThan(glyph!.width);
+    expect(avatar!.height).toBeLessThanOrEqual(row!.height);
+    expect(avatar!.width).toBeCloseTo(
+      parseFloat(await resolve(page, "width", "calc(var(--pl-icon-md) * 1.5)")),
+      0,
+    );
+  });
+
+  for (const globals of ["", "material:glass"]) {
+    test(`axe finds no WCAG 2.2 AA violations in rows (${globals || "solid"})`, async ({
+      page,
+    }) => {
+      await expectAccessible(await open(page, "rows", globals));
+    });
+  }
+});
+
+test.describe("reorderable", () => {
+  test("level 1 items show a grip only while the sidebar is reorderable", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    await expect(page.locator("pl-sidebar-item [part=handle]")).toHaveCount(3);
+    await open(page);
+    await expect(page.locator("pl-sidebar-item [part=handle]")).toHaveCount(0);
+  });
+
+  test("level 2 items have no grip", async ({ page }) => {
+    await open(page, "group-open");
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.setAttribute("reorderable", ""));
+    await expect(page.locator("#home [part=handle]")).toHaveCount(1);
+    await expect(page.locator("#recent [part=handle]")).toHaveCount(0);
+  });
+
+  test("Alt with an arrow key asks to move the item and moves nothing", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    await listen(page, "pl-reorder");
+    await page.locator("#second a").focus();
+    await page.keyboard.press("Alt+ArrowUp");
+    await page.keyboard.press("Alt+ArrowDown");
+    await expect
+      .poll(() => heard(page))
+      .toEqual([
+        { from: 1, to: 0 },
+        { from: 1, to: 2 },
+      ]);
+    expect(await order(page)).toEqual(["first", "second", "third"]);
+  });
+
+  test("it does not go past either end", async ({ page }) => {
+    await open(page, "reorderable");
+    await listen(page, "pl-reorder");
+    await page.locator("#first a").focus();
+    await page.keyboard.press("Alt+ArrowUp");
+    await page.locator("#third a").focus();
+    await page.keyboard.press("Alt+ArrowDown");
+    expect(await heard(page)).toEqual([]);
+  });
+
+  test("focus stays on the item when the app moves it", async ({ page }) => {
+    await open(page, "reorderable");
+    await page.evaluate(() => {
+      document
+        .querySelector("#sidebar")
+        ?.addEventListener("pl-reorder", (event) => {
+          const item = event.target as HTMLElement;
+          item.previousElementSibling?.before(item);
+        });
+    });
+    await page.locator("#second a").focus();
+    await page.keyboard.press("Alt+ArrowUp");
+    await expect.poll(() => order(page)).toEqual(["second", "first", "third"]);
+    await expect.poll(() => focusedId(page)).toBe("second");
+  });
+
+  test("dragging the grip past other items fires pl-reorder with the new place", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    await listen(page, "pl-reorder");
+    const grip = (await page.locator("#first [part=handle]").boundingBox())!;
+    const third = (await page.locator("#third").boundingBox())!;
+    const x = grip.x + grip.width / 2;
+    await page.mouse.move(x, grip.y + grip.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(x, third.y + third.height / 2 + 4, { steps: 6 });
+    await expect(page.locator("#first")).toHaveAttribute("data-dragging", "");
+    await page.mouse.up();
+    await expect(page.locator("#first")).not.toHaveAttribute("data-dragging");
+    expect(await heard(page)).toEqual([{ from: 0, to: 2 }]);
+    expect(await order(page)).toEqual(["first", "second", "third"]);
+    expect(
+      await page.locator("#first").evaluate((el) => el.style.translate),
+    ).toBe("");
+  });
+
+  test("a drag that ends where it began fires nothing", async ({ page }) => {
+    await open(page, "reorderable");
+    await listen(page, "pl-reorder");
+    const grip = (await page.locator("#second [part=handle]").boundingBox())!;
+    const x = grip.x + grip.width / 2;
+    const y = grip.y + grip.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x, y + 6, { steps: 3 });
+    await page.mouse.up();
+    expect(await heard(page)).toEqual([]);
+  });
+
+  test("pressing the grip does not select the item", async ({ page }) => {
+    await open(page, "reorderable");
+    await listen(page, "pl-change");
+    await page.locator("#second [part=handle]").click();
+    expect(await heard(page)).toEqual([]);
+    await expect(page.locator("#second a")).not.toHaveAttribute("aria-current");
+  });
+
+  test("a reorderable item tells assistive technology about the keys", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    await expect(page.locator("#second a")).toHaveAttribute(
+      "aria-keyshortcuts",
+      "Alt+ArrowUp Alt+ArrowDown",
+    );
+  });
+
+  test("axe finds no WCAG 2.2 AA violations", async ({ page }) => {
+    await expectAccessible(await open(page, "reorderable"));
+  });
 });
