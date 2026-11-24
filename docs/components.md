@@ -914,16 +914,20 @@ import "purrlucent/dialog";
 
 ### `<pl-dialog>`
 
-A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description. Initial focus goes to the element with `autofocus`, otherwise the default action (a `pl-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. A sheet opened while another sheet is open is warned about and still shows; an alert over a sheet is not. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open.
+A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the top layer, the inert page, the focus trap and Escape. The `alert` variant is a compact, urgent question with an `alertdialog` role; the `sheet` variant is a larger panel with a title area, a scrolling body and a row of actions. The accessible name is the slotted title, or `label` when there is none. The description is the default slot of an alert and the `description` slot of a sheet, so a sheet's form is not read out as a description; the `description` attribute gives one when nothing is slotted. Initial focus goes to the element with `autofocus`, otherwise the default action (a `pl-button` with `default`, unless destructive), the cancel action (`cancel`) or the first action. Return clicks the default action, except in a multi-line text field or on a focused button; Escape and Command-Period click the cancel action, and without one Escape closes the dialog. A destructive default is ignored and warned about. An alert with more than three actions is warned about and still shows them all. A sheet opened while another sheet is open is warned about and still shows; an alert over a sheet is not. Focus returns to the element that had it before opening. An element inside with `data-close="value"` closes the dialog with that return value. The page cannot scroll while a dialog is open. With `nonmodal` the dialog opens without blocking the page: the rest of the page stays interactive, and there is no scrim, focus trap or scroll lock. Use it for a panel that works beside the page, such as an in-context translation tool, and not for a question that must be answered first. Escape and the close button close it while focus is inside it.
 
-| Attribute     | Type                 | Default   | Description                                                            |
-| ------------- | -------------------- | --------- | ---------------------------------------------------------------------- |
-| `open`        | `boolean`            | `false`   | The dialog is showing. Setting it opens the dialog modally.            |
-| `variant`     | `"alert" \| "sheet"` | `"sheet"` | `sheet` (default) or `alert`.                                          |
-| `label`       | `string`             | `""`      | The accessible name when there is no slotted title.                    |
-| `dismissible` | `boolean`            | `false`   | A sheet also closes when the backdrop is pressed. An alert never does. |
-| `_scrolls`    | `boolean`            | `false`   |                                                                        |
-| `_actions`    | `number`             | `0`       |                                                                        |
+| Attribute     | Type                 | Default   | Description                                                                                                                 |
+| ------------- | -------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `open`        | `boolean`            | `false`   | The dialog is showing. Setting it opens the dialog modally, or without blocking the page with `nonmodal`.                   |
+| `variant`     | `"alert" \| "sheet"` | `"sheet"` | `sheet` (default) or `alert`.                                                                                               |
+| `label`       | `string`             | `""`      | The accessible name when there is no slotted title.                                                                         |
+| `description` | `string`             | `""`      | The accessible description when nothing is slotted for it: the `description` slot of a sheet, the default slot of an alert. |
+| `dismissible` | `boolean`            | `false`   | A sheet also closes when the backdrop is pressed. An alert never does.                                                      |
+| `closable`    | `boolean`            | `false`   | A sheet shows a close button in its header. It asks to close like Escape.                                                   |
+| `close-label` | `string`             | `""`      | The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Close".           |
+| `nonmodal`    | `boolean`            | `false`   | Opens without blocking the page: no scrim, inert page or scroll lock. Set it before opening.                                |
+| `_scrolls`    | `boolean`            | `false`   |                                                                                                                             |
+| `_actions`    | `number`             | `0`       |                                                                                                                             |
 
 **Slots**
 
@@ -932,12 +936,14 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 - `description`: A short explanation under the sheet's title.
 - default: The alert's message, or the sheet's scrolling body.
 - `actions`: `pl-button` elements, in the order they are shown.
+- `actions-start`: Non-button content, such as a status line, at the start of a sheet's row of actions.
 
 **Parts**
 
 - `dialog`: The native dialog.
 - `surface`: The padded panel inside it.
 - `header`: The icon and title.
+- `close`: The close button of a closable sheet.
 - `body`: The scrolling content.
 - `actions`: The row or column of actions.
 
@@ -948,8 +954,8 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 **Events**
 
 - `name`:
-- `pl-cancel`: Escape, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
-- `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with.
+- `pl-cancel`: Escape, the close button, or the backdrop of a dismissible sheet, asked to close. Cancelable: `preventDefault()` keeps the dialog open.
+- `pl-close`: The dialog closed. `detail.returnValue` holds the value it closed with. `detail.reason` is `user` for Escape, an action, the backdrop or the close button, and `programmatic` for `close()` or `open` set to false. It does not fire when `open` is set again before the close completes.
 
 ## Drawer
 
@@ -968,6 +974,7 @@ A modal panel anchored to an edge of the screen. A native `<dialog>` inside open
 | `detents`      | `string`       | `""`       | Space-separated heights a bottom sheet can rest at: `medium`, `large` or `medium large`. Without it the sheet is as tall as its content, up to the large height. |
 | `detent`       | `Detent \| ""` | `""`       | The current detent, one of `detents`; the first when unset or not listed. Reflects dragging and the grabber.                                                     |
 | `label`        | `string`       | `""`       | The accessible name when there is no slotted title.                                                                                                              |
+| `description`  | `string`       | `""`       | The accessible description when nothing is slotted in the `description` slot.                                                                                    |
 | `expand-label` | `string`       | `""`       | The grabber's accessible name while it grows the sheet. Defaults to the page language's text (see `setMessages`), in English "Expand".                           |
 | `close-label`  | `string`       | `""`       | The grabber's accessible name while it closes the sheet. Defaults to the page language's text (see `setMessages`), in English "Close".                           |
 | `dismissible`  | `boolean`      | `false`    | Pressing the backdrop also asks to close.                                                                                                                        |
