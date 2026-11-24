@@ -50,6 +50,15 @@ test("a token that is read but never defined is reported", () => {
   ]);
 });
 
+test("a registered property counts as defined", () => {
+  expect(
+    undefinedTokens({
+      "tokens.css": "@property --pl-lens { syntax: '*'; inherits: false; }",
+      "a.css.ts": "backdrop-filter: var(--pl-lens, ) none;",
+    }),
+  ).toEqual([]);
+});
+
 test("a token name completed by a template value is skipped", () => {
   expect(
     undefinedTokens({ "a.ts": "`color: var(--pl-color-${role})`" }),

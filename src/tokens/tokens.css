@@ -2,6 +2,15 @@
    base; everything else is calculated from them. Colors are light-dark() pairs and follow the
    page's color-scheme. Every token sits in a cascade layer, so app styles
    override it. */
+
+/* A glass host's own refraction filter, set by its lens (behaviors/lens.ts) in
+   Chromium. It does not inherit, so a control inside a refracting bar never
+   borrows the bar's map. */
+@property --pl-lens {
+  syntax: "*";
+  inherits: false;
+}
+
 @layer pl.tokens {
   :root {
     color-scheme: light dark;
@@ -258,6 +267,7 @@
     --pl-icon-sm: calc(var(--pl-spacing) * 3);
     --pl-icon-md: calc(var(--pl-spacing) * 4);
     --pl-icon-lg: calc(var(--pl-spacing) * 5);
+    --pl-blur-sm: calc(var(--pl-spacing) * 2.5);
     --pl-blur-md: calc(var(--pl-spacing) * 5);
     --pl-blur-lg: calc(var(--pl-spacing) * 7.5);
     --pl-font-sans: "Inter", system-ui, sans-serif;
@@ -402,6 +412,37 @@
     --pl-material-field: var(--pl-color-input);
     --pl-material-float: var(--pl-color-background);
 
+    /* The focus ring and the selection on glass: the pink deepened in light
+       and lifted in dark, so each holds 3:1 on the thin fill over any
+       backdrop, and on every solid ground. Increased contrast gives them its
+       own ring and selection colors. */
+    --pl-material-ring: light-dark(
+      oklch(from var(--pl-color-hot-pink) 32% c h),
+      color-mix(in srgb, var(--pl-color-hot-pink), white 55%)
+    );
+    --pl-material-selected: var(--pl-material-ring);
+
+    /* A capsule or control that shows grey, pink or red text on glass reads
+       these instead, which stay thick under glass. Solid, they match. */
+    --pl-material-capsule-strong: transparent;
+    --pl-material-control-strong: var(--pl-color-secondary);
+    --pl-material-control-strong-pressed: var(--pl-color-secondary-pressed);
+
+    /* How much of its tone a tinted or destructive button mixes into its
+       face, at rest and pressed. On glass the tint is lighter and pressing
+       lightens it, so the pink or red label keeps 4.5:1 over any backdrop. */
+    --pl-material-tone-rest: 21%;
+    --pl-material-tone-pressed: 28%;
+
+    /* The thin glass fill: a pale film in light and an ink one in dark, as
+       clear as primary text on it allows over any backdrop, black to white.
+       Under a small blur and a strong color boost, the backdrop's shapes and
+       colors show through it, as in Apple's small glass. */
+    --pl-material-fill-thin: light-dark(
+      rgb(240 240 240 / 60%),
+      color-mix(in srgb, var(--pl-color-ink) 66%, transparent)
+    );
+
     /* The neutral control face. Glass makes it stronger. */
     --pl-color-secondary: var(--pl-color-muted-2);
     --pl-color-secondary-pressed: var(--pl-color-muted-pressed);
@@ -426,25 +467,35 @@
 
   @supports (backdrop-filter: blur(1px)) {
     [pl-material="glass"] {
-      /* The glass fill and its color boost. The fill is as clear as text on it
-         allows over any backdrop, black to white (HIG materials): below the
-         overlay's opacity, accent and tertiary text drop under 4.5:1. An app
-         that controls what sits behind its glass may set a clearer fill. A
-         tint mixes a color into the fill, at 0% by default; set both on the
-         pl-material="glass" element or above it. Apple tints glass sparingly. */
+      /* Two tiers, as Apple's small glass is clearer than its large glass.
+         Bars, capsules and controls, which carry primary text, take the thin
+         fill; sidebars, panels and sheets, and the strong capsule and control
+         that carry grey, pink or red text, take the thick one, the overlay.
+         Each fill is as clear as its text allows over any backdrop, black to
+         white (HIG materials). An app that controls what sits behind its
+         glass may set clearer fills. A tint mixes a color into the fills, at
+         0% by default; set both on the pl-material="glass" element or above
+         it. Apple tints glass sparingly. */
       --pl-material-glass: color-mix(
         in srgb,
         var(--pl-color-overlay),
         var(--pl-material-tint, transparent)
           var(--pl-material-tint-strength, 0%)
       );
-      --pl-material-saturate: saturate(160%);
-      --pl-material-bar: var(--pl-material-glass);
-      --pl-material-capsule: var(--pl-material-glass);
+      --pl-material-glass-thin: color-mix(
+        in srgb,
+        var(--pl-material-fill-thin),
+        var(--pl-material-tint, transparent)
+          var(--pl-material-tint-strength, 0%)
+      );
+      --pl-material-saturate: saturate(180%);
+      --pl-material-bar: var(--pl-material-glass-thin);
+      --pl-material-capsule: var(--pl-material-glass-thin);
+      --pl-material-capsule-strong: var(--pl-material-glass);
       --pl-material-sidebar: var(--pl-material-glass);
       --pl-material-panel: var(--pl-material-glass);
       --pl-material-sheet: var(--pl-material-glass);
-      --pl-material-bar-filter: blur(var(--pl-blur-md))
+      --pl-material-bar-filter: blur(var(--pl-blur-sm))
         var(--pl-material-saturate);
       --pl-material-sidebar-filter: blur(var(--pl-blur-md))
         var(--pl-material-saturate);
@@ -453,22 +504,31 @@
       --pl-material-sheet-filter: blur(var(--pl-blur-lg))
         var(--pl-material-saturate);
 
+      /* The text color for text-only buttons on a thin bar. A bar or toolbar
+         hands it to the buttons in it as --pl-material-ghost-text, so a
+         text-only button elsewhere keeps its pink or red label. */
+      --pl-material-chrome-text: var(--pl-color-foreground);
+
+      /* The ring and the selection that hold 3:1 on the thin fill. */
+      --pl-color-ring: var(--pl-material-ring);
+      --pl-color-selected: var(--pl-material-selected);
+
       /* Light on the glass, as Apple's material catches it: a specular line
          along the top rim, the hairline, a glow inside the top edge and a
          fainter catch light along the bottom rim. Insets only, so the
          surface keeps its size; the glow is light and stays near the rim,
          away from the text. */
       --pl-material-highlight: light-dark(
-        color-mix(in srgb, #fff 70%, transparent),
-        color-mix(in srgb, #fff 30%, transparent)
+        color-mix(in srgb, #fff 75%, transparent),
+        color-mix(in srgb, #fff 42%, transparent)
       );
       --pl-material-glow: light-dark(
-        color-mix(in srgb, #fff 40%, transparent),
-        color-mix(in srgb, #fff 10%, transparent)
+        color-mix(in srgb, #fff 38%, transparent),
+        color-mix(in srgb, #fff 14%, transparent)
       );
       --pl-material-rim-low: light-dark(
-        color-mix(in srgb, #fff 30%, transparent),
-        color-mix(in srgb, #fff 8%, transparent)
+        color-mix(in srgb, #fff 22%, transparent),
+        color-mix(in srgb, #fff 10%, transparent)
       );
       --pl-material-edge:
         inset 0 1px 0 0 var(--pl-material-highlight),
@@ -476,20 +536,36 @@
         inset 0 0 0 1px var(--pl-color-overlay-border),
         inset 0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 2)
           calc(var(--pl-spacing) * -2) var(--pl-material-glow);
-      --pl-material-control: var(--pl-material-glass);
+      --pl-material-control: var(--pl-material-glass-thin);
+
+      /* Pressed, the thin face thickens halfway to the thick fill and takes a
+         little of the text color, so the press shows and its text keeps
+         4.5:1 over any backdrop. */
       --pl-material-control-pressed: color-mix(
+        in srgb,
+        color-mix(
+          in srgb,
+          var(--pl-material-glass-thin),
+          var(--pl-material-glass)
+        ),
+        var(--pl-color-foreground) 10%
+      );
+      --pl-material-tone-rest: 8%;
+      --pl-material-tone-pressed: 4%;
+      --pl-material-control-strong: var(--pl-material-glass);
+      --pl-material-control-strong-pressed: color-mix(
         in srgb,
         var(--pl-material-glass),
         var(--pl-color-foreground) 12%
       );
-      --pl-material-control-filter: blur(var(--pl-blur-md))
+      --pl-material-control-filter: blur(var(--pl-blur-sm))
         var(--pl-material-saturate);
       --pl-material-field: color-mix(
         in srgb,
         var(--pl-color-input) 70%,
         transparent
       );
-      --pl-material-float: var(--pl-material-glass);
+      --pl-material-float: var(--pl-material-glass-thin);
 
       /* A contact shadow under the control and a soft one that lifts it. */
       --pl-elevation-control:
@@ -533,6 +609,9 @@
       --pl-material-dim: brightness(70%);
       --pl-material-bar: var(--pl-material-glass);
       --pl-material-capsule: var(--pl-material-glass);
+      --pl-material-capsule-strong: var(--pl-material-glass);
+      --pl-material-control-strong: var(--pl-material-glass);
+      --pl-material-control-strong-pressed: rgb(0 0 0 / 68%);
       --pl-material-sidebar: var(--pl-material-glass);
       --pl-material-panel: var(--pl-material-glass);
       --pl-material-sheet: var(--pl-material-glass);
@@ -567,6 +646,7 @@
     [pl-material="glass"][pl-glass="clear"] {
       --pl-material-bar: var(--pl-color-surface);
       --pl-material-capsule: transparent;
+      --pl-material-capsule-strong: transparent;
       --pl-material-sidebar: var(--pl-color-surface);
       --pl-material-panel: var(--pl-color-surface);
       --pl-material-sheet: var(--pl-color-surface);
@@ -576,8 +656,13 @@
       --pl-material-sheet-filter: none;
       --pl-material-highlight: transparent;
       --pl-material-edge: 0 0 transparent;
+      --pl-material-chrome-text: initial;
       --pl-material-control: var(--pl-color-secondary);
       --pl-material-control-pressed: var(--pl-color-secondary-pressed);
+      --pl-material-control-strong: var(--pl-color-secondary);
+      --pl-material-control-strong-pressed: var(--pl-color-secondary-pressed);
+      --pl-material-tone-rest: 21%;
+      --pl-material-tone-pressed: 28%;
       --pl-material-control-filter: none;
       --pl-material-field: var(--pl-color-input);
       --pl-material-float: var(--pl-color-background);
@@ -596,6 +681,11 @@
 
   @media (prefers-contrast: more) {
     :root {
+      --pl-material-ring: light-dark(var(--pl-color-ink), #fff);
+      --pl-material-selected: light-dark(
+        var(--pl-color-accent-text),
+        var(--pl-color-paper)
+      );
       --pl-boundary: inset 0 0 0 1px var(--pl-color-input-border);
       --pl-color-edge: var(--pl-color-input-border);
       --pl-elevation-panel: var(--pl-boundary);

@@ -2,6 +2,7 @@ import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { AnchoredController } from "../../behaviors/anchored.ts";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import { barSurface } from "../../surfaces/surfaces.css.ts";
 import { itemStyles, navigationMenuStyles } from "./navigation-menu.css.ts";
 
@@ -170,6 +171,7 @@ export class PlNavigationMenu extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.label = "";
     this.addEventListener("pl-toggle", this.#onToggle);
   }

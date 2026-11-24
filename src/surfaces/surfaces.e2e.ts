@@ -58,27 +58,22 @@ test("list row and field shell never have a backdrop filter, glass or not", asyn
 
 // materials/5: the tint is translucent, so each rendered surface's background
 // is composited over the extremes of any backdrop (black, white) and the
-// midpoint between them. Its legibility floor: every text role at 4.5:1 and
-// the focus ring and selection face at 3:1, the weakest included.
+// midpoint between them. Its legibility floor: text at 4.5:1 and the focus
+// ring and selection face at 3:1, the weakest included. A bar is the thin
+// tier and carries primary text only; a panel or sheet carries every role.
 const glassForegrounds = [
-  ["label", 4.5],
-  ["secondary-label", 4.5],
-  ["tertiary-label", 4.5],
+  ["foreground", 4.5],
+  ["muted-foreground", 4.5],
   ["accent-text", 4.5],
   ["destructive-text", 4.5],
-  ["focus", 3],
-  ["selection", 3],
+  ["ring", 3],
+  ["selected", 3],
 ] as const;
+const primaryRoles = new Set(["foreground", "ring", "selected"]);
 
 test("glass labels stay legible over any backdrop", async ({ page }) => {
   for (const theme of ["light", "dark"]) {
     await openStory(page, `material:glass;theme:${theme}`, patterned);
-    const colors = await resolveColors(
-      page,
-      Object.fromEntries(
-        glassForegrounds.map(([role]) => [role, `var(--pl-color-${role})`]),
-      ),
-    );
     for (const id of ["bar", "panel", "sheet"]) {
       const background = await page
         .locator(`#${id}`)
@@ -88,12 +83,23 @@ test("glass labels stay legible over any backdrop", async ({ page }) => {
         "#808080",
         "#fff",
       ]);
-      for (const over of shown)
-        for (const [role, need] of glassForegrounds)
+      const roles = glassForegrounds.filter(
+        ([role]) => id !== "bar" || primaryRoles.has(role),
+      );
+      // A translucent foreground is measured as it shows on each ground.
+      for (const [role, need] of roles) {
+        const fgs = await compositeOver(
+          page,
+          `var(--pl-color-${role})`,
+          shown.map((over) => `rgb(${over.join(" ")})`),
+        );
+        shown.forEach((over, i) =>
           expect(
-            contrast(colors[role]!, over),
+            contrast(fgs[i]!, over),
             `${role} on ${id} in ${theme}`,
-          ).toBeGreaterThanOrEqual(need);
+          ).toBeGreaterThanOrEqual(need),
+        );
+      }
     }
   }
 });
@@ -159,8 +165,8 @@ test("clear glass dims its backdrop and its labels hold over white or black", as
         ).toBeGreaterThanOrEqual(need);
     const [undimmed] = await compositeOver(page, background, ["#fff"]);
     expect(
-      contrast(colors.label!, undimmed!),
-      `label on ${id} without the dim`,
+      contrast(colors.foreground!, undimmed!),
+      `foreground on ${id} without the dim`,
     ).toBeGreaterThanOrEqual(4.5);
   }
 });

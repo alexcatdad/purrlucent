@@ -10,8 +10,8 @@ export const selectStyles = css`
     --_size: var(--pl-size-md);
     --_pad: var(--pl-pad-control);
     --_glyph: var(--pl-icon-md);
-    --_face: var(--pl-material-control);
-    --_face-pressed: var(--pl-material-control-pressed);
+    --_face: var(--pl-material-control-strong);
+    --_face-pressed: var(--pl-material-control-strong-pressed);
     --_face-hover: color-mix(in srgb, var(--_face), var(--_face-pressed));
 
     display: inline-grid;
