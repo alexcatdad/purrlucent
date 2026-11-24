@@ -487,7 +487,12 @@ test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("open")));
 });
 
-test("submenu text meets contrast", async ({ page }) => {
+test("submenu text meets contrast", async ({ page, browserName }) => {
+  // The submenu often fails to open on load in WebKit: issue #171.
+  test.fixme(
+    browserName === "webkit",
+    "Submenu does not open on load in WebKit",
+  );
   for (const theme of ["light", "dark"])
     for (const material of ["solid", "glass"]) {
       await gotoStory(

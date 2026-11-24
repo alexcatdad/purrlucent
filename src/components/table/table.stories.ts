@@ -354,6 +354,33 @@ export const Regular: Story = {
 };
 
 /** Visually hidden text in a header cell stays inside the scroll area, so the page does not scroll sideways. */
+/** A column of short words beside a wide one keeps its words whole. */
+export const WordWidths: Story = {
+  render: () => html`
+    <pl-table id="control" label="Invoices">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Invoice</th>
+            <th scope="col">Status</th>
+            <th scope="col">Vendor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">
+              Invoice 2026000418 settled against the October purchase order for
+              the warehouse refit, second instalment of four
+            </th>
+            <td>Approved</td>
+            <td>Presto AB</td>
+          </tr>
+        </tbody>
+      </table>
+    </pl-table>
+  `,
+};
+
 export const ScreenReaderCell: Story = {
   render: () => html`
     <pl-table id="control" label="Pioneers">

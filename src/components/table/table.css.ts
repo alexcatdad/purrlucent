@@ -39,7 +39,7 @@ export const tableDocumentStyles = css`
     border-block-end: 1px solid var(--pl-color-border);
     text-align: start;
     vertical-align: middle;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
 
   pl-table tbody > tr > :is(th, td) {
