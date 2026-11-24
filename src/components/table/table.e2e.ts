@@ -300,6 +300,38 @@ test("hidden text in a header cell does not widen the page at 390px", async ({
   );
 });
 
+/** Words that wrap inside themselves: a word whose text spans more than one line box. */
+const brokenWords = (page: Page) =>
+  page.locator("pl-table").evaluate((table) => {
+    const broken: string[] = [];
+    for (const cell of table.querySelectorAll("th, td")) {
+      const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const text = node.textContent ?? "";
+        for (const match of text.matchAll(/\S+/g)) {
+          const range = document.createRange();
+          range.setStart(node, match.index);
+          range.setEnd(node, match.index + match[0].length);
+          const lines = new Set(
+            [...range.getClientRects()].map((rect) => Math.round(rect.top)),
+          );
+          if (lines.size > 1) broken.push(match[0]);
+        }
+      }
+    }
+    return broken;
+  });
+
+for (const width of [1280, 390]) {
+  test(`no column is narrower than its longest word at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await open(page, "data-table--word-widths");
+    expect(await brokenWords(page)).toEqual([]);
+  });
+}
+
 test("the sticky header still sticks inside the positioned scroll area", async ({
   page,
 }) => {
