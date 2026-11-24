@@ -1696,13 +1696,14 @@ import "purrlucent/popover";
 
 ### `<pl-popover>`
 
-A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger. The panel is as wide as its content, from a minimum that keeps the arrow clear of the corners up to a maximum of `calc(var(--pl-spacing) * 45)`, and never wider than the viewport; longer content wraps.
+A non-modal floating panel anchored to a trigger. The trigger is any focusable control in the `trigger` slot; the element sets `aria-haspopup` and `aria-expanded` on it. The panel is a dialog named by `label`: it opens on a press of the trigger, takes focus to its first focusable content (or to itself), and closes on Escape (focus returns to the trigger), on a press outside and when focus leaves it. An arrow points at the trigger. The panel is as wide as its content, from a minimum that keeps the arrow clear of the corners up to a maximum of `--pl-popover-max-inline-size`, and never wider than the viewport; longer content wraps.
 
-| Attribute   | Type                                    | Default    | Description                                                                                                                                     |
-| ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                                                          |
-| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                         |
-| `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it. |
+| Attribute   | Type                                    | Default    | Description                                                                                                                                                                                            |
+| ----------- | --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`     | `string`                                | `""`       | The panel's accessible name. Required.                                                                                                                                                                 |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                                                                                |
+| `align`     | `Align`                                 | `"center"` | How the panel lines up with the trigger on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the trigger. |
+| `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it.                                                        |
 
 **Slots**
 
@@ -1713,6 +1714,10 @@ A non-modal floating panel anchored to a trigger. The trigger is any focusable c
 
 - `panel`: The floating panel.
 - `arrow`: The arrow pointing at the trigger.
+
+**CSS properties**
+
+- `--pl-popover-max-inline-size`: The widest the panel grows before its content wraps. Default `calc(var(--pl-spacing) * 45)`.
 
 **Events**
 
@@ -2484,19 +2489,26 @@ import "purrlucent/tooltip";
 
 ### `<pl-tooltip>`
 
-Shows `text` in a small bubble beside its content (the target): after a delay on hover, at once on keyboard focus. It hides on pointer leave, blur, Escape and a press, and the pointer can move onto the bubble without hiding it. It never shows for touch, so a tap always reaches the target. The bubble is a `role="tooltip"` element that the tooltip adds to its own children, so the target can name it in `aria-describedby`: an id reference cannot reach into a shadow root.
+Shows `text` in a small bubble beside its content (the target): after a delay on hover, at once on keyboard focus. It hides on pointer leave, blur, Escape and a press, and the pointer can move onto the bubble without hiding it. It never shows for touch, so a tap always reaches the target. The bubble is a `role="tooltip"` element that the tooltip adds to its own children, so the target can name it in `aria-describedby`: an id reference cannot reach into a shadow root. For more than a line of text, put one non-interactive element (a `<div>` holding a `<dl>` or several lines) in the `content` slot: it becomes the `role="tooltip"` element and `text` is not used. Not the `<dl>` itself: `role="tooltip"` on it breaks its list semantics. The bubble wraps at `--pl-tooltip-max-inline-size`.
 
-| Attribute   | Type                                    | Default    | Description                                                                      |
-| ----------- | --------------------------------------- | ---------- | -------------------------------------------------------------------------------- |
-| `text`      | `string`                                | `""`       | What the bubble says. Required.                                                  |
-| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | `bottom` (default), `top`, `start` or `end`. It flips when the side has no room. |
-| `shown`     | `boolean`                               | `false`    |                                                                                  |
+| Attribute   | Type                                    | Default    | Description                                                                                                                                                                                           |
+| ----------- | --------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`      | `string`                                | `""`       | What the bubble says. Required unless the `content` slot is used.                                                                                                                                     |
+| `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                                                                                                      |
+| `align`     | `Align`                                 | `"center"` | How the bubble lines up with the target on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the target. |
+| `shown`     | `boolean`                               | `false`    |                                                                                                                                                                                                       |
 
 **Slots**
 
 - default: The target: a control, or anything the pointer or focus can reach.
+- `content`: Rich, non-interactive content for the bubble, in place of `text`.
 
 **Parts**
 
 - `bubble`: The floating box. Invisible: its padding is the gap to the target.
 - `face`: The visible bubble.
+
+**CSS properties**
+
+- `--pl-tooltip-open-delay`: How long the pointer must rest on the target before the bubble shows. Default `560ms`. Keyboard focus shows it at once.
+- `--pl-tooltip-max-inline-size`: The widest the bubble grows before its content wraps. Default `calc(var(--pl-spacing) * 60)`.
