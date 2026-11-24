@@ -8,6 +8,7 @@ import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { inputOtpStyles } from "./input-otp.css.ts";
+import { fill, messages } from "../../behaviors/locale.ts";
 
 /**
  * A one-time code field. One native input does the editing, so typing, paste,
@@ -30,7 +31,7 @@ import { inputOtpStyles } from "./input-otp.css.ts";
  * @attr {boolean} readonly - The value can be selected but not edited.
  * @attr {boolean} disabled - No focus, nothing submitted.
  * @attr {string} pattern - A regular expression the whole value must match.
- * @attr {string} incomplete-message - The message shown for a code shorter than `length`. Defaults to "Enter all N characters."
+ * @attr {string} incomplete-message - The message shown for a code shorter than `length`. Defaults to the page language's text (see `setMessages`), in English "Enter all N characters."
  * @slot - The visible label.
  * @csspart label - The visible label.
  * @csspart field - The row of boxes.
@@ -215,7 +216,9 @@ export class PlInputOtp extends LitElement {
       input.value.length < this.#n
     ) {
       flags = { tooShort: true };
-      message = this.incompleteMessage || `Enter all ${this.#n} characters.`;
+      message =
+        this.incompleteMessage ||
+        fill(messages(this).enterAll, { count: this.#n });
     }
     this.#internals.setFormValue(input.value);
     this.#internals.setValidity(flags, message, input);

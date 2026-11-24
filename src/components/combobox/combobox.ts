@@ -9,6 +9,7 @@ import {
 import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
+import { fill, messages } from "../../behaviors/locale.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
 import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
@@ -21,8 +22,6 @@ import { comboboxStyles } from "./combobox.css.ts";
 const chevron = html`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 9l6 6l6 -6" />
 </svg>`;
-
-const TOGGLE_LABEL = "Show options";
 
 /** `ariaActiveDescendantElement` is missing from the DOM typings. */
 type ActiveDescendantHost = HTMLInputElement & {
@@ -57,8 +56,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} allow-custom - Text that matches no option becomes the value.
  * @attr {boolean} open - The list is showing.
- * @attr {string} toggle-label - The chevron button's accessible name. Defaults to "Show options", which becomes "<label>, show options" when the field has a label.
- * @attr {string} empty-label - The text shown when no option matches. Defaults to "No results".
+ * @attr {string} toggle-label - The chevron button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Show options", which becomes "<label>, show options" when the field has a label.
+ * @attr {string} empty-label - The text shown when no option matches. Defaults to the page language's text (see `setMessages`), in English "No results".
  * @slot - The `pl-option` children.
  * @slot label - The visible label.
  * @csspart label - The visible label.
@@ -145,8 +144,8 @@ export class PlCombobox extends LitElement {
     this.size = "md";
     this.allowCustom = false;
     this.open = false;
-    this.toggleLabel = TOGGLE_LABEL;
-    this.emptyLabel = "No results";
+    this.toggleLabel = "";
+    this.emptyLabel = "";
     this._active = null;
     this._labelled = false;
     new DismissController(this, {
@@ -211,7 +210,7 @@ export class PlCombobox extends LitElement {
     this.#internals.setFormValue(this.value);
     this.#internals.setValidity(
       { valueMissing: this.required && !this.value },
-      nativeMessage("select", "Choose an option to continue."),
+      nativeMessage(this, "select", "selectRequired"),
       input,
     );
     const invalid = this.#touched && !this.#internals.validity.valid;
@@ -466,9 +465,10 @@ export class PlCombobox extends LitElement {
           type="button"
           tabindex="-1"
           aria-label=${
-            field && this.toggleLabel === TOGGLE_LABEL
-              ? `${field}, show options`
-              : this.toggleLabel
+            this.toggleLabel ||
+            (field
+              ? fill(messages(this).showOptionsFor, { label: field })
+              : messages(this).showOptions)
           }
           aria-expanded=${this.open}
           aria-controls="list"
@@ -499,7 +499,7 @@ export class PlCombobox extends LitElement {
                 aria-disabled="true"
                 aria-selected="false"
               >
-                ${this.emptyLabel}
+                ${this.emptyLabel || messages(this).noResults}
               </div>`
             : nothing
         }

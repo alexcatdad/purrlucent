@@ -1,15 +1,16 @@
 import { LitElement, html, nothing, type PropertyValues } from "lit";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { attachmentGroupStyles, attachmentStyles } from "./attachment.css.ts";
+import { messages, type PlMessages } from "../../behaviors/locale.ts";
 
 export type PlAttachmentState =
   "idle" | "uploading" | "processing" | "error" | "done";
 export type PlAttachmentSize = "default" | "sm" | "xs";
 
-const stateText: Partial<Record<PlAttachmentState, string>> = {
-  uploading: "Uploading",
-  processing: "Processing",
-  error: "Error",
+const stateText: Partial<Record<PlAttachmentState, keyof PlMessages>> = {
+  uploading: "uploading",
+  processing: "processing",
+  error: "error",
 };
 
 // Controls that take a tab stop of their own, so the group needs none.
@@ -100,7 +101,7 @@ export class PlAttachment extends LitElement {
   override render() {
     const word = stateText[this.state ?? "done"];
     const title = html`<span part="title"><slot name="title"></slot></span
-      >${word ? html`<span part="status">${this.statusLabel || word}</span>` : nothing}`;
+      >${word ? html`<span part="status">${this.statusLabel || messages(this)[word]}</span>` : nothing}`;
     return html`<div part="media" hidden>
         <slot name="media" @slotchange=${hideWhenEmpty}></slot>
       </div>

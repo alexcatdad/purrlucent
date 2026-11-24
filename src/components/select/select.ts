@@ -313,7 +313,7 @@ export class PlSelect extends LitElement {
     this.#internals.setFormValue(chosen ? this.value : null);
     this.#internals.setValidity(
       { valueMissing: this.required && !chosen },
-      nativeMessage("select", "Choose an option to continue."),
+      nativeMessage(this, "select", "selectRequired"),
       this.#trigger,
     );
     if (this.#popup.sync(this.open)) {

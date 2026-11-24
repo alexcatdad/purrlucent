@@ -1,4 +1,5 @@
 import { LitElement, html, nothing, svg } from "lit";
+import { fill, messages } from "../../behaviors/locale.ts";
 import { parseLevel, type SidebarLevel } from "./level.ts";
 import { itemStyles } from "./sidebar.css.ts";
 
@@ -18,7 +19,7 @@ const detail = html`<slot name="detail"></slot>`;
  * renders a plain button; clicking it selects it, so an app can also handle the
  * click itself.
  *
- * @attr {string} toggle-label - The disclosure button's accessible name when a link has one beside it. Defaults to "<item label>, show items".
+ * @attr {string} toggle-label - The disclosure button's accessible name when a link has one beside it. Defaults to the page language's text (see `setMessages`), in English "<item label>, show items".
  * @slot - The item label.
  * @slot icon - A leading svg icon, tinted with the accent text color.
  * @slot detail - Trailing muted text, such as a count.
@@ -104,7 +105,7 @@ export class PlSidebarItem extends LitElement {
       .join("")
       .replace(/\s+/g, " ")
       .trim();
-    return `${text}, show items`;
+    return fill(messages(this).showItemsFor, { label: text });
   }
 
   protected override updated() {

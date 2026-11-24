@@ -2,6 +2,7 @@ import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { paginationStyles } from "./pagination.css.ts";
 import { clampPage, pageItems, wholeTotal } from "./pages.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 // Both point toward their own side; the stylesheet mirrors them under right-to-left.
 const previousGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5.5-6 6.5 6 6.5" /></svg>`;
@@ -27,10 +28,10 @@ type Kind = "previous" | "next" | "page";
  *
  * @attr {number} page - The current page, from 1 to `total`. Defaults to 1; a value out of range is clamped.
  * @attr {number} total - The number of pages. Defaults to 1.
- * @attr {string} label - The accessible name of the landmark. Defaults to "Pagination".
+ * @attr {string} label - The accessible name of the landmark. Defaults to the page language's text (see `setMessages`), in English "Pagination".
  * @attr {string} href-template - Makes the pages links. `{page}` is replaced by the page number, as in `/posts?page={page}`.
- * @attr {string} previous-label - The accessible name of the Previous button. Defaults to "Previous page".
- * @attr {string} next-label - The accessible name of the Next button. Defaults to "Next page".
+ * @attr {string} previous-label - The accessible name of the Previous button. Defaults to the page language's text (see `setMessages`), in English "Previous page".
+ * @attr {string} next-label - The accessible name of the Next button. Defaults to the page language's text (see `setMessages`), in English "Next page".
  * @fires {CustomEvent<{ page: number }>} pl-change - The user chose another page. `detail.page` holds it.
  * @fires input - After pl-change, as a native control fires it.
  * @fires change - After input, as a native control fires it.
@@ -63,10 +64,10 @@ export class PlPagination extends LitElement {
     super();
     this.page = 1;
     this.total = 1;
-    this.label = "Pagination";
+    this.label = "";
     this.hrefTemplate = "";
-    this.previousLabel = "Previous page";
-    this.nextLabel = "Next page";
+    this.previousLabel = "";
+    this.nextLabel = "";
   }
 
   override connectedCallback() {
@@ -78,11 +79,7 @@ export class PlPagination extends LitElement {
     this.total = wholeTotal(this.total);
     this.page = clampPage(this.page, this.total);
     if (changed.has("label")) {
-      if (this.label) this.setAttribute("aria-label", this.label);
-      else {
-        this.removeAttribute("aria-label");
-        console.warn("pl-pagination needs a label.");
-      }
+      this.setAttribute("aria-label", this.label || messages(this).pagination);
     }
   }
 
@@ -174,7 +171,7 @@ export class PlPagination extends LitElement {
           "previous",
           page - 1,
           previousGlyph,
-          this.previousLabel,
+          this.previousLabel || messages(this).previousPage,
           page <= 1,
         )}
       </li>
@@ -197,7 +194,7 @@ export class PlPagination extends LitElement {
           "next",
           page + 1,
           nextGlyph,
-          this.nextLabel,
+          this.nextLabel || messages(this).nextPage,
           page >= total,
         )}
       </li>

@@ -18,6 +18,7 @@ import type {
   PlModelHeader,
   PlModelRow,
 } from "./data-table-types.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 export type * from "./data-table-types.ts";
 
@@ -42,23 +43,6 @@ const glyph = {
   collapsed: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6l-6 6" /></svg>`,
   expanded: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6l6 -6" /></svg>`,
   more: svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01M12 12h.01M19 12h.01" /></svg>`,
-};
-
-/** The wording of the column and row menus. */
-const menuText = {
-  ascending: "Sort ascending",
-  descending: "Sort descending",
-  hide: "Hide",
-  earlier: "Move earlier",
-  later: "Move later",
-  pinStart: "Pin to start",
-  pinEnd: "Pin to end",
-  unpin: "Unpin",
-  group: "Group by",
-  ungroup: "Ungroup",
-  pinTop: "Pin to top",
-  pinBottom: "Pin to bottom",
-  unpinRow: "Unpin row",
 };
 
 /** A column is at least this many spacing units wide. */
@@ -116,22 +100,22 @@ const compare = (a: unknown, b: unknown) =>
  * @attr {string} sort-direction - `ascending` (default) or `descending`.
  * @attr {boolean} manual-sort - Do not reorder the rows; the app does it on `pl-sort`.
  * @attr {boolean} filterable - Shows a search field above the table.
- * @attr {string} filter-label - The search field's accessible name. Defaults to "Filter".
+ * @attr {string} filter-label - The search field's accessible name. Defaults to the page language's text (see `setMessages`), in English "Filter".
  * @attr {string} filter - The global filter query.
  * @attr {boolean} manual-filter - Do not filter the rows; the app does it on `pl-filter`.
  * @attr {number} page-size - Rows per page; 0 (default) shows every row and no pagination.
  * @attr {number} page - The current page, from 1. Defaults to 1; a page past the end is clamped.
  * @attr {boolean} manual-pagination - Do not slice the rows; the app does it on `pl-page`. `row-count` then gives the total.
  * @attr {number} row-count - With `manual-pagination`, the number of rows over all pages. Defaults to the number of rows given.
- * @attr {string} empty-label - The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".
- * @attr {string} select-all-label - The select-all checkbox's accessible name. Defaults to "Select all".
- * @attr {string} select-row-label - Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".
- * @attr {string} expand-label - Prefix of each disclosure button's accessible name, followed by the row's first cell, in model mode. Defaults to "Expand".
- * @attr {string} columns-label - The text of the menu that shows and hides columns, in model mode. Defaults to "Columns".
- * @attr {string} column-menu-label - Prefix of each heading menu's accessible name, followed by the heading, in model mode. Defaults to "Column options".
- * @attr {string} resize-label - Prefix of each resize handle's accessible name, followed by the heading, in model mode. Defaults to "Resize".
+ * @attr {string} empty-label - The text shown when there are no rows and the `empty` slot is unused. Defaults to the page language's text (see `setMessages`), in English "No results".
+ * @attr {string} select-all-label - The select-all checkbox's accessible name. Defaults to the page language's text (see `setMessages`), in English "Select all".
+ * @attr {string} select-row-label - Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to the page language's text (see `setMessages`), in English "Select".
+ * @attr {string} expand-label - Prefix of each disclosure button's accessible name, followed by the row's first cell, in model mode. Defaults to the page language's text (see `setMessages`), in English "Expand".
+ * @attr {string} columns-label - The text of the menu that shows and hides columns, in model mode. Defaults to the page language's text (see `setMessages`), in English "Columns".
+ * @attr {string} column-menu-label - Prefix of each heading menu's accessible name, followed by the heading, in model mode. Defaults to the page language's text (see `setMessages`), in English "Column options".
+ * @attr {string} resize-label - Prefix of each resize handle's accessible name, followed by the heading, in model mode. Defaults to the page language's text (see `setMessages`), in English "Resize".
  * @attr {boolean} row-menu - Gives each row a menu to pin it, in model mode.
- * @attr {string} row-menu-label - Prefix of each row menu's accessible name, followed by the row's first cell. Defaults to "Row options".
+ * @attr {string} row-menu-label - Prefix of each row menu's accessible name, followed by the row's first cell. Defaults to the page language's text (see `setMessages`), in English "Row options".
  * @attr {boolean} cell-select - The cells take a roving focus and shift-click or shift-arrow selects a rectangle, in model mode.
  * @slot empty - Content shown instead of the rows when there are none.
  * @fires {CustomEvent<{ column: string, direction: "ascending" | "descending" }>} pl-sort - A heading was activated. `detail.column` is the column key and `detail.direction` the new direction.
@@ -233,21 +217,21 @@ export class PlDataTable extends LitElement {
     this.sortDirection = "ascending";
     this.manualSort = false;
     this.filterable = false;
-    this.filterLabel = "Filter";
+    this.filterLabel = "";
     this.filter = "";
     this.manualFilter = false;
     this.pageSize = 0;
     this.page = 1;
     this.manualPagination = false;
-    this.emptyLabel = "No results";
-    this.selectAllLabel = "Select all";
-    this.selectRowLabel = "Select";
-    this.expandLabel = "Expand";
-    this.columnsLabel = "Columns";
-    this.columnMenuLabel = "Column options";
-    this.resizeLabel = "Resize";
+    this.emptyLabel = "";
+    this.selectAllLabel = "";
+    this.selectRowLabel = "";
+    this.expandLabel = "";
+    this.columnsLabel = "";
+    this.columnMenuLabel = "";
+    this.resizeLabel = "";
     this.rowMenu = false;
-    this.rowMenuLabel = "Row options";
+    this.rowMenuLabel = "";
     this.cellSelect = false;
   }
 
@@ -280,6 +264,23 @@ export class PlDataTable extends LitElement {
       this.manualPagination ? (this.rowCount ?? this.rows.length) : matching,
       this.pageSize,
     );
+  }
+
+  /** The built-in text in the table's language, with the label attributes set on it on top. */
+  get #text() {
+    const own = messages(this);
+    return {
+      ...own,
+      filter: this.filterLabel || own.filter,
+      noResults: this.emptyLabel || own.noResults,
+      selectAll: this.selectAllLabel || own.selectAll,
+      select: this.selectRowLabel || own.select,
+      expand: this.expandLabel || own.expand,
+      columns: this.columnsLabel || own.columns,
+      columnOptions: this.columnMenuLabel || own.columnOptions,
+      resize: this.resizeLabel || own.resize,
+      rowOptions: this.rowMenuLabel || own.rowOptions,
+    };
   }
 
   protected override willUpdate() {
@@ -410,7 +411,7 @@ export class PlDataTable extends LitElement {
       ? html`<pl-input
           type="search"
           class="filter"
-          label=${this.filterLabel}
+          label=${this.#text.filter}
           .value=${value}
           @pl-input=${this.#onFilter}
           @pl-change=${this.#contain}
@@ -630,7 +631,7 @@ export class PlDataTable extends LitElement {
     index: number,
     count: number,
   ) {
-    const name = `${this.columnMenuLabel} ${h.label}`.trim();
+    const name = `${this.#text.columnOptions} ${h.label}`.trim();
     return html`<pl-menu
       label=${name}
       @pl-select=${(e: CustomEvent<{ value: string }>) =>
@@ -647,46 +648,46 @@ export class PlDataTable extends LitElement {
       ${
         h.sortable
           ? html`<pl-menu-item value="ascending"
-                >${menuText.ascending}</pl-menu-item
+                >${this.#text.sortAscending}</pl-menu-item
               >
               <pl-menu-item value="descending"
-                >${menuText.descending}</pl-menu-item
+                >${this.#text.sortDescending}</pl-menu-item
               >
               <pl-menu-separator></pl-menu-separator>`
           : nothing
       }
       ${
         column.canHide
-          ? html`<pl-menu-item value="hide">${menuText.hide}</pl-menu-item>`
+          ? html`<pl-menu-item value="hide">${this.#text.hide}</pl-menu-item>`
           : nothing
       }
       <pl-menu-item value="earlier" ?disabled=${index === 0}
-        >${menuText.earlier}</pl-menu-item
+        >${this.#text.moveEarlier}</pl-menu-item
       >
       <pl-menu-item value="later" ?disabled=${index === count - 1}
-        >${menuText.later}</pl-menu-item
+        >${this.#text.moveLater}</pl-menu-item
       >
       <pl-menu-separator></pl-menu-separator>
       ${
         column.pinned !== "start"
           ? html`<pl-menu-item value="start"
-              >${menuText.pinStart}</pl-menu-item
+              >${this.#text.pinStart}</pl-menu-item
             >`
           : nothing
       }
       ${
         column.pinned !== "end"
-          ? html`<pl-menu-item value="end">${menuText.pinEnd}</pl-menu-item>`
+          ? html`<pl-menu-item value="end">${this.#text.pinEnd}</pl-menu-item>`
           : nothing
       }
       ${
         column.pinned
-          ? html`<pl-menu-item value="unpin">${menuText.unpin}</pl-menu-item>`
+          ? html`<pl-menu-item value="unpin">${this.#text.unpin}</pl-menu-item>`
           : nothing
       }
       <pl-menu-separator></pl-menu-separator>
       <pl-menu-item value="group"
-        >${column.grouped ? menuText.ungroup : menuText.group}</pl-menu-item
+        >${column.grouped ? this.#text.ungroup : this.#text.groupBy}</pl-menu-item
       >
     </pl-menu>`;
   }
@@ -695,10 +696,10 @@ export class PlDataTable extends LitElement {
     if (!model.columns.some((c) => c.canHide)) return nothing;
     return html`<pl-menu
       class="columns"
-      label=${this.columnsLabel}
+      label=${this.#text.columns}
       @pl-select=${this.#onColumns}
     >
-      <pl-button slot="trigger">${this.columnsLabel}</pl-button>
+      <pl-button slot="trigger">${this.#text.columns}</pl-button>
       ${model.columns.map(
         (c) =>
           html`<pl-menu-item
@@ -717,7 +718,7 @@ export class PlDataTable extends LitElement {
     return html`<pl-combobox
       class="column-filter"
       allow-custom
-      label=${`${this.filterLabel} ${h.label}`.trim()}
+      label=${`${this.#text.filter} ${h.label}`.trim()}
       .value=${value}
       @pl-change=${(e: CustomEvent<{ value: string }>) =>
         this.#onColumnFilter(column, e)}
@@ -734,7 +735,7 @@ export class PlDataTable extends LitElement {
       class="resize"
       role="separator"
       aria-orientation="vertical"
-      aria-label=${`${this.resizeLabel} ${label}`.trim()}
+      aria-label=${`${this.#text.resize} ${label}`.trim()}
       aria-valuenow=${width}
       tabindex="0"
       @pointerdown=${(e: PointerEvent) => this.#onResizeDown(e, column, width)}
@@ -746,7 +747,7 @@ export class PlDataTable extends LitElement {
   }
 
   #rowMenu(row: PlModelRow, label: string) {
-    const name = `${this.rowMenuLabel} ${label}`.trim();
+    const name = `${this.#text.rowOptions} ${label}`.trim();
     return html`<pl-menu
       class="row-menu"
       label=${name}
@@ -763,20 +764,20 @@ export class PlDataTable extends LitElement {
       </button>
       ${
         row.pinned !== "top"
-          ? html`<pl-menu-item value="top">${menuText.pinTop}</pl-menu-item>`
+          ? html`<pl-menu-item value="top">${this.#text.pinTop}</pl-menu-item>`
           : nothing
       }
       ${
         row.pinned !== "bottom"
           ? html`<pl-menu-item value="bottom"
-              >${menuText.pinBottom}</pl-menu-item
+              >${this.#text.pinBottom}</pl-menu-item
             >`
           : nothing
       }
       ${
         row.pinned
           ? html`<pl-menu-item value="unpin"
-              >${menuText.unpinRow}</pl-menu-item
+              >${this.#text.unpinRow}</pl-menu-item
             >`
           : nothing
       }
@@ -879,7 +880,7 @@ export class PlDataTable extends LitElement {
                       type="button"
                       class="expand"
                       aria-expanded=${row.expanded ? "true" : "false"}
-                      aria-label=${`${this.expandLabel} ${label}`.trim()}
+                      aria-label=${`${this.#text.expand} ${label}`.trim()}
                       @click=${() =>
                         this.#emit("pl-expand", {
                           row: row.id,
@@ -965,7 +966,7 @@ export class PlDataTable extends LitElement {
                   )
                 : html`<tr>
                     <td class="empty" colspan=${shown.length || 1}>
-                      <slot name="empty">${this.emptyLabel}</slot>
+                      <slot name="empty">${this.#text.noResults}</slot>
                     </td>
                   </tr>`
             }
@@ -1010,7 +1011,7 @@ export class PlDataTable extends LitElement {
                 this.selectable
                   ? html`<th scope="col" class="select">
                       <pl-checkbox
-                        aria-label=${this.selectAllLabel}
+                        aria-label=${this.#text.selectAll}
                         .checked=${view.length > 0 && picked === view.length}
                         .indeterminate=${picked > 0 && picked < view.length}
                         ?disabled=${view.length === 0}
@@ -1035,7 +1036,7 @@ export class PlDataTable extends LitElement {
                           this.selectable
                             ? html`<td class="select">
                                 <pl-checkbox
-                                  aria-label=${`${this.selectRowLabel ?? ""} ${first ? String(row[first] ?? "") : key}`.trim()}
+                                  aria-label=${`${this.#text.select} ${first ? String(row[first] ?? "") : key}`.trim()}
                                   .checked=${chosen.has(key)}
                                   @pl-change=${(
                                     e: CustomEvent<{ checked: boolean }>,
@@ -1055,7 +1056,7 @@ export class PlDataTable extends LitElement {
                   )
                 : html`<tr>
                     <td class="empty" colspan=${span}>
-                      <slot name="empty">${this.emptyLabel}</slot>
+                      <slot name="empty">${this.#text.noResults}</slot>
                     </td>
                   </tr>`
             }

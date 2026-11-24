@@ -2,6 +2,7 @@ import { LitElement, html, nothing, svg } from "lit";
 import { closeGlyph, errorGlyph } from "../../behaviors/glyphs.ts";
 import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import { bannerStyles } from "./banner.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>`;
 const successGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M8.5 12.5l2.5 2.5l4.5 -5" /></svg>`;
@@ -22,7 +23,7 @@ const glyphs = {
  *
  * @attr {boolean} open - The banner is showing.
  * @attr {string} tone - `info` (default), `success`, `warning` or `destructive`.
- * @attr {string} close-label - The close button's accessible name. Defaults to "Dismiss".
+ * @attr {string} close-label - The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Dismiss".
  * @attr {boolean} no-icon - Shows no icon, not the tone's own either.
  * @attr {boolean} no-close - Shows no close button, for a banner that stays until its cause is gone, such as a lost connection.
  * @slot icon - An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, a check for `success`, a triangle for `warning`, an error mark for `destructive`.
@@ -55,7 +56,7 @@ export class PlBanner extends LitElement {
     super();
     this.open = false;
     this.tone = "info";
-    this.closeLabel = "Dismiss";
+    this.closeLabel = "";
     this.noIcon = false;
     this.noClose = false;
   }
@@ -93,7 +94,7 @@ export class PlBanner extends LitElement {
           : html`<button
               part="close"
               type="button"
-              aria-label=${this.closeLabel}
+              aria-label=${this.closeLabel || messages(this).dismiss}
               @click=${this.#close}
             >
               ${closeGlyph}

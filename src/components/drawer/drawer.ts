@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { drawerStyles } from "./drawer.css.ts";
 import { parseDetents, settle, stepDetent, type Detent } from "./detents.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 export type PlDrawerSide = "bottom" | "start" | "end";
 
@@ -59,8 +60,8 @@ const flickWindow = 100;
  * @attr {string} detents - Space-separated heights a bottom sheet can rest at: `medium`, `large` or `medium large`. Without it the sheet is as tall as its content, up to the large height.
  * @attr {string} detent - The current detent, one of `detents`; the first when unset or not listed. Reflects dragging and the grabber.
  * @attr {string} label - The accessible name when there is no slotted title.
- * @attr {string} expand-label - The grabber's accessible name while it grows the sheet. Defaults to `Expand`.
- * @attr {string} close-label - The grabber's accessible name while it closes the sheet. Defaults to `Close`.
+ * @attr {string} expand-label - The grabber's accessible name while it grows the sheet. Defaults to the page language's text (see `setMessages`), in English "Expand".
+ * @attr {string} close-label - The grabber's accessible name while it closes the sheet. Defaults to the page language's text (see `setMessages`), in English "Close".
  * @attr {boolean} dismissible - Pressing the backdrop also asks to close.
  * @cssprop --pl-drawer-width - The width of a `start` or `end` panel. Defaults to 320px (80 spacing units) and is capped at the viewport width minus 10 spacing units.
  * @slot title - The heading.
@@ -125,8 +126,8 @@ export class PlDrawer extends LitElement {
     this.detents = "";
     this.detent = "";
     this.label = "";
-    this.expandLabel = "Expand";
-    this.closeLabel = "Close";
+    this.expandLabel = "";
+    this.closeLabel = "";
     this.dismissible = false;
     this._scrolls = false;
     this.addEventListener("click", this.#onActivate);
@@ -399,7 +400,7 @@ export class PlDrawer extends LitElement {
                   type="button"
                   aria-label=${
                     (expands ? this.expandLabel : this.closeLabel) ||
-                    (expands ? "Expand" : "Close")
+                    messages(this)[expands ? "expand" : "close"]
                   }
                   @click=${this.#onGrabberClick}
                   @keydown=${this.#onGrabberKeydown}

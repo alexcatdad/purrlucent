@@ -91,6 +91,27 @@ Tailwind's preflight sets `margin`, `padding` and `border` to zero on every elem
 </form>
 ```
 
+### Languages
+
+The built-in text, such as a close button's name or "No results", is English. Register another language once, at app start, and every component inside an element with that `lang` uses it, also inside other components:
+
+```ts
+import { setMessages, type PlMessages } from "purrlucent";
+
+const sv: PlMessages = {
+  dismiss: "Stäng",
+  noResults: "Inga resultat",
+  showOptionsFor: "{label}, visa alternativ",
+  // … every key: TypeScript reports a missing one
+};
+
+setMessages("sv", sv);
+```
+
+A tag such as `sv-FI` matches its own registration first, then `sv`. Messages that build on another name keep its `{label}`, `{page}`, `{total}` or `{count}` slot, so a language can put it where its word order needs it. An attribute on one element, such as `close-label`, wins over both. Components read the language when they render, so set `lang` before they first render.
+
+Dates, weekday and month names come from the browser's `Intl` for the same `lang` and need no registration.
+
 ### TypeScript
 
 The package ships type declarations. Each import adds its elements to `HTMLElementTagNameMap`, so `document.querySelector("pl-button")` is typed.

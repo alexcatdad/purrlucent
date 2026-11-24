@@ -130,7 +130,7 @@ export class PlSwitch extends LitElement {
     );
     this.#internals.setValidity(
       { valueMissing: this.required && !this.checked },
-      nativeMessage("checkbox", "Turn this on to continue."),
+      nativeMessage(this, "checkbox", "switchRequired"),
     );
   }
 

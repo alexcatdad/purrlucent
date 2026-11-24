@@ -1,5 +1,6 @@
 import { LitElement } from "lit";
 import { handleStyles } from "./resizable.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 /**
  * The divider between two panels of a `pl-resizable` group, following the
@@ -8,7 +9,7 @@ import { handleStyles } from "./resizable.css.ts";
  * `aria-valuemin`, `aria-valuemax`, `aria-controls` and `aria-orientation`,
  * and handles the pointer and the keys.
  *
- * @attr {string} label - The accessible name. Defaults to "Resize".
+ * @attr {string} label - The accessible name. Defaults to the page language's text (see `setMessages`), in English "Resize".
  * @attr {boolean} disabled - The divider cannot be moved, collapses nothing and takes no focus.
  */
 export class PlResizableHandle extends LitElement {
@@ -50,7 +51,7 @@ export class PlResizableHandle extends LitElement {
   }
 
   protected override updated() {
-    this.setAttribute("aria-label", this.label || "Resize");
+    this.setAttribute("aria-label", this.label || messages(this).resize);
     this.tabIndex = this.disabled ? -1 : 0;
     if (this.disabled) this.setAttribute("aria-disabled", "true");
     else this.removeAttribute("aria-disabled");

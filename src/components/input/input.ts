@@ -8,6 +8,7 @@ import { submitImplicitly } from "../../behaviors/implicit-submit.ts";
 import { labelText } from "../../behaviors/labels.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { inputStyles } from "./input.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 // Kept as a public export of this module.
 export { submitImplicitly };
@@ -42,7 +43,7 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * @attr {string} pattern - A regular expression the value must match.
  * @attr {string} autocomplete - The autofill hint.
  * @attr {string} inputmode - The virtual keyboard hint.
- * @attr {string} clear-label - The clear button's accessible name. Defaults to "Clear".
+ * @attr {string} clear-label - The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".
  * @slot - The visible label.
  * @csspart label - The visible label.
  * @csspart field - The shell around the input.
@@ -124,7 +125,7 @@ export class PlInput extends LitElement {
     this.required = false;
     this.readonly = false;
     this.disabled = false;
-    this.clearLabel = "Clear";
+    this.clearLabel = "";
     this._labelled = false;
   }
 
@@ -326,7 +327,7 @@ export class PlInput extends LitElement {
             ? html`<button
                 part="clear"
                 type="button"
-                aria-label=${this.clearLabel}
+                aria-label=${this.clearLabel || messages(this).clear}
                 @mousedown=${(event: Event) => event.preventDefault()}
                 @click=${() => this.#clear()}
               >

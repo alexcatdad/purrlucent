@@ -1,4 +1,5 @@
 export { backGlyph, closeGlyph } from "./behaviors/glyphs.ts";
+export { setMessages, type PlMessages } from "./behaviors/locale.ts";
 export * from "./surfaces/surfaces.css.ts";
 export * from "./typography/typography.css.ts";
 export * from "./components/accordion/accordion.ts";

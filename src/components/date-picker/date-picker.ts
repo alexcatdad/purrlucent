@@ -14,13 +14,13 @@ import type { PlCalendarDisabledDates } from "../calendar/calendar.ts";
 import {
   formatDay,
   isIso,
-  localeOf,
   parseTyped,
   unavailable,
 } from "../calendar/dates.ts";
 import "../popover/popover.ts";
 import type { PlPopover } from "../popover/popover.ts";
 import { datePickerStyles } from "./date-picker.css.ts";
+import { localeOf, messages } from "../../behaviors/locale.ts";
 
 const calendarGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>`;
 
@@ -51,9 +51,9 @@ const calendarGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
  * @attr {boolean} required - The form is invalid while the field is empty.
  * @attr {boolean} readonly - The text can be selected but not edited and the calendar does not open.
  * @attr {boolean} disabled - No focus, nothing submitted.
- * @attr {string} calendar-label - The calendar button's and the popover's accessible name. Defaults to "Choose date".
- * @attr {string} invalid-message - The message for text that is not a day. Defaults to "Enter a valid date."
- * @attr {string} range-message - The message for a day outside `min` and `max` or one of the disabled days. Defaults to "Choose an available date."
+ * @attr {string} calendar-label - The calendar button's and the popover's accessible name. Defaults to the page language's text (see `setMessages`), in English "Choose date".
+ * @attr {string} invalid-message - The message for text that is not a day. Defaults to the page language's text (see `setMessages`), in English "Enter a valid date."
+ * @attr {string} range-message - The message for a day outside `min` and `max` or one of the disabled days. Defaults to the page language's text (see `setMessages`), in English "Choose an available date."
  * @slot - The visible label.
  * @csspart label - The visible label.
  * @csspart field - The shell around the entry and the button.
@@ -142,9 +142,9 @@ export class PlDatePicker extends LitElement {
     this.required = false;
     this.readonly = false;
     this.disabled = false;
-    this.calendarLabel = "Choose date";
-    this.invalidMessage = "Enter a valid date.";
-    this.rangeMessage = "Choose an available date.";
+    this.calendarLabel = "";
+    this.invalidMessage = "";
+    this.rangeMessage = "";
     this._text = "";
     this._labelled = false;
   }
@@ -271,9 +271,9 @@ export class PlDatePicker extends LitElement {
     const message = !text
       ? ""
       : !parsed
-        ? this.invalidMessage
+        ? this.invalidMessage || messages(this).invalidDate
         : this.#off(parsed)
-          ? this.rangeMessage
+          ? this.rangeMessage || messages(this).unavailableDate
           : "";
     input.setCustomValidity(this.#custom || message);
     const invalid = this.#touched && !input.validity.valid;
@@ -382,14 +382,17 @@ export class PlDatePicker extends LitElement {
           @blur=${this.#onBlur}
           @keydown=${this.#onKeydown}
         />
-        <pl-popover label=${this.calendarLabel} @pl-toggle=${this.#onToggle}>
+        <pl-popover
+          label=${this.calendarLabel || messages(this).chooseDate}
+          @pl-toggle=${this.#onToggle}
+        >
           <pl-button
             slot="trigger"
             part="trigger"
             icon
             variant="ghost"
             size=${this.size}
-            aria-label=${this.calendarLabel}
+            aria-label=${this.calendarLabel || messages(this).chooseDate}
             ?disabled=${off || this.readonly}
           >
             ${calendarGlyph}

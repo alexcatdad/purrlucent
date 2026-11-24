@@ -19,6 +19,7 @@ import {
   valueAfterKey,
   type Bounds,
 } from "./number-math.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 const chevron = (d: string) =>
   svg`<svg viewBox="4 8 16 8" aria-hidden="true"><path d=${d} /></svg>`;
@@ -66,8 +67,8 @@ const optionalNumber = {
  * @attr {boolean} required - The form is invalid while the field is empty.
  * @attr {boolean} readonly - The value can be selected but not changed.
  * @attr {boolean} disabled - No focus, nothing submitted.
- * @attr {string} increase-label - The up button's accessible name. Defaults to "Increase".
- * @attr {string} decrease-label - The down button's accessible name. Defaults to "Decrease".
+ * @attr {string} increase-label - The up button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Increase".
+ * @attr {string} decrease-label - The down button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Decrease".
  * @slot - The visible label.
  * @csspart label - The visible label.
  * @csspart group - The field and the outside stepper.
@@ -147,8 +148,8 @@ export class PlNumberField extends LitElement {
     this.required = false;
     this.readonly = false;
     this.disabled = false;
-    this.increaseLabel = "Increase";
-    this.decreaseLabel = "Decrease";
+    this.increaseLabel = "";
+    this.decreaseLabel = "";
     this._labelled = false;
   }
 
@@ -441,7 +442,10 @@ export class PlNumberField extends LitElement {
       part=${part}
       type="button"
       tabindex="-1"
-      aria-label=${direction === 1 ? this.increaseLabel : this.decreaseLabel}
+      aria-label=${
+        (direction === 1 ? this.increaseLabel : this.decreaseLabel) ||
+        messages(this)[direction === 1 ? "increase" : "decrease"]
+      }
       ?disabled=${atLimit || this.readonly || this.matches(":disabled")}
       @mousedown=${(event: Event) => event.preventDefault()}
       @pointerdown=${(event: PointerEvent) => {
