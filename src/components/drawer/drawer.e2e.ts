@@ -174,12 +174,15 @@ test("the arrow keys on the grabber step between detents, and Down at the smalle
   await expect.poll(() => detentOf(page)).toBe("medium");
   await page.keyboard.press("ArrowDown");
   await expect(sheet(page)).toBeHidden();
-  expect(await recorded(page)).toEqual([
-    ["pl-resize", { detent: "large" }],
-    ["pl-resize", { detent: "medium" }],
-    ["pl-cancel", null],
-    ["pl-close", { returnValue: "" }],
-  ]);
+  // pl-close follows the close transition, after the sheet is hidden.
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([
+      ["pl-resize", { detent: "large" }],
+      ["pl-resize", { detent: "medium" }],
+      ["pl-cancel", null],
+      ["pl-close", { returnValue: "" }],
+    ]);
 });
 
 test("dragging a sheet down far enough closes it", async ({ page }) => {
