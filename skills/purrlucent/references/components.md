@@ -244,6 +244,7 @@ A notification banner: an icon, a title, a message, optional actions and a close
 | `open`        | `boolean`                 | `false`     | The banner is showing.                                     |
 | `tone`        | `"info" \| "destructive"` | `"info"`    | `info` (default) or `destructive`.                         |
 | `close-label` | `string`                  | `"Dismiss"` | The close button's accessible name. Defaults to "Dismiss". |
+| `no-icon`     | `boolean`                 | `false`     | Shows no icon, not the tone's own either.                  |
 
 **Slots**
 
@@ -582,6 +583,7 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 | `size`          | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                       |
 | `required`      | `boolean`              | `false` | The form is invalid while the box is unchecked.                     |
 | `disabled`      | `boolean`              | `false` | No focus, no feedback, nothing submitted.                           |
+| `readonly`      | `boolean`              | `false` | The state shows and submits but a press does not change it.         |
 
 **Slots**
 
@@ -608,9 +610,10 @@ import "purrlucent/collapsible";
 
 A single disclosure: a trigger that shows and hides a block of content. The trigger is a button named by the text in the `trigger` slot; it carries `aria-expanded` and `aria-controls`. Space and Enter toggle it, as on any button. The content grows and shrinks in height with `--pl-duration`; under reduced motion it shows and hides at once. Closed content is hidden from focus and assistive technology. For several disclosures that open one at a time, handle `pl-toggle` in the app.
 
-| Attribute | Type      | Default | Description                                                                 |
-| --------- | --------- | ------- | --------------------------------------------------------------------------- |
-| `open`    | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses. |
+| Attribute  | Type      | Default | Description                                                                 |
+| ---------- | --------- | ------- | --------------------------------------------------------------------------- |
+| `open`     | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses. |
+| `disabled` | `boolean` | `false` | The trigger takes no focus and the content cannot be toggled.               |
 
 **Slots**
 
