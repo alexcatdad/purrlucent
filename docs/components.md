@@ -654,24 +654,26 @@ import "purrlucent/combobox";
 
 ### `<pl-combobox>`
 
-A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `pl-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `pl-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis.
+A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `pl-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `pl-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis. With `manual-filter` the list is never narrowed or reordered here: the app listens to `pl-input` and replaces the options itself, as when it searches on a server. A `pl-option` with the `action` attribute is a row that fires `pl-action` instead of choosing a value; it is always listed, and the `action-label` attribute adds such a row ("Add" and the typed text) while text has been typed.
 
-| Attribute      | Type                   | Default | Description                                                                                                                                                                                  |
-| -------------- | ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`        | `string`               | `""`    | The chosen option's value, or the custom text.                                                                                                                                               |
-| `text`         | `string`               | `""`    | The visible text of the field.                                                                                                                                                               |
-| `name`         | `string`               | `""`    | The name submitted with a form.                                                                                                                                                              |
-| `label`        | `string`               | `""`    | The accessible name when there is no slotted label.                                                                                                                                          |
-| `placeholder`  | `string`               | `""`    | Hint shown while the field is empty.                                                                                                                                                         |
-| `required`     | `boolean`              | `false` | The form is invalid while there is no value.                                                                                                                                                 |
-| `disabled`     | `boolean`              | `false` | No focus, no list, nothing submitted.                                                                                                                                                        |
-| `size`         | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                                                                |
-| `allow-custom` | `boolean`              | `false` | Text that matches no option becomes the value.                                                                                                                                               |
-| `open`         | `boolean`              | `false` | The list is showing.                                                                                                                                                                         |
-| `toggle-label` | `string`               | `""`    | The chevron button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Show options", which becomes "<label>, show options" when the field has a label. |
-| `empty-label`  | `string`               | `""`    | The text shown when no option matches. Defaults to the page language's text (see `setMessages`), in English "No results".                                                                    |
-| `_active`      | `PlOption \| null`     | `null`  |                                                                                                                                                                                              |
-| `_labelled`    | `boolean`              | `false` |                                                                                                                                                                                              |
+| Attribute       | Type                   | Default | Description                                                                                                                                                                                  |
+| --------------- | ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`         | `string`               | `""`    | The chosen option's value, or the custom text.                                                                                                                                               |
+| `text`          | `string`               | `""`    | The visible text of the field.                                                                                                                                                               |
+| `name`          | `string`               | `""`    | The name submitted with a form.                                                                                                                                                              |
+| `label`         | `string`               | `""`    | The accessible name when there is no slotted label.                                                                                                                                          |
+| `placeholder`   | `string`               | `""`    | Hint shown while the field is empty.                                                                                                                                                         |
+| `required`      | `boolean`              | `false` | The form is invalid while there is no value.                                                                                                                                                 |
+| `disabled`      | `boolean`              | `false` | No focus, no list, nothing submitted.                                                                                                                                                        |
+| `size`          | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                                                                |
+| `allow-custom`  | `boolean`              | `false` | Text that matches no option becomes the value.                                                                                                                                               |
+| `open`          | `boolean`              | `false` | The list is showing.                                                                                                                                                                         |
+| `toggle-label`  | `string`               | `""`    | The chevron button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Show options", which becomes "<label>, show options" when the field has a label. |
+| `empty-label`   | `string`               | `""`    | The text shown when no option matches. Defaults to the page language's text (see `setMessages`), in English "No results".                                                                    |
+| `manual-filter` | `boolean`              | `false` | The app filters the options; the typed text does not narrow the list.                                                                                                                        |
+| `action-label`  | `string \| null`       | `null`  | Shows an action row while text is typed. Its text defaults to the page language's text (see `setMessages`), in English "Add {query}"; `{query}` stands for the typed text.                   |
+| `_active`       | `PlOption \| null`     | `null`  |                                                                                                                                                                                              |
+| `_labelled`     | `boolean`              | `false` |                                                                                                                                                                                              |
 
 **Slots**
 
@@ -681,6 +683,7 @@ A text field with a list of suggestions. It follows the editable combobox patter
 **Parts**
 
 - `label`: The visible label.
+- `action`: The row that `action-label` adds.
 - `field`: The shell around the input and the button.
 - `control`: The native input.
 - `button`: The chevron button that toggles the list.
@@ -693,6 +696,7 @@ A text field with a list of suggestions. It follows the editable combobox patter
 - `name`:
 - `pl-input`: The text changed through typing or Escape. `detail.text` holds it.
 - `pl-change`: The value changed. `detail.value` holds it.
+- `pl-action`: An action row was chosen. `detail.query` holds the typed text, empty when nothing was typed.
 - `input`: After each pl-input, as a native input fires it.
 - `change`: After each pl-change.
 
@@ -1952,12 +1956,13 @@ import "purrlucent/select";
 
 One choice in a `pl-select`. Its text is the label. The select marks the chosen option with `aria-selected`; this element does nothing alone.
 
-| Attribute  | Type      | Default | Description                                                                |
-| ---------- | --------- | ------- | -------------------------------------------------------------------------- |
-| `value`    | `string`  | `""`    | What the select submits when this option is chosen. Defaults to the label. |
-| `selected` | `boolean` | `false` | The select's starting choice.                                              |
-| `disabled` | `boolean` | `false` | Cannot be chosen.                                                          |
-| `chosen`   | `boolean` | `false` |                                                                            |
+| Attribute  | Type      | Default | Description                                                                                       |
+| ---------- | --------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `value`    | `string`  | `""`    | What the select submits when this option is chosen. Defaults to the label.                        |
+| `selected` | `boolean` | `false` | The select's starting choice.                                                                     |
+| `disabled` | `boolean` | `false` | Cannot be chosen.                                                                                 |
+| `action`   | `boolean` | `false` | In a `pl-combobox`, a row that fires `pl-action` with the typed text instead of choosing a value. |
+| `chosen`   | `boolean` | `false` |                                                                                                   |
 
 **Slots**
 
