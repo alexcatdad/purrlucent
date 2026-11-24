@@ -154,17 +154,17 @@ export const buttonStyles = css`
   :host([destructive]:not([variant="ghost"])) {
     --_face: color-mix(
       in srgb,
-      var(--_tone) 21%,
+      var(--_tone) var(--pl-material-tone-rest),
       var(--pl-material-capsule-strong)
     );
     --_face-pressed: color-mix(
       in srgb,
-      var(--_tone) 28%,
+      var(--_tone) var(--pl-material-tone-pressed),
       var(--pl-material-capsule-strong)
     );
     --_face-disabled: color-mix(
       in srgb,
-      var(--_tone) 10%,
+      var(--_tone) calc(var(--pl-material-tone-rest) / 2),
       var(--pl-material-capsule-strong)
     );
     --_fg: var(--_tone-text);

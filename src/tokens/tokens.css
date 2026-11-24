@@ -419,12 +419,18 @@
     --pl-material-control-strong: var(--pl-color-secondary);
     --pl-material-control-strong-pressed: var(--pl-color-secondary-pressed);
 
+    /* How much of its tone a tinted or destructive button mixes into its
+       face, at rest and pressed. On glass the tint is lighter and pressing
+       lightens it, so the pink or red label keeps 4.5:1 over any backdrop. */
+    --pl-material-tone-rest: 21%;
+    --pl-material-tone-pressed: 28%;
+
     /* The thin glass fill: a pale film in light and an ink one in dark, as
        clear as primary text on it allows over any backdrop, black to white.
        Under a small blur and a strong color boost, the backdrop's shapes and
        colors show through it, as in Apple's small glass. */
     --pl-material-fill-thin: light-dark(
-      rgb(240 240 240 / 56%),
+      rgb(240 240 240 / 60%),
       color-mix(in srgb, var(--pl-color-ink) 66%, transparent)
     );
 
@@ -522,11 +528,21 @@
         inset 0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 2)
           calc(var(--pl-spacing) * -2) var(--pl-material-glow);
       --pl-material-control: var(--pl-material-glass-thin);
+
+      /* Pressed, the thin face thickens halfway to the thick fill and takes a
+         little of the text color, so the press shows and its text keeps
+         4.5:1 over any backdrop. */
       --pl-material-control-pressed: color-mix(
         in srgb,
-        var(--pl-material-glass-thin),
-        var(--pl-color-foreground) 12%
+        color-mix(
+          in srgb,
+          var(--pl-material-glass-thin),
+          var(--pl-material-glass)
+        ),
+        var(--pl-color-foreground) 10%
       );
+      --pl-material-tone-rest: 8%;
+      --pl-material-tone-pressed: 4%;
       --pl-material-control-strong: var(--pl-material-glass);
       --pl-material-control-strong-pressed: color-mix(
         in srgb,
@@ -636,6 +652,8 @@
       --pl-material-control-pressed: var(--pl-color-secondary-pressed);
       --pl-material-control-strong: var(--pl-color-secondary);
       --pl-material-control-strong-pressed: var(--pl-color-secondary-pressed);
+      --pl-material-tone-rest: 21%;
+      --pl-material-tone-pressed: 28%;
       --pl-material-control-filter: none;
       --pl-material-field: var(--pl-color-input);
       --pl-material-float: var(--pl-color-background);

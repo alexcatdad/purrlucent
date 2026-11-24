@@ -29,7 +29,7 @@ export type Knob = {
 // Both fill knobs write the whole thin fill (bars, capsules, controls), which
 // reads whichever is set.
 const thin =
-  "light-dark(rgb(240 240 240 / var(--sb-glass-light, 56%)), color-mix(in srgb, var(--pl-color-ink) var(--sb-glass-dark, 66%), transparent))";
+  "light-dark(rgb(240 240 240 / var(--sb-glass-light, 60%)), color-mix(in srgb, var(--pl-color-ink) var(--sb-glass-dark, 66%), transparent))";
 
 export const knobs: Knob[] = [
   {
@@ -97,7 +97,7 @@ export const knobs: Knob[] = [
     max: 100,
     step: 1,
     unit: "%",
-    shipped: 56,
+    shipped: 60,
     apply: (v) => ({
       "--sb-glass-light": `${v}%`,
       "--pl-material-fill-thin": thin,
