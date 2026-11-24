@@ -33,7 +33,7 @@ export const toasterStyles = css`
 `;
 
 /*
- * Builds on the panel surface. The destructive variant's icon, the text and
+ * Builds on the panel surface. The icon of a toned variant, the text and
  * the close button share one row; the action sits under the text. A toast
  * that appears fades and rises a little; the motion tokens are 0s under
  * reduced motion, and nothing waits for the transition to end.
@@ -65,13 +65,24 @@ export const toastStyles = css`
   }
 
   :host([variant="destructive"]) {
-    --_title: var(--pl-color-destructive-text);
+    --_tone: var(--pl-color-destructive-text);
+    --_title: var(--_tone);
+  }
+
+  :host([variant="success"]) {
+    --_tone: var(--pl-color-success-text);
+    --_title: var(--_tone);
+  }
+
+  :host([variant="warning"]) {
+    --_tone: var(--pl-color-warning-text);
+    --_title: var(--_tone);
   }
 
   [part="icon"] {
     grid-area: icon;
     margin-inline-end: var(--pl-space-3);
-    color: var(--pl-color-destructive-text);
+    color: var(--_tone);
   }
 
   [part="icon"] svg {
@@ -90,6 +101,17 @@ export const toastStyles = css`
     margin-inline-end: var(--pl-space-3);
     min-inline-size: 0;
     overflow-wrap: anywhere;
+  }
+
+  /* Line breaks in the text stay; a long description scrolls instead of growing the toast. */
+  [part="description"] {
+    max-block-size: calc(var(--pl-spacing) * 40);
+    overflow-y: auto;
+  }
+
+  [part="description"]:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-width);
   }
 
   [part="title"] {
@@ -158,7 +180,8 @@ export const toastStyles = css`
   }
 
   @media (forced-colors: active) {
-    [part="close"]:focus-visible {
+    [part="close"]:focus-visible,
+    [part="description"]:focus-visible {
       outline-color: Highlight;
     }
   }
