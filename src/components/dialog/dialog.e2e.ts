@@ -952,12 +952,12 @@ test.describe("nonmodal", () => {
       const box = el
         .shadowRoot!.querySelector("dialog")!
         .getBoundingClientRect();
-      return (
-        document.elementFromPoint(
-          box.x + box.width / 2,
-          box.y + box.height / 2,
-        ) === el
+      // The hit is the host or the slotted content inside it, not the page layer.
+      const hit = document.elementFromPoint(
+        box.x + box.width / 2,
+        box.y + box.height / 2,
       );
+      return !!hit && el.contains(hit);
     });
     expect(topmost).toBe(true);
   });
