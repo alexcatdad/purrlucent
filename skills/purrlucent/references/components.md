@@ -2351,7 +2351,7 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 
 **Events**
 
-- `pl-change`: A press changed the state. `detail.pressed` holds the new one.
+- `pl-change`: A press is about to change the state, before it is applied. `detail.pressed` holds the new one. Cancelable: `preventDefault()` keeps the current state.
 - `pl-press`: When the button is activated by pointer, Enter or Space.
 
 ## Toggle group
@@ -2380,7 +2380,7 @@ One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. A
 
 ### `<pl-toggle-group>`
 
-A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
+A row of equal-width items that offers one required choice, as a radio group: choosing the selected item again never deselects it, so one item is always selected. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
 | Attribute     | Type                   | Default | Description                                                                                                                                                                                                |
 | ------------- | ---------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2397,8 +2397,8 @@ A row of equal-width items that offers one required choice, as a radio group. Ar
 
 **Events**
 
-- `pl-change`: The selection changed by the user. `detail.selected` is a one-item array.
-- `input`: After pl-change, as a native radio fires it.
+- `pl-change`: The user is about to change the selection, before it is applied. `detail.selected` is a one-item array. Cancelable: `preventDefault()` keeps the current value and fires no `input` or `change`.
+- `input`: After the selection changed, as a native radio fires it.
 - `change`: After input, as a native radio fires it.
 
 ## Toolbar
