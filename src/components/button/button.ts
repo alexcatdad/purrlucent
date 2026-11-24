@@ -21,8 +21,8 @@ export type PlButtonSize = "md" | "lg" | "xl";
  * can be cancelled with `preventDefault()` for client-side routing; otherwise
  * the browser follows the link. A disabled link has no address and cannot be
  * focused. An icon link's `aria-label` moves to the inner link; set it again
- * to rename the link. `focus()` focuses the inner link. A link does not take
- * part in a toolbar's arrow-key focus yet, so keep it out of `pl-toolbar`.
+ * to rename the link. `focus()` focuses the inner link, and a `tabindex` set
+ * on the host, as a toolbar's arrow-key focus does, moves to it too.
  *
  * In a dialog, `default` marks the button Return activates (not from a
  * multi-line text field) and `cancel` the one Escape or Command-Period
@@ -86,6 +86,8 @@ export class PlButton extends LitElement {
   #ownRole = false;
   /** An icon link's name, moved from the host to the inner link. */
   #linkLabel: string | null = null;
+  /** A tabindex set on the host by a roving group, moved to the inner link. */
+  #linkTabIndex: string | null = null;
 
   constructor() {
     super();
@@ -140,7 +142,7 @@ export class PlButton extends LitElement {
   }
 
   static override get observedAttributes() {
-    return [...super.observedAttributes, "aria-label"];
+    return [...super.observedAttributes, "aria-label", "tabindex"];
   }
 
   override attributeChangedCallback(
@@ -150,6 +152,13 @@ export class PlButton extends LitElement {
   ) {
     super.attributeChangedCallback(name, old, value);
     if (name === "aria-label") this.requestUpdate();
+    // A roving group (a toolbar) sets the tab stop on the host; a link takes
+    // it, so the link is the one stop and the host stays out of the order.
+    if (name === "tabindex" && value !== null && this.href) {
+      this.#linkTabIndex = value;
+      this.removeAttribute("tabindex");
+      this.requestUpdate();
+    }
   }
 
   formDisabledCallback() {
@@ -180,6 +189,10 @@ export class PlButton extends LitElement {
       this.#linkLabel = null;
     }
     if (this.#ownRole) this.setAttribute("role", "button");
+    if (this.#linkTabIndex !== null) {
+      this.setAttribute("tabindex", this.#linkTabIndex);
+      this.#linkTabIndex = null;
+    }
     const off = this.matches(":disabled");
     if (off !== this.#off) {
       this.#off = off;
@@ -199,7 +212,13 @@ export class PlButton extends LitElement {
   /** The inner link is the control: the host has no role, tab stop or name of its own. */
   #asLink() {
     if (this.#ownRole) this.removeAttribute("role");
-    this.removeAttribute("tabindex");
+    // A tab stop the host had as a button carries over to the link.
+    const tabindex = this.getAttribute("tabindex");
+    if (tabindex !== null) {
+      this.#linkTabIndex = tabindex;
+      this.removeAttribute("tabindex");
+      this.requestUpdate();
+    }
     this.removeAttribute("aria-disabled");
     this.#off = false;
     this.#tabindex = null;
@@ -221,6 +240,7 @@ export class PlButton extends LitElement {
       role=${off ? "link" : nothing}
       aria-disabled=${off ? "true" : nothing}
       aria-label=${ifDefined(this.#linkLabel ?? undefined)}
+      tabindex=${off || this.#linkTabIndex === null ? nothing : this.#linkTabIndex}
       target=${ifDefined(this.target ?? undefined)}
       rel=${ifDefined(this.rel ?? undefined)}
       download=${ifDefined(this.download ?? undefined)}

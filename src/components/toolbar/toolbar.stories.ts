@@ -167,6 +167,34 @@ const chrome = (size: "md" | "xl") =>
       <pl-button variant="primary" size=${size}>Done</pl-button>
     </pl-toolbar>`;
 
+/** Link buttons (`href`) take part in the arrow keys like any other item. */
+export const Links: Story = {
+  render: () =>
+    html`<style>
+        pl-toolbar svg {
+          display: block;
+        }
+      </style>
+      <pl-toolbar id="toolbar" label="Contract">
+        <pl-button
+          id="back"
+          href="#list"
+          aria-label="Back to list"
+          variant="ghost"
+          icon
+          >${backGlyph}</pl-button
+        >
+        <pl-toolbar-title>Contract 42</pl-toolbar-title>
+        <pl-toolbar-spacer></pl-toolbar-spacer>
+        <pl-button id="add" aria-label="Add" variant="ghost" icon
+          >${icon(plus)}</pl-button
+        >
+        <pl-button id="open" href="#contracts" variant="primary" size="xl"
+          >Open in Contracts</pl-button
+        >
+      </pl-toolbar>`,
+};
+
 /** A title with a subtitle, groups, a separator, a search field and the prominent item. */
 export const Chrome: Story = { render: () => chrome("xl") };
 
