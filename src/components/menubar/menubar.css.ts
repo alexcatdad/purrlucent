@@ -13,7 +13,7 @@ export const menubarStyles = css`
     padding-inline: var(--pl-space-3);
     min-block-size: calc(var(--pl-size-md) + var(--pl-space-2));
     background: var(--pl-material-capsule);
-    backdrop-filter: var(--pl-material-bar-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-bar-filter);
     box-shadow: var(--pl-material-edge);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }

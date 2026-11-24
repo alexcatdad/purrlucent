@@ -77,7 +77,7 @@ export const buttonStyles = css`
      a blur behind it, a lit edge and a light shadow. Tinted and filled faces
      keep their fill. Increased contrast outlines the face instead. */
   :host(:not([variant="ghost"])) {
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
   }
 
   /* Only the neutral face is lifted; filled and tinted faces add no shadow. */

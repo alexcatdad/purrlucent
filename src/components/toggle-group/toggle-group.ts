@@ -1,5 +1,6 @@
 import { LitElement, html, type PropertyValues } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
@@ -134,6 +135,7 @@ export class PlToggleGroup extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.value = "";
     this.name = "";
     this.label = "";

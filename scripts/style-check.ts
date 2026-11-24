@@ -31,11 +31,13 @@ export function count(css: string): { lengths: number; colors: number } {
   return { lengths, colors: body.match(COLOR)?.length ?? 0 };
 }
 
-/** --pl-* tokens that are read somewhere but defined nowhere. */
+/** --pl-* tokens that are read somewhere but defined nowhere. A registered
+ * property (@property) counts as defined. */
 export function undefinedTokens(sources: Record<string, string>): string[] {
   const assigned = new Set<string>();
   for (const source of Object.values(sources))
-    for (const m of source.matchAll(/--pl-([\w-]+)\s*:/g)) assigned.add(m[1]!);
+    for (const m of source.matchAll(/(?:@property\s+)?--pl-([\w-]+)\s*[:{]/g))
+      assigned.add(m[1]!);
   const missing = new Set<string>();
   for (const [file, source] of Object.entries(sources))
     // A name that ends in "-" is completed by a template value; it cannot be checked here.
