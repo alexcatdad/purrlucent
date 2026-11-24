@@ -786,20 +786,36 @@ import "purrlucent/data-table";
 
 ### `<pl-data-table>`
 
-A native table drawn from `columns` and `rows`, with sortable headings and optional row selection. A sortable heading is a button inside its `<th>`, and the sorted column carries `aria-sort`. A click sorts ascending; a click on the sorted column reverses it. The rows are sorted here unless `manual-sort` is set, which leaves the order to the app (which then answers `pl-sort`). With `selectable`, each row has a checkbox and the header has a select-all checkbox that shows mixed when some rows are selected. Every row is rendered; there is no virtualization. With no rows, the `empty` slot (or `empty-label`) shows in place of the body.
+A native table drawn from `columns` and `rows`, with sortable headings and optional row selection. A sortable heading is a button inside its `<th>`, and the sorted column carries `aria-sort`. A click sorts ascending; a click on the sorted column reverses it. The rows are sorted here unless `manual-sort` is set, which leaves the order to the app (which then answers `pl-sort`). With `selectable`, each row has a checkbox and the header has a select-all checkbox that shows mixed when some rows are selected. Every row is rendered on its page; there is no virtualization. With no rows, the `empty` slot (or `empty-label`) shows in place of the body. With `filterable`, a search field above the table keeps the rows whose text contains the query, ignoring case and accents. The filter runs before the sort, and select-all applies to the filtered rows. With `page-size`, the rows are paged and a `pl-pagination` below the table moves through them; a page past the end falls back to the last one. `manual-filter` and `manual-pagination` show the state but leave the rows to the app, which answers `pl-filter` and `pl-page`. With `model`, the table draws exactly that model: its header rows, spanning cells, group rows (value and count), indented rows with a disclosure button, aggregate footer, pinned rows and columns, and column widths. It then ignores `columns`, `rows`, the sort, the filter and the paging logic, and only reports `pl-sort`, `pl-filter`, `pl-page` and `pl-expand`; the app answers with a new model. A pinned column needs a `width` so the ones after it can sit beside it. In model mode each heading of a column also has a menu (sort, hide, move, pin, group), a "Columns" menu above the table shows or hides columns, a heading with a `filter` gets a combobox of its `facets`, and a `resizable` heading gets a resize handle (a separator that a pointer drags and the arrow keys move). With `row-menu` each row has a menu to pin it to the top or bottom, and with `cell-select` the cells take a roving focus and shift-click or shift-arrow selects a rectangle of them. The table never changes the model itself: each of these reports an event and the app answers with a new model.
 
-| Attribute          | Type                  | Default        | Description                                                                                                                                    |
-| ------------------ | --------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `caption`          | `string \| undefined` |                | A visible caption that also names the table.                                                                                                   |
-| `sticky-header`    | `boolean`             | `false`        | The headings stay at the top while the rows scroll; give the element a `max-block-size`.                                                       |
-| `selectable`       | `boolean`             | `false`        | Adds a checkbox column.                                                                                                                        |
-| `row-key`          | `string`              | `"id"`         | The row property that identifies a row in `selected` and `pl-selection-change`. Defaults to `id`; a row without it is identified by its index. |
-| `sort-column`      | `string \| undefined` |                | The `key` of the sorted column.                                                                                                                |
-| `sort-direction`   | `PlSortDirection`     | `"ascending"`  | `ascending` (default) or `descending`.                                                                                                         |
-| `manual-sort`      | `boolean`             | `false`        | Do not reorder the rows; the app does it on `pl-sort`.                                                                                         |
-| `empty-label`      | `string`              | `"No results"` | The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".                                                |
-| `select-all-label` | `string`              | `"Select all"` | The select-all checkbox's accessible name. Defaults to "Select all".                                                                           |
-| `select-row-label` | `string`              | `"Select"`     | Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".                                         |
+| Attribute           | Type                  | Default            | Description                                                                                                                                    |
+| ------------------- | --------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `caption`           | `string \| undefined` |                    | A visible caption that also names the table.                                                                                                   |
+| `sticky-header`     | `boolean`             | `false`            | The headings stay at the top while the rows scroll; give the element a `max-block-size`.                                                       |
+| `selectable`        | `boolean`             | `false`            | Adds a checkbox column.                                                                                                                        |
+| `row-key`           | `string`              | `"id"`             | The row property that identifies a row in `selected` and `pl-selection-change`. Defaults to `id`; a row without it is identified by its index. |
+| `sort-column`       | `string \| undefined` |                    | The `key` of the sorted column.                                                                                                                |
+| `sort-direction`    | `PlSortDirection`     | `"ascending"`      | `ascending` (default) or `descending`.                                                                                                         |
+| `manual-sort`       | `boolean`             | `false`            | Do not reorder the rows; the app does it on `pl-sort`.                                                                                         |
+| `filterable`        | `boolean`             | `false`            | Shows a search field above the table.                                                                                                          |
+| `filter-label`      | `string`              | `"Filter"`         | The search field's accessible name. Defaults to "Filter".                                                                                      |
+| `filter`            | `string`              | `""`               | The global filter query.                                                                                                                       |
+| `manual-filter`     | `boolean`             | `false`            | Do not filter the rows; the app does it on `pl-filter`.                                                                                        |
+| `page-size`         | `number`              | `0`                | Rows per page; 0 (default) shows every row and no pagination.                                                                                  |
+| `page`              | `number`              | `1`                | The current page, from 1. Defaults to 1; a page past the end is clamped.                                                                       |
+| `manual-pagination` | `boolean`             | `false`            | Do not slice the rows; the app does it on `pl-page`. `row-count` then gives the total.                                                         |
+| `row-count`         | `number \| undefined` |                    | With `manual-pagination`, the number of rows over all pages. Defaults to the number of rows given.                                             |
+| `empty-label`       | `string`              | `"No results"`     | The text shown when there are no rows and the `empty` slot is unused. Defaults to "No results".                                                |
+| `select-all-label`  | `string`              | `"Select all"`     | The select-all checkbox's accessible name. Defaults to "Select all".                                                                           |
+| `select-row-label`  | `string`              | `"Select"`         | Prefix of each row checkbox's accessible name, followed by the row's first cell. Defaults to "Select".                                         |
+| `expand-label`      | `string`              | `"Expand"`         | Prefix of each disclosure button's accessible name, followed by the row's first cell, in model mode. Defaults to "Expand".                     |
+| `columns-label`     | `string`              | `"Columns"`        | The text of the menu that shows and hides columns, in model mode. Defaults to "Columns".                                                       |
+| `column-menu-label` | `string`              | `"Column options"` | Prefix of each heading menu's accessible name, followed by the heading, in model mode. Defaults to "Column options".                           |
+| `resize-label`      | `string`              | `"Resize"`         | Prefix of each resize handle's accessible name, followed by the heading, in model mode. Defaults to "Resize".                                  |
+| `row-menu`          | `boolean`             | `false`            | Gives each row a menu to pin it, in model mode.                                                                                                |
+| `row-menu-label`    | `string`              | `"Row options"`    | Prefix of each row menu's accessible name, followed by the row's first cell. Defaults to "Row options".                                        |
+| `cell-select`       | `boolean`             | `false`            | The cells take a roving focus and shift-click or shift-arrow selects a rectangle, in model mode.                                               |
+| `focusCell`         | `string \| undefined` |                    | The id of the cell that holds the roving tab stop.                                                                                             |
 
 **Slots**
 
@@ -809,7 +825,17 @@ A native table drawn from `columns` and `rows`, with sortable headings and optio
 
 - `name`:
 - `pl-sort`: A heading was activated. `detail.column` is the column key and `detail.direction` the new direction.
+- `pl-column-visibility`: A column was hidden or shown from a menu, in model mode.
+- `pl-column-order`: A column was moved; `detail.index` is its new place among the model's columns.
+- `pl-column-pin`: A column was pinned to a side, or unpinned (`null`).
+- `pl-column-resize`: A column's resize handle moved; `detail.width` is the requested width in pixels.
+- `pl-column-group`: A column was grouped or ungrouped from its menu.
+- `pl-row-pin`: A row was pinned to the top or bottom, or unpinned (`null`).
+- `pl-cell-select`: The selected cell range changed. `detail.cells` holds the cell ids.
 - `pl-selection-change`: The selection changed through a checkbox. `detail.keys` holds the selected row keys, in row order.
+- `pl-filter`: A filter field changed. `detail.value` is the query; `detail.column` names the column of a heading filter, and is absent for the global one.
+- `pl-page`: Another page was chosen. `detail.page` is the page.
+- `pl-expand`: A disclosure button was activated in model mode. `detail.expanded` is the new state.
 
 ## Date picker
 
