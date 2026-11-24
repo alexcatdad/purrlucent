@@ -48,6 +48,14 @@ export const tabsStyles = css`
     border-inline-end: 1px solid var(--pl-color-border);
   }
 
+  :host([hide-scrollbar]) [part="list"] {
+    scrollbar-width: none;
+  }
+
+  :host([hide-scrollbar]) [part="list"]::-webkit-scrollbar {
+    display: none;
+  }
+
   [part="panels"] {
     flex: 1;
     min-inline-size: 0;
