@@ -85,6 +85,8 @@ export class PlOption extends LitElement {
  * it, `label` becomes the accessible name, and without both a native
  * `<label for>` names it.
  *
+ * The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+ *
  * @attr {string} value - The chosen option's value. Empty when nothing is chosen.
  * @attr {string} name - The name submitted with a form.
  * @attr {string} label - The accessible name when there is no slotted label.

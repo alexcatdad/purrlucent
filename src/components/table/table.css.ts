@@ -10,12 +10,25 @@ import { css } from "lit";
 export const tableDocumentStyles = css`
   pl-table {
     --_row: var(--pl-size-md);
+    --_pad-y: var(--pl-pad-cell-y);
+  }
+
+  /* An explicit density wins over the page's. */
+  pl-table[density="regular"] {
+    --_row: calc(var(--pl-spacing) * 8);
     --_pad-y: var(--pl-space-2);
   }
 
   pl-table[density="compact"] {
-    --_row: var(--pl-size-row);
+    --_row: calc(var(--pl-spacing) * 6);
     --_pad-y: var(--pl-space-1);
+  }
+
+  @media (pointer: coarse) {
+    pl-table[density="regular"],
+    pl-table[density="compact"] {
+      --_row: var(--pl-touch-min);
+    }
   }
 
   pl-table > table {
@@ -191,7 +204,7 @@ export const tableDocumentStyles = css`
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
-    background: var(--pl-color-raised);
+    background: var(--pl-color-surface-content);
   }
 
   /* The header floats over rows, so it keeps its own edge while it sticks. */
@@ -253,7 +266,7 @@ export const tableStyles = css`
     overflow: auto;
     max-block-size: inherit;
     border: 1px solid var(--pl-color-frame);
-    background: var(--pl-color-raised);
+    background: var(--pl-color-surface-content);
     border-radius: var(--pl-radius-panel);
   }
 

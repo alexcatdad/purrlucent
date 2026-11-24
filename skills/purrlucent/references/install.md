@@ -218,6 +218,46 @@ Radii follow role and pointer. `--pl-radius-control` (8px, 12px for a coarse poi
 
 The tokens are in the `pl.tokens` cascade layer, so your unlayered styles win without extra selectors. Keep your colors readable: the contrast checks apply to the defaults, not to your overrides.
 
+### Surfaces
+
+Four tokens name the page's layers, back to front. Components read them, so one override restyles a layer.
+
+| Token                        | Layer                                                | Default                                            |
+| ---------------------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| `--pl-color-surface-canvas`  | The page                                             | `--pl-color-background`                            |
+| `--pl-color-surface-content` | Cards and table boxes                                | `--pl-color-raised`                                |
+| `--pl-color-surface-chrome`  | Sidebars and toolbars, a step darker than the canvas | Ink toward paper in light, darker than ink in dark |
+| `--pl-color-surface-overlay` | Popovers and menus                                   | `--pl-color-overlay`                               |
+
+```css
+:root {
+  --pl-color-surface-chrome: oklch(94% 0.01 350deg);
+}
+```
+
+### Density
+
+Controls are compact by default. Set `data-pl-density="comfortable"` on `:root`, or on any ancestor, to raise the vertical metrics together:
+
+| Metric                            | Compact          | Comfortable      |
+| --------------------------------- | ---------------- | ---------------- |
+| Control `sm`, `md`, `lg`, `xl`    | 24, 32, 36, 40px | 32, 38, 42, 46px |
+| Menu and list row                 | 24px             | 36px             |
+| Sidebar row                       | 32px             | 36px             |
+| Line height, tight, normal, loose | 14, 16, 20px     | 18, 20, 24px     |
+| Table cell vertical padding       | 8px              | 12px             |
+
+Widths, font sizes and horizontal padding do not change, and a coarse pointer keeps its 44px minimum. `data-pl-density="compact"` is the default, so it can reset a region inside a comfortable one.
+
+```html
+<html data-pl-density="comfortable">
+  ...
+  <pl-table density="compact">...</pl-table>
+</html>
+```
+
+A `pl-table` with its own `density` (`regular` or `compact`) keeps it; without one it follows the page.
+
 ### Parts
 
 Elements expose named parts for styling from outside. For example, `<pl-button>` exposes `label`:

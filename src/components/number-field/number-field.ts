@@ -56,6 +56,8 @@ const optionalNumber = {
  * not inserted: only digits, one separator and a leading minus. The form value
  * and the `value` property stay plain numbers.
  *
+ * The default width is 16 spacing units plus the stepper width, as a number needs few digits, not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+ *
  * @attr {number} value - The starting value; empty means no value. The `value` property holds the current number, or null.
  * @attr {number} min - Smallest value.
  * @attr {number} max - Largest value.

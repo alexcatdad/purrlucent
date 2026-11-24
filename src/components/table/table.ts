@@ -35,7 +35,7 @@ function adoptTableStyles(root: Node) {
  *
  * @attr {string} label - The accessible name of the scroll area. Defaults to the table's caption.
  * @attr {boolean} striped - Even body rows get a faint alternate fill; hover and selection override it.
- * @attr {"regular" | "compact"} density - Row height and cell padding. Defaults to `regular`.
+ * @attr {"regular" | "compact"} density - Row height and cell padding. Unset, it follows the page's `data-pl-density`.
  * @attr {boolean} sticky-header - The header cells stay at the top while the rows scroll.
  * @slot - A native `<table>`.
  * @csspart scroller - The scroll container.
@@ -53,7 +53,7 @@ export class PlTable extends LitElement {
 
   declare label: string | undefined;
   declare striped: boolean;
-  declare density: "regular" | "compact";
+  declare density: "regular" | "compact" | undefined;
   declare stickyHeader: boolean;
   declare _scrollable: boolean;
   declare _caption: string;
@@ -64,7 +64,6 @@ export class PlTable extends LitElement {
   constructor() {
     super();
     this.striped = false;
-    this.density = "regular";
     this.stickyHeader = false;
     this._scrollable = false;
     this._caption = "";
