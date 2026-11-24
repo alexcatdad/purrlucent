@@ -28,10 +28,35 @@ test("host aria attributes reach the native input", async ({ page }) => {
     "aria-description",
     "We only use it to send the receipt.",
   );
+  await page.locator("#hint").evaluate((el) => {
+    el.textContent = "Receipts only.";
+  });
+  await expect(inner).toHaveAttribute("aria-description", "Receipts only.");
   await page.locator("#input").evaluate((el) => {
     el.removeAttribute("aria-describedby");
   });
   await expect(inner).not.toHaveAttribute("aria-description");
+});
+
+test("the forwarded description follows the referenced text and ID", async ({
+  page,
+}) => {
+  await gotoStory(page, story("host-aria"));
+  const inner = page.locator("#input input");
+  await page.locator("#problem").evaluate((el) => {
+    el.textContent = "Enter a valid address.";
+  });
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "We only use it to send the receipt. Enter a valid address.",
+  );
+  await page.locator("#hint").evaluate((el) => {
+    el.id = "old-hint";
+  });
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "Enter a valid address.",
+  );
 });
 
 test("Return in a form without a submit button presses the dialog's default action", async ({

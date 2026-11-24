@@ -1,6 +1,6 @@
 import { LitElement, html, nothing, svg } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { FORWARDED_ARIA, forwardAria } from "../../behaviors/aria-forward.ts";
+import { AriaWatch, forwardAria } from "../../behaviors/aria-forward.ts";
 import {
   fieldMessage,
   syncFieldMessage,
@@ -109,7 +109,7 @@ export class PlInput extends LitElement {
   readonly #internals = this.attachInternals();
   #touched = false;
   readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
-  readonly #ariaWatch = new MutationObserver(() => this.#sync());
+  readonly #ariaWatch = new AriaWatch(this, () => this.#sync());
 
   constructor() {
     super();
@@ -145,7 +145,7 @@ export class PlInput extends LitElement {
       subtree: true,
       characterData: true,
     });
-    this.#ariaWatch.observe(this, { attributeFilter: FORWARDED_ARIA });
+    this.#ariaWatch.observe();
     this.#syncLabelled();
   }
 
