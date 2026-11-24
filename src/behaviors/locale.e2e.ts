@@ -88,6 +88,27 @@ test("the required message follows a change of lang", async ({ page }) => {
     .not.toBe("Markera rutan för att fortsätta.");
 });
 
+test("the date picker writes its day again in the new lang's format", async ({
+  page,
+}) => {
+  await gotoStory(page, story);
+  const entry = page.locator("#date input");
+  await expect(entry).toHaveValue("2026-11-18");
+  await setLang(page, "en-US");
+  await expect(entry).toHaveValue("11/18/2026");
+});
+
+test("a day being typed is left alone when the lang changes", async ({
+  page,
+}) => {
+  await gotoStory(page, story);
+  const entry = page.locator("#date input");
+  await entry.fill("2026-11");
+  await setLang(page, "en-US");
+  await page.waitForTimeout(100);
+  await expect(entry).toHaveValue("2026-11");
+});
+
 test("setMessages after render updates the components in that lang", async ({
   page,
 }) => {

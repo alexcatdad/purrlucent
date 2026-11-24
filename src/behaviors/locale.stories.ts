@@ -56,7 +56,11 @@ export const Swedish: Story = {
         <pl-option>Äpple</pl-option>
         <pl-option>Päron</pl-option>
       </pl-combobox>
-      <pl-date-picker label="Datum"></pl-date-picker>
+      <pl-date-picker
+        id="date"
+        label="Datum"
+        value="2026-11-18"
+      ></pl-date-picker>
       <pl-pagination total="5"></pl-pagination>
       <pl-checkbox id="terms" required>Villkor</pl-checkbox>
       <button

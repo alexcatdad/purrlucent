@@ -91,7 +91,7 @@ const { register, handleSubmit } = useForm<{ name: string; news: boolean }>();
 
 ## Language
 
-Register each language's text once with `setMessages` from `purrlucent/locale`; the [install guide](./install.md#languages) lists the keys. To switch language while the app runs, set `lang` and leave the rest to the elements: they update their text and messages without a re-render from React.
+Register each language's text once with `setMessages` from `purrlucent/locale`; the [install guide](./install.md#languages) lists the keys. To switch language while the app runs, set `lang` and leave the rest to the elements: they update their text and the messages the library writes without a re-render from React. The [install guide](./install.md#languages) lists what follows the language.
 
 ```tsx
 function setLanguage(lang: "en" | "sv") {

@@ -81,7 +81,8 @@ export type PlMessages = typeof en;
 const registered = new Map<string, PlMessages>();
 
 /**
- * Registers the built-in text for a language, once at app start. Components
+ * Registers the built-in text for a language, usually once at app start;
+ * components already on the page render again with it. Components
  * use it wherever the closest `lang` is that language: an exact tag such as
  * `sv-FI` first, else its language, `sv`. English is built in and is used for
  * any language without registered text. An attribute on a component still
@@ -110,10 +111,18 @@ function refresh() {
   });
 }
 
+let pruneAt = 64;
+
 function track(host: Element) {
   if (known.has(host)) return;
   known.add(host);
   readers.push(new WeakRef(host));
+  // Drop collected elements as new ones arrive, so a page that never changes
+  // language does not keep a growing list.
+  if (readers.length >= pruneAt) {
+    readers = readers.filter((ref) => ref.deref());
+    pruneAt = Math.max(64, readers.length * 2);
+  }
   if (observer) return;
   observer = new MutationObserver(refresh);
   observer.observe(document, {
