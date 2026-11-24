@@ -164,7 +164,11 @@ export class PlToggleGroup extends LitElement {
         cancelable: true,
       }),
     );
-    if (!proceed) return;
+    if (!proceed) {
+      // Focus stays put; the tab stop returns to the selected item.
+      this.requestUpdate();
+      return;
+    }
     this.value = value;
     fireNative(this, "input", "change");
   }
