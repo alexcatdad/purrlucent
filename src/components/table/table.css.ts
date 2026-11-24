@@ -73,11 +73,7 @@ export const tableDocumentStyles = css`
         [data-selected]
       ):hover
       > :is(th, td) {
-      background: color-mix(
-        in srgb,
-        var(--pl-color-foreground) 6%,
-        transparent
-      );
+      background: var(--pl-color-muted-3);
     }
   }
 
