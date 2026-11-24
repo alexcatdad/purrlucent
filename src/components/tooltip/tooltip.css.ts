@@ -8,10 +8,11 @@ import { css } from "lit";
 export const tooltipStyles = css`
   :host {
     --_gap: var(--pl-space-1-5);
+    --pl-tooltip-open-delay: 560ms;
 
     display: inline-block;
     /* Read by the element, not used: its computed value is the hover delay. A fixed time, not a motion token: the delay is behaviour and must survive reduced motion. */
-    transition-delay: 560ms;
+    transition-delay: var(--pl-tooltip-open-delay);
   }
 
   :host([hidden]) {
@@ -20,7 +21,10 @@ export const tooltipStyles = css`
 
   [part="bubble"] {
     box-sizing: border-box;
-    max-inline-size: calc(100vw - var(--pl-space-4));
+    max-inline-size: min(
+      var(--pl-tooltip-max-inline-size),
+      calc(100vw - var(--pl-space-4))
+    );
     inset: auto;
     margin: 0;
     border: 0;
@@ -54,7 +58,8 @@ export const tooltipStyles = css`
   }
 
   /* A block, not the inline span it is made as: Firefox reports an inline box's text as overflow. */
-  ::slotted([role="tooltip"]) {
+  ::slotted([role="tooltip"]),
+  ::slotted([slot="content"]) {
     display: block;
   }
 

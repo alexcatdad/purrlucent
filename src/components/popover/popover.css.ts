@@ -26,7 +26,7 @@ export const popoverStyles = css`
     inline-size: fit-content;
     min-inline-size: calc(var(--_corner) * 2);
     max-inline-size: min(
-      calc(var(--pl-spacing) * 45),
+      var(--pl-popover-max-inline-size),
       calc(100vw - var(--pl-space-4))
     );
     inset: auto;
