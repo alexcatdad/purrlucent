@@ -2031,21 +2031,25 @@ import "purrlucent/sidebar";
 
 ### `<pl-sidebar-item>`
 
-One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. An expandable item with an `href` keeps its link, which selects like any other, and gets a separate disclosure button before it. Without an `href` an item renders a plain button; clicking it selects it, so an app can also handle the click itself.
+One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set by the sidebar because level 2 items follow it, a disclosure button. An expandable item with an `href` keeps its link, which selects like any other, and gets a separate disclosure button before it. Without an `href` an item renders a plain button; clicking it selects it, so an app can also handle the click itself. With `action` it is a plain button that never takes the selection, such as a menu trigger: listen for its `click`.
 
-| Attribute      | Type                  | Default | Description                                                                                                                                                             |
-| -------------- | --------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `toggle-label` | `string`              | `""`    | The disclosure button's accessible name when a link has one beside it. Defaults to the page language's text (see `setMessages`), in English "<item label>, show items". |
-| `href`         | `string \| undefined` |         |                                                                                                                                                                         |
-| `selected`     | `boolean`             | `false` |                                                                                                                                                                         |
-| `level`        | `SidebarLevel`        |         | 1 or 2. Any other value throws in development.                                                                                                                          |
-| `expandable`   | `boolean`             | `false` | Set by the sidebar when level 2 items follow this one.                                                                                                                  |
-| `expanded`     | `boolean`             | `false` |                                                                                                                                                                         |
+| Attribute      | Type                        | Default | Description                                                                                                                                                             |
+| -------------- | --------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `toggle-label` | `string`                    | `""`    | The disclosure button's accessible name when a link has one beside it. Defaults to the page language's text (see `setMessages`), in English "<item label>, show items". |
+| `action`       | `boolean`                   | `false` | Renders a button that does not take the selection; `href` and `selected` are ignored and it never has a disclosure. Use it for a menu trigger or a command.             |
+| `size`         | `"md" \| "lg" \| undefined` |         | `md` or `lg`, the row size of this item. Defaults to the sidebar's `size`.                                                                                              |
+| `href`         | `string \| undefined`       |         |                                                                                                                                                                         |
+| `selected`     | `boolean`                   | `false` |                                                                                                                                                                         |
+| `level`        | `SidebarLevel`              |         | 1 or 2. Any other value throws in development.                                                                                                                          |
+| `expandable`   | `boolean`                   | `false` | Set by the sidebar when level 2 items follow this one.                                                                                                                  |
+| `expanded`     | `boolean`                   | `false` |                                                                                                                                                                         |
+| `reorderable`  | `boolean`                   | `false` | Set by the sidebar when it is `reorderable` and this is a level 1 item.                                                                                                 |
 
 **Slots**
 
 - default: The item label.
-- `icon`: A leading svg icon, tinted with the accent text color.
+- `icon`: A leading svg icon, tinted with the accent text color. A `pl-avatar` here is sized to fit the row.
+- `description`: A second, muted line under the label.
 - `detail`: Trailing muted text, such as a count.
 
 **Parts**
@@ -2053,10 +2057,13 @@ One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set by 
 - `control`: The link or disclosure button.
 - `disclosure`: The disclosure button beside a link.
 - `chevron`: The disclosure arrow.
+- `handle`: The grip a level 1 item shows while the sidebar is `reorderable`. Drag it with a pointer; the keyboard uses Alt with the Up and Down arrows on the item.
 
 **Events**
 
 - `pl-toggle`: A disclosure button opened or closed. `detail.expanded` holds the new state.
+- `pl-navigate`: A plain left click, or Enter, activated the link, before the browser navigates. `detail.href` holds the address. Cancelable: `preventDefault()` stops the navigation, so a router can take over.
+- `pl-reorder`: A drag or Alt with an arrow key asked to move this level 1 item. `from` and `to` are its place among the level 1 items of its section or sidebar. The item does not move itself: the app moves it.
 
 ### `<pl-sidebar-section>`
 
@@ -2076,27 +2083,37 @@ A titled group of `pl-sidebar-item` children inside a `pl-sidebar`. The group is
 
 ### `<pl-sidebar>`
 
-A navigation sidebar: a `nav` landmark holding `pl-sidebar-item` children, loose or grouped under `pl-sidebar-section` headings (at most two levels, and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a disclosure button that shows and hides them; with an `href` it stays a link that selects, and the disclosure button sits before it. Every button and visible link is a tab stop. As an extra, Up and Down arrows, Home and End move among all visible items (Left and Right are not used). Space or Enter on a link selects it; Escape on a group button or inside its group closes it and focuses the button. On a narrow screen (600px or less) the sidebar collapses on its own; shown again, it fills the width. A collapse it made itself is undone when the screen widens; read the first state from `collapsed`, because `pl-collapse` can fire before a listener is attached.
+A navigation sidebar: a `nav` landmark holding `pl-sidebar-item` children, loose or grouped under `pl-sidebar-section` headings (at most two levels, and a group never reaches into the next section). A level 1 item followed by level 2 items becomes a disclosure button that shows and hides them; with an `href` it stays a link that selects, and the disclosure button sits before it. Every button and visible link is a tab stop. As an extra, Up and Down arrows, Home and End move among all visible items (Left and Right are not used). Space or Enter on a link selects it; Escape on a group button or inside its group closes it and focuses the button. On a narrow screen (`collapse-below`, 600px or less by default) the sidebar collapses on its own; shown again, it is a modal panel on the start edge over a scrim: the page behind is inert, Escape or a press on the scrim closes it, focus moves into it and returns to the toggle. A collapse it made itself is undone when the screen widens; `pl-collapse` also fires for the first one, once the sidebar has rendered. `collapsed` is the state, and an app can control it: set the property or attribute, or call `toggle()`, `show()` and `hide()`. Setting `collapsed` does not fire `pl-collapse`; the toggle button, the methods, the `shortcut` and the automatic collapse do. With `no-toggle` the built-in button is hidden, for an app that has its own.
 
-| Attribute      | Type           | Default | Description                                                                                                                                                               |
-| -------------- | -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `toggle-label` | `string`       | `""`    | The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set. |
-| `label`        | `string`       | `""`    | Accessible name of the navigation landmark.                                                                                                                               |
-| `collapsed`    | `boolean`      | `false` |                                                                                                                                                                           |
-| `size`         | `"md" \| "lg"` | `"md"`  | `md` (default) or `lg`, the larger rows.                                                                                                                                  |
+| Attribute        | Type           | Default | Description                                                                                                                                                                                                                                                              |
+| ---------------- | -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `collapsed`      | `boolean`      | `false` | The sidebar is hidden, leaving only its toggle. Set it to control the sidebar; changing it from outside fires no `pl-collapse`.                                                                                                                                          |
+| `collapse-below` | `number`       |         | The width in px at and below which the sidebar collapses on its own; 0 turns it off.                                                                                                                                                                                     |
+| `no-toggle`      | `boolean`      | `false` | Hides the built-in toggle button. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.                                                                                                                                             |
+| `reorderable`    | `boolean`      | `false` | Level 1 items show a grip and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.                                                                                                      |
+| `shortcut`       | `string`       | `""`    | A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known. A key press needs `mod`, `ctrl` or `alt` to count, so typing is never taken. |
+| `toggle-label`   | `string`       | `""`    | The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.                                                                                                |
+| `label`          | `string`       | `""`    | Accessible name of the navigation landmark.                                                                                                                                                                                                                              |
+| `size`           | `"md" \| "lg"` | `"md"`  | `md` (default) or `lg`, the larger rows.                                                                                                                                                                                                                                 |
+| `_narrow`        | `boolean`      | `false` |                                                                                                                                                                                                                                                                          |
 
 **Slots**
 
 - default: `pl-sidebar-item` and `pl-sidebar-section` children.
+- `header`: Content pinned above the navigation, such as a logo or the account name. It sits outside the `nav` landmark.
+- `footer`: Content pinned below the navigation, such as preferences, the signed-in person or a version. It sits outside the `nav` landmark.
 
 **Parts**
 
 - `toggle`: The button that hides and shows the sidebar.
+- `header`: The wrapper of the `header` slot.
 - `nav`: The navigation landmark.
+- `footer`: The wrapper of the `footer` slot.
+- `dialog`: The modal panel a narrow screen shows.
 
 **Events**
 
-- `pl-collapse`: The sidebar was hidden or shown. `detail.collapsed` holds the new state.
+- `pl-collapse`: The sidebar was hidden or shown by its toggle, a method, the shortcut, Escape or the scrim, or by the screen width. `detail.collapsed` holds the new state.
 - `pl-change`: The selected item changed. `detail.selected` is an array holding the new item.
 
 ## Skeleton
