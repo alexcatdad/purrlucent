@@ -10,7 +10,7 @@ Web components for apps: buttons, form controls, menus, dialogs and navigation, 
 
 ## Components
 
-Accordion, aspect ratio, attachment, avatar, badge, banner, breadcrumb, bubble, button, button group, calendar, card, carousel, chart, checkbox, collapsible, combobox, command palette, context menu, data table, date picker, dialog, drawer, empty, field, hover card, input, input group, item, kbd, marker, menu, menubar, message, message scroller, month range picker, navigation menu, number field, one-time code input, pagination, popover, progress, prompt input, radio group, resizable panels, scroll area, select, separator, sidebar, skeleton, slider, spinner, switch, table, tabs, textarea, toast, toggle, toggle group, toolbar and tooltip.
+Accordion, aspect ratio, attachment, avatar, badge, banner, breadcrumb, bubble, button, button group, calendar, card, carousel, chart, checkbox, collapsible, combobox, command palette, context menu, data table, date picker, dialog, drawer, empty, field, file input, hover card, input, input group, item, kbd, marker, menu, menubar, message, message scroller, month range picker, navigation menu, number field, one-time code input, pagination, popover, progress, prompt input, radio group, resizable panels, scroll area, select, separator, sidebar, skeleton, slider, spinner, switch, table, tabs, textarea, toast, toggle, toggle group, toolbar and tooltip.
 
 The [component reference](docs/components.md) lists every element with its attributes, slots, parts and events. Storybook has an example of each state. The chart is not part of `import "purrlucent"`: import `purrlucent/chart` and install its optional peer, `@tanstack/charts`.
 
