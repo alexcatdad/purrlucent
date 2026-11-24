@@ -352,6 +352,16 @@ export const dataTableStyles = css`
     outline-offset: calc(var(--pl-ring-width) * -1);
   }
 
+  /* A link a cell renderer returns reads as a link. */
+  td a[href] {
+    color: var(--pl-color-accent-text);
+  }
+
+  td a[href]:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
   @media (forced-colors: active) {
     table.model [data-pin],
     table.model tr[data-row-pin] > :is(td, th),
