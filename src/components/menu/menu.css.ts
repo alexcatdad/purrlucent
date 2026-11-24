@@ -260,6 +260,10 @@ export const itemStyles = css`
     pointer-events: none;
   }
 
+  :host([disabled]) [part="description"] {
+    color: inherit;
+  }
+
   @media (forced-colors: active) {
     :host(:not([disabled]):focus) {
       background: Highlight;
@@ -271,7 +275,8 @@ export const itemStyles = css`
       outline: 1px solid CanvasText;
     }
 
-    :host([disabled]) {
+    :host([disabled]),
+    :host([disabled]) [part="description"] {
       color: GrayText;
     }
 

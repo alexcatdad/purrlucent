@@ -338,7 +338,7 @@ export class PlMenu extends LitElement {
   }
 
   hide() {
-    this.#close(true);
+    if (this.open) this.#close(true);
   }
 
   #close(refocus: boolean) {
