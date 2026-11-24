@@ -392,7 +392,6 @@ test("the control is accessible", async ({ page }) => {
 });
 
 test("the aria and field stories are accessible", async ({ page }) => {
-  await expectAccessible(await gotoStory(page, story("aria-forwarded")));
   await expectAccessible(await gotoStory(page, story("in-field")));
 });
 

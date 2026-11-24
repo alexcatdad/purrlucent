@@ -135,7 +135,7 @@ export const sidebarStyles = [
        so the sidebar does not move when it closes. */
     :host([collapsed]),
     :host([data-overlay]) {
-      inline-size: var(--pl-size-xl);
+      inline-size: calc(var(--pl-size-xl) + var(--pl-space-3) * 2);
       padding-block-end: 0;
     }
 

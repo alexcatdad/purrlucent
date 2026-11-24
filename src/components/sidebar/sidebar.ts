@@ -421,7 +421,11 @@ export class PlSidebar extends LitElement {
   #closePanel() {
     const dialog = this.shadowRoot?.querySelector("dialog");
     if (!dialog?.open) return;
-    if (this.matches(":focus-within")) this.#refocus = true;
+    // WebKit does not focus a clicked button, so a press on the scrim or the
+    // panel's toggle can leave focus on the page: it still belongs back here.
+    const active = document.activeElement;
+    if (this.matches(":focus-within") || !active || active === document.body)
+      this.#refocus = true;
     dialog.close();
   }
 

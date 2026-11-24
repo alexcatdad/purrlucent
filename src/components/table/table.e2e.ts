@@ -279,7 +279,10 @@ const resolve = (page: Page, property: string, value: string) =>
   );
 
 const background = (page: Page, selector: string) =>
-  page.locator(selector).evaluate((el) => getComputedStyle(el).backgroundColor);
+  page
+    .locator(selector)
+    .first()
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
 
 test("hidden text in a header cell does not widen the page at 390px", async ({
   page,
