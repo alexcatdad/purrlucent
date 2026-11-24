@@ -129,9 +129,10 @@ export const dialogStyles = css`
     min-inline-size: 0;
   }
 
+  /* A sheet's title is a step above its body text, so the header reads as one. */
   [part="title"] {
     font-weight: 700;
-    font-size: var(--pl-text-base);
+    font-size: var(--pl-text-lg);
   }
 
   :host([variant="alert"]) [part="title"] {
@@ -144,13 +145,20 @@ export const dialogStyles = css`
     overflow-wrap: anywhere;
   }
 
+  /* The gap sits on the dialog's own wrapper: a page reset (Tailwind's
+     preflight) outranks a margin set on the slotted element. */
   [part="description"] {
+    margin-block-start: var(--pl-space-1-5);
     font-weight: 400;
     font-size: var(--pl-text-xs);
   }
 
+  [part="description"][hidden] {
+    display: none;
+  }
+
   ::slotted([slot="description"]) {
-    margin: var(--pl-space-1-5) 0 0;
+    margin: 0;
   }
 
   /* The scroll box clips, so it bleeds past the content by a focus ring. */

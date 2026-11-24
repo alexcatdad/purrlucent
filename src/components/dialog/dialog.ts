@@ -1,22 +1,34 @@
 import { LitElement, html, nothing } from "lit";
+import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { dialogStyles } from "./dialog.css.ts";
 
 // Dialogs can stack, so the lock is released with the last one.
 let locks = 0;
 let savedOverflow = "";
+let savedGutter = "";
 
 // A second sheet over an open one is warned about; an alert over a sheet is not.
 const openSheets = new Set<PlDialog>();
 
+// A page with a classic scrollbar keeps its room while the lock hides it, so
+// the page does not shift sideways; a page without one gains no gutter.
 const lockScroll = () => {
   if (locks++ === 0) {
-    savedOverflow = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
+    const root = document.documentElement;
+    savedOverflow = root.style.overflow;
+    savedGutter = root.style.scrollbarGutter;
+    if (window.innerWidth - root.clientWidth > 0)
+      root.style.scrollbarGutter = "stable";
+    root.style.overflow = "hidden";
   }
 };
 
 const unlockScroll = () => {
-  if (--locks === 0) document.documentElement.style.overflow = savedOverflow;
+  if (--locks === 0) {
+    const root = document.documentElement;
+    root.style.overflow = savedOverflow;
+    root.style.scrollbarGutter = savedGutter;
+  }
 };
 
 /**
@@ -305,8 +317,11 @@ export class PlDialog extends LitElement {
             ${
               alert
                 ? nothing
-                : html`<div id="description" part="description">
-                    <slot name="description"></slot>
+                : html`<div id="description" part="description" hidden>
+                    <slot
+                      name="description"
+                      @slotchange=${hideWhenEmpty}
+                    ></slot>
                   </div>`
             }
           </div>

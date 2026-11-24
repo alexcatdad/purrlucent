@@ -1649,7 +1649,7 @@ import "purrlucent/progress";
 
 ### `<pl-progress>`
 
-A progress bar. With a `value` it shows how far along the work is; without one it shows that work is going on. Name it with `label`.
+A progress bar. With a `value` it shows how far along the work is; without one it shows that work is going on. Name it with `label`. It is a block as wide as its container; set `inline-size` on it for a shorter bar.
 
 | Attribute | Type                                                   | Default | Description                                                                                                                               |
 | --------- | ------------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2314,14 +2314,14 @@ One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. A
 
 A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
-| Attribute     | Type                   | Default | Description                                                                                                                                               |
-| ------------- | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`       | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                                   |
-| `name`        | `string`               | `""`    | The name submitted with a form.                                                                                                                           |
-| `label`       | `string`               | `""`    | The accessible name of the group.                                                                                                                         |
-| `size`        | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                             |
-| `fit-content` | `boolean`              | `false` | Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways. For many items of different lengths. |
-| `disabled`    | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.             |
+| Attribute     | Type                   | Default | Description                                                                                                                                                                                                |
+| ------------- | ---------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                                                                                    |
+| `name`        | `string`               | `""`    | The name submitted with a form.                                                                                                                                                                            |
+| `label`       | `string`               | `""`    | The accessible name of the group.                                                                                                                                                                          |
+| `size`        | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                                                                              |
+| `fit-content` | `boolean`              | `false` | Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways, fading the edges that have more items past them. For many items of different lengths. |
+| `disabled`    | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.                                                              |
 
 **Slots**
 

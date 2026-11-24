@@ -528,6 +528,39 @@ test("removing an open dialog releases the scroll lock", async ({ page }) => {
   ).toBe("");
 });
 
+test("the scroll lock keeps the page's width, and closing restores its styles", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-alert"));
+  const widths = await dialogEl(page).evaluate(async (el) => {
+    const dialog = el as HTMLElement & { show(): void; close(): void };
+    const root = document.documentElement;
+    const frame = () => new Promise(requestAnimationFrame);
+    dialog.close();
+    await frame();
+    // A page tall enough to scroll, so a classic scrollbar shows where there is one.
+    const tall = document.createElement("div");
+    tall.style.blockSize = "300vh";
+    document.body.append(tall);
+    await frame();
+    const before = root.clientWidth;
+    dialog.show();
+    await frame();
+    const open = root.clientWidth;
+    dialog.close();
+    await frame();
+    return {
+      before,
+      open,
+      overflow: root.style.overflow,
+      gutter: root.style.scrollbarGutter,
+    };
+  });
+  expect(widths.open).toBe(widths.before);
+  expect(widths.overflow).toBe("");
+  expect(widths.gutter).toBe("");
+});
+
 test("a re-inserted open dialog is modal again and keeps the scroll lock", async ({
   page,
 }) => {
@@ -555,14 +588,35 @@ test("a sheet without a description leaves no gap under the title", async ({
   page,
 }) => {
   await gotoStory(page, story("open-sheet"));
-  const gap = await dialogEl(page).evaluate((el) => {
+  const gap = await dialogEl(page).evaluate(async (el) => {
     el.querySelector("[slot=description]")!.remove();
+    // slotchange, which hides the empty wrapper, is dispatched after this task.
+    await new Promise(requestAnimationFrame);
     const root = el.shadowRoot!;
     const text = root.querySelector("[part=text]")!.getBoundingClientRect();
     const title = root.querySelector("[part=title]")!.getBoundingClientRect();
     return text.height - title.height;
   });
   expect(gap).toBe(0);
+});
+
+test("the description keeps its gap under the title when the page resets margins", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"));
+  const gap = await dialogEl(page).evaluate(async (el) => {
+    const reset = document.createElement("style");
+    reset.textContent = "* { margin: 0; padding: 0; }";
+    document.head.append(reset);
+    await new Promise(requestAnimationFrame);
+    const root = el.shadowRoot!;
+    const title = root.querySelector("[part=title]")!.getBoundingClientRect();
+    const description = el
+      .querySelector("[slot=description]")!
+      .getBoundingClientRect();
+    return description.top - title.bottom;
+  });
+  expect(gap).toBeGreaterThan(0);
 });
 
 test("a long body scrolls inside the dialog and is reachable by keyboard", async ({
