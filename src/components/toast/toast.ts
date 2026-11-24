@@ -363,7 +363,15 @@ export class PlToaster extends LitElement {
     const toaster = document.createElement("pl-toaster");
     document.body.append(toaster);
     const toast = createToast(options);
-    setTimeout(() => toaster.append(toast), 100);
+    // A toast with the same id shown in the meantime is newer and stays.
+    setTimeout(() => {
+      const id = ids.get(toast);
+      if (
+        id === undefined ||
+        ![...toaster.children].some((child) => ids.get(child) === id)
+      )
+        toaster.append(toast);
+    }, 100);
     return toast;
   }
 
