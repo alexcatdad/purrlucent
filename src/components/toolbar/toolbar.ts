@@ -1,4 +1,5 @@
 import { LitElement, html, type PropertyValues } from "lit";
+import { LensController } from "../../behaviors/lens.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { barSurface } from "../../surfaces/surfaces.css.ts";
 import {
@@ -181,6 +182,7 @@ export class PlToolbar extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.label = "";
     this.scrolled = false;
     this.size = "xl";

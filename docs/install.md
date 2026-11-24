@@ -151,6 +151,8 @@ Each glass fill is as clear as the text on it allows over any backdrop, black to
 
 If you control what sits behind your glass, you may set clearer fills on the `pl-material="glass"` element, and then check text contrast over your own backdrop. Put only primary text on the thin tier.
 
+In Chromium, toolbars, menubars, navigation menus, buttons and segmented controls also refract: each bends what is behind its rim through an SVG filter sized to it, which the component adds to its own tree. Safari and Firefox keep the frosted glass, as they cannot draw an SVG filter in `backdrop-filter`.
+
 ### Clear glass
 
 For controls over photos and video, such as a player's bar, set `pl-glass="clear"` on their container inside glass. Clear glass is a dark film over a dimmed backdrop, with light text in both color schemes, as Apple's clear variant is. Use it only over media; for everything else the regular glass reads better.

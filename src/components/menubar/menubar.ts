@@ -1,4 +1,5 @@
 import { LitElement, html, type PropertyValues } from "lit";
+import { LensController } from "../../behaviors/lens.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { barSurface } from "../../surfaces/surfaces.css.ts";
 import { PlMenu } from "../menu/menu.ts";
@@ -38,6 +39,7 @@ export class PlMenubar extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.label = "";
     this.addEventListener("keydown", this.#onKeydown);
   }

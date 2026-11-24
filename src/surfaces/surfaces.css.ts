@@ -13,7 +13,7 @@ export const barSurface = css`
     display: block;
     box-sizing: border-box;
     background: var(--pl-material-bar);
-    backdrop-filter: var(--pl-material-bar-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-bar-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     padding: var(--pl-space-2) var(--pl-space-4);

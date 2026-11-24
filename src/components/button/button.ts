@@ -1,5 +1,6 @@
 import { LitElement, html, nothing } from "lit";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import "../spinner/spinner.ts";
 import { buttonStyles } from "./button.css.ts";
@@ -59,6 +60,7 @@ export class PlButton extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.variant = "secondary";
     this.type = "button";
     this.size = "md";

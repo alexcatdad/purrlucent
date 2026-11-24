@@ -20,7 +20,7 @@ export const groupStyles = css`
     overflow: clip;
     border-radius: var(--pl-radius-control);
     background-color: var(--pl-material-control);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

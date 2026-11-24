@@ -2,6 +2,15 @@
    base; everything else is calculated from them. Colors are light-dark() pairs and follow the
    page's color-scheme. Every token sits in a cascade layer, so app styles
    override it. */
+
+/* A glass host's own refraction filter, set by its lens (behaviors/lens.ts) in
+   Chromium. It does not inherit, so a control inside a refracting bar never
+   borrows the bar's map. */
+@property --pl-lens {
+  syntax: "*";
+  inherits: false;
+}
+
 @layer pl.tokens {
   :root {
     color-scheme: light dark;
