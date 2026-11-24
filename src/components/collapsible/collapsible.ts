@@ -4,6 +4,9 @@ import { collapsibleStyles } from "./collapsible.css.ts";
 // A slotted element of one of these kinds is the trigger itself, not a label for the built-in button.
 const triggerSelector = 'button, a[href], [role="button"]';
 
+// Ids given to content for aria-controls where element reflection is missing.
+let uid = 0;
+
 // design/icons/chevron-right.svg
 const chevron = svg`<svg class="chevron" part="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.25 5.75 5.5 5.5q.75.75 0 1.5l-5.5 5.5" /></svg>`;
 
@@ -58,7 +61,9 @@ export class PlCollapsible extends LitElement {
 
   #onClick = (event: Event) => {
     const trigger = this.#slotted;
-    if (trigger && event.composedPath().includes(trigger)) this.#toggle();
+    if (!trigger || !event.composedPath().includes(trigger)) return;
+    if (this.disabled) event.preventDefault();
+    this.#toggle();
   };
 
   /** A slotted trigger that is not a native button answers Enter and Space itself; a link answers Enter by navigating (and toggling, as a click) and Space here. */
@@ -90,6 +95,8 @@ export class PlCollapsible extends LitElement {
 
   #wired: HTMLElement | undefined;
   #added = new Set<string>();
+  #idOn: Element | undefined;
+  #tabindex: string | null | undefined;
 
   /** Sets an ARIA state on the consumer's trigger only when it has none, and removes only what was added here. */
   #mark(trigger: HTMLElement, name: string, on: boolean) {
@@ -100,20 +107,74 @@ export class PlCollapsible extends LitElement {
     } else if (this.#added.delete(name)) trigger.removeAttribute(name);
   }
 
-  /** The trigger and the content are both in the light DOM: wire them by element. */
-  #wire(trigger: HTMLElement) {
-    if (this.#wired !== trigger) {
-      this.#wired = trigger;
-      this.#added.clear();
-    }
-    trigger.setAttribute("aria-expanded", String(this.open));
-    const content = [...this.children].filter((c) => !c.slot);
-    if ("ariaControlsElements" in trigger && content.length)
+  /** Points the trigger at the content: by element where supported, else by id (given to the first content child when it has none). */
+  #control(trigger: HTMLElement, content: Element[]) {
+    const first = content[0];
+    if (Reflect.has(trigger, "ariaControlsElements")) {
       (
         trigger as HTMLElement & { ariaControlsElements: Element[] }
       ).ariaControlsElements = content;
+      return;
+    }
+    // The first child changed: take back the id given to the old one.
+    if (this.#idOn !== first) {
+      this.#idOn?.removeAttribute("id");
+      this.#idOn = undefined;
+    }
+    if (!first) {
+      if (this.#added.delete("aria-controls"))
+        trigger.removeAttribute("aria-controls");
+      return;
+    }
+    if (!first.id) {
+      first.id = `pl-collapsible-${++uid}`;
+      this.#idOn = first;
+    }
+    if (
+      !trigger.hasAttribute("aria-controls") ||
+      this.#added.has("aria-controls")
+    ) {
+      trigger.setAttribute("aria-controls", first.id);
+      this.#added.add("aria-controls");
+    }
+  }
+
+  /** A disabled slotted trigger takes no focus: tabindex -1 now, the consumer's value back after. */
+  #focusable(trigger: HTMLElement, on: boolean) {
+    if (!on) {
+      if (this.#tabindex === undefined) return;
+      if (this.#tabindex === null) trigger.removeAttribute("tabindex");
+      else trigger.setAttribute("tabindex", this.#tabindex);
+      this.#tabindex = undefined;
+    } else if (this.#tabindex === undefined) {
+      this.#tabindex = trigger.getAttribute("tabindex");
+      trigger.setAttribute("tabindex", "-1");
+    }
+  }
+
+  /** Takes back everything this component put on a trigger that is being replaced. */
+  #unwire(trigger: HTMLElement) {
+    for (const name of this.#added) trigger.removeAttribute(name);
+    this.#added.clear();
+    this.#focusable(trigger, false);
+    this.#idOn?.removeAttribute("id");
+    this.#idOn = undefined;
+  }
+
+  /** The trigger and the content are both in the light DOM: wire them by element. */
+  #wire(trigger: HTMLElement) {
+    if (this.#wired !== trigger) {
+      if (this.#wired) this.#unwire(this.#wired);
+      this.#wired = trigger;
+    }
+    trigger.setAttribute("aria-expanded", String(this.open));
+    this.#control(
+      trigger,
+      [...this.children].filter((c) => !c.slot),
+    );
     this.#mark(trigger, "aria-current", this.current);
     this.#mark(trigger, "aria-disabled", this.disabled);
+    this.#focusable(trigger, this.disabled);
   }
 
   protected override updated(changed: PropertyValues<this>) {

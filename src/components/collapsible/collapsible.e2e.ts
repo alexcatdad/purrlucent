@@ -172,7 +172,9 @@ test.describe("slotted trigger", () => {
       const t = el.querySelector("#trigger") as HTMLElement & {
         ariaControlsElements?: Element[];
       };
-      return t.ariaControlsElements?.[0] === el.querySelector("#body");
+      const body = el.querySelector("#body");
+      const id = t.getAttribute("aria-controls");
+      return t.ariaControlsElements?.[0] === body || (!!id && body?.id === id);
     });
 
   test("it replaces the built-in button and is wired with aria-expanded and aria-controls", async ({

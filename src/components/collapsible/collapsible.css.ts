@@ -55,6 +55,10 @@ export const collapsibleStyles = css`
     background-color: var(--pl-color-muted-3);
   }
 
+  :host([current]) .trigger:active:not(:disabled) {
+    background-color: var(--pl-color-muted-pressed);
+  }
+
   .trigger:disabled,
   .trigger:disabled .chevron {
     color: var(--pl-color-disabled-foreground);
@@ -139,9 +143,13 @@ export const collapsibleStyles = css`
     }
 
     :host([current]) .trigger,
+    :host([current]) .trigger:active:not(:disabled),
     :host([current]) .head {
       background-color: Highlight;
       color: HighlightText;
+    }
+
+    :host([current]) .trigger {
       forced-color-adjust: none;
     }
 
