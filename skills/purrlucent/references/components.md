@@ -622,21 +622,22 @@ import "purrlucent/collapsible";
 
 ### `<pl-collapsible>`
 
-A single disclosure: a trigger that shows and hides a block of content. The trigger is a button named by the text in the `trigger` slot; it carries `aria-expanded` and `aria-controls`. Space and Enter toggle it, as on any button. The content grows and shrinks in height with `--pl-duration`; under reduced motion it shows and hides at once. Closed content is hidden from focus and assistive technology. For several disclosures that open one at a time, handle `pl-toggle` in the app.
+A single disclosure: a trigger that shows and hides a block of content. The trigger is a button named by the text in the `trigger` slot; it carries `aria-expanded` and `aria-controls`. Space and Enter toggle it, as on any button. To use your own trigger, such as a sidebar row, slot a `button`, an `a[href]` or an element with `role="button"` as `slot="trigger"`: it replaces the built-in button and the collapsible sets `aria-expanded` and `aria-controls` on it, and `aria-current` and `aria-disabled` when it has none, and toggles on click, Enter and Space. A link trigger toggles and also follows its `href`; to only toggle, use a `button`. The content grows and shrinks in height with `--pl-duration`; under reduced motion it shows and hides at once. Closed content is hidden from focus and assistive technology. For several disclosures that open one at a time, handle `pl-toggle` in the app.
 
-| Attribute  | Type      | Default | Description                                                                 |
-| ---------- | --------- | ------- | --------------------------------------------------------------------------- |
-| `open`     | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses. |
-| `disabled` | `boolean` | `false` | The trigger takes no focus and the content cannot be toggled.               |
+| Attribute  | Type      | Default | Description                                                                                                                                             |
+| ---------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `open`     | `boolean` | `false` | The content is showing. It reflects, so it also follows the user's presses.                                                                             |
+| `disabled` | `boolean` | `false` | The trigger takes no focus and the content cannot be toggled.                                                                                           |
+| `current`  | `boolean` | `false` | The row is the current one, as a selected row in a sidebar. It fills the trigger like other current rows and sets `aria-current="true"` on the trigger. |
 
 **Slots**
 
 - default: The content the trigger shows and hides.
-- `trigger`: The trigger's label: short text, optionally with an svg. Required: without it the button has no name.
+- `trigger`: The trigger's label: short text, optionally with an svg. Required: without it the button has no name. A slotted `button`, `a[href]` or `[role="button"]` element is the trigger itself instead, and then brings its own chevron and styling.
 
 **Parts**
 
-- `trigger`: The button.
+- `trigger`: The button, or the wrapper around a slotted trigger.
 - `chevron`: The disclosure arrow.
 - `content`: The wrapper around the content.
 
@@ -2225,11 +2226,12 @@ The content one tab shows. It is visible only while the tab with the same `value
 
 Tabs switch between panels of content in one place, as the APG tabs pattern with automatic activation: moving focus to a tab shows its panel. Tab enters on the selected tab, and the arrow keys, Home and End move between tabs and wrap. Horizontal tabs use Left and Right (mirrored under `dir="rtl"`); vertical tabs use Up and Down. Always set `label` (or `aria-label`): without either the tab list has no accessible name. Use tabs to switch between panels of one view; to pick a value, use a toggle group, and for the sections of an app use a sidebar.
 
-| Attribute     | Type                         | Default        | Description                                                                                             |
-| ------------- | ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
-| `value`       | `string`                     | `""`           | The value of the selected tab. Defaults to the first enabled tab; a value no tab has selects the first. |
-| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`.                                                                   |
-| `label`       | `string`                     | `""`           | The accessible name of the tab list.                                                                    |
+| Attribute        | Type                         | Default        | Description                                                                                               |
+| ---------------- | ---------------------------- | -------------- | --------------------------------------------------------------------------------------------------------- |
+| `value`          | `string`                     | `""`           | The value of the selected tab. Defaults to the first enabled tab; a value no tab has selects the first.   |
+| `orientation`    | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) or `vertical`.                                                                     |
+| `label`          | `string`                     | `""`           | The accessible name of the tab list.                                                                      |
+| `hide-scrollbar` | `boolean`                    | `false`        | Hides the scrollbar of a tab list that overflows. The list stays scrollable by touch, wheel and keyboard. |
 
 **Slots**
 
