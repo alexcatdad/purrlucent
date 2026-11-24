@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { test as base, expect, type Page } from "@playwright/test";
-import { ignoresSpacing, lowContrastText } from "../e2e/helpers/rendered.ts";
+import {
+  ignoresSpacing,
+  lowContrastText,
+  overflowsRoot,
+} from "../e2e/helpers/rendered.ts";
 import { gotoStory, switchStory } from "../e2e/helpers/story.ts";
 
 // Checks that apply to every story, so a new component is covered without
@@ -90,3 +94,22 @@ for (const id of stories)
       expect(await ignoresSpacing(page)).toEqual([]);
     },
   );
+
+// Layout that fits is not a matter of engine or theme, so one browser covers
+// it: playwright.config.ts leaves these out of the other projects. Each width
+// needs its own viewport, so these load a fresh page.
+for (const id of stories.filter((story) => story.startsWith("patterns-")))
+  for (const width of [320, 768])
+    test(
+      `no story element overflows its parent at ${width}px: ${id}`,
+      {
+        tag: "@quality",
+      },
+      async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await gotoStory(page, id);
+        await settle(page);
+        expect(await overflowsRoot(page)).toEqual([]);
+      },
+    );

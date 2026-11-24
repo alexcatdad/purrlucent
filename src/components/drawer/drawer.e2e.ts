@@ -323,6 +323,15 @@ test("a drag that starts inside a dismissible drawer and ends on the backdrop ke
   await expect(sheet(page)).toBeVisible();
 });
 
+test("drawer: body ends above the actions", async ({ page }) => {
+  await opened(page, "open-long-content");
+  const [body, footer] = await Promise.all([
+    drawerEl(page).locator("[part=body]").boundingBox(),
+    drawerEl(page).locator("[part=footer]").boundingBox(),
+  ]);
+  expect(body!.y + body!.height).toBeLessThanOrEqual(footer!.y + 0.5);
+});
+
 test("an element with data-close closes the drawer with its value", async ({
   page,
 }) => {

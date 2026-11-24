@@ -254,6 +254,17 @@ export class PlToolbar extends LitElement {
       this.#slotted().map((el) => el.getAttribute("variant") === "primary"),
     );
     if (issue) console.warn(`pl-toolbar: ${issue}`);
+    // A title between two spacers is centered on the bar, not on the room the
+    // items on either side leave it.
+    const slotted = this.#slotted();
+    slotted.forEach((el, i) => {
+      if (el instanceof PlToolbarTitle)
+        el.toggleAttribute(
+          "data-centered",
+          slotted[i - 1] instanceof PlToolbarSpacer &&
+            slotted[i + 1] instanceof PlToolbarSpacer,
+        );
+    });
     this.requestUpdate();
   }
 

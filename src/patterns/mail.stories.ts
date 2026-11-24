@@ -640,8 +640,10 @@ class MailDemo extends LitElement {
       }
     }
 
+    /* One column as wide as the pane: the sidebar's own width is a ceiling, not a minimum. */
     .folders {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: var(--pl-space-3);
       padding: var(--pl-space-3);
     }

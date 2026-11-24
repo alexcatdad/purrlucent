@@ -26,20 +26,21 @@ export default defineConfig({
   },
   // Firefox runs only in CI; locally Chromium and WebKit. The spacing-base
   // check runs in Chromium only; leaving it out here, not skipping it at run
-  // time, keeps it out of the other projects' shard balancing.
+  // time, keeps it out of the other projects' shard balancing. The pattern
+  // layout check is the same.
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
-      grepInvert: /follow the spacing base/,
+      grepInvert: /follow the spacing base|overflows its parent/,
     },
     ...(process.env.CI
       ? [
           {
             name: "firefox",
             use: { ...devices["Desktop Firefox"] },
-            grepInvert: /follow the spacing base/,
+            grepInvert: /follow the spacing base|overflows its parent/,
           },
         ]
       : []),
