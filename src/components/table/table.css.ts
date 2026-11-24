@@ -8,6 +8,16 @@ import { css } from "lit";
  * Cell edges, row fills and the sticky header read tokens only.
  */
 export const tableDocumentStyles = css`
+  pl-table {
+    --_row: var(--pl-size-md);
+    --_pad-y: var(--pl-space-2);
+  }
+
+  pl-table[density="compact"] {
+    --_row: var(--pl-size-row);
+    --_pad-y: var(--pl-space-1);
+  }
+
   pl-table > table {
     inline-size: 100%;
     border-collapse: separate;
@@ -25,19 +35,34 @@ export const tableDocumentStyles = css`
   }
 
   pl-table :is(th, td) {
-    padding: var(--pl-space-2) var(--pl-pad-panel);
+    padding: var(--_pad-y) var(--pl-pad-panel);
     border-block-end: 1px solid var(--pl-color-border);
     text-align: start;
     vertical-align: middle;
     overflow-wrap: anywhere;
   }
 
+  pl-table tbody > tr > :is(th, td) {
+    box-sizing: border-box;
+    block-size: var(--_row);
+  }
+
+  /* A header cell is a small, semibold label in the secondary colour. */
   pl-table th {
     color: var(--pl-color-muted-foreground);
     font-weight: 600;
   }
 
-  pl-table :is(td, th)[align="end"] {
+  pl-table thead th {
+    font-size: var(--pl-text-xs);
+  }
+
+  /* The hairline between the header and the body. */
+  pl-table thead > tr:last-child > th {
+    border-block-end: 1px solid var(--pl-color-border);
+  }
+
+  pl-table :is(td, th):is([align="end"], [data-numeric]) {
     text-align: end;
     font-variant-numeric: tabular-nums;
   }
@@ -56,6 +81,19 @@ export const tableDocumentStyles = css`
     cursor: pointer;
   }
 
+  /* A plain link in a cell takes the accent; a stretched link keeps the row. */
+  pl-table a:not([data-stretched]) {
+    color: var(--pl-color-accent-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    pl-table a:not([data-stretched]):hover {
+      text-decoration: underline;
+    }
+  }
+
   pl-table a[data-stretched]::after {
     content: "";
     position: absolute;
@@ -70,7 +108,8 @@ export const tableDocumentStyles = css`
   @media (hover: hover) {
     pl-table
       tr:is([data-interactive], :has(a[data-stretched])):not(
-        [data-selected]
+        [data-selected],
+        [aria-selected="true"]
       ):hover
       > :is(th, td) {
       background: var(--pl-color-muted-3);
@@ -139,7 +178,12 @@ export const tableDocumentStyles = css`
     --_sort-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6-6'/%3E%3C/svg%3E");
   }
 
-  pl-table tr[data-selected] > :is(th, td) {
+  /* Zero specificity here, so hover and selection override the stripe. */
+  pl-table[striped] :where(tbody > tr:nth-child(even)) > :is(th, td) {
+    background: var(--pl-color-muted-1);
+  }
+
+  pl-table tr:is([data-selected], [aria-selected="true"]) > :is(th, td) {
     background: color-mix(in srgb, var(--pl-color-selected) 16%, transparent);
   }
 
@@ -147,7 +191,7 @@ export const tableDocumentStyles = css`
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
-    background: var(--pl-color-background);
+    background: var(--pl-color-raised);
   }
 
   /* The header floats over rows, so it keeps its own edge while it sticks. */
@@ -162,6 +206,10 @@ export const tableDocumentStyles = css`
 
     pl-table th {
       color: CanvasText;
+    }
+
+    pl-table a:not([data-stretched]) {
+      color: LinkText;
     }
 
     pl-table[sticky-header] thead th {
@@ -181,7 +229,7 @@ export const tableDocumentStyles = css`
       outline-color: Highlight;
     }
 
-    pl-table tr[data-selected] > :is(th, td) {
+    pl-table tr:is([data-selected], [aria-selected="true"]) > :is(th, td) {
       border-block-end-color: Highlight;
     }
   }
@@ -201,11 +249,12 @@ export const tableStyles = css`
   }
 
   [part="scroller"] {
+    position: relative;
     overflow: auto;
     max-block-size: inherit;
     border: 1px solid var(--pl-color-frame);
     background: var(--pl-color-raised);
-    border-radius: var(--pl-radius-control);
+    border-radius: var(--pl-radius-panel);
   }
 
   [part="scroller"]:focus-visible {
