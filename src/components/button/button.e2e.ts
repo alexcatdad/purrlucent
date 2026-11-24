@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import {
   expectAccessible,
   expectNoOverflowAtTextZoom,
@@ -15,6 +15,9 @@ const stories = [
   "disabled",
   "busy",
   "glass",
+  "links",
+  "small",
+  "submit-form",
 ];
 const labels = ["Duplicate", "Save", "Share", "Cancel"];
 
@@ -32,7 +35,7 @@ test("an icon button takes its name from aria-label", async ({ page }) => {
   const root = await gotoStory(page, "actions-button--sizes");
   await expect(
     root.getByRole("button", { name: "Add", exact: true }),
-  ).toHaveCount(3);
+  ).toHaveCount(4);
 });
 
 test("a disabled button is exposed as disabled", async ({ page }) => {
@@ -107,7 +110,146 @@ test("each size is taller than the one before", async ({ page }) => {
     .locator("pl-button:not([icon])")
     .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
   expect(heights).toEqual([...heights].sort((a, b) => a - b));
-  expect(new Set(heights).size).toBe(3);
+  expect(new Set(heights).size).toBe(4);
+});
+
+test("a small button is 24px tall and a small icon button is 24px square", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--small");
+  const box = async (id: string) => (await page.locator(id).boundingBox())!;
+  for (const id of ["#small", "#small-primary", "#small-ghost", "#small-link"])
+    expect((await box(id)).height).toBe(24);
+  const icon = await box("#small-icon");
+  expect(icon.width).toBe(24);
+  expect(icon.height).toBe(24);
+});
+
+test("a submit button submits on Enter in a native field of a form with several fields", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.data = JSON.stringify([
+        ...new FormData(form as HTMLFormElement),
+      ]);
+      form.dataset.count = String(Number(form.dataset.count ?? 0) + 1);
+    });
+  });
+  await page.getByRole("textbox", { name: "First name" }).fill("Ada");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#signup")).toHaveAttribute("data-count", "1");
+  await expect(page.locator("#signup")).toHaveAttribute(
+    "data-data",
+    JSON.stringify([
+      ["first", "Ada"],
+      ["last", ""],
+      ["email", ""],
+      ["intent", "save"],
+    ]),
+  );
+});
+
+test("Enter in a pl-input still submits through the form's submit button", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.count = String(Number(form.dataset.count ?? 0) + 1);
+    });
+  });
+  await page.getByRole("textbox", { name: "Email" }).fill("ada@example.com");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#signup")).toHaveAttribute("data-count", "1");
+});
+
+test("a disabled submit button blocks Enter in a field", async ({ page }) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.count = String(Number(form.dataset.count ?? 0) + 1);
+    });
+    form.querySelector("pl-button")!.setAttribute("disabled", "");
+  });
+  await page.getByRole("textbox", { name: "First name" }).fill("Ada");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#signup")).not.toHaveAttribute("data-count");
+});
+
+test("a submit button outside the form submits the form named by form, with its name and value", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.data = JSON.stringify([
+        ...new FormData(form as HTMLFormElement),
+      ]);
+    });
+  });
+  const draft = page.getByRole("button", { name: "Save as draft" });
+  await expect(draft).toHaveAttribute("form", "signup");
+  await draft.click();
+  await expect(page.locator("#signup")).toHaveAttribute(
+    "data-data",
+    JSON.stringify([
+      ["first", ""],
+      ["last", ""],
+      ["email", ""],
+      ["intent", "draft"],
+    ]),
+  );
+});
+
+test("only the button that submitted adds its name and value", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.data = JSON.stringify([
+        ...new FormData(form as HTMLFormElement),
+      ]);
+    });
+  });
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  const data = await page.locator("#signup").getAttribute("data-data");
+  expect(JSON.parse(data!).filter(([k]: string[]) => k === "intent")).toEqual([
+    ["intent", "save"],
+  ]);
+  await page.locator("#signup").evaluate((form) => {
+    form.dataset.data = JSON.stringify([
+      ...new FormData(form as HTMLFormElement),
+    ]);
+  });
+  const later = await page.locator("#signup").getAttribute("data-data");
+  expect(JSON.parse(later!).map(([k]: string[]) => k)).not.toContain("intent");
+});
+
+test("form, name and value are attributes and properties", async ({ page }) => {
+  await gotoStory(page, "actions-button--submit-form");
+  const draft = page.getByRole("button", { name: "Save as draft" });
+  expect(
+    await draft.evaluate((el) => {
+      const b = el as HTMLElement & {
+        form: string;
+        name: string;
+        value: string;
+      };
+      return [b.form, b.name, b.value];
+    }),
+  ).toEqual(["signup", "intent", "draft"]);
+  await draft.evaluate((el) => {
+    (el as HTMLElement & { name: string }).name = "other";
+  });
+  await expect(draft).toHaveAttribute("name", "other");
 });
 
 test("an icon button is as wide as it is tall", async ({ page }) => {
@@ -325,4 +467,167 @@ test("increased contrast outlines every filled variant", async ({ page }) => {
       els.map((el) => getComputedStyle(el, "::before").boxShadow),
     );
   for (const shadow of shadows) expect(shadow).not.toBe("none");
+});
+
+test.describe("links", () => {
+  const story = "actions-button--links";
+  const hash = (page: Page) => page.evaluate(() => location.hash);
+
+  test("a button with href is a link named by its label or aria-label", async ({
+    page,
+  }) => {
+    const root = await gotoStory(page, story);
+    await expect(root).toMatchAriaSnapshot(`
+      - link "Open in Contracts"
+      - link "Back to list"
+      - link "New contract"
+      - link "Open report"
+      - link "Archive" [disabled]
+    `);
+    await expect(root.getByRole("button")).toHaveCount(0);
+    await expect(page.locator("#link-icon")).not.toHaveAttribute("aria-label");
+  });
+
+  test("a plain click follows the link", async ({ page }) => {
+    await gotoStory(page, story);
+    await page.locator("#link").click();
+    await expect.poll(() => hash(page)).toBe("#contracts");
+  });
+
+  test("the whole face is the link's hit area", async ({ page }) => {
+    await gotoStory(page, story);
+    // In the padding at the start edge, outside the label text.
+    await page.locator("#link").click({ position: { x: 4, y: 12 } });
+    await expect.poll(() => hash(page)).toBe("#contracts");
+  });
+
+  test("a click listener on the host can prevent the navigation and route instead", async ({
+    page,
+  }) => {
+    await gotoStory(page, story);
+    await page.locator("#link").evaluate((el) => {
+      const w = window as unknown as { seen: string[] };
+      w.seen = [];
+      el.addEventListener("click", (event) => {
+        w.seen.push((event.target as Element).id);
+        event.preventDefault();
+      });
+    });
+    await page.locator("#link").click();
+    await page.locator("#link a").focus();
+    await page.keyboard.press("Enter");
+    expect(
+      await page.evaluate(() => (window as unknown as { seen: string[] }).seen),
+    ).toEqual(["link", "link"]);
+    expect(await hash(page)).toBe("");
+  });
+
+  test("Tab reaches the inner link, Enter follows it and fires pl-press once", async ({
+    page,
+  }) => {
+    await gotoStory(page, story);
+    await page.locator("#link-ghost").evaluate((el) => {
+      const w = window as unknown as { presses: number };
+      w.presses = 0;
+      el.addEventListener("pl-press", () => w.presses++);
+    });
+    await page.locator("#link a").focus();
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#link-ghost a")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect.poll(() => hash(page)).toBe("#list");
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { presses: number }).presses,
+      ),
+    ).toBe(1);
+  });
+
+  test("target, rel and download reach the inner link", async ({ page }) => {
+    await gotoStory(page, story);
+    const inner = page.locator("#link-new-tab a");
+    await expect(inner).toHaveAttribute("href", "#report");
+    await expect(inner).toHaveAttribute("target", "_blank");
+    await expect(inner).toHaveAttribute("rel", "noopener");
+    await page
+      .locator("#link-new-tab")
+      .evaluate((el) => el.setAttribute("download", "report.csv"));
+    await expect(inner).toHaveAttribute("download", "report.csv");
+  });
+
+  test("a disabled link has no address, does not navigate and is skipped by Tab", async ({
+    page,
+  }) => {
+    await gotoStory(page, story);
+    const inner = page.locator("#link-disabled a");
+    await expect(inner).not.toHaveAttribute("href");
+    await expect(inner).toHaveAttribute("aria-disabled", "true");
+    await page.locator("#link-disabled").click({ force: true });
+    expect(await hash(page)).toBe("");
+    await page.locator("#link-new-tab a").focus();
+    await page.keyboard.press("Tab");
+    await expect(inner).not.toBeFocused();
+  });
+
+  test("a disabled or busy link keeps its click from a router on the host", async ({
+    page,
+  }) => {
+    await gotoStory(page, story);
+    await page.evaluate(() => {
+      const w = window as unknown as { seen: string[] };
+      w.seen = [];
+      for (const id of ["link-disabled", "link"])
+        document
+          .getElementById(id)!
+          .addEventListener("click", () => w.seen.push(id));
+    });
+    await page.locator("#link").evaluate((el) => el.setAttribute("busy", ""));
+    await page.locator("#link-disabled").click({ force: true });
+    await page.locator("#link").click({ force: true });
+    await page.locator("#link a").focus();
+    await page.keyboard.press("Enter");
+    expect(
+      await page.evaluate(() => (window as unknown as { seen: string[] }).seen),
+    ).toEqual([]);
+    expect(await hash(page)).toBe("");
+  });
+
+  test("a link moved in the page stays a link", async ({ page }) => {
+    const root = await gotoStory(page, story);
+    await page.locator("#link").evaluate((el) => el.parentElement!.append(el));
+    await expect(root.getByRole("button")).toHaveCount(0);
+    await expect(
+      root.getByRole("link", { name: "Open in Contracts" }),
+    ).toBeVisible();
+  });
+
+  test("focus() focuses the inner link", async ({ page }) => {
+    await gotoStory(page, story);
+    await page
+      .locator("#link-ghost")
+      .evaluate((el) => (el as HTMLElement).focus());
+    await expect(page.locator("#link-ghost a")).toBeFocused();
+  });
+
+  test("the keyboard focus ring is drawn around the face", async ({ page }) => {
+    await gotoStory(page, story);
+    await page.locator("#link a").focus();
+    await page.keyboard.press("Tab");
+    expect(
+      await page
+        .locator("#link-ghost a")
+        .evaluate((a) => getComputedStyle(a, "::after").outlineStyle),
+    ).toBe("solid");
+  });
+
+  test("removing href makes it a button again", async ({ page }) => {
+    const root = await gotoStory(page, story);
+    await page
+      .locator("#link-icon")
+      .evaluate((el) => el.removeAttribute("href"));
+    await expect(
+      root.getByRole("button", { name: "New contract" }),
+    ).toBeVisible();
+    await expect(page.locator("#link-icon")).toHaveAttribute("tabindex", "0");
+  });
 });

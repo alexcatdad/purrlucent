@@ -31,6 +31,29 @@ export const buttonStyles = css`
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
+  /* A link wraps the label; its ::after covers the whole face, so the face is
+     the link's hit area and focus draws the button's ring around it. */
+  [part="link"] {
+    display: inline-flex;
+    border-radius: inherit;
+    color: inherit;
+    text-decoration: none;
+    cursor: inherit;
+    outline: none;
+  }
+
+  [part="link"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  [part="link"]:focus-visible::after {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
   [part="label"] {
     display: inline-flex;
     align-items: center;
@@ -54,6 +77,23 @@ export const buttonStyles = css`
   /* The spinner takes the icon's place, so an icon button keeps its size. */
   :host([icon][busy]) ::slotted(svg) {
     display: none;
+  }
+
+  /* A dense control for tables, toolbars and pagination. Its hit region is
+     its own height; a coarse pointer raises that to the touch size. */
+  :host([size="sm"]) {
+    --_size: var(--pl-size-sm);
+
+    min-inline-size: var(--_size);
+    padding: var(--pl-space-1) var(--pl-space-2);
+    font-size: var(--pl-text-xs);
+    line-height: var(--pl-leading-tight);
+  }
+
+  :host([size="sm"]) ::slotted(svg),
+  :host([size="sm"]) pl-spinner {
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
   }
 
   :host([size="lg"]) {
@@ -188,6 +228,10 @@ export const buttonStyles = css`
 
     :host(:is([disabled], :disabled)) {
       color: GrayText;
+    }
+
+    [part="link"]:focus-visible::after {
+      outline-color: Highlight;
     }
 
     :host::before {

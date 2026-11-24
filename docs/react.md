@@ -89,6 +89,35 @@ const { register, handleSubmit } = useForm<{ name: string; news: boolean }>();
 </form>;
 ```
 
+## Links and routing
+
+A `pl-button` with an `href` is a link with the button's look: opening in a new tab, the context menu and copying the address work as on any link. Its `click` reaches the host, so a router can take a plain click and leave the others to the browser. This example uses TanStack Router's `useNavigate`; any router's navigate function works the same way:
+
+```tsx
+import { useNavigate } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+
+function ButtonLink({ to, children }: { to: string; children: ReactNode }) {
+  const navigate = useNavigate();
+  return (
+    <pl-button
+      href={to}
+      onClick={(e) => {
+        // Let the browser handle new-tab and download clicks.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+          return;
+        e.preventDefault();
+        void navigate({ to });
+      }}
+    >
+      {children}
+    </pl-button>
+  );
+}
+```
+
+Without the handler the browser follows the link. A `disabled` link has no address and cannot be focused. An icon link takes its name from `aria-label`, as an icon button does.
+
 ## Language
 
 Register each language's text once with `setMessages` from `purrlucent/locale`; the [install guide](./install.md#languages) lists the keys. To switch language while the app runs, set `lang` and leave the rest to the elements: they update their text and the messages the library writes without a re-render from React. The [install guide](./install.md#languages) lists what follows the language.
