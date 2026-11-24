@@ -263,6 +263,7 @@ export class PlFileInput extends LitElement {
         role="group"
         aria-labelledby=${ifDefined(this._labelled ? "label" : undefined)}
         aria-label=${this._labelled ? nothing : ifDefined(this.label)}
+        aria-disabled=${this.matches(":disabled") ? "true" : nothing}
         @dragenter=${this.#onDragOver}
         @dragover=${this.#onDragOver}
         @dragleave=${this.#onDragLeave}

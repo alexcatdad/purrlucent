@@ -118,11 +118,12 @@ test("a small button is 24px tall and a small icon button is 24px square", async
 }) => {
   await gotoStory(page, "actions-button--small");
   const box = async (id: string) => (await page.locator(id).boundingBox())!;
+  // Firefox lays out to a subpixel short of the token size.
   for (const id of ["#small", "#small-primary", "#small-ghost", "#small-link"])
-    expect((await box(id)).height).toBe(24);
+    expect((await box(id)).height).toBeCloseTo(24, 1);
   const icon = await box("#small-icon");
-  expect(icon.width).toBe(24);
-  expect(icon.height).toBe(24);
+  expect(icon.width).toBeCloseTo(24, 1);
+  expect(icon.height).toBeCloseTo(24, 1);
 });
 
 test("a submit button submits on Enter in a native field of a form with several fields", async ({
