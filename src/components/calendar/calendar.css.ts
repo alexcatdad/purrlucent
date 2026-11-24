@@ -98,6 +98,11 @@ export const calendarStyles = css`
     text-align: center;
   }
 
+  /* The full name stays in the title; the browser's dotted underline goes. */
+  [part="weekday"] abbr {
+    text-decoration: none;
+  }
+
   [part="day"] {
     box-sizing: border-box;
     block-size: var(--_cell);
