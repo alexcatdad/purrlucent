@@ -80,11 +80,30 @@ export const ToneIcons: Story = {
         <strong slot="title">Saved</strong>
         Your changes are saved.
       </pl-banner>`,
+      html`<pl-banner open tone="success">
+        <strong slot="title">Queued again</strong>
+        12 episodes are queued again.
+      </pl-banner>`,
+      html`<pl-banner open tone="warning">
+        <strong slot="title">Falling behind</strong>
+        3 series are more than a day behind.
+      </pl-banner>`,
       html`<pl-banner open tone="destructive">
         <strong slot="title">Not saved</strong>
         Your changes could not be saved.
       </pl-banner>`,
     ]),
+};
+
+/** `no-close` keeps a banner up until its cause is gone. */
+export const Persistent: Story = {
+  render: () =>
+    column(
+      html`<pl-banner id="persistent" open tone="destructive" no-close>
+        <strong slot="title">Server unreachable</strong>
+        Retrying every 10 seconds.
+      </pl-banner>`,
+    ),
 };
 
 /** `no-icon` hides the icon, the tone's own included. */

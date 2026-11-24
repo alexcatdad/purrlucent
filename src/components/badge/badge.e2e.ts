@@ -11,7 +11,7 @@ const story = (name: string) => `text-badge--${name}`;
 test("aria snapshot: the badge is its text", async ({ page }) => {
   const root = await gotoStory(page, story("variants"));
   await expect(root).toMatchAriaSnapshot(`
-    - text: Draft New Failed
+    - text: Draft New Done Behind Failed
   `);
 });
 
@@ -19,21 +19,44 @@ test("each variant says its status in text", async ({ page }) => {
   await gotoStory(page, story("variants"));
   await expect(page.locator("#neutral")).toHaveText("Draft");
   await expect(page.locator("#accent")).toHaveText("New");
+  await expect(page.locator("#success")).toHaveText("Done");
+  await expect(page.locator("#warning")).toHaveText("Behind");
   await expect(page.locator("#destructive")).toHaveText("Failed");
 });
 
 test("the variants differ in fill", async ({ page }) => {
   await gotoStory(page, story("variants"));
-  const fill = (id: string) =>
-    page
-      .locator(`#${id}`)
-      .evaluate((el) => getComputedStyle(el).backgroundColor);
-  const fills = [
-    await fill("neutral"),
-    await fill("accent"),
-    await fill("destructive"),
-  ];
-  expect(new Set(fills).size).toBe(3);
+  const fills = await page
+    .locator("pl-badge")
+    .evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el).backgroundColor),
+    );
+  expect(new Set(fills).size).toBe(5);
+});
+
+test("dot: one neutral fill, and a round dot colored per variant", async ({
+  page,
+}) => {
+  await gotoStory(page, story("status"));
+  const badges = await page.locator("pl-badge").evaluateAll((els) =>
+    els.map((el) => {
+      const dot = el.shadowRoot!.querySelector('[part="dot"]')!;
+      const box = dot.getBoundingClientRect();
+      return {
+        fill: getComputedStyle(el).backgroundColor,
+        dot: getComputedStyle(dot).backgroundColor,
+        size: [box.width, box.height],
+        hidden: dot.getAttribute("aria-hidden"),
+      };
+    }),
+  );
+  expect(new Set(badges.map((b) => b.fill)).size).toBe(1);
+  expect(new Set(badges.map((b) => b.dot)).size).toBe(5);
+  for (const badge of badges) {
+    expect(badge.size[0]).toBeGreaterThan(0);
+    expect(badge.size[0]).toBe(badge.size[1]);
+    expect(badge.hidden).toBe("true");
+  }
 });
 
 test("the text meets 4.5:1 against the fill in every variant", async ({

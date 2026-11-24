@@ -4,6 +4,15 @@ import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import { bannerStyles } from "./banner.css.ts";
 
 const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>`;
+const successGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M8.5 12.5l2.5 2.5l4.5 -5" /></svg>`;
+const warningGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 4.2l-7.4 12.8a2 2 0 0 0 1.7 3h14.8a2 2 0 0 0 1.7 -3l-7.4 -12.8a2 2 0 0 0 -3.4 0" /><path d="M12 9v4" /><path d="M12 16.5h.01" /></svg>`;
+
+const glyphs = {
+  info: infoGlyph,
+  success: successGlyph,
+  warning: warningGlyph,
+  destructive: errorGlyph,
+};
 
 /**
  * A notification banner: an icon, a title, a message, optional actions and a
@@ -12,10 +21,11 @@ const infoGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12
  * banner and fires `pl-close`.
  *
  * @attr {boolean} open - The banner is showing.
- * @attr {string} tone - `info` (default) or `destructive`.
+ * @attr {string} tone - `info` (default), `success`, `warning` or `destructive`.
  * @attr {string} close-label - The close button's accessible name. Defaults to "Dismiss".
  * @attr {boolean} no-icon - Shows no icon, not the tone's own either.
- * @slot icon - An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, an error mark for `destructive`.
+ * @attr {boolean} no-close - Shows no close button, for a banner that stays until its cause is gone, such as a lost connection.
+ * @slot icon - An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, a check for `success`, a triangle for `warning`, an error mark for `destructive`.
  * @slot title - The heading.
  * @slot - The message.
  * @slot actions - Buttons below the message.
@@ -30,12 +40,14 @@ export class PlBanner extends LitElement {
     tone: { reflect: true },
     closeLabel: { attribute: "close-label" },
     noIcon: { type: Boolean, reflect: true, attribute: "no-icon" },
+    noClose: { type: Boolean, reflect: true, attribute: "no-close" },
   };
 
   declare open: boolean;
-  declare tone: "info" | "destructive";
+  declare tone: "info" | "success" | "warning" | "destructive";
   declare closeLabel: string;
   declare noIcon: boolean;
+  declare noClose: boolean;
 
   #role = "";
 
@@ -45,6 +57,7 @@ export class PlBanner extends LitElement {
     this.tone = "info";
     this.closeLabel = "Dismiss";
     this.noIcon = false;
+    this.noClose = false;
   }
 
   // A role attribute, so it shows in the DOM and in the accessibility tree of
@@ -68,22 +81,24 @@ export class PlBanner extends LitElement {
     return html`${
         this.noIcon
           ? nothing
-          : html`<slot name="icon"
-              >${this.tone === "destructive" ? errorGlyph : infoGlyph}</slot
-            >`
+          : html`<slot name="icon">${glyphs[this.tone] ?? infoGlyph}</slot>`
       }
       <div part="text">
         <div part="title"><slot name="title"></slot></div>
         <slot></slot>
       </div>
-      <button
-        part="close"
-        type="button"
-        aria-label=${this.closeLabel}
-        @click=${this.#close}
-      >
-        ${closeGlyph}
-      </button>
+      ${
+        this.noClose
+          ? nothing
+          : html`<button
+              part="close"
+              type="button"
+              aria-label=${this.closeLabel}
+              @click=${this.#close}
+            >
+              ${closeGlyph}
+            </button>`
+      }
       <div part="actions"><slot name="actions"></slot></div>`;
   }
 }

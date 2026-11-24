@@ -39,6 +39,30 @@ export const Determinate: Story = {
     ),
 };
 
+/** A tone colors the fill; the label still says the state. */
+export const Tones: Story = {
+  render: () =>
+    column([
+      html`<pl-progress label="Downloading, 60%" value="60"></pl-progress>`,
+      html`<pl-progress
+        id="success"
+        label="Archived"
+        tone="success"
+        value="100"
+      ></pl-progress>`,
+      html`<pl-progress
+        label="Behind, 30%"
+        tone="warning"
+        value="30"
+      ></pl-progress>`,
+      html`<pl-progress
+        label="Failed at 45%"
+        tone="destructive"
+        value="45"
+      ></pl-progress>`,
+    ]),
+};
+
 export const Indeterminate: Story = {
   render: () => html`<pl-progress label="Preparing"></pl-progress>`,
 };

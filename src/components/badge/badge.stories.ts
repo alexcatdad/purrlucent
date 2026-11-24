@@ -25,7 +25,21 @@ export const Variants: Story = {
     html`<div style=${row}>
       <pl-badge id="neutral">Draft</pl-badge>
       <pl-badge id="accent" variant="accent">New</pl-badge>
+      <pl-badge id="success" variant="success">Done</pl-badge>
+      <pl-badge id="warning" variant="warning">Behind</pl-badge>
       <pl-badge id="destructive" variant="destructive">Failed</pl-badge>
+    </div>`,
+};
+
+/** `dot` makes a status pill: the neutral fill, with the variant coloring a dot. */
+export const Status: Story = {
+  render: () =>
+    html`<div style=${row}>
+      <pl-badge dot>Idle</pl-badge>
+      <pl-badge dot variant="accent">Collecting</pl-badge>
+      <pl-badge dot variant="success">Up to date</pl-badge>
+      <pl-badge dot variant="warning">Behind</pl-badge>
+      <pl-badge dot variant="destructive">Needs you</pl-badge>
     </div>`,
 };
 

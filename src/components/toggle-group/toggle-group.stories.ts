@@ -28,6 +28,24 @@ const control = async (canvasElement: HTMLElement) => {
 // function would change the selection before the test starts.
 export const Default: Story = { render };
 
+/** `fit-content`: items as wide as their text; on a narrow screen the group scrolls sideways. */
+export const FitContent: Story = {
+  render: () => html`
+    <div style="max-inline-size: 20rem; padding: var(--pl-space-4)">
+      <pl-toggle-group id="control" label="Source" fit-content>
+        <pl-toggle-group-item value="all">All 4.1k</pl-toggle-group-item>
+        <pl-toggle-group-item value="tapas">Tapas 1.2k</pl-toggle-group-item>
+        <pl-toggle-group-item value="webtoon">Webtoon 980</pl-toggle-group-item>
+        <pl-toggle-group-item value="tappytoon"
+          >Tappytoon 640</pl-toggle-group-item
+        >
+        <pl-toggle-group-item value="toomics">Toomics 410</pl-toggle-group-item>
+        <pl-toggle-group-item value="other">Other 12</pl-toggle-group-item>
+      </pl-toggle-group>
+    </div>
+  `,
+};
+
 /** A segment marked `selected` is the starting selection. */
 export const Preselected: Story = {
   render: () => html`

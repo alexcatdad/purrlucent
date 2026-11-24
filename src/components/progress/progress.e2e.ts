@@ -19,6 +19,25 @@ test("aria snapshot", async ({ page }) => {
   `);
 });
 
+test("each tone colors the fill differently, and the name still says the state", async ({
+  page,
+}) => {
+  await gotoStory(page, story("tones"));
+  const bars = page.getByRole("progressbar");
+  await expect(bars).toHaveCount(4);
+  const fills = await bars.evaluateAll((els) =>
+    els.map(
+      (el) =>
+        getComputedStyle(el.shadowRoot!.querySelector('[part="fill"]')!)
+          .backgroundColor,
+    ),
+  );
+  expect(new Set(fills).size).toBe(4);
+  await expect(
+    page.getByRole("progressbar", { name: "Archived" }),
+  ).toHaveAttribute("tone", "success");
+});
+
 test("a value sets aria-valuenow and the fill width", async ({ page }) => {
   await gotoStory(page, story("determinate"));
   const widths: number[] = [];

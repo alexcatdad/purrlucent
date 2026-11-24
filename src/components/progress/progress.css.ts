@@ -11,6 +11,7 @@ export const progressStyles = css`
     --_h: calc(var(--pl-spacing) * 2.5);
     --_d: 1;
     --_p: 0;
+    --_fill: var(--pl-color-selected);
 
     display: inline-block;
     inline-size: calc(var(--pl-spacing) * 35);
@@ -29,13 +30,26 @@ export const progressStyles = css`
     --_d: -1;
   }
 
+  /* A tone takes the color made for text on the page, which keeps 3:1 against the track. */
+  :host([tone="success"]) {
+    --_fill: var(--pl-color-success-text);
+  }
+
+  :host([tone="warning"]) {
+    --_fill: var(--pl-color-warning-text);
+  }
+
+  :host([tone="destructive"]) {
+    --_fill: var(--pl-color-destructive-text);
+  }
+
   [part="fill"] {
     display: block;
     block-size: 100%;
     inline-size: calc(var(--_p) * 100%);
     min-inline-size: calc(var(--_h) * min(1, var(--_p) * 100));
     border-radius: var(--pl-radius-full);
-    background-color: var(--pl-color-selected);
+    background-color: var(--_fill);
     transition: inline-size var(--pl-duration) var(--pl-ease-out);
   }
 
@@ -43,11 +57,7 @@ export const progressStyles = css`
     inline-size: 60%;
     margin-inline-start: 20%;
     background-color: transparent;
-    background-image: linear-gradient(
-      to right,
-      transparent 5%,
-      var(--pl-color-selected)
-    );
+    background-image: linear-gradient(to right, transparent 5%, var(--_fill));
     scale: var(--_d) 1;
     animation: pl-progress-slide calc(var(--pl-duration-slow) * 5.7) linear
       infinite;

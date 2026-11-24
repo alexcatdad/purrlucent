@@ -39,6 +39,20 @@ export const groupStyles = css`
     --_min: calc(var(--pl-spacing) * 9.5);
   }
 
+  /* Items as wide as their text, on one line; a track wider than its room
+     scrolls sideways, and a focused item scrolls into view. */
+  :host([fit-content]) {
+    grid-auto-columns: auto;
+    overflow: auto hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
+  }
+
+  :host([fit-content]) ::slotted(*) {
+    white-space: nowrap;
+  }
+
   /* Increased contrast outlines the track instead of lighting its edge. */
   @media (prefers-contrast: more) {
     :host {

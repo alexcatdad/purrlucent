@@ -36,6 +36,17 @@ export const bannerStyles = css`
     --_title: var(--pl-color-destructive-text);
   }
 
+  :host([tone="success"]) {
+    --_tone: var(--pl-color-success);
+  }
+
+  /* Amber is light, so its glyph is the dark foreground made for it. */
+  :host([tone="warning"]) {
+    --_tone: var(--pl-color-warning);
+    --_glyph: var(--pl-color-warning-foreground);
+    --_title: var(--pl-color-warning-text);
+  }
+
   /* A slotted icon, or the tone's own in the slot's fallback. */
   ::slotted([slot="icon"]),
   slot[name="icon"] > svg {
@@ -50,7 +61,7 @@ export const bannerStyles = css`
       color-mix(in srgb, var(--_tone), var(--pl-color-honeydew) 25%),
       var(--_tone)
     );
-    color: var(--pl-color-accent-foreground);
+    color: var(--_glyph, var(--pl-color-accent-foreground));
     fill: none;
     stroke: currentColor;
     stroke-width: 1.5;
