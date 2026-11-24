@@ -1566,35 +1566,48 @@ import "purrlucent/month-range-picker";
 
 ### `<pl-month-range-picker>`
 
-Chooses a range of whole months, one year at a time. The months of the year on show are a `grid` of three columns with one tab stop. The first month chosen starts the range and the second ends it, in either order; the value is always ordered. Leaving the picker after one month, or closing its popover, chooses that month alone. The arrow keys move by a month (Up and Down by a row), Page Up and Page Down by a year, Home and End go to January and December, and Enter or Space chooses. Month names and the direction follow the locale. By default it is a button that shows the range and opens the months in a popover; with `inline` the months show in place. It takes part in forms like a native input: it submits `name` with its value and a reset returns it to its `value` attribute.
+Chooses a range of whole months, one year at a time. The months of the year on show are a `grid` of three columns with one tab stop. The first month chosen starts the range and the second ends it, in either order; the value is always ordered. Leaving the picker after one month, or closing its popover, chooses that month alone. The arrow keys move by a month (Up and Down by a row), Page Up and Page Down by a year, Home and End go to January and December, and Enter or Space chooses. Month names and the direction follow the locale. By default it is a field, laid out like `pl-select` (a calendar icon, the range or the placeholder, a chevron), that opens the months in a popover; with `inline` the months show in place. A `slot="label"` element is a visible label above the field. The range shows as one band: the months between the ends are tinted, the ends are filled, and after the first month is chosen the months up to the one under the pointer or focus preview the end. The `presets` property adds buttons that each choose a ready-made range. It takes part in forms like a native input: it submits `name` with its value and a reset returns it to its `value` attribute.
 
-| Attribute     | Type                  | Default | Description                                                                                                                                      |
-| ------------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `value`       | `string`              | `""`    | The range, `yyyy-mm/yyyy-mm` with the start first, or empty. A single month is the same month twice. The `value` property holds the current one. |
-| `min`         | `string \| undefined` |         | The earliest month that can be chosen, `yyyy-mm`.                                                                                                |
-| `max`         | `string \| undefined` |         | The latest month that can be chosen, `yyyy-mm`.                                                                                                  |
-| `inline`      | `boolean`             | `false` | Shows the months in place instead of a button and a popover.                                                                                     |
-| `clearable`   | `boolean`             | `false` | Shows a Clear button that empties the value.                                                                                                     |
-| `disabled`    | `boolean`             | `false` | Nothing can be chosen and the value is not submitted.                                                                                            |
-| `label`       | `string`              | `""`    | The accessible name of the button and the months. Defaults to the page language's text (see `setMessages`), in English "Choose months".          |
-| `placeholder` | `string`              | `""`    | The button's text while the value is empty. Defaults to the label.                                                                               |
-| `locale`      | `string \| undefined` |         | A BCP 47 tag for month names and direction. Defaults to the closest `lang`, else the document's, else the browser's.                             |
-| `name`        | `string`              | `""`    | The name submitted with a form.                                                                                                                  |
-| `prev-label`  | `string`              | `""`    | The previous year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous year".                |
-| `next-label`  | `string`              | `""`    | The next year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next year".                        |
-| `clear-label` | `string`              | `""`    | The Clear button's text. Defaults to the page language's text (see `setMessages`), in English "Clear".                                           |
-| `_focus`      | `number`              | `-1`    | The month index that holds the tab stop, and with it the year on show; -1 until one is chosen or focused.                                        |
-| `_anchor`     | `number`              | `-1`    | The first month of a range still being chosen, or -1.                                                                                            |
+| Attribute     | Type                  | Default | Description                                                                                                                                                           |
+| ------------- | --------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `string`              | `""`    | The range, `yyyy-mm/yyyy-mm` with the start first, or empty. A single month is the same month twice. The `value` property holds the current one.                      |
+| `min`         | `string \| undefined` |         | The earliest month that can be chosen, `yyyy-mm`.                                                                                                                     |
+| `max`         | `string \| undefined` |         | The latest month that can be chosen, `yyyy-mm`.                                                                                                                       |
+| `inline`      | `boolean`             | `false` | Shows the months in place instead of a button and a popover.                                                                                                          |
+| `clearable`   | `boolean`             | `false` | Shows a Clear button that empties the value.                                                                                                                          |
+| `disabled`    | `boolean`             | `false` | Nothing can be chosen and the value is not submitted.                                                                                                                 |
+| `label`       | `string`              | `""`    | The accessible name of the field and the months when there is no slotted label. Defaults to the page language's text (see `setMessages`), in English "Choose months". |
+| `placeholder` | `string`              | `""`    | The field's text while the value is empty. Defaults to the label.                                                                                                     |
+| `locale`      | `string \| undefined` |         | A BCP 47 tag for month names and direction. Defaults to the closest `lang`, else the document's, else the browser's.                                                  |
+| `name`        | `string`              | `""`    | The name submitted with a form.                                                                                                                                       |
+| `prev-label`  | `string`              | `""`    | The previous year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous year".                                     |
+| `next-label`  | `string`              | `""`    | The next year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next year".                                             |
+| `clear-label` | `string`              | `""`    | The Clear button's text. Defaults to the page language's text (see `setMessages`), in English "Clear".                                                                |
+| `_focus`      | `number`              | `-1`    | The month index that holds the tab stop, and with it the year on show; -1 until one is chosen or focused.                                                             |
+| `_anchor`     | `number`              | `-1`    | The first month of a range still being chosen, or -1.                                                                                                                 |
+| `_preview`    | `number`              | `-1`    | The month the pointer or focus is on while a range is being chosen, which would end it; -1 for none.                                                                  |
+| `_labelled`   | `boolean`             | `false` |                                                                                                                                                                       |
+
+**Slots**
+
+- `label`: The visible label.
 
 **Parts**
 
-- `trigger`: The button that opens the popover.
-- `panel`: The months and their header.
+- `label`: The visible label.
+- `trigger`: The button that opens the popover, shaped as a field.
+- `icon`: The calendar icon in the trigger.
+- `value`: The range, or the placeholder in the muted colour.
+- `glyph`: The chevron in the trigger.
+- `panel`: The months, and the presets beside them.
+- `months`: The header, the table of months and the Clear button.
+- `presets`: The list of preset buttons.
+- `preset`: A preset button.
 - `header`: The row with the year buttons and the year.
 - `title`: The year.
 - `nav`: A year button.
 - `grid`: The table of months.
-- `month`: A month cell.
+- `month`: A month cell. It also has `start` or `end` (a cap of the range, or of the preview of it), or `between` (inside the band), and `start end` when the range is one month.
 - `clear`: The Clear button.
 
 **Events**
