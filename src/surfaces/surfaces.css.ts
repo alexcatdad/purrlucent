@@ -4,9 +4,12 @@ import { css } from "lit";
 // fallbacks) apply through the tokens. They carry no stroke: elevation separates
 // floating surfaces, and increased contrast turns it into a 1px outline. List rows and field shells hold content and stay solid.
 
-/** A navigation or control bar, such as a toolbar or tab bar. Flat, square corners. */
+/** A navigation or control bar, such as a toolbar or tab bar. Flat, square corners.
+ * On glass its fill is thin, so a text-only button in it takes the primary text color. */
 export const barSurface = css`
   :host {
+    --pl-material-ghost-text: var(--pl-material-chrome-text);
+
     display: block;
     box-sizing: border-box;
     background: var(--pl-material-bar);

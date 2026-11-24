@@ -126,21 +126,20 @@ export const buttonStyles = css`
     );
   }
 
+  /* In a glass bar a text-only button sits on the thin fill, so the bar hands
+     it the primary text color through --pl-material-ghost-text. */
   :host([variant="ghost"]) {
+    --_label: var(--pl-material-ghost-text, var(--_tone-text));
     --_face: transparent;
     --_face-pressed: transparent;
     --_face-disabled: transparent;
-    --_fg: var(--_tone-text);
+    --_fg: var(--_label);
     --_fg-disabled: color-mix(in srgb, var(--_tone-text) 50%, transparent);
     --pl-face-hover: var(--pl-color-muted-3);
   }
 
   :host([variant="ghost"]:state(pressed)) {
-    color: color-mix(
-      in srgb,
-      var(--_tone-text),
-      var(--pl-color-foreground) 25%
-    );
+    color: color-mix(in srgb, var(--_label), var(--pl-color-foreground) 25%);
   }
 
   /* A destructive button takes the tinted look in red, never the filled one. */
@@ -149,11 +148,25 @@ export const buttonStyles = css`
     --_tone-text: var(--pl-color-destructive-text);
   }
 
+  /* The tint sits on the thick glass fill, which keeps its pink or red label
+     legible; solid, the strong capsule is clear and the tint is as before. */
   :host([variant="tinted"]),
   :host([destructive]:not([variant="ghost"])) {
-    --_face: color-mix(in srgb, var(--_tone) 21%, transparent);
-    --_face-pressed: color-mix(in srgb, var(--_tone) 28%, transparent);
-    --_face-disabled: color-mix(in srgb, var(--_tone) 10%, transparent);
+    --_face: color-mix(
+      in srgb,
+      var(--_tone) var(--pl-material-tone-rest),
+      var(--pl-material-capsule-strong)
+    );
+    --_face-pressed: color-mix(
+      in srgb,
+      var(--_tone) var(--pl-material-tone-pressed),
+      var(--pl-material-capsule-strong)
+    );
+    --_face-disabled: color-mix(
+      in srgb,
+      var(--_tone) calc(var(--pl-material-tone-rest) / 2),
+      var(--pl-material-capsule-strong)
+    );
     --_fg: var(--_tone-text);
     --_fg-disabled: color-mix(in srgb, var(--_tone-text) 40%, transparent);
   }
