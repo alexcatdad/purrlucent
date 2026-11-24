@@ -3,13 +3,14 @@ description: Installs Bun and the locked dependencies, reusing Bun's package cac
 
 inputs:
   bun-version:
-    description: The Bun version to install.
-    required: true
+    description: The Bun version to install. Empty in the browser-test image, which has Bun.
+    default: ""
 
 runs:
   using: composite
   steps:
-    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+    - if: ${{ inputs.bun-version }}
+      uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
       with:
         bun-version: ${{ inputs.bun-version }}
     # The downloaded packages, keyed on the lockfile; the install still links
@@ -17,7 +18,9 @@ runs:
     - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.bun/install/cache
-        key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
-        restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+        # Separate in the image: a cache restores relative to the workspace,
+        # which a job container mounts elsewhere.
+        key: bun-${{ runner.os }}-${{ runner.arch }}-${{ inputs.bun-version || 'image' }}-${{ hashFiles('bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-${{ inputs.bun-version || 'image' }}-
     - run: bun install --frozen-lockfile
       shell: bash
