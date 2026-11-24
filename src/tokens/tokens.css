@@ -452,13 +452,30 @@
         var(--pl-material-saturate);
       --pl-material-sheet-filter: blur(var(--pl-blur-lg))
         var(--pl-material-saturate);
+
+      /* Light on the glass, as Apple's material catches it: a specular line
+         along the top rim, the hairline, a glow inside the top edge and a
+         fainter catch light along the bottom rim. Insets only, so the
+         surface keeps its size; the glow is light and stays near the rim,
+         away from the text. */
       --pl-material-highlight: light-dark(
-        color-mix(in srgb, #fff 45%, transparent),
-        color-mix(in srgb, #fff 22%, transparent)
+        color-mix(in srgb, #fff 70%, transparent),
+        color-mix(in srgb, #fff 30%, transparent)
+      );
+      --pl-material-glow: light-dark(
+        color-mix(in srgb, #fff 40%, transparent),
+        color-mix(in srgb, #fff 10%, transparent)
+      );
+      --pl-material-rim-low: light-dark(
+        color-mix(in srgb, #fff 30%, transparent),
+        color-mix(in srgb, #fff 8%, transparent)
       );
       --pl-material-edge:
         inset 0 1px 0 0 var(--pl-material-highlight),
-        inset 0 0 0 1px var(--pl-color-overlay-border);
+        inset 0 -1px 0 0 var(--pl-material-rim-low),
+        inset 0 0 0 1px var(--pl-color-overlay-border),
+        inset 0 calc(var(--pl-spacing) * 2) calc(var(--pl-spacing) * 2)
+          calc(var(--pl-spacing) * -2) var(--pl-material-glow);
       --pl-material-control: var(--pl-material-glass);
       --pl-material-control-pressed: color-mix(
         in srgb,
@@ -473,8 +490,13 @@
         transparent
       );
       --pl-material-float: var(--pl-material-glass);
-      --pl-elevation-control: 0 calc(var(--pl-spacing) / 4)
-        calc(var(--pl-spacing) * 2) color-mix(in srgb, #000 18%, transparent);
+
+      /* A contact shadow under the control and a soft one that lifts it. */
+      --pl-elevation-control:
+        0 calc(var(--pl-spacing) / 4) calc(var(--pl-spacing) / 2)
+          color-mix(in srgb, #000 12%, transparent),
+        0 var(--pl-spacing) calc(var(--pl-spacing) * 3)
+          color-mix(in srgb, #000 14%, transparent);
       --pl-color-edge: var(--pl-color-overlay-border);
       --pl-color-secondary: color-mix(
         in srgb,
