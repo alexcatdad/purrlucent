@@ -29,6 +29,7 @@ This page is generated from the code by `bun scripts/component-docs.ts`. Each co
 - [Drawer](#drawer): `pl-drawer`
 - [Empty](#empty): `pl-empty`
 - [Field](#field): `pl-field`, `pl-fieldset`
+- [File input](#file-input): `pl-file-input`
 - [Hover card](#hover-card): `pl-hover-card`
 - [Input](#input): `pl-input`
 - [Input group](#input-group): `pl-input-group`
@@ -1084,6 +1085,45 @@ A group of fields with a legend and a description. The host is a `role="group"` 
 - `legend`: The wrapper around the legend.
 - `description`: The wrapper around the description.
 - `fields`: The wrapper around the fields.
+
+## File input
+
+```ts
+import "purrlucent/file-input";
+```
+
+### `<pl-file-input>`
+
+A file picker. A button opens the system file dialog and the chosen names are listed beside it; files can also be dropped on the field. The slotted text is a visible label; without it, `label` becomes the group's accessible name. The `files` property holds the chosen files as an array and takes a `FileList` or an array. It takes part in forms like a native file input: it submits the files under `name`, a reset clears it, a disabled fieldset disables it, and `required` makes the form invalid while nothing is chosen. It carries its own label, description and message, so do not wrap it in a `pl-field`.
+
+| Attribute   | Type                  | Default | Description                                                                                                                           |
+| ----------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`     | `string \| undefined` |         | The accessible name when there is no slotted label.                                                                                   |
+| `name`      | `string`              | `""`    | The name the files are submitted under.                                                                                               |
+| `accept`    | `string \| undefined` |         | The kinds of file allowed: extensions such as `.pdf`, types such as `image/png`, or wildcards such as `image/*`, separated by commas. |
+| `multiple`  | `boolean`             | `false` | More than one file can be chosen.                                                                                                     |
+| `required`  | `boolean`             | `false` | The form is invalid while no file is chosen.                                                                                          |
+| `disabled`  | `boolean`             | `false` | No focus, no dropping, nothing submitted.                                                                                             |
+| `_labelled` | `boolean`             | `false` |                                                                                                                                       |
+
+**Slots**
+
+- default: The visible label.
+- `description`: Help text below the label.
+
+**Parts**
+
+- `label`: The visible label.
+- `description`: The wrapper of the description.
+- `field`: The shell around the button and the names; files can be dropped on it.
+- `button`: The button that opens the file dialog.
+- `names`: The names of the chosen files.
+- `message`: The icon and validation message below the field while it is invalid.
+
+**Events**
+
+- `pl-change`: Files were chosen or dropped. `detail.files` holds them.
+- `change`: After each pl-change, as a native file input fires it.
 
 ## Hover card
 
