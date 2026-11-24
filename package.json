@@ -283,6 +283,7 @@
       "default": "./dist/react.js"
     },
     "./tokens.css": "./dist/tokens.css",
+    "./tailwind.css": "./dist/tailwind.css",
     "./custom-elements.json": "./dist/custom-elements.json"
   },
   "scripts": {

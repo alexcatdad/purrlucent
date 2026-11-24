@@ -71,6 +71,15 @@ Colors follow the page's `color-scheme`, which the tokens set to `light dark`, s
 }
 ```
 
+### Tailwind CSS
+
+Tailwind's preflight sets `margin`, `padding` and `border` to zero on every element, and a rule from the page outranks a component's own styles, so the elements lose their spacing and edges. Import `purrlucent/tailwind.css` after Tailwind; it hands those three back to every purrlucent element:
+
+```css
+@import "tailwindcss";
+@import "purrlucent/tailwind.css";
+```
+
 ### Forms
 
 `pl-button` with `type="submit"` or `type="reset"` acts on the form it is in. The input controls, such as `pl-switch`, submit their `name` and `value` with the form, return to their starting state on reset, and are disabled by a disabled `fieldset`.
