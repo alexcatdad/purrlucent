@@ -130,7 +130,8 @@ export class PlButton extends LitElement {
     super.connectedCallback();
     if (!this.hasAttribute("role")) this.#ownRole = true;
     // A link moved in the page gets no role back.
-    if (this.#ownRole && !this.href) this.setAttribute("role", "button");
+    if (this.#ownRole && !this.href && !this.hasAttribute("role"))
+      this.setAttribute("role", "button");
   }
 
   override focus(options?: FocusOptions) {
@@ -188,7 +189,9 @@ export class PlButton extends LitElement {
       this.setAttribute("aria-label", this.#linkLabel);
       this.#linkLabel = null;
     }
-    if (this.#ownRole) this.setAttribute("role", "button");
+    // Only when absent: a container such as a menubar may give it a role of its own.
+    if (this.#ownRole && !this.hasAttribute("role"))
+      this.setAttribute("role", "button");
     if (this.#linkTabIndex !== null) {
       this.setAttribute("tabindex", this.#linkTabIndex);
       this.#linkTabIndex = null;
@@ -211,7 +214,8 @@ export class PlButton extends LitElement {
 
   /** The inner link is the control: the host has no role, tab stop or name of its own. */
   #asLink() {
-    if (this.#ownRole) this.removeAttribute("role");
+    if (this.#ownRole && this.getAttribute("role") === "button")
+      this.removeAttribute("role");
     // A tab stop the host had as a button carries over to the link.
     const tabindex = this.getAttribute("tabindex");
     if (tabindex !== null) {
