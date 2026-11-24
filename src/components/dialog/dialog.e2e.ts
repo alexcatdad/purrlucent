@@ -115,7 +115,7 @@ test("Return in the body activates the default action", async ({ page }) => {
   await expect(sheet(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["pl-close", { returnValue: "save" }]]);
+    .toEqual([["pl-close", { returnValue: "save", reason: "user" }]]);
 });
 
 test("Escape activates the cancel action", async ({ page }) => {
@@ -125,7 +125,7 @@ test("Escape activates the cancel action", async ({ page }) => {
   await expect(sheet(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["pl-close", { returnValue: "cancel" }]]);
+    .toEqual([["pl-close", { returnValue: "cancel", reason: "user" }]]);
 });
 
 test("Command-Period activates the cancel action", async ({ page }) => {
@@ -135,7 +135,7 @@ test("Command-Period activates the cancel action", async ({ page }) => {
   await expect(sheet(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["pl-close", { returnValue: "cancel" }]]);
+    .toEqual([["pl-close", { returnValue: "cancel", reason: "user" }]]);
 });
 
 test("Return in a textarea adds a newline and does not activate the default", async ({
@@ -355,7 +355,7 @@ test("Escape asks to cancel, closes, and returns focus to the opener", async ({
     .poll(() => recorded(page))
     .toEqual([
       ["pl-cancel", null],
-      ["pl-close", { returnValue: "" }],
+      ["pl-close", { returnValue: "", reason: "user" }],
     ]);
   await expect(page.locator("#trigger")).toBeFocused();
 });
@@ -409,7 +409,7 @@ test("pressing the backdrop closes a dismissible sheet and can be cancelled", as
     .toEqual([
       ["pl-cancel", null],
       ["pl-cancel", null],
-      ["pl-close", { returnValue: "" }],
+      ["pl-close", { returnValue: "", reason: "user" }],
     ]);
 });
 
@@ -433,7 +433,7 @@ test("an element with data-close closes the dialog with its value", async ({
   await expect(alert(page)).toBeHidden();
   await expect
     .poll(() => recorded(page))
-    .toEqual([["pl-close", { returnValue: "save" }]]);
+    .toEqual([["pl-close", { returnValue: "save", reason: "user" }]]);
   await expect(page.locator("#trigger")).toBeFocused();
 });
 
@@ -447,14 +447,14 @@ test("the keyboard closes with a value, and a later Escape reports none", async 
   await expect(alert(page)).toBeHidden();
   await expect
     .poll(async () => (await recorded(page)).at(-1))
-    .toEqual(["pl-close", { returnValue: "cancel" }]);
+    .toEqual(["pl-close", { returnValue: "cancel", reason: "user" }]);
   await page.locator("#trigger").click();
   await withoutRole(page, "cancel");
   await page.keyboard.press("Escape");
   await expect(alert(page)).toBeHidden();
   await expect
     .poll(async () => (await recorded(page)).at(-1))
-    .toEqual(["pl-close", { returnValue: "" }]);
+    .toEqual(["pl-close", { returnValue: "", reason: "user" }]);
   expect(
     await dialogEl(page).evaluate(
       (el) => (el as never as { returnValue: string }).returnValue,
@@ -493,8 +493,8 @@ test("show() and close(value) work from script, and removing open closes", async
   await expect
     .poll(() => recorded(page))
     .toEqual([
-      ["pl-close", { returnValue: "done" }],
-      ["pl-close", { returnValue: "" }],
+      ["pl-close", { returnValue: "done", reason: "programmatic" }],
+      ["pl-close", { returnValue: "", reason: "programmatic" }],
     ]);
 });
 
@@ -723,6 +723,248 @@ test("virtual screen reader speaks the title, message and actions", async ({
   expect(spoken).toContain("Save this message as a draft?");
   expect(spoken).toContain("button, Cancel");
   expect(spoken).toContain("button, Save");
+});
+
+const closeButton = (page: Page) => dialogEl(page).locator("[part=close]");
+
+test("the close button clicks the cancel action, like Escape", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-closable-with-cancel"));
+  await record(page);
+  await closeButton(page).click();
+  await expect(sheet(page)).toBeHidden();
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([["pl-close", { returnValue: "cancel", reason: "user" }]]);
+});
+
+test("a closable sheet has a close button named Close that asks to cancel and closes", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-closable"));
+  await record(page);
+  await expect(closeButton(page)).toHaveAccessibleName("Close");
+  await closeButton(page).click();
+  await expect(sheet(page)).toBeHidden();
+  await expect
+    .poll(() => recorded(page))
+    .toEqual([
+      ["pl-cancel", null],
+      ["pl-close", { returnValue: "", reason: "user" }],
+    ]);
+});
+
+test("a pl-cancel handler can keep a closable sheet open, and close-label names the button", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-closable"));
+  await dialogEl(page).evaluate((el) => {
+    el.setAttribute("close-label", "Dismiss shortcuts");
+    el.addEventListener("pl-cancel", (event) => event.preventDefault(), {
+      once: true,
+    });
+  });
+  await expect(closeButton(page)).toHaveAccessibleName("Dismiss shortcuts");
+  await closeButton(page).click();
+  await expect(sheet(page)).toBeVisible();
+  expect(await isOpen(page)).toBe(true);
+  await closeButton(page).click();
+  await expect(sheet(page)).toBeHidden();
+});
+
+test("a sheet without closable has no close button", async ({ page }) => {
+  await gotoStory(page, story("open-sheet"));
+  await expect(closeButton(page)).toHaveCount(0);
+});
+
+test("actions-start content sits at the start of the actions row", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await gotoStory(page, story("open-actions-start"));
+  const status = page.getByText("3 of 12 reviewed");
+  await expect(status).toBeVisible();
+  const [statusBox, cancel, save] = await Promise.all([
+    status.boundingBox(),
+    page.getByRole("button", { name: "Cancel" }).boundingBox(),
+    page.getByRole("button", { name: "Save" }).boundingBox(),
+  ]);
+  expect(statusBox!.x).toBeLessThan(cancel!.x);
+  expect(cancel!.x).toBeLessThan(save!.x);
+  expect(statusBox!.y).toBeLessThan(save!.y + save!.height);
+});
+
+test("pl-close reports reason user for the keyboard and programmatic for close()", async ({
+  page,
+}) => {
+  await openDefault(page);
+  await page.keyboard.press("Escape");
+  await expect(alert(page)).toBeHidden();
+  await expect
+    .poll(async () => (await recorded(page)).at(-1))
+    .toEqual(["pl-close", { returnValue: "cancel", reason: "user" }]);
+  await dialogEl(page).evaluate((el) =>
+    (el as HTMLElement & { show(): void }).show(),
+  );
+  await expect(alert(page)).toBeVisible();
+  await dialogEl(page).evaluate((el) =>
+    (el as HTMLElement & { close(): void }).close(),
+  );
+  await expect(alert(page)).toBeHidden();
+  await expect
+    .poll(async () => (await recorded(page)).at(-1))
+    .toEqual(["pl-close", { returnValue: "", reason: "programmatic" }]);
+});
+
+test("setting open back to true before a close completes keeps the dialog open and reports no close", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await record(page);
+  await dialogEl(page).evaluate(async (el) => {
+    const dialog = el as HTMLElement & {
+      show(): void;
+      close(): void;
+      updateComplete: Promise<unknown>;
+    };
+    dialog.show();
+    await dialog.updateComplete;
+    dialog.close();
+    dialog.show();
+    await dialog.updateComplete;
+  });
+  await expect(alert(page)).toBeVisible();
+  // The queued native close event has run by now.
+  await page.waitForTimeout(100);
+  expect(await isOpen(page)).toBe(true);
+  expect(await recorded(page)).toEqual([]);
+});
+
+test("the description attribute describes a sheet that has no description slot", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-described-by-attribute"));
+  await expect(sheet(page)).toBeVisible();
+  await expect(sheet(page)).toHaveAccessibleDescription(
+    "Changes apply to every project you own.",
+  );
+});
+
+test("a slotted description wins over the description attribute", async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"));
+  await dialogEl(page).evaluate((el) =>
+    el.setAttribute("description", "Attribute text."),
+  );
+  await expect(sheet(page)).toHaveAccessibleDescription(
+    /^You can choose to save your changes/,
+  );
+});
+
+test.describe("nonmodal", () => {
+  test("opens without blocking the page, the scrim or the scroll lock", async ({
+    page,
+    browserName,
+  }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await expect(sheet(page)).toBeVisible();
+    expect(
+      await dialogEl(page)
+        .locator("dialog")
+        .evaluate((el) => el.matches(":modal")),
+    ).toBe(false);
+    expect(
+      await page.evaluate(() => document.documentElement.style.overflow),
+    ).toBe("");
+    // The scrim is read through getComputedStyle, which this check does not
+    // rely on in WebKit.
+    if (browserName !== "webkit")
+      expect(
+        await dialogEl(page)
+          .locator("dialog")
+          .evaluate((el) => getComputedStyle(el, "::backdrop").backgroundColor),
+      ).toBe("rgba(0, 0, 0, 0)");
+    await page.evaluate(() => {
+      const button = document.querySelector("#page-button")!;
+      (window as unknown as { clicks: number }).clicks = 0;
+      button.addEventListener(
+        "click",
+        () => (window as unknown as { clicks: number }).clicks++,
+      );
+    });
+    await page.locator("#page-button").click();
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { clicks: number }).clicks,
+      ),
+    ).toBe(1);
+    await expect(sheet(page)).toBeVisible();
+  });
+
+  test("closing leaves focus where the user moved it on the page", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await expect(sheet(page)).toBeVisible();
+    await page.locator("#page-button").focus();
+    await dialogEl(page).evaluate((el) =>
+      (el as unknown as { close(): void }).close(),
+    );
+    await expect(sheet(page)).toBeHidden();
+    await expect(page.locator("#page-button")).toBeFocused();
+  });
+
+  test("stays above page content with a higher z-index", async ({ page }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await expect(sheet(page)).toBeVisible();
+    const topmost = await dialogEl(page).evaluate((el) => {
+      const box = el
+        .shadowRoot!.querySelector("dialog")!
+        .getBoundingClientRect();
+      return (
+        document.elementFromPoint(
+          box.x + box.width / 2,
+          box.y + box.height / 2,
+        ) === el
+      );
+    });
+    expect(topmost).toBe(true);
+  });
+
+  test("Escape and the close button close it", async ({ page }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await record(page);
+    await expect.poll(() => activeInside(page)).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(sheet(page)).toBeHidden();
+    await expect
+      .poll(() => recorded(page))
+      .toEqual([
+        ["pl-cancel", null],
+        ["pl-close", { returnValue: "", reason: "user" }],
+      ]);
+    await page.locator("#trigger").click();
+    await expect(sheet(page)).toBeVisible();
+    await closeButton(page).click();
+    await expect(sheet(page)).toBeHidden();
+    await expect.poll(async () => (await recorded(page)).length).toBe(4);
+  });
+
+  test("Escape can be cancelled", async ({ page }) => {
+    await gotoStory(page, story("open-nonmodal"));
+    await expect.poll(() => activeInside(page)).toBe(true);
+    await dialogEl(page).evaluate((el) =>
+      el.addEventListener("pl-cancel", (event) => event.preventDefault(), {
+        once: true,
+      }),
+    );
+    await page.keyboard.press("Escape");
+    await expect(sheet(page)).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(sheet(page)).toBeHidden();
+  });
 });
 
 test.describe("coarse pointer on a wide screen", () => {

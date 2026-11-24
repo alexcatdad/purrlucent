@@ -58,7 +58,14 @@ export const dialogStyles = css`
     flex-direction: column;
   }
 
-  dialog::backdrop {
+  /* A manual popover: in the top layer, so it centers itself above the page. */
+  :host([nonmodal]) dialog {
+    position: fixed;
+    inset: 0;
+    block-size: fit-content;
+  }
+
+  dialog:modal::backdrop {
     background: var(--_scrim);
     transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
   }
@@ -69,7 +76,7 @@ export const dialogStyles = css`
       scale: 0.96;
     }
 
-    dialog[open]::backdrop {
+    dialog:modal[open]::backdrop {
       opacity: 0;
     }
   }
@@ -190,9 +197,56 @@ export const dialogStyles = css`
     margin-block-start: var(--pl-space-5);
   }
 
-  /* The destructive action sits apart, at the leading edge. */
-  ::slotted([destructive]) {
+  /* The destructive action and the status text sit apart, at the leading edge. */
+  ::slotted([destructive]),
+  ::slotted([slot="actions-start"]) {
     margin-inline-end: auto;
+  }
+
+  ::slotted([slot="actions-start"]) {
+    min-inline-size: 0;
+    color: var(--pl-color-muted-foreground);
+  }
+
+  [part="close"] {
+    display: grid;
+    flex: none;
+    place-items: center;
+    align-self: flex-start;
+    inline-size: var(--pl-size-hit-min);
+    block-size: var(--pl-size-hit-min);
+    margin: calc((var(--pl-size-hit-min) - var(--pl-icon-md)) / -2);
+    padding: 0;
+    border: 0;
+    border-radius: var(--pl-radius-full);
+    background: none;
+    color: var(--pl-color-muted-foreground);
+    cursor: default;
+    transition: color var(--pl-duration-fast) var(--pl-ease-out);
+  }
+
+  @media (hover: hover) {
+    [part="close"]:hover {
+      color: var(--pl-color-foreground);
+    }
+  }
+
+  [part="close"]:active {
+    color: var(--pl-color-foreground);
+  }
+
+  [part="close"]:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
+  }
+
+  [part="close"] svg {
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
   }
 
   :host([variant="alert"]) [part="actions"] {
@@ -222,7 +276,8 @@ export const dialogStyles = css`
       color: CanvasText;
     }
 
-    [part="body"]:focus-visible {
+    [part="body"]:focus-visible,
+    [part="close"]:focus-visible {
       outline-color: Highlight;
     }
   }

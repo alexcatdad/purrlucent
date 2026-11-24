@@ -61,6 +61,7 @@ const flickWindow = 100;
  * @attr {string} detents - Space-separated heights a bottom sheet can rest at: `medium`, `large` or `medium large`. Without it the sheet is as tall as its content, up to the large height.
  * @attr {string} detent - The current detent, one of `detents`; the first when unset or not listed. Reflects dragging and the grabber.
  * @attr {string} label - The accessible name when there is no slotted title.
+ * @attr {string} description - The accessible description when nothing is slotted in the `description` slot.
  * @attr {string} expand-label - The grabber's accessible name while it grows the sheet. Defaults to the page language's text (see `setMessages`), in English "Expand".
  * @attr {string} close-label - The grabber's accessible name while it closes the sheet. Defaults to the page language's text (see `setMessages`), in English "Close".
  * @attr {boolean} dismissible - Pressing the backdrop also asks to close.
@@ -90,6 +91,7 @@ export class PlDrawer extends LitElement {
     detents: { reflect: true },
     detent: { reflect: true },
     label: {},
+    description: {},
     expandLabel: { attribute: "expand-label" },
     closeLabel: { attribute: "close-label" },
     dismissible: { type: Boolean, reflect: true },
@@ -101,6 +103,7 @@ export class PlDrawer extends LitElement {
   declare detents: string;
   declare detent: Detent | "";
   declare label: string;
+  declare description: string;
   declare expandLabel: string;
   declare closeLabel: string;
   declare dismissible: boolean;
@@ -130,6 +133,7 @@ export class PlDrawer extends LitElement {
     this.detents = "";
     this.detent = "";
     this.label = "";
+    this.description = "";
     this.expandLabel = "";
     this.closeLabel = "";
     this.dismissible = false;
@@ -285,7 +289,12 @@ export class PlDrawer extends LitElement {
 
   #onActivate = (event: Event) => {
     const closer = (event.target as Element).closest?.("[data-close]");
-    if (closer?.closest("pl-drawer") === this && !closer.matches(":disabled"))
+    // The nearest dialog or drawer owns the closer, so one inside a nested
+    // dialog does not close this drawer too.
+    if (
+      closer?.closest("pl-drawer, pl-dialog") === this &&
+      !closer.matches(":disabled")
+    )
       this.close(closer.getAttribute("data-close") ?? "");
   };
 
@@ -377,11 +386,13 @@ export class PlDrawer extends LitElement {
     const title = this.querySelector(
       ":scope > [slot=title]",
     )?.textContent?.trim();
+    const described =
+      !!this.description && !this.querySelector(":scope > [slot=description]");
     const expands = !!stepDetent(this.#allowed, this.detent as Detent, 1);
     return html`<dialog
       part="dialog"
       aria-label=${title || this.label || nothing}
-      aria-describedby="description"
+      aria-describedby=${described ? "summary" : "description"}
       data-detent=${this.detent || nothing}
       @cancel=${this.#onCancel}
       @close=${this.#onClose}
@@ -424,8 +435,15 @@ export class PlDrawer extends LitElement {
               ></slot>
             </div>
             <div id="description" part="description" hidden>
-              <slot name="description" @slotchange=${hideWhenEmpty}></slot>
+              <slot
+                name="description"
+                @slotchange=${(event: Event) => {
+                  hideWhenEmpty(event);
+                  this.requestUpdate();
+                }}
+              ></slot>
             </div>
+            ${described ? html`<span id="summary" hidden>${this.description}</span>` : nothing}
           </div>
         </div>
         <div part="body" tabindex=${this._scrolls ? 0 : nothing}>
