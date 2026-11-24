@@ -1,5 +1,0 @@
----
-"purrlucent": minor
----
-
-`pl-sidebar` gains `header` and `footer` slots outside the navigation landmark; a narrow screen now shows the open sidebar as a modal panel with a scrim (Escape or the scrim closes it, focus moves in and returns to the toggle) instead of a full-width bar; `collapse-below` sets the width in px for the automatic collapse (`0` turns it off, the default stays 600); `no-toggle`, `toggle()`, `show()` and `hide()` let an app control it, and `shortcut` (such as `mod+b`) toggles it from anywhere in the page; `pl-collapse` also fires for the first automatic collapse; and `reorderable` adds a grip and Alt with the Up and Down arrows to level 1 items, which fire `pl-reorder` with `{ from, to }` without moving anything themselves. `pl-sidebar-item` gains `action` (a button that never takes the selection), a per-item `size`, a `description` slot, correct sizing for a `pl-avatar` in the icon slot, and a cancelable `pl-navigate` event with `detail.href` before a plain left click on a link navigates.
