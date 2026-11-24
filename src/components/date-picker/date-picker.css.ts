@@ -18,7 +18,9 @@ export const datePickerStyles = [
       padding-inline-end: 0;
     }
 
+    /* An input cannot hold a <bdi>; plaintext isolates the day the same way, so its parts keep the order the locale writes. */
     [part="control"] {
+      unicode-bidi: plaintext;
       text-overflow: ellipsis;
     }
 

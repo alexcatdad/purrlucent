@@ -1,12 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect } from "storybook/test";
+import { plaintextRtlFor } from "../../.storybook/isolate.ts";
 import { proseStyles } from "./typography.css.ts";
 
 // The prose styles are plain page styles, so the story adds them to the document.
 const sheet = proseStyles.styleSheet!;
 if (!document.adoptedStyleSheets.includes(sheet))
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+
+// Under right to left each English sentence keeps its period at its end.
+const rtlText = new CSSStyleSheet();
+rtlText.replaceSync(plaintextRtlFor(".pl-prose"));
+if (!document.adoptedStyleSheets.includes(rtlText))
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, rtlText];
 
 const meta = { title: "Foundations/Typography" } satisfies Meta;
 
