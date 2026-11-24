@@ -171,9 +171,12 @@ export class PlFileInput extends LitElement {
     root.querySelector("[part=message] span")!.textContent = invalid
       ? text
       : "";
+    const described = root.querySelector<HTMLElement>("#description")!.hidden
+      ? "names"
+      : "description names";
     button.setAttribute(
       "aria-describedby",
-      invalid ? "names message" : "names",
+      invalid ? `${described} message` : described,
     );
   }
 
@@ -206,6 +209,11 @@ export class PlFileInput extends LitElement {
 
   #onChange = (event: Event) =>
     this.#choose(Array.from((event.target as HTMLInputElement).files ?? []));
+
+  #onDescription = (event: Event) => {
+    hideWhenEmpty(event);
+    this.requestUpdate();
+  };
 
   #open = () => this.renderRoot.querySelector("input")!.click();
 
@@ -245,8 +253,8 @@ export class PlFileInput extends LitElement {
     const text = messages(this);
     const names = this.#files.map((file) => file.name).join(", ");
     return html`<div part="label" id="label"><slot></slot></div>
-      <div part="description" hidden>
-        <slot name="description" @slotchange=${hideWhenEmpty}></slot>
+      <div part="description" id="description" hidden>
+        <slot name="description" @slotchange=${this.#onDescription}></slot>
       </div>
       <div
         part="field"
