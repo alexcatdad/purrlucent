@@ -370,9 +370,14 @@ test.describe("placement", () => {
     const el = scroller(page);
     await el.evaluate((e) => (e.scrollTop = e.scrollHeight));
     await frames(page);
+    const before = await el.evaluate((e) => e.scrollTop);
     await append(el, [{ id: "plain", lines: 5 }]);
     await frames(page);
-    expect(await toEnd(el)).toBeGreaterThan(50);
+    // The view stays put, so the new row waits below the end.
+    expect(
+      Math.abs((await el.evaluate((e) => e.scrollTop)) - before),
+    ).toBeLessThan(1);
+    expect(await toEnd(el)).toBeGreaterThan(0);
   });
 
   test("default-scroll-position end opens at the latest message", async ({
