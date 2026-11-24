@@ -1165,8 +1165,7 @@ test.describe("narrow screen as a modal panel", () => {
     expect(reached).toBe(false);
   });
 
-  // Focus does not return to the toggle after the panel closes: issue #166.
-  test.fixme("Escape closes the panel, fires pl-collapse and focuses the toggle", async ({
+  test("Escape closes the panel, fires pl-collapse and focuses the toggle", async ({
     page,
   }) => {
     await open(page);
@@ -1190,6 +1189,9 @@ test.describe("narrow screen as a modal panel", () => {
     await page.mouse.click(450, 400);
     await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
     await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Library sidebar" }),
+    ).toBeFocused();
   });
 
   test("a press inside the panel keeps it open", async ({ page }) => {
@@ -1214,8 +1216,7 @@ test.describe("narrow screen as a modal panel", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
   });
 
-  // Focus does not return to the toggle after the panel closes: issue #166.
-  test.fixme("the toggle in the panel closes it and focus returns to the toggle", async ({
+  test("the toggle in the panel closes it and focus returns to the toggle", async ({
     page,
   }) => {
     await open(page);
@@ -1657,5 +1658,240 @@ test.describe("reorderable", () => {
 
   test("axe finds no WCAG 2.2 AA violations", async ({ page }) => {
     await expectAccessible(await open(page, "reorderable"));
+  });
+});
+
+/** Page width beyond the viewport; 0 when nothing overflows sideways. */
+const overflowX = (page: Page) =>
+  page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+
+test.describe("narrow screen beside content", () => {
+  test.use({ viewport: { width: 390, height: 800 } });
+
+  test("the page does not overflow sideways right after load", async ({
+    page,
+  }) => {
+    await open(page, "beside-content");
+    expect(await overflowX(page)).toBeLessThanOrEqual(0);
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+  });
+
+  test("the page does not overflow sideways when the window narrows", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await open(page, "beside-content");
+    await expect(page.locator("#sidebar")).not.toHaveAttribute("collapsed");
+    // Read in the same task as the width change, before anything is drawn.
+    await page.evaluate(() => {
+      const seen: number[] = [];
+      (window as unknown as { seen: number[] }).seen = seen;
+      matchMedia("(max-width: 600px)").addEventListener("change", () =>
+        seen.push(document.documentElement.scrollWidth - innerWidth),
+      );
+    });
+    await page.setViewportSize({ width: 390, height: 800 });
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    const seen = await page.evaluate(
+      () => (window as unknown as { seen: number[] }).seen,
+    );
+    expect(seen.length).toBeGreaterThan(0);
+    for (const overflow of seen) expect(overflow).toBeLessThanOrEqual(0);
+    expect(await overflowX(page)).toBeLessThanOrEqual(0);
+  });
+
+  test("the open panel's host takes no place in the page", async ({ page }) => {
+    await open(page, "beside-content");
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.getByRole("dialog", { name: "Library" })).toBeVisible();
+    expect(
+      await page
+        .locator("#sidebar")
+        .evaluate((el) => getComputedStyle(el).position),
+    ).toBe("fixed");
+    const [app, main] = await Promise.all([
+      page.locator("#app").evaluate((el) => el.getBoundingClientRect().left),
+      page.locator("#main").evaluate((el) => el.getBoundingClientRect().left),
+    ]);
+    expect(Math.abs(main - app)).toBeLessThanOrEqual(1);
+  });
+});
+
+test.describe("collapse animation", () => {
+  const durations = (page: Page) =>
+    page
+      .locator("#sidebar")
+      .evaluate((el) =>
+        getComputedStyle(el).transitionDuration.split(", ").map(parseFloat),
+      );
+
+  const width = (page: Page) =>
+    page.locator("#sidebar").evaluate((el) => el.getBoundingClientRect().width);
+
+  test("the width follows the duration token", async ({ page }) => {
+    await open(page);
+    const token = await page.evaluate(() => {
+      const probe = document.createElement("div");
+      probe.style.transitionDuration = "var(--pl-duration)";
+      document.body.append(probe);
+      const duration = parseFloat(getComputedStyle(probe).transitionDuration);
+      probe.remove();
+      return duration;
+    });
+    expect(token).toBeGreaterThan(0);
+    expect(await durations(page)).toContain(token);
+    await page.getByRole("button", { name: "Library sidebar" }).click();
+    await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
+    await expect.poll(() => width(page)).toBeLessThan(100);
+  });
+
+  test("nothing animates under reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await open(page);
+    expect(Math.max(...(await durations(page)))).toBe(0);
+    expect(await width(page)).toBeGreaterThan(200);
+    // The width is already the collapsed one when the update has finished.
+    const collapsed = await page
+      .locator("#sidebar")
+      .evaluate(
+        (
+          el: HTMLElement & { hide(): void; updateComplete: Promise<boolean> },
+        ) => {
+          el.hide();
+          return el.updateComplete.then(() => el.getBoundingClientRect().width);
+        },
+      );
+    expect(collapsed).toBeLessThan(100);
+  });
+});
+
+test("with no-toggle a collapsed sidebar takes no space", async ({ page }) => {
+  await open(page, "no-toggle-collapsed");
+  expect(
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.getBoundingClientRect().width),
+  ).toBeLessThanOrEqual(1);
+  const [app, main] = await Promise.all([
+    page.locator("#app").evaluate((el) => el.getBoundingClientRect().left),
+    page.locator("#main").evaluate((el) => el.getBoundingClientRect().left),
+  ]);
+  expect(Math.abs(main - app)).toBeLessThanOrEqual(1);
+});
+
+test.describe("reorder grips", () => {
+  const grip = (page: Page, id: string) => page.locator(`#${id} [part=handle]`);
+
+  test("a fine pointer sees a grip on hover and on focus only", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    expect(
+      await page.evaluate(() => matchMedia("(hover: hover)").matches),
+    ).toBe(true);
+    await page.mouse.move(0, 0);
+    await expect(grip(page, "second")).toHaveCSS("opacity", "0");
+    await page.locator("#second").hover();
+    await expect(grip(page, "second")).toHaveCSS("opacity", "1");
+    await expect(grip(page, "third")).toHaveCSS("opacity", "0");
+    await page.mouse.move(0, 0);
+    await expect(grip(page, "second")).toHaveCSS("opacity", "0");
+    await page.locator("#third a").focus();
+    await expect(grip(page, "third")).toHaveCSS("opacity", "1");
+    await expect(grip(page, "first")).toHaveCSS("opacity", "0");
+  });
+
+  test.describe("touch screen", () => {
+    test.use({ viewport: { width: 800, height: 800 }, hasTouch: true });
+
+    test("every grip is shown", async ({ page }) => {
+      await open(page, "reorderable");
+      expect(
+        await page.evaluate(
+          () =>
+            matchMedia("(pointer: coarse)").matches ||
+            matchMedia("(hover: none)").matches,
+        ),
+      ).toBe(true);
+      for (const id of ["first", "second", "third"])
+        await expect(grip(page, id)).toHaveCSS("opacity", "1");
+    });
+  });
+});
+
+test.describe("icon gap", () => {
+  /** The space between an item's icon and its label, in px. */
+  const gap = (page: Page, id: string, icon: string) =>
+    page.locator(`#${id}`).evaluate((el, selector) => {
+      const end = el.querySelector(selector)!.getBoundingClientRect().right;
+      const start = el
+        .shadowRoot!.querySelector(".label")!
+        .getBoundingClientRect().left;
+      return start - end;
+    }, icon);
+
+  test("an svg icon keeps the icon gap token from its label, with page margins reset too", async ({
+    page,
+  }) => {
+    await open(page, "sections");
+    // Page CSS such as a reset reaches slotted elements, never the shadow tree.
+    await page.addStyleTag({ content: "* { margin: 0; }" });
+    const token = parseFloat(
+      await resolve(page, "width", "var(--pl-gap-icon)"),
+    );
+    expect(token).toBeGreaterThan(0);
+    for (const id of ["today", "work"])
+      expect(await gap(page, id, "svg")).toBeGreaterThanOrEqual(token - 1);
+  });
+
+  test("an avatar icon keeps it too", async ({ page }) => {
+    await open(page, "rows");
+    await page.addStyleTag({ content: "* { margin: 0; }" });
+    const token = parseFloat(
+      await resolve(page, "width", "var(--pl-gap-icon)"),
+    );
+    expect(await gap(page, "account", "pl-avatar")).toBeGreaterThanOrEqual(
+      token - 1,
+    );
+  });
+});
+
+test.describe("an action item as a menu trigger", () => {
+  const control = (page: Page) => page.locator("#account button");
+
+  test("the focused control exposes the menu's expanded state", async ({
+    page,
+  }) => {
+    await open(page, "menu-trigger");
+    await expect(control(page)).toHaveAttribute("aria-haspopup", "menu");
+    await expect(control(page)).toHaveAttribute("aria-expanded", "false");
+    await control(page).click();
+    await expect(page.locator("#menu")).toHaveAttribute("open", "");
+    await expect(control(page)).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#menu")).not.toHaveAttribute("open");
+    await expect(control(page)).toHaveAttribute("aria-expanded", "false");
+    await expect(control(page)).toBeFocused();
+  });
+
+  test("aria-controls points at an element where the browser allows it", async ({
+    page,
+  }) => {
+    await open(page, "menu-trigger");
+    await page.locator("#account").evaluate((el) => {
+      el.setAttribute("aria-controls", "home");
+    });
+    await expect
+      .poll(() =>
+        control(page).evaluate((button) =>
+          "ariaControlsElements" in button
+            ? ((button.ariaControlsElements as Element[] | null)?.[0]?.id ??
+              "none")
+            : "unsupported",
+        ),
+      )
+      .toMatch(/^(home|unsupported)$/);
+    // An id reference would name nothing inside the item's own tree.
+    await expect(control(page)).not.toHaveAttribute("aria-controls");
   });
 });

@@ -106,6 +106,17 @@ export const sidebarStyles = [
       max-inline-size: 100%;
       padding: 0 var(--pl-space-3) var(--pl-space-4);
       font: 400 var(--_text) / var(--_leading) var(--pl-font-sans);
+      transition:
+        inline-size var(--pl-duration) var(--pl-ease-out),
+        padding-inline var(--pl-duration) var(--pl-ease-out);
+    }
+
+    /* The content keeps its width while the sidebar grows and shrinks, and the
+       host clips it, so it slides instead of wrapping. */
+    :host(:not([data-overlay])) {
+      --_content: calc(var(--pl-spacing) * 64 - var(--pl-space-3) * 2);
+
+      overflow-x: clip;
     }
 
     :host([hidden]) {
@@ -120,16 +131,60 @@ export const sidebarStyles = [
       ${rowLg}
     }
 
+    /* Only the toggle is left; the panel of a narrow screen keeps this size,
+       so the sidebar does not move when it closes. */
     :host([collapsed]),
     :host([data-overlay]) {
-      inline-size: fit-content;
+      inline-size: var(--pl-size-xl);
       padding-block-end: 0;
     }
 
+    /* Without a toggle nothing is left, not even the padding. */
+    :host([no-toggle][collapsed]),
+    :host([no-toggle][data-overlay]) {
+      inline-size: 0;
+      padding-inline: 0;
+    }
+
+    /* The panel is in the top layer; the host leaves the page flow. */
+    :host([data-overlay]) {
+      position: fixed;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+    }
+
+    /* A change the screen width caused is not animated. */
+    :host([data-snap]),
+    :host([data-snap]) nav,
+    :host([data-snap]) [part="header"],
+    :host([data-snap]) [part="footer"] {
+      transition: none;
+    }
+
+    nav,
+    [part="header"],
+    [part="footer"] {
+      min-inline-size: var(--_content, 0);
+      transition:
+        opacity var(--pl-duration) var(--pl-ease-out),
+        display var(--pl-duration) allow-discrete;
+    }
+
+    /* The content fades out while the width shrinks, then leaves the layout. */
     :host([collapsed]) nav,
     :host([collapsed]) [part="header"],
     :host([collapsed]) [part="footer"] {
       display: none;
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :host,
+      nav,
+      [part="header"],
+      [part="footer"] {
+        transition: none;
+      }
     }
 
     /* The header and footer hold what the app pins to the top and bottom, such
@@ -310,12 +365,22 @@ export const itemStyles = [
       color: var(--pl-color-muted-foreground);
     }
 
-    /* An empty slot adds no column width and no margin. */
-    ::slotted([slot="icon"]) {
+    /* The gap sits in this wrapper, not on the icon: page CSS that zeroes
+       margins reaches a slotted element but never the shadow tree. An empty
+       slot adds no column width and no gap. */
+    .icon {
       grid-column: 2;
+      display: grid;
+      align-items: center;
+    }
+
+    .icon[data-filled] {
+      padding-inline-end: var(--pl-gap-icon);
+    }
+
+    ::slotted([slot="icon"]) {
       inline-size: var(--_glyph);
       block-size: var(--_glyph);
-      margin-inline-end: var(--pl-gap-icon);
       color: var(--pl-color-accent-text);
     }
 
@@ -350,6 +415,33 @@ export const itemStyles = [
       cursor: grab;
       touch-action: none;
       user-select: none;
+      opacity: 0;
+      transition: opacity var(--pl-duration-fast) var(--pl-ease-out);
+    }
+
+    /* Shown on hover and while the row has focus; a touch screen has no
+       hover, so there it is always shown. */
+    :host(:focus-within) .handle,
+    :host([data-dragging]) .handle {
+      opacity: 1;
+    }
+
+    @media (hover: hover) {
+      :host(:hover) .handle {
+        opacity: 1;
+      }
+    }
+
+    @media (pointer: coarse), (hover: none) {
+      .handle {
+        opacity: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .handle {
+        transition: none;
+      }
     }
 
     .handle svg {

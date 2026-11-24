@@ -13,7 +13,17 @@ const grip = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const label = html`<span class="label"
   ><slot></slot><slot name="description"></slot
 ></span>`;
-const icon = html`<slot name="icon"></slot>`;
+// The icon's gap is applied to the wrapper once the slot holds something.
+const onIcon = (event: Event) => {
+  const slot = event.target as HTMLSlotElement;
+  slot.parentElement?.toggleAttribute(
+    "data-filled",
+    slot.assignedElements().length > 0,
+  );
+};
+const icon = html`<span class="icon"
+  ><slot name="icon" @slotchange=${onIcon}></slot
+></span>`;
 const detail = html`<slot name="detail"></slot>`;
 
 /**
@@ -26,7 +36,7 @@ const detail = html`<slot name="detail"></slot>`;
  * selection, such as a menu trigger: listen for its `click`.
  *
  * @attr {string} toggle-label - The disclosure button's accessible name when a link has one beside it. Defaults to the page language's text (see `setMessages`), in English "<item label>, show items".
- * @attr {boolean} action - Renders a button that does not take the selection; `href` and `selected` are ignored and it never has a disclosure. Use it for a menu trigger or a command.
+ * @attr {boolean} action - Renders a button that does not take the selection; `href` and `selected` are ignored and it never has a disclosure. Use it for a menu trigger or a command. `aria-haspopup`, `aria-expanded` and `aria-controls` set on the item, as `pl-menu` does for its trigger, are passed on to the button that holds focus; `aria-controls` only where the browser can point into the page.
  * @attr {string} size - `md` or `lg`, the row size of this item. Defaults to the sidebar's `size`.
  * @slot - The item label.
  * @slot icon - A leading svg icon, tinted with the accent text color. A `pl-avatar` here is sized to fit the row.
@@ -71,6 +81,9 @@ export class PlSidebarItem extends LitElement {
 
   #level: SidebarLevel = 1;
 
+  // A menu sets these on the host; the focused control inside needs them.
+  readonly #forwarded = new MutationObserver(() => this.requestUpdate());
+
   constructor() {
     super();
     this.selected = false;
@@ -79,6 +92,19 @@ export class PlSidebarItem extends LitElement {
     this.toggleLabel = "";
     this.action = false;
     this.reorderable = false;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.#forwarded.observe(this, {
+      attributes: true,
+      attributeFilter: ["aria-haspopup", "aria-expanded", "aria-controls"],
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#forwarded.disconnect();
   }
 
   protected override willUpdate() {
@@ -135,12 +161,23 @@ export class PlSidebarItem extends LitElement {
   }
 
   protected override updated() {
+    type Controls = HTMLElement & { ariaControlsElements?: Element[] | null };
     // The controlled items sit in the light DOM, out of reach of an id reference.
-    const button = this.renderRoot.querySelector<
-      HTMLButtonElement & { ariaControlsElements?: Element[] | null }
-    >(".disclosure");
+    const button = this.renderRoot.querySelector<Controls>(".disclosure");
     if (button && "ariaControlsElements" in button)
       button.ariaControlsElements = this.#children();
+    // An id in the page cannot be named from this shadow tree; an element
+    // reference can, and where it is not supported the attribute is left out.
+    const action = this.action
+      ? this.renderRoot.querySelector<Controls>(".control")
+      : null;
+    if (action && "ariaControlsElements" in action) {
+      const id = this.getAttribute("aria-controls");
+      const target = id
+        ? (this.getRootNode() as Document | ShadowRoot).getElementById(id)
+        : null;
+      action.ariaControlsElements = target ? [target] : null;
+    }
   }
 
   override render() {
@@ -165,6 +202,8 @@ export class PlSidebarItem extends LitElement {
         part="control"
         type="button"
         aria-keyshortcuts=${keys}
+        aria-haspopup=${this.getAttribute("aria-haspopup") ?? nothing}
+        aria-expanded=${this.getAttribute("aria-expanded") ?? nothing}
       >
         ${icon}${label}${detail}
       </button>`;

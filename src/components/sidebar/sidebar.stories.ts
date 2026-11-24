@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
-import { html } from "lit";
+import { html, type TemplateResult } from "lit";
 import { expect } from "storybook/test";
 import "../avatar/avatar.ts";
 import "../button/button.ts";
+import "../menu/menu.ts";
 import "./sidebar.ts";
 import type { PlSidebar } from "./sidebar.ts";
 
@@ -234,6 +235,60 @@ export const Reorderable: Story = {
       <pl-sidebar-item id="first" href="#first" selected>First</pl-sidebar-item>
       <pl-sidebar-item id="second" href="#second">Second</pl-sidebar-item>
       <pl-sidebar-item id="third" href="#third">Third</pl-sidebar-item>
+    </pl-sidebar>
+  `,
+};
+
+const withContent = (sidebar: TemplateResult) => html`
+  <div id="app" style="display: flex">
+    ${sidebar}
+    <main
+      id="main"
+      style="flex: 1; min-inline-size: calc(var(--pl-spacing) * 64)"
+    >
+      Content
+    </main>
+  </div>
+`;
+
+/** Beside the page's content. On a narrow screen the sidebar is collapsed from the first frame, so the page never overflows sideways. */
+export const BesideContent: Story = {
+  render: () =>
+    withContent(html`
+      <pl-sidebar id="sidebar" label="Library">
+        <pl-sidebar-item id="home" href="#home" selected
+          >${inbox}Home</pl-sidebar-item
+        >
+        <pl-sidebar-item id="settings" href="#settings"
+          >${inbox}Settings</pl-sidebar-item
+        >
+      </pl-sidebar>
+    `),
+};
+
+/** Collapsed with `no-toggle`: the sidebar takes no space, not even a strip. */
+export const NoToggleCollapsed: Story = {
+  render: () =>
+    withContent(html`
+      <pl-sidebar id="sidebar" label="Library" no-toggle collapsed>
+        <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+      </pl-sidebar>
+    `),
+};
+
+/** An `action` item as the trigger of a `pl-menu`: the button that holds focus carries `aria-haspopup` and `aria-expanded`. */
+export const MenuTrigger: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Workspace" collapse-below="0">
+      <pl-menu id="menu" label="Account">
+        <pl-sidebar-item id="account" slot="trigger" action
+          ><pl-avatar slot="icon" name="Ada Lovelace"></pl-avatar>Ada
+          Lovelace</pl-sidebar-item
+        >
+        <pl-menu-item>Profile</pl-menu-item>
+        <pl-menu-item>Sign Out</pl-menu-item>
+      </pl-menu>
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
     </pl-sidebar>
   `,
 };

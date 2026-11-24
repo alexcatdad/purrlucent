@@ -26,7 +26,14 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * edge over a scrim: the page behind is inert, Escape or a press on the scrim
  * closes it, focus moves into it and returns to the toggle. A collapse it made
  * itself is undone when the screen widens; `pl-collapse` also fires for the
- * first one, once the sidebar has rendered.
+ * first one, once the sidebar has rendered. Whether the screen is narrow is
+ * decided when the sidebar connects and again at each width change, before the
+ * next frame is drawn, so a narrow screen never shows the inline sidebar. While
+ * the panel is open the sidebar itself takes no space in the page.
+ *
+ * Hiding and showing slides the width, with the motion tokens, and does not
+ * animate under `prefers-reduced-motion: reduce`; a collapse caused by the
+ * screen width is immediate.
  *
  * `collapsed` is the state, and an app can control it: set the property or
  * attribute, or call `toggle()`, `show()` and `hide()`. Setting `collapsed`
@@ -34,10 +41,10 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * and the automatic collapse do. With `no-toggle` the built-in button is
  * hidden, for an app that has its own.
  *
- * @attr {boolean} collapsed - The sidebar is hidden, leaving only its toggle. Set it to control the sidebar; changing it from outside fires no `pl-collapse`.
+ * @attr {boolean} collapsed - The sidebar is hidden, leaving only its toggle, or nothing with `no-toggle`. Set it to control the sidebar; changing it from outside fires no `pl-collapse`.
  * @attr {number} collapse-below - The viewport width in px at and below which the sidebar collapses on its own and opens as a modal panel. `0` turns this off. Defaults to 600.
- * @attr {boolean} no-toggle - Hides the built-in toggle button. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.
- * @attr {boolean} reorderable - Level 1 items show a grip and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
+ * @attr {boolean} no-toggle - Hides the built-in toggle button; a collapsed sidebar then takes no space at all. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.
+ * @attr {boolean} reorderable - Level 1 items show a grip, on hover and keyboard focus or always on a touch screen, and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
  * @attr {string} shortcut - A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known. A key press needs `mod`, `ctrl` or `alt` to count, so typing is never taken.
  * @attr {string} toggle-label - The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.
  * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
@@ -379,12 +386,44 @@ export class PlSidebar extends LitElement {
     if (narrow === this.#wasNarrow) return;
     const first = this.#wasNarrow === undefined;
     this.#wasNarrow = narrow;
+    // The change applies to the host in this task, before the next frame is
+    // drawn, and without the collapse animation: a narrow screen never shows
+    // the full-width sidebar, not even while it shrinks.
+    if (!first) this.#snap();
+    if (!narrow) this.#closePanel();
     this._narrow = narrow;
     // A listener added after the element connected still hears the first one.
     if (narrow && !this.collapsed) this.#setCollapsed(true, true, first);
     else if (!narrow && this.#autoCollapsed && this.collapsed)
       this.#setCollapsed(false);
+    else this.#applyHostState();
   };
+
+  /** Switches the collapse animation off until the change has been drawn. */
+  #snap() {
+    this.toggleAttribute("data-snap", true);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => this.removeAttribute("data-snap")),
+    );
+  }
+
+  /** The attributes the styles read, set now rather than at the next update. */
+  #applyHostState() {
+    this.toggleAttribute("collapsed", this.collapsed);
+    this.toggleAttribute("data-overlay", this.#overlay);
+  }
+
+  /**
+   * Closes an open modal panel before the render removes it. Removing an open
+   * modal dialog leaves the page inert and the engines restore focus on their
+   * own schedule, so the toggle is focused only afterwards, in `updated()`.
+   */
+  #closePanel() {
+    const dialog = this.shadowRoot?.querySelector("dialog");
+    if (!dialog?.open) return;
+    if (this.matches(":focus-within")) this.#refocus = true;
+    dialog.close();
+  }
 
   readonly #onShortcut = (event: KeyboardEvent) => {
     if (
@@ -479,11 +518,20 @@ export class PlSidebar extends LitElement {
     }
     if (this.#refocus) {
       this.#refocus = false;
-      const toggle = this.shadowRoot?.querySelector<HTMLElement>(
-        ".toggle:not(.in-dialog)",
-      );
-      (toggle ?? this.#opener)?.focus();
+      const opener = this.#opener;
       this.#opener = undefined;
+      const target = () =>
+        this.shadowRoot?.querySelector<HTMLElement>(
+          ".toggle:not(.in-dialog)",
+        ) ?? opener;
+      // After this update has settled and the closed dialog has let go of
+      // focus; once more a frame later for an engine that restores it late.
+      void this.updateComplete.then(() => {
+        target()?.focus();
+        requestAnimationFrame(() => {
+          if (!target()?.matches(":focus")) target()?.focus();
+        });
+      });
     }
   }
 
@@ -491,7 +539,9 @@ export class PlSidebar extends LitElement {
 
   #setCollapsed(collapsed: boolean, auto = false, deferEvent = false) {
     this.#autoCollapsed = auto;
+    if (collapsed) this.#closePanel();
     this.collapsed = collapsed;
+    this.#applyHostState();
     const emit = () =>
       this.dispatchEvent(
         new CustomEvent("pl-collapse", {
