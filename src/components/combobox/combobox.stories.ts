@@ -205,6 +205,57 @@ export const NoResults: Story = {
   },
 };
 
+const places = ["Amsterdam", "Berlin", "Lisbon", "Oslo", "Vienna"];
+
+// Stands in for a server: it returns the places that contain the text, in its own order.
+const search = (event: Event) => {
+  const el = event.currentTarget as PlCombobox;
+  const { text } = (event as CustomEvent<{ text: string }>).detail;
+  el.replaceChildren(
+    ...places
+      .filter((place) => place.toLowerCase().includes(text.toLowerCase()))
+      .map((place) =>
+        Object.assign(document.createElement("pl-option"), {
+          textContent: place,
+        }),
+      ),
+  );
+};
+
+/** With `manual-filter` the field leaves the list to the app, which replaces the options on each `pl-input`. */
+export const ManualFilter: Story = {
+  render: () =>
+    column(
+      html`<pl-combobox
+        id="combo"
+        label="City"
+        manual-filter
+        @pl-input=${search}
+        >${places.map((place) => html`<pl-option>${place}</pl-option>`)}</pl-combobox
+      >`,
+    ),
+};
+
+/** `action-label` adds a row that offers the typed text; choosing it fires `pl-action`. */
+export const ActionLabel: Story = {
+  render: () =>
+    column(
+      html`<pl-combobox id="combo" label="Apple variety" action-label
+        >${apples}</pl-combobox
+      >`,
+    ),
+};
+
+/** A slotted `pl-option` with `action` is always listed and fires `pl-action` instead of choosing a value. */
+export const ActionOption: Story = {
+  render: () =>
+    column(
+      html`<pl-combobox id="combo" label="Apple variety"
+        >${apples}<pl-option action>Add a variety…</pl-option></pl-combobox
+      >`,
+    ),
+};
+
 export const Rtl: Story = {
   render: () =>
     column(

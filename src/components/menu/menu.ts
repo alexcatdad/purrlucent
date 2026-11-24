@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { DismissController } from "../../behaviors/dismiss.ts";
 import { LensController } from "../../behaviors/lens.ts";
 import { position } from "../../behaviors/position.ts";
+import type { Placement } from "../../behaviors/position.ts";
 import { matchIndex } from "../select/match.ts";
 import {
   itemStyles,
@@ -15,11 +16,16 @@ const TYPE_AHEAD_MS = 500;
 const HOVER_MS = 200;
 const DISABLED_TRIGGER = ":disabled, [aria-disabled=true]";
 
+export type MenuPlacement = Exclude<Placement, "top" | "bottom">;
+
 /**
  * One command in a `pl-menu`. Its text is the label. With `type` it becomes a
  * checkbox or radio item; radio items in a run (no separator, label or other
  * kind of item between them) are a group. A nested `pl-menu` in the
- * `submenu` slot makes it open a submenu.
+ * `submenu` slot makes it open a submenu. With `href` it is a link: a real
+ * anchor covers the row, so middle-click, open in a new tab and copy link work.
+ * Choosing an item dispatches a `click` event on the item itself, then the menu
+ * fires `pl-select`.
  *
  * @attr {string} value - What `pl-select` reports. Defaults to the label.
  * @attr {string} type - `checkbox` or `radio`. Empty for a plain command.
@@ -27,13 +33,21 @@ const DISABLED_TRIGGER = ":disabled, [aria-disabled=true]";
  * @attr {boolean} disabled - Skipped by the keyboard and cannot be activated.
  * @attr {boolean} destructive - The command deletes or discards something.
  * @attr {string} detail - Trailing text such as a shortcut. The `detail` slot wins.
+ * @attr {string} description - A second, muted line under the label. The `description` slot wins.
+ * @attr {string} href - Makes the item a link to this URL. Choosing it closes the menu and follows the link.
+ * @attr {string} target - Where the link opens, such as `_blank`.
+ * @attr {string} rel - The link's relationship, such as `noopener`.
  * @attr {boolean} indent - Reserves the check column. The menu sets it.
  * @slot - The label.
  * @slot icon - A leading svg.
+ * @slot description - A second, muted line under the label.
  * @slot detail - Trailing content, such as a shortcut.
  * @slot submenu - A nested `pl-menu`.
  * @csspart check - The check mark.
+ * @csspart link - The anchor of a link item.
+ * @csspart text - The label and description column.
  * @csspart label - The label wrapper.
+ * @csspart description - The description wrapper.
  * @csspart detail - The trailing text wrapper.
  * @csspart chevron - The submenu arrow.
  */
@@ -46,8 +60,13 @@ export class PlMenuItem extends LitElement {
     disabled: { type: Boolean, reflect: true },
     destructive: { type: Boolean, reflect: true },
     detail: { reflect: true },
+    description: { reflect: true },
+    href: { reflect: true },
+    target: { reflect: true },
+    rel: { reflect: true },
     indent: { type: Boolean, reflect: true },
     hasSubmenu: { state: true },
+    hasDescriptionSlot: { state: true },
   };
 
   declare value: string;
@@ -56,8 +75,13 @@ export class PlMenuItem extends LitElement {
   declare disabled: boolean;
   declare destructive: boolean;
   declare detail: string;
+  declare description: string;
+  declare href: string;
+  declare target: string;
+  declare rel: string;
   declare indent: boolean;
   declare hasSubmenu: boolean;
+  declare hasDescriptionSlot: boolean;
 
   readonly #internals = this.attachInternals();
 
@@ -69,8 +93,28 @@ export class PlMenuItem extends LitElement {
     this.disabled = false;
     this.destructive = false;
     this.detail = "";
+    this.description = "";
+    this.href = "";
+    this.target = "";
+    this.rel = "";
     this.indent = false;
     this.hasSubmenu = false;
+    this.hasDescriptionSlot = false;
+  }
+
+  get #described(): boolean {
+    return this.hasDescriptionSlot || this.description !== "";
+  }
+
+  get #link(): HTMLAnchorElement | null {
+    return this.shadowRoot?.querySelector("[part=link]") ?? null;
+  }
+
+  /** Activates the item. A link item clicks its anchor, so the browser follows the link. */
+  override click() {
+    const link = this.#link;
+    if (link && !this.disabled) link.click();
+    else super.click();
   }
 
   /** The item's own text, without its detail or submenu. */
@@ -106,22 +150,51 @@ export class PlMenuItem extends LitElement {
     else this.removeAttribute("aria-checked");
     if (this.hasSubmenu) this.setAttribute("aria-haspopup", "menu");
     else this.removeAttribute("aria-haspopup");
-    // An open submenu's text would otherwise become part of this row's name.
-    this.#internals.ariaLabelledByElements = this.hasSubmenu
-      ? [this.shadowRoot!.querySelector("[part=label]")!]
+    // An open submenu's text, or the description, would otherwise become part of this row's name.
+    this.#internals.ariaLabelledByElements =
+      this.hasSubmenu || this.#described
+        ? [this.shadowRoot!.querySelector("[part=label]")!]
+        : null;
+    this.#internals.ariaDescribedByElements = this.#described
+      ? [this.shadowRoot!.querySelector("[part=description]")!]
       : null;
   }
 
   override render() {
-    return html`${
+    const body = html`${
         this.indent
           ? html`<svg part="check" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12l5 5l10 -10" />
             </svg>`
           : nothing
-      }<slot name="icon"></slot><span part="label"><slot></slot></span
-      ><span part="detail"><slot name="detail">${this.detail}</slot></span
-      >${
+      }<slot name="icon"></slot
+      ><span part="text"
+        ><span part="label"><slot></slot></span
+        ><span part="description" ?hidden=${!this.#described}
+          ><slot
+            name="description"
+            @slotchange=${(event: Event) =>
+              (this.hasDescriptionSlot =
+                (event.target as HTMLSlotElement).assignedNodes().length > 0)}
+            >${this.description}</slot
+          ></span
+        ></span
+      ><span part="detail"><slot name="detail">${this.detail}</slot></span>`;
+    // A link item's anchor is an empty layer over the row, so the row keeps
+    // its name from its own text and the link still opens in a new tab or
+    // copies its address like any link.
+    return html`${body}${
+        this.href && !this.disabled
+          ? html`<a
+              part="link"
+              tabindex="-1"
+              aria-hidden="true"
+              href=${this.href}
+              target=${this.target || nothing}
+              rel=${this.rel || nothing}
+            ></a>`
+          : nothing
+      }${
         this.hasSubmenu
           ? html`<svg part="chevron" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 6l6 6l-6 6" />
@@ -167,24 +240,34 @@ export class PlMenuLabel extends LitElement {
  * moves to them while the menu is open and returns to the trigger on close.
  * Arrow keys move with wrap, Home and End jump, typing jumps to a label,
  * Enter and Space activate, Escape closes one level, Tab closes all of them.
- * Activating an item closes every level and fires `pl-select`.
+ * Activating an item dispatches `click` on the item, closes every level and
+ * fires `pl-select`. `show()` and `open` open it from code with the first item
+ * focused, as a keyboard open does.
  *
  * @attr {string} label - The accessible name of the menu.
  * @attr {boolean} open - The menu is showing.
+ * @attr {string} placement - Where the menu opens from its trigger: `bottom-start` (default), `bottom-end`, `top-start`, `top-end`, `start` or `end`. It flips when the side has no room.
  * @slot trigger - A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
+ * @slot header - Non-interactive content above the items, such as a name and email block or an empty state.
  * @slot - The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
  * @csspart menu - The popup.
- * @fires {CustomEvent<{ value: string }>} pl-select - An item was activated. `detail.value` holds its value.
+ * @csspart header - The wrapper of the header content.
+ * @fires {CustomEvent<{ value: string; item: PlMenuItem }>} pl-select - An item was activated. `detail.value` holds its value and `detail.item` the item element.
+ * @fires {CustomEvent<{ open: boolean }>} pl-toggle - The menu opened or closed. `detail.open` says which. A submenu fires it on itself and it does not bubble.
  */
 export class PlMenu extends LitElement {
   static override styles = menuStyles;
   static override properties = {
     label: { reflect: true },
     open: { type: Boolean, reflect: true },
+    placement: { reflect: true },
+    hasHeader: { state: true },
   };
 
   declare label: string;
   declare open: boolean;
+  declare placement: MenuPlacement;
+  declare hasHeader: boolean;
 
   #query = "";
   #timer: ReturnType<typeof setTimeout> | undefined;
@@ -200,6 +283,8 @@ export class PlMenu extends LitElement {
     );
     this.label = "";
     this.open = false;
+    this.placement = "bottom-start";
+    this.hasHeader = false;
     // Only the root listens: a press on a parent row must not close its submenu.
     new DismissController(this, {
       enabled: () => this.open && !this.#parent,
@@ -250,8 +335,16 @@ export class PlMenu extends LitElement {
     if (wasOpen) this.#reposition();
   }
 
+  /** Opens the menu at its trigger with the first item focused, as a keyboard open does. */
+  show() {
+    const wasOpen = this.open;
+    this.#atPoint = false;
+    this.#openFromTrigger("first");
+    if (wasOpen) this.#reposition();
+  }
+
   hide() {
-    this.#close(true);
+    if (this.open) this.#close(true);
   }
 
   #close(refocus: boolean) {
@@ -294,7 +387,7 @@ export class PlMenu extends LitElement {
     }
     this.dispatchEvent(
       new CustomEvent("pl-select", {
-        detail: { value: item.itemValue },
+        detail: { value: item.itemValue, item },
         bubbles: true,
         composed: true,
       }),
@@ -430,7 +523,7 @@ export class PlMenu extends LitElement {
         : (this.#trigger ?? this.shadowRoot!.querySelector("[part=point]")!);
       // A point has no edge to keep clear of; a trigger gets the list's margin as a gap.
       list.style.marginBlock = this.#atPoint ? "0" : "";
-      position(anchor, list, "bottom-start");
+      position(anchor, list, this.#atPoint ? "bottom-start" : this.placement);
       return;
     }
     const anchor = parent.shadowRoot!.querySelector("[part=anchor]")!;
@@ -463,9 +556,15 @@ export class PlMenu extends LitElement {
 
   protected override updated(changed: PropertyValues<this>) {
     this.#syncAnchor();
-    if (!changed.has("open")) return;
+    if (!changed.has("open")) {
+      if (changed.has("placement") && this.open) this.#reposition();
+      return;
+    }
     const list = this.#list;
     if (this.open && !list.matches(":popover-open")) {
+      // Where focus returns to when there is no trigger and no point to come from.
+      if (!this.#parent && !this.#atPoint)
+        this.#opener = document.activeElement as HTMLElement | null;
       list.showPopover();
       this.#reposition();
       addEventListener("resize", this.#reposition);
@@ -480,6 +579,15 @@ export class PlMenu extends LitElement {
       removeEventListener("resize", this.#reposition);
       removeEventListener("scroll", this.#reposition, true);
     }
+    // The first update only sets the starting state.
+    if (changed.get("open") !== undefined)
+      this.dispatchEvent(
+        new CustomEvent("pl-toggle", {
+          detail: { open: this.open },
+          bubbles: !this.#parent,
+          composed: true,
+        }),
+      );
   }
 
   // `type` can change after the slot was assigned, which slotchange does not report.
@@ -515,6 +623,14 @@ export class PlMenu extends LitElement {
         popover="manual"
         aria-label=${this.label || nothing}
       >
+        <div part="header" role="group" ?hidden=${!this.hasHeader}>
+          <slot
+            name="header"
+            @slotchange=${(event: Event) =>
+              (this.hasHeader =
+                (event.target as HTMLSlotElement).assignedNodes().length > 0)}
+          ></slot>
+        </div>
         <slot @slotchange=${this.#onItems}></slot>
       </div>`;
   }

@@ -179,6 +179,35 @@ export const InForm: Story = {
     </form>`,
 };
 
+/** A form that validates itself sets `aria-required`, `aria-describedby`, `aria-invalid` and `aria-errormessage` on the host; the field forwards them to its native input. */
+export const HostAria: Story = {
+  parameters: {
+    // The host attributes are forwarded to the inner control, which is where they apply.
+    a11y: {
+      options: {
+        rules: {
+          "aria-allowed-attr": { enabled: false },
+          "aria-valid-attr-value": { enabled: false },
+        },
+      },
+    },
+  },
+  render: () =>
+    column(html`
+      <pl-date-picker
+        id="picker"
+        locale="en-US"
+        aria-required="true"
+        aria-invalid="true"
+        aria-describedby="hint"
+        aria-errormessage="problem"
+        >Date</pl-date-picker
+      >
+      <p id="hint" style="margin:0">Pick a day next week.</p>
+      <p id="problem" style="margin:0">Choose a date.</p>
+    `),
+};
+
 export const Rtl: Story = {
   render: () =>
     column(

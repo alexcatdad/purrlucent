@@ -104,6 +104,17 @@ export const Behavior: Story = {
   },
 };
 
+/** A listener that calls preventDefault on pl-change keeps the state. */
+export const Cancelable: Story = {
+  render: () => html`<pl-toggle id="toggle">${star}Favorite</pl-toggle>`,
+  play: async () => {
+    const toggle = document.getElementById("toggle") as PlToggle;
+    toggle.addEventListener("pl-change", (event) => event.preventDefault());
+    await userEvent.click(toggle);
+    expect(toggle.pressed).toBe(false);
+  },
+};
+
 /** A disabled fieldset disables the toggle. */
 export const InFieldset: Story = {
   render: () =>

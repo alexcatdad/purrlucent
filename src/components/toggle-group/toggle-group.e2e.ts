@@ -109,6 +109,35 @@ test("a click selects one segment and pl-change fires once", async ({
   ).toEqual([{ selected: ["week"] }]);
 });
 
+test("a prevented pl-change keeps the selection and fires no input or change", async ({
+  page,
+}) => {
+  await open(page);
+  await page.locator("#control").evaluate((el) => {
+    (window as unknown as { native: string[] }).native = [];
+    el.addEventListener("pl-change", (e) => e.preventDefault());
+    for (const type of ["input", "change"])
+      el.addEventListener(type, () =>
+        (window as unknown as { native: string[] }).native.push(type),
+      );
+  });
+  await page.getByRole("radio", { name: "Week" }).click();
+  await expect(page.getByRole("radio", { name: "Day" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await expect(page.getByRole("radio", { name: "Week" })).toHaveAttribute(
+    "aria-checked",
+    "false",
+  );
+  expect(await selectedValue(page)).toBe("day");
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { native: string[] }).native,
+    ),
+  ).toEqual([]);
+});
+
 test("a selection is required: the selected segment cannot be cleared", async ({
   page,
 }) => {

@@ -218,6 +218,100 @@ export const Glass: Story = {
   globals: { material: "glass", theme: "dark", contrast: "more" },
 };
 
+const note = (text: string) => html`<p style="margin:0">${text}</p>`;
+
+/** With a cancel action, the close button clicks it, as Escape does. */
+export const OpenClosableWithCancel: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-dialog id="dialog" variant="sheet" closable>
+        <h2 slot="title">Rename file</h2>
+        ${note("The new name applies everywhere.")}
+        <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+        <pl-button slot="actions" default data-close="save">Save</pl-button>
+      </pl-dialog>`,
+    ),
+  play: open,
+};
+
+/** `closable` adds a close button to the header; it cancels like Escape. */
+export const OpenClosable: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-dialog id="dialog" variant="sheet" closable>
+        <h2 slot="title">Keyboard shortcuts</h2>
+        <p slot="description" style="margin:0">
+          Shortcuts work anywhere in the app.
+        </p>
+        ${note("Press Command-K to search.")}
+        <pl-button slot="actions" data-close="done">Done</pl-button>
+      </pl-dialog>`,
+    ),
+  play: open,
+};
+
+/** `actions-start` holds status text at the start of the actions row. */
+export const OpenActionsStart: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-dialog id="dialog" variant="sheet">
+        <h2 slot="title">Translate</h2>
+        ${note("Review the suggested translation before you save it.")}
+        <span slot="actions-start">3 of 12 reviewed</span>
+        <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+        <pl-button slot="actions" default data-close="save">Save</pl-button>
+      </pl-dialog>`,
+    ),
+  play: open,
+};
+
+/** The `description` attribute describes a dialog that has no description slot. */
+export const OpenDescribedByAttribute: Story = {
+  render: () =>
+    scene(
+      "Show sheet",
+      html`<pl-dialog
+        id="dialog"
+        variant="sheet"
+        description="Changes apply to every project you own."
+      >
+        <h2 slot="title">Default settings</h2>
+        ${note("Choose the defaults for new projects.")}
+        <pl-button slot="actions" data-close="done">Done</pl-button>
+      </pl-dialog>`,
+    ),
+  play: open,
+};
+
+/** `nonmodal` keeps the page behind interactive: no scrim, no focus trap. */
+export const OpenNonmodal: Story = {
+  render: () =>
+    html`<div style="padding:var(--pl-space-4)">
+      <pl-button
+        id="trigger"
+        @click=${(event: Event) =>
+          (
+            (event.currentTarget as HTMLElement).nextElementSibling as PlDialog
+          ).show()}
+        >Show tool</pl-button
+      >
+      <pl-dialog id="dialog" variant="sheet" nonmodal closable>
+        <h2 slot="title">Translation tool</h2>
+        ${note("The page behind stays interactive.")}
+        <pl-button slot="actions" data-close="done">Done</pl-button>
+      </pl-dialog>
+      <pl-button id="page-button">Page action</pl-button>
+      <div
+        id="page-layer"
+        style="position:fixed;inset:0;z-index:10;pointer-events:none"
+      ></div>
+    </div>`,
+  play: open,
+};
+
 export const GlassSheet: Story = {
   render: () => scene("Show sheet", save()),
   play: open,

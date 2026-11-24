@@ -1,20 +1,27 @@
 import { LitElement, html, nothing } from "lit";
-import { closeGlyph, errorGlyph } from "../../behaviors/glyphs.ts";
+import {
+  closeGlyph,
+  errorGlyph,
+  successGlyph,
+  warningGlyph,
+} from "../../behaviors/glyphs.ts";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import "../button/button.ts";
 import { toastStyles, toasterStyles } from "./toast.css.ts";
 import { messages } from "../../behaviors/locale.ts";
 
-export type PlToastVariant = "neutral" | "destructive";
+export type PlToastVariant = "neutral" | "destructive" | "success" | "warning";
 export type PlToastCloseReason = "close" | "escape" | "timeout" | "action";
 
 /** What `PlToaster.show()` builds a toast from. */
 export interface PlToastOptions {
   /** What happened, in a few words. */
   title: string;
-  /** One short sentence of detail. */
-  description?: string;
+  /** One short sentence of detail, or a node such as a collapsed `details` element. A string keeps its line breaks. */
+  description?: string | Node;
+  /** Names the toast: showing another with the same id replaces this one where it is, instead of adding a second. */
+  id?: string;
   variant?: PlToastVariant;
   /** A button under the text. A toast with an action never dismisses itself, and pressing the action closes it after `onClick` runs. */
   action?: { label: string; onClick?: () => void };
@@ -22,11 +29,18 @@ export interface PlToastOptions {
   duration?: number;
 }
 
+const glyphs: Partial<Record<PlToastVariant, unknown>> = {
+  destructive: errorGlyph,
+  success: successGlyph,
+  warning: warningGlyph,
+};
+
 /**
  * A non-blocking status message: a title, an optional description, an
  * optional action and a close button. It never takes focus when it appears.
  * Inside a `pl-toaster` the toaster's live region announces it, and a
- * destructive toast is a `role="alert"` of its own; outside one it is a
+ * destructive toast is a `role="alert"` of its own, while success and warning
+ * toasts are announced politely; outside one it is a
  * `status` (or `alert`) itself.
  *
  * A toast without an action dismisses itself after `duration` milliseconds.
@@ -37,11 +51,11 @@ export interface PlToastOptions {
  * Escape closes the toast that has focus and returns focus to where it was.
  * A closed toast stays closed; show a new one.
  *
- * @attr {string} variant - `neutral` (default) or `destructive`.
+ * @attr {string} variant - `neutral` (default), `destructive`, `success` or `warning`.
  * @attr {number} duration - Milliseconds before it dismisses itself. Defaults to 6000. 0 keeps it. Ignored when there is an action.
  * @attr {string} close-label - The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Dismiss".
  * @slot title - The heading.
- * @slot - The description.
+ * @slot - The description. Past a set height it scrolls.
  * @slot action - A `pl-button`. Pressing it closes the toast, unless its click is prevented.
  * @csspart text - The title and description.
  * @csspart close - The close button.
@@ -66,6 +80,7 @@ export class PlToast extends LitElement {
   #hovered = false;
   #focused = false;
   #returnTo: Element | null = null;
+  #resize = new ResizeObserver(() => this.#fit());
 
   constructor() {
     super();
@@ -82,11 +97,15 @@ export class PlToast extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) this.#sync();
+    if (this.hasUpdated) {
+      this.#observe();
+      this.#sync();
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.#resize.disconnect();
     this.#sync();
   }
 
@@ -113,6 +132,7 @@ export class PlToast extends LitElement {
   }
 
   protected override updated() {
+    this.#observe();
     this.#sync();
   }
 
@@ -156,6 +176,40 @@ export class PlToast extends LitElement {
     if (keepRemainder) this.#left -= performance.now() - this.#since;
   }
 
+  // A description that scrolls takes the keyboard, so its overflow can be reached.
+  #fit() {
+    const text =
+      this.renderRoot.querySelector<HTMLElement>("[part=description]");
+    if (!text) return;
+    // A pixel of slack: Firefox rounds a fitting box's scroll height up.
+    if (text.scrollHeight > text.clientHeight + 1) {
+      text.tabIndex = 0;
+      text.setAttribute("role", "region");
+      text.setAttribute("aria-labelledby", "title");
+    } else {
+      text.removeAttribute("tabindex");
+      text.removeAttribute("role");
+      text.removeAttribute("aria-labelledby");
+    }
+  }
+
+  // The description box itself, which a resize observer reports even when its
+  // content is text or inline, and the elements slotted into it.
+  #observe() {
+    this.#resize.disconnect();
+    const text =
+      this.renderRoot.querySelector<HTMLElement>("[part=description]");
+    if (!text) return;
+    this.#resize.observe(text);
+    for (const node of text.querySelector("slot")?.assignedElements() ?? [])
+      this.#resize.observe(node);
+  }
+
+  #watch() {
+    this.#observe();
+    this.#fit();
+  }
+
   #hover(on: boolean) {
     this.#hovered = on;
     this.#sync();
@@ -187,13 +241,15 @@ export class PlToast extends LitElement {
 
   override render() {
     return html`${
-        this.variant === "destructive"
-          ? html`<span part="icon">${errorGlyph}</span>`
+        glyphs[this.variant]
+          ? html`<span part="icon">${glyphs[this.variant]}</span>`
           : nothing
       }
       <div part="text">
-        <div part="title"><slot name="title"></slot></div>
-        <div part="description"><slot></slot></div>
+        <div part="title" id="title"><slot name="title"></slot></div>
+        <div part="description">
+          <slot @slotchange=${this.#watch}></slot>
+        </div>
       </div>
       <button
         part="close"
@@ -219,6 +275,7 @@ customElements.define("pl-toast", PlToast);
 
 // The toasts `show()` made are removed when they close; the author's own are not.
 const made = new WeakSet<Element>();
+const ids = new WeakMap<Element, string>();
 
 function createToast(options: PlToastOptions): PlToast {
   const toast = document.createElement("pl-toast");
@@ -228,7 +285,15 @@ function createToast(options: PlToastOptions): PlToast {
   title.slot = "title";
   title.textContent = options.title;
   toast.append(title);
-  if (options.description) toast.append(options.description);
+  const { description } = options;
+  if (typeof description === "string") {
+    // Only the text `show()` was given keeps its line breaks.
+    const text = document.createElement("span");
+    text.style.display = "block";
+    text.style.whiteSpace = "pre-line";
+    text.textContent = description;
+    toast.append(text);
+  } else if (description) toast.append(description);
   if (options.action) {
     const { label, onClick } = options.action;
     const button = document.createElement("pl-button");
@@ -239,6 +304,7 @@ function createToast(options: PlToastOptions): PlToast {
     toast.append(button);
   }
   made.add(toast);
+  if (options.id !== undefined) ids.set(toast, options.id);
   return toast;
 }
 
@@ -262,6 +328,11 @@ function createToast(options: PlToastOptions): PlToast {
  * });
  * PlToaster.show({ title: "Not saved", variant: "destructive" });
  * ```
+ *
+ * Both take an `id`: a toast shown with the id of one that is still there
+ * replaces it where it stands, which keeps one toast for one ongoing thing.
+ * A string description keeps its line breaks; a node, such as a collapsed
+ * `details` element, is shown as it is. A long description scrolls.
  *
  * Or write `pl-toast` elements inside it.
  *
@@ -296,10 +367,24 @@ export class PlToaster extends LitElement {
     if (!this.matches(":popover-open")) this.showPopover();
   }
 
-  /** Adds a toast to this toaster and returns it. */
+  /** Adds a toast to this toaster and returns it. A toast with the `id` of one already here takes its place. */
   show(options: PlToastOptions): PlToast {
     const toast = createToast(options);
-    this.append(toast);
+    const same =
+      options.id === undefined
+        ? undefined
+        : [...this.children].find((child) => ids.get(child) === options.id);
+    if (same) {
+      // Focus inside the old toast moves to the new one that takes its place.
+      const focused = same.matches(":focus-within");
+      same.before(toast);
+      // Closing it fires pl-close, and the toaster removes it.
+      (same as PlToast).close();
+      if (focused)
+        void toast.updateComplete.then(() =>
+          toast.shadowRoot?.querySelector<HTMLElement>("[part=close]")?.focus(),
+        );
+    } else this.append(toast);
     return toast;
   }
 
@@ -310,7 +395,15 @@ export class PlToaster extends LitElement {
     const toaster = document.createElement("pl-toaster");
     document.body.append(toaster);
     const toast = createToast(options);
-    setTimeout(() => toaster.append(toast), 100);
+    // A toast with the same id shown in the meantime is newer and stays.
+    setTimeout(() => {
+      const id = ids.get(toast);
+      if (
+        id === undefined ||
+        ![...toaster.children].some((child) => ids.get(child) === id)
+      )
+        toaster.append(toast);
+    }, 100);
     return toast;
   }
 

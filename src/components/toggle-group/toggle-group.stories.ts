@@ -165,3 +165,19 @@ export const KeyboardRtl: Story = {
     expect(el.value).toBe("week");
   },
 };
+
+/** A listener that calls preventDefault on pl-change keeps the selection and fires no input or change. */
+export const Cancelable: Story = {
+  render,
+  play: async ({ canvasElement }) => {
+    const el = await control(canvasElement);
+    const native: string[] = [];
+    el.addEventListener("pl-change", (event) => event.preventDefault());
+    el.addEventListener("input", () => native.push("input"));
+    el.addEventListener("change", () => native.push("change"));
+    await userEvent.click(el.querySelector("[value=week]")!);
+    await el.updateComplete;
+    expect(el.value).toBe("day");
+    expect(native).toEqual([]);
+  },
+};

@@ -6,8 +6,10 @@ import type {
   PlDataTable,
   PlDataTableColumn,
   PlDataTableModel,
+  PlDataTableRow,
   PlModelCell,
   PlModelColumn,
+  PlModelRow,
   PlPin,
 } from "./data-table.ts";
 
@@ -462,6 +464,76 @@ export const ModelInteractive: Story = { render: modelInteractive };
 export const ModelInteractiveRtl: Story = {
   render: modelInteractive,
   globals: { dir: "rtl" },
+};
+
+/** `renderCell` returns a template, a Node or a string in place of a cell's text; returning nothing keeps the text. */
+export const RichCells: Story = {
+  render: () => html`
+    <pl-data-table
+      id="control"
+      caption="Pioneers"
+      .columns=${columns}
+      .rows=${rows}
+      .renderCell=${(row: PlDataTableRow, column: PlDataTableColumn) => {
+        if (column.key === "name")
+          return html`<a href="#${row.id}">${row.name}</a>`;
+        if (column.key === "role") {
+          const node = document.createElement("em");
+          node.textContent = String(row.role);
+          return node;
+        }
+        if (column.key === "age")
+          return html`<pl-checkbox
+            aria-label="Verified ${row.name}"
+          ></pl-checkbox>`;
+        return undefined;
+      }}
+    ></pl-data-table>
+  `,
+};
+
+/** In model mode a cell renderer receives the model row and column; the arrow keys still move between cells, and a button in a cell stays in the tab order. */
+export const ModelRichCells: Story = {
+  render: () => html`
+    <pl-data-table
+      id="control"
+      caption="People"
+      cell-select
+      .model=${
+        {
+          columns: modelColumns.map((c) => ({
+            ...c,
+            pinned: undefined,
+            width: undefined,
+          })),
+          headerGroups: [
+            modelColumns.map((c) => ({
+              id: `h-${c.key}`,
+              column: c.key,
+              label: c.label,
+              colSpan: 1,
+            })),
+          ],
+          rows: everyone.map((p) => ({
+            id: p.id,
+            depth: 0,
+            cells: rowCells(p.id, p).map((cell) => ({
+              ...cell,
+              pinned: undefined,
+            })),
+          })),
+        } satisfies PlDataTableModel
+      }
+      .renderCell=${(row: PlModelRow, column: PlModelColumn) => {
+        const cell = row.cells.find((c) => c.column === column.key);
+        if (column.key === "name")
+          return html`<a href="#${row.id}">${cell?.value}</a>`;
+        if (column.key === "city")
+          return html`<pl-button>Map ${cell?.value}</pl-button>`;
+        return undefined;
+      }}
+    ></pl-data-table>
+  `,
 };
 
 /** With no rows, the empty slot replaces the body. */

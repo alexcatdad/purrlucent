@@ -8,6 +8,7 @@ import { badgeStyles } from "./badge.css.ts";
  * surrounding text, for example "Inbox" before a badge reading "3".
  *
  * @attr {string} variant - `neutral` (default), `accent`, `success`, `warning` or `destructive`.
+ * @attr {string} appearance - `solid` (default), `soft` (a tinted fill under tone-colored text) or `outline` (an edge in the tone, no fill).
  * @attr {boolean} dot - A status pill: the badge keeps the neutral fill and the variant colors a dot before the text.
  * @slot - The badge text.
  * @csspart dot - The status dot, shown with `dot`.
@@ -17,15 +18,18 @@ export class PlBadge extends LitElement {
   static override styles = badgeStyles;
   static override properties = {
     variant: { reflect: true },
+    appearance: { reflect: true },
     dot: { type: Boolean, reflect: true },
   };
 
   declare variant: "neutral" | "accent" | "success" | "warning" | "destructive";
+  declare appearance: "solid" | "soft" | "outline";
   declare dot: boolean;
 
   constructor() {
     super();
     this.variant = "neutral";
+    this.appearance = "solid";
     this.dot = false;
   }
 

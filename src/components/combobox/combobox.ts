@@ -46,6 +46,13 @@ type ActiveDescendantHost = HTMLInputElement & {
  * field with no value shows the validation message below it. The list is as
  * wide as the field: a long option wraps, and a long value ends in an ellipsis.
  *
+ * With `manual-filter` the list is never narrowed or reordered here: the app
+ * listens to `pl-input` and replaces the options itself, as when it searches
+ * on a server. A `pl-option` with the `action` attribute is a row that fires
+ * `pl-action` instead of choosing a value; it is always listed, and the
+ * `action-label` attribute adds such a row ("Add" and the typed text) while
+ * text has been typed.
+ *
  * @attr {string} value - The chosen option's value, or the custom text.
  * @attr {string} text - The visible text of the field.
  * @attr {string} name - The name submitted with a form.
@@ -58,9 +65,12 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {boolean} open - The list is showing.
  * @attr {string} toggle-label - The chevron button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Show options", which becomes "<label>, show options" when the field has a label.
  * @attr {string} empty-label - The text shown when no option matches. Defaults to the page language's text (see `setMessages`), in English "No results".
+ * @attr {boolean} manual-filter - The app filters the options; the typed text does not narrow the list.
+ * @attr {string} action-label - Shows an action row while text is typed. Its text defaults to the page language's text (see `setMessages`), in English "Add {query}"; `{query}` stands for the typed text.
  * @slot - The `pl-option` children.
  * @slot label - The visible label.
  * @csspart label - The visible label.
+ * @csspart action - The row that `action-label` adds.
  * @csspart field - The shell around the input and the button.
  * @csspart control - The native input.
  * @csspart button - The chevron button that toggles the list.
@@ -69,6 +79,7 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart message - The validation message below the field.
  * @fires {CustomEvent<{ text: string }>} pl-input - The text changed through typing or Escape. `detail.text` holds it.
  * @fires {CustomEvent<{ value: string }>} pl-change - The value changed. `detail.value` holds it.
+ * @fires {CustomEvent<{ query: string }>} pl-action - An action row was chosen. `detail.query` holds the typed text, empty when nothing was typed.
  * @fires input - After each pl-input, as a native input fires it.
  * @fires change - After each pl-change.
  */
@@ -95,6 +106,8 @@ export class PlCombobox extends LitElement {
     open: { type: Boolean, reflect: true },
     toggleLabel: { attribute: "toggle-label" },
     emptyLabel: { attribute: "empty-label" },
+    manualFilter: { type: Boolean, reflect: true, attribute: "manual-filter" },
+    actionLabel: { attribute: "action-label" },
     _active: { state: true },
     _labelled: { state: true },
   };
@@ -111,6 +124,8 @@ export class PlCombobox extends LitElement {
   declare open: boolean;
   declare toggleLabel: string;
   declare emptyLabel: string;
+  declare manualFilter: boolean;
+  declare actionLabel: string | null;
   declare _active: PlOption | null;
   declare _labelled: boolean;
 
@@ -146,6 +161,8 @@ export class PlCombobox extends LitElement {
     this.open = false;
     this.toggleLabel = "";
     this.emptyLabel = "";
+    this.manualFilter = false;
+    this.actionLabel = null;
     this._active = null;
     this._labelled = false;
     new DismissController(this, {
@@ -167,17 +184,37 @@ export class PlCombobox extends LitElement {
     return [...this.querySelectorAll("pl-option")];
   }
 
+  /** The text typed since the list last closed. */
+  get #query(): string {
+    return this.#filtering ? this.text : "";
+  }
+
+  // Action rows are never filtered and come last.
   get #listed(): PlOption[] {
-    const options = this.#options;
-    return filterIndexes(
-      options.map((o) => o.label),
-      this.#filtering ? this.text : "",
-    ).map((i) => options[i]!);
+    const options = this.#options.filter((o) => !o.action);
+    const shown = this.manualFilter
+      ? options
+      : filterIndexes(
+          options.map((o) => o.label),
+          this.#query,
+        ).map((i) => options[i]!);
+    return [...shown, ...this.#options.filter((o) => o.action)];
+  }
+
+  /** The row that `action-label` adds, once there is text for it to use. */
+  get #builtin(): PlOption | null {
+    return this.shadowRoot!.querySelector("[part=action]");
+  }
+
+  /** Every row the arrow keys can reach. */
+  get #rows(): PlOption[] {
+    const builtin = this.#builtin;
+    return [...this.#listed, ...(builtin ? [builtin] : [])];
   }
 
   get #chosen(): PlOption | undefined {
     return this.value
-      ? this.#options.find((o) => o.optionValue === this.value)
+      ? this.#options.find((o) => !o.action && o.optionValue === this.value)
       : undefined;
   }
 
@@ -234,7 +271,7 @@ export class PlCombobox extends LitElement {
     this.text = this.#chosen?.label ?? (this.allowCustom ? this.value : "");
   }
 
-  #emit(name: "pl-input" | "pl-change", detail: object) {
+  #emit(name: "pl-input" | "pl-change" | "pl-action", detail: object) {
     this.dispatchEvent(
       new CustomEvent(name, { detail, bubbles: true, composed: true }),
     );
@@ -264,17 +301,33 @@ export class PlCombobox extends LitElement {
   #commit() {
     const text = this.text;
     const hit = this.#options.find(
-      (o) => !o.disabled && o.label.toLowerCase() === text.toLowerCase(),
+      (o) =>
+        !o.action &&
+        !o.disabled &&
+        o.label.toLowerCase() === text.toLowerCase(),
     );
     if (hit) this.#setValue(hit.optionValue, hit.label);
     // Empty text beside a value that shows nothing was never typed: keep it.
     else if (this.allowCustom || (!text && (this.#chosen || !this.value))) {
       this.#setValue(text, text);
-    } else this.text = this.#chosen?.label ?? "";
+    } else if (!(this.manualFilter && this.value && !this.#chosen)) {
+      // The app's list may not hold the chosen option: then keep text and value.
+      this.text = this.#chosen?.label ?? "";
+    }
   }
 
   #choose(option: PlOption) {
     if (option.disabled) return;
+    if (option.action) {
+      // Typed text stays the query after Escape; a chosen label is not typed.
+      const query =
+        this.#filtering || this.text !== this.#chosen?.label
+          ? this.text.trim()
+          : "";
+      this.#hide();
+      this.#emit("pl-action", { query });
+      return;
+    }
     this.#setValue(option.optionValue, option.label);
     this.#hide();
   }
@@ -288,7 +341,7 @@ export class PlCombobox extends LitElement {
 
   #show(active?: PlOption) {
     this.open = true;
-    this._active = active && this.#listed.includes(active) ? active : null;
+    this._active = active && this.#rows.includes(active) ? active : null;
   }
 
   #onClick = (event: Event) => {
@@ -309,6 +362,9 @@ export class PlCombobox extends LitElement {
 
   #onInput = (event: Event) => {
     this.text = (event.target as HTMLInputElement).value;
+    // The added row goes with the text.
+    if (this._active === this.#builtin && !this.text.trim())
+      this._active = null;
     this.#filtering = true;
     this.#show();
     this.#emit("pl-input", { text: this.text });
@@ -325,7 +381,7 @@ export class PlCombobox extends LitElement {
         return;
       }
       const down = key === "ArrowDown";
-      const enabled = this.#listed.filter((o) => !o.disabled);
+      const enabled = this.#rows.filter((o) => !o.disabled);
       if (!this.open) {
         this.#show(this.#chosen ?? (down ? enabled[0] : enabled.at(-1)));
       } else {
@@ -367,6 +423,8 @@ export class PlCombobox extends LitElement {
 
   #onOptions = () => {
     this.#syncLabelled();
+    // An option the app removed can no longer be chosen.
+    if (this._active && !this.#rows.includes(this._active)) this._active = null;
     if (this.#start === undefined && this.#options.length) {
       this.#start =
         this.value || this.#options.find((o) => o.selected)?.optionValue || "";
@@ -407,7 +465,8 @@ export class PlCombobox extends LitElement {
     const chosen = this.#chosen;
     const listed = this.#listed;
     const input = this.#input;
-    for (const option of this.#options) {
+    const builtin = this.#builtin;
+    for (const option of [...this.#options, ...(builtin ? [builtin] : [])]) {
       option.chosen = option === chosen;
       option.toggleAttribute("data-active", option === this._active);
     }
@@ -428,7 +487,10 @@ export class PlCombobox extends LitElement {
 
   override render() {
     const disabled = this.matches(":disabled");
-    const empty = this.open && this.#filtering && !this.#listed.length;
+    const empty =
+      this.open && this.#filtering && this.#listed.every((o) => o.action);
+    const query = this.text.trim();
+    const add = this.actionLabel !== null && this.#filtering && query;
     const name = this._labelled
       ? undefined
       : this.label || labelText(this.#internals.labels);
@@ -491,6 +553,18 @@ export class PlCombobox extends LitElement {
         @pointerover=${this.#onPointerover}
       >
         <slot></slot>
+        ${
+          add
+            ? html`<pl-option
+                part="action"
+                action
+                @click=${() => this.#choose(this.#builtin!)}
+                >${fill(this.actionLabel || messages(this).addQuery, {
+                  query,
+                })}</pl-option
+              >`
+            : nothing
+        }
         ${
           empty
             ? html`<div

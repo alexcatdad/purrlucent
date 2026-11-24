@@ -41,6 +41,14 @@ export const Variants: Story = {
           <strong slot="title">The message could not be sent</strong>
           Check the network connection and try again.
         </pl-toast>
+        <pl-toast variant="success" duration="0">
+          <strong slot="title">Backup complete</strong>
+          Every file is backed up.
+        </pl-toast>
+        <pl-toast variant="warning" duration="0">
+          <strong slot="title">Storage almost full</strong>
+          Less than 1 GB is left.
+        </pl-toast>
       </pl-toaster>`,
     ),
 };
@@ -123,6 +131,75 @@ export const Imperative: Story = {
                 duration: 0,
               })}
             >Destructive</pl-button
+          >
+        </div>`,
+    ),
+};
+
+/** A description past a set height scrolls and can be reached with the keyboard. */
+export const LongDescription: Story = {
+  render: () =>
+    page(
+      html`<pl-toaster>
+        <pl-toast duration="0">
+          <strong slot="title">Import finished</strong>
+          <span style="white-space:pre-line"
+            >${Array.from(
+              { length: 30 },
+              (_, i) => `Row ${i + 1} imported`,
+            ).join("\n")}</span
+          >
+        </pl-toast>
+      </pl-toaster>`,
+    ),
+};
+
+/** `show()` takes a node as a description, a repeated `id` replaces a toast in place, and a string keeps its line breaks. */
+export const Described: Story = {
+  render: () =>
+    page(
+      html`<pl-toaster id="toaster"></pl-toaster>
+        <div style="display:flex;gap:var(--pl-space-2)">
+          <pl-button
+            id="details"
+            @click=${() => {
+              const details = document.createElement("details");
+              const summary = document.createElement("summary");
+              summary.textContent = "Technical details";
+              details.append(summary, "Error 503 from the sync service.");
+              PlToaster.show({
+                title: "Sync failed",
+                description: details,
+                variant: "destructive",
+                duration: 0,
+              });
+            }}
+            >Details</pl-button
+          >
+          <pl-button
+            id="lines"
+            @click=${() =>
+              PlToaster.show({
+                title: "Imported",
+                description: "First line\nSecond line",
+                variant: "success",
+                duration: 0,
+              })}
+            >Lines</pl-button
+          >
+          <pl-button
+            id="progress"
+            @click=${() => {
+              const w = window as never as { step: number };
+              w.step = (w.step ?? 0) + 1;
+              PlToaster.show({
+                id: "upload",
+                title: `Upload step ${w.step}`,
+                variant: "warning",
+                duration: 0,
+              });
+            }}
+            >Progress</pl-button
           >
         </div>`,
     ),

@@ -7,7 +7,7 @@ import { toggleStyles } from "./toggle.css.ts";
  * svg icon work the same; an `icon` toggle needs an `aria-label`. The button's
  * `variant`, `type` and `destructive` have no use here.
  *
- * @fires {CustomEvent<{ pressed: boolean }>} pl-change - A press changed the state. `detail.pressed` holds the new one.
+ * @fires {CustomEvent<{ pressed: boolean }>} pl-change - A press is about to change the state, before it is applied. `detail.pressed` holds the new one. Cancelable: `preventDefault()` keeps the current state.
  * @slot - The label, with an optional leading svg icon (filled while on).
  * @csspart label - The wrapper around the label.
  */
@@ -24,20 +24,24 @@ export class PlToggle extends PlButton {
     super();
     this.pressed = false;
     this.addEventListener("pl-press", () => {
-      this.pressed = !this.pressed;
-      this.dispatchEvent(
+      if (this.href) return;
+      const pressed = !this.pressed;
+      const proceed = this.dispatchEvent(
         new CustomEvent("pl-change", {
-          detail: { pressed: this.pressed },
+          detail: { pressed },
           bubbles: true,
           composed: true,
+          cancelable: true,
         }),
       );
+      if (proceed) this.pressed = pressed;
     });
   }
 
   protected override updated() {
     super.updated();
-    this.setAttribute("aria-pressed", String(this.pressed));
+    if (this.href) this.removeAttribute("aria-pressed");
+    else this.setAttribute("aria-pressed", String(this.pressed));
   }
 }
 

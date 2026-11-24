@@ -18,6 +18,7 @@ const TYPE_AHEAD_MS = 500;
  * @attr {string} value - What the select submits when this option is chosen. Defaults to the label.
  * @attr {boolean} selected - The select's starting choice.
  * @attr {boolean} disabled - Cannot be chosen.
+ * @attr {boolean} action - In a `pl-combobox`, a row that fires `pl-action` with the typed text instead of choosing a value.
  * @slot - The label.
  * @csspart check - The check mark shown on the chosen option.
  */
@@ -27,12 +28,14 @@ export class PlOption extends LitElement {
     value: { reflect: true },
     selected: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
+    action: { type: Boolean, reflect: true },
     chosen: { state: true },
   };
 
   declare value: string;
   declare selected: boolean;
   declare disabled: boolean;
+  declare action: boolean;
   declare chosen: boolean;
 
   constructor() {
@@ -40,6 +43,7 @@ export class PlOption extends LitElement {
     this.value = "";
     this.selected = false;
     this.disabled = false;
+    this.action = false;
     this.chosen = false;
   }
 

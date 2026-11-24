@@ -79,6 +79,55 @@ test("the drawer is named by its title and described by its description, not its
   );
 });
 
+test("the description attribute describes a drawer that has no description slot", async ({
+  page,
+}) => {
+  await opened(page, "open-described-by-attribute");
+  await expect(sheet(page)).toHaveAccessibleDescription(
+    "Sharing can be turned off at any time.",
+  );
+});
+
+test("a slotted description wins over the description attribute", async ({
+  page,
+}) => {
+  await opened(page, "open-bottom");
+  await drawerEl(page).evaluate((el) =>
+    el.setAttribute("description", "Attribute text."),
+  );
+  await expect(sheet(page)).toHaveAccessibleDescription(
+    /^Anyone with the link can see it/,
+  );
+});
+
+test("Escape closes only the dialog opened from inside the drawer, then the drawer", async ({
+  page,
+}) => {
+  await opened(page, "open-with-dialog");
+  await page.locator("#inner-trigger").click();
+  const inner = page.getByRole("alertdialog");
+  await expect(inner).toBeVisible();
+  await expect(page.getByRole("button", { name: "Cancel" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(inner).toBeHidden();
+  expect(await isOpen(page)).toBe(true);
+  await expect(page.locator("#inner-trigger")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(sheet(page)).toBeHidden();
+  expect(await isOpen(page)).toBe(false);
+});
+
+test("an action inside a dialog in the drawer closes the dialog and not the drawer", async ({
+  page,
+}) => {
+  await opened(page, "open-with-dialog");
+  await page.locator("#inner-trigger").click();
+  await expect(page.getByRole("alertdialog")).toBeVisible();
+  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await expect(page.getByRole("alertdialog")).toBeHidden();
+  expect(await isOpen(page)).toBe(true);
+});
+
 test("without a title the label names the drawer", async ({ page }) => {
   await opened(page, "open-bottom");
   await drawerEl(page).evaluate((el) => {

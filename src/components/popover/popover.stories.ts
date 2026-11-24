@@ -31,6 +31,7 @@ const stage = (inner: unknown) =>
 const popover = (attrs: {
   id?: string;
   placement?: string;
+  align?: string;
   open?: boolean;
   label?: string;
 }) =>
@@ -38,9 +39,14 @@ const popover = (attrs: {
     id=${attrs.id ?? "popover"}
     label=${attrs.label ?? "Sharing"}
     placement=${attrs.placement ?? "bottom"}
+    align=${attrs.align ?? "center"}
     ?open=${attrs.open ?? false}
   >
-    <pl-button slot="trigger">Show popover</pl-button>
+    <pl-button
+      slot="trigger"
+      style=${attrs.align ? "inline-size:calc(var(--pl-spacing) * 60)" : ""}
+      >Show popover</pl-button
+    >
     ${content}
   </pl-popover>`;
 
@@ -72,6 +78,21 @@ export const OpenStart = opened("start");
 
 /** Opens at the end side of the trigger. */
 export const OpenEnd = opened("end");
+
+/** The panel lines up with the start edge of a wide trigger instead of its middle. */
+export const AlignStart: Story = {
+  render: () => stage(popover({ align: "start", open: true })),
+};
+
+/** The panel lines up with the end edge of a wide trigger. */
+export const AlignEnd: Story = {
+  render: () => stage(popover({ align: "end", open: true })),
+};
+
+export const AlignStartRtl: Story = {
+  render: () => stage(popover({ align: "start", open: true })),
+  globals: { dir: "rtl" },
+};
 
 /** One popover per side, all open. Opening one later closes the others. */
 export const Placements: Story = {

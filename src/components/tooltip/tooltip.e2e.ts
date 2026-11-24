@@ -11,6 +11,8 @@ const target = (page: Page, scope = "") =>
   page.locator(`${scope} pl-button`.trim());
 const bubble = (page: Page, scope = "") =>
   page.locator(`${scope} [part=bubble]`.trim());
+const face = (page: Page, scope = "") =>
+  page.locator(`${scope} [part=face]`.trim());
 const box = async (locator: ReturnType<Page["locator"]>) =>
   (await locator.boundingBox())!;
 
@@ -327,4 +329,157 @@ test.describe("coarse pointer on a wide screen", () => {
     expect(b.width).toBeGreaterThanOrEqual(44);
     expect(b.height).toBeGreaterThanOrEqual(44);
   });
+});
+
+test("rich content in the content slot is the tooltip the target is described by", async ({
+  page,
+}) => {
+  await gotoStory(page, story("rich"));
+  await expect(bubble(page)).toBeVisible();
+  const described = await target(page).evaluate((el) => {
+    const named = document.getElementById(el.getAttribute("aria-describedby")!);
+    return { role: named?.role, tag: named?.tagName, slot: named?.slot };
+  });
+  expect(described).toEqual({ role: "tooltip", tag: "DIV", slot: "content" });
+  await expect(page.getByRole("tooltip")).toHaveCount(1);
+  await expect(page.locator("[slot=content] dt").first()).toBeVisible();
+});
+
+test("the browser exposes the rich content as the target's accessible description", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== "chromium", "Reads Chromium's accessibility tree.");
+  await gotoStory(page, story("rich"));
+  const session = await page.context().newCDPSession(page);
+  const { nodes } = await session.send("Accessibility.getFullAXTree");
+  const node = nodes.find(
+    (n) => n.role?.value === "button" && n.name?.value === "Shortcuts",
+  );
+  expect(node?.description?.value).toContain("Copy");
+  expect(node?.description?.value).toContain("Cmd V");
+});
+
+test("removing the rich content brings the text back as the description", async ({
+  page,
+}) => {
+  await gotoStory(page, story("rich"));
+  const described = await page.locator("pl-tooltip").evaluate(async (el) => {
+    const tooltip = el as HTMLElement & { text: string };
+    tooltip.text = "Plain text";
+    el.querySelector("[slot=content]")!.remove();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    const button = el.querySelector("pl-button")!;
+    const ids = button.getAttribute("aria-describedby")!.split(" ");
+    const named = document.getElementById(ids[0]!);
+    return { count: ids.length, role: named?.role, text: named?.textContent };
+  });
+  expect(described).toEqual({ count: 1, role: "tooltip", text: "Plain text" });
+});
+
+test("a long tooltip wraps at the cap instead of running on in one line", async ({
+  page,
+}) => {
+  await gotoStory(page, story("long-text"));
+  await expect(bubble(page)).toBeVisible();
+  const sizes = await page.locator("pl-tooltip").evaluate((el) => {
+    const face = el.shadowRoot!.querySelector("[part=face]")!;
+    const probe = document.createElement("div");
+    probe.style.inlineSize = "calc(var(--pl-spacing) * 60)";
+    document.body.append(probe);
+    const cap = probe.getBoundingClientRect().width;
+    probe.remove();
+    const line = parseFloat(getComputedStyle(face).lineHeight);
+    return {
+      cap,
+      width: face.getBoundingClientRect().width,
+      height: face.getBoundingClientRect().height,
+      line,
+    };
+  });
+  expect(sizes.width).toBeLessThanOrEqual(sizes.cap + 0.5);
+  expect(sizes.height).toBeGreaterThan(sizes.line * 2);
+});
+
+test("--pl-tooltip-max-inline-size sets the widest bubble", async ({
+  page,
+}) => {
+  await gotoStory(page, story("long-text"));
+  await page.locator("pl-tooltip").evaluate((el) => {
+    el.style.setProperty("--pl-tooltip-max-inline-size", "120px");
+  });
+  await expect(bubble(page)).toBeVisible();
+  await expect
+    .poll(async () => (await box(bubble(page))).width)
+    .toBeLessThanOrEqual(120.5);
+});
+
+test("--pl-tooltip-open-delay sets how long a hover waits", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  const fallback = await page
+    .locator("pl-tooltip")
+    .evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--pl-tooltip-open-delay").trim(),
+    );
+  // Engines serialize a time differently: "560ms" or ".56s".
+  const ms = fallback.endsWith("ms")
+    ? parseFloat(fallback)
+    : parseFloat(fallback) * 1000;
+  expect(ms).toBeCloseTo(560, 5);
+  await page.locator("pl-tooltip").evaluate((el) => {
+    el.style.setProperty("--pl-tooltip-open-delay", "1500ms");
+  });
+  await target(page).hover();
+  await page.waitForTimeout(900);
+  await expect(bubble(page)).toBeHidden();
+  await expect(bubble(page)).toBeVisible({ timeout: 3000 });
+});
+
+test("align start and end line the bubble's edge up with the target's, center its middle", async ({
+  page,
+}) => {
+  await gotoStory(page, story("align"));
+  for (const align of ["center", "start", "end"]) {
+    await expect(bubble(page, `#${align}`)).toBeVisible();
+    const b = await box(face(page, `#${align}`));
+    const t = await box(target(page, `#${align}`));
+    if (align === "start") expect(Math.abs(b.x - t.x)).toBeLessThan(1.5);
+    if (align === "end") {
+      expect(Math.abs(b.x + b.width - (t.x + t.width))).toBeLessThan(1.5);
+    }
+    if (align === "center") {
+      expect(Math.abs(b.x + b.width / 2 - (t.x + t.width / 2))).toBeLessThan(
+        1.5,
+      );
+    }
+  }
+});
+
+test("under rtl align start is the right-hand edge", async ({ page }) => {
+  await gotoStory(page, story("align-rtl"));
+  await expect(bubble(page)).toBeVisible();
+  const b = await box(face(page));
+  const t = await box(target(page));
+  expect(Math.abs(b.x + b.width - (t.x + t.width))).toBeLessThan(1.5);
+});
+
+test("align has no effect beside the target", async ({ page }) => {
+  await gotoStory(page, story("open"));
+  await expect(bubble(page)).toBeVisible();
+  await page.locator("pl-tooltip").evaluate((el) => {
+    el.setAttribute("placement", "end");
+    el.setAttribute("align", "start");
+  });
+  await expect
+    .poll(async () => {
+      const b = await box(bubble(page));
+      const t = await box(target(page));
+      return (
+        b.x >= t.x + t.width - 0.5 &&
+        Math.abs(b.y + b.height / 2 - (t.y + t.height / 2)) < 1.5
+      );
+    })
+    .toBe(true);
 });

@@ -78,7 +78,8 @@ export class PlToggleGroupItem extends LitElement {
 
 /**
  * A row of equal-width items that offers one required choice, as a radio
- * group. Arrow keys, Home and End move focus and select; they follow the visual
+ * group: choosing the selected item again never deselects it, so one item is
+ * always selected. Arrow keys, Home and End move focus and select; they follow the visual
  * direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio
  * group pattern; Home and End are extras. Enter does not select, as with a
  * native radio. Always set `label` (or `aria-label`): without either the group
@@ -93,8 +94,8 @@ export class PlToggleGroupItem extends LitElement {
  * @attr {boolean} fit-content - Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways, fading the edges that have more items past them. For many items of different lengths.
  * @attr {boolean} disabled - Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.
  * @slot - `pl-toggle-group-item` elements.
- * @fires {CustomEvent<{ selected: string[] }>} pl-change - The selection changed by the user. `detail.selected` is a one-item array.
- * @fires input - After pl-change, as a native radio fires it.
+ * @fires {CustomEvent<{ selected: string[] }>} pl-change - The user is about to change the selection, before it is applied. `detail.selected` is a one-item array. Cancelable: `preventDefault()` keeps the current value and fires no `input` or `change`.
+ * @fires input - After the selection changed, as a native radio fires it.
  * @fires change - After input, as a native radio fires it.
  */
 export class PlToggleGroup extends LitElement {
@@ -142,11 +143,9 @@ export class PlToggleGroup extends LitElement {
     this.size = "md";
     this.fitContent = false;
     this.disabled = false;
+    // The controller's pl-change only mirrors `value` into its set: not a user change.
     this.addEventListener("pl-change", (event) => {
-      if (this.#syncing) return event.stopImmediatePropagation();
-      const [selected] = (event as CustomEvent<{ selected: string[] }>).detail
-        .selected;
-      if (selected !== undefined) this.value = selected;
+      if (this.#syncing) event.stopImmediatePropagation();
     });
     this.addEventListener("pl-press", (event) => {
       if (!this.#off && event.target instanceof PlToggleGroupItem)
@@ -156,9 +155,22 @@ export class PlToggleGroup extends LitElement {
 
   /** The user's choice; the native events follow pl-change, as on a native radio. */
   #choose(value: string) {
-    const before = this.value;
-    this.#selection.select(value);
-    if (this.value !== before) fireNative(this, "input", "change");
+    if (value === this.value) return;
+    const proceed = this.dispatchEvent(
+      new CustomEvent("pl-change", {
+        detail: { selected: [value] },
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+      }),
+    );
+    if (!proceed) {
+      // Focus stays put; the tab stop returns to the selected item.
+      this.requestUpdate();
+      return;
+    }
+    this.value = value;
+    fireNative(this, "input", "change");
   }
 
   // :disabled covers a disabled fieldset around the group; the property is

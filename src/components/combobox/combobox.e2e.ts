@@ -64,7 +64,7 @@ const submitted = (page: Page) =>
     );
 
 /** Records the detail of a pl-input or pl-change event on #combo in window.log. */
-const record = (page: Page, type: "pl-input" | "pl-change") =>
+const record = (page: Page, type: "pl-input" | "pl-change" | "pl-action") =>
   page.evaluate((type) => {
     const log: unknown[] = [];
     document
@@ -736,7 +736,221 @@ test("in dark mode the field stands out from the page", async ({ page }) => {
   expect(field.edge).not.toBe("none");
 });
 
+/** The names of the options one combobox lists, in order. */
+const listedIn = (page: Page, selector: string) =>
+  page.locator(selector).evaluate((el) =>
+    el
+      .shadowRoot!.querySelector<HTMLSlotElement>("slot:not([name])")!
+      .assignedElements()
+      .map((o) => o.textContent!.trim()),
+  );
+
+test("manual-filter lists every option in the app's order, whatever is typed", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<pl-combobox id="probe" label="Probe" manual-filter>${abc}</pl-combobox>`,
+  );
+  await combo(page, "Probe").focus();
+  await page.keyboard.type("zzz");
+  await expect(listbox(page)).toBeVisible();
+  expect(await listedIn(page, "#probe")).toEqual(["Alpha", "Beta", "Gamma"]);
+  await expect(page.locator("#probe [part=empty]")).toHaveCount(0);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(combo(page, "Probe")).toHaveValue("Alpha");
+});
+
+test("manual-filter lets the app replace the options on pl-input", async ({
+  page,
+}) => {
+  await gotoStory(page, story("manual-filter"));
+  await record(page, "pl-change");
+  await combo(page, "City").focus();
+  await page.keyboard.type("o");
+  // A client-side filter would rank Oslo, which starts with o, first.
+  await expect.poll(() => listed(page)).toEqual(["Lisbon", "Oslo"]);
+  await page.keyboard.type("s");
+  await expect.poll(() => listed(page)).toEqual(["Oslo"]);
+  await page.keyboard.type("x");
+  await expect(page.getByRole("option", { name: "No results" })).toBeVisible();
+  await page.keyboard.press("Backspace");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(combo(page, "City")).toHaveValue("Oslo");
+  expect(await recorded(page)).toEqual([{ value: "Oslo" }]);
+});
+
+/** Replaces the options of `#probe` with a single one, as an app's search does. */
+const replaceOptions = (page: Page) =>
+  page.locator("#probe").evaluate((el) => {
+    el.innerHTML = `<pl-option value="d">Delta</pl-option>`;
+  });
+
+const probeValue = (page: Page) =>
+  page.locator("#probe").evaluate((el) => (el as HTMLInputElement).value);
+
+test("manual-filter: an active option the app removed is not chosen by Enter", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<pl-combobox id="probe" label="Probe" manual-filter>${abc}</pl-combobox>`,
+  );
+  await combo(page, "Probe").focus();
+  await page.keyboard.type("z");
+  await page.keyboard.press("ArrowDown");
+  await expect
+    .poll(() =>
+      combo(page, "Probe").evaluate((input) =>
+        (
+          input as HTMLInputElement & { ariaActiveDescendantElement: Element }
+        ).ariaActiveDescendantElement?.textContent?.trim(),
+      ),
+    )
+    .toBe("Alpha");
+  await replaceOptions(page);
+  await expect(page.locator("#probe pl-option")).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  expect(await probeValue(page)).toBe("");
+});
+
+test("manual-filter: leaving keeps the text and value when the app's list lacks the chosen option", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<pl-combobox id="probe" label="Probe" manual-filter value="a">${abc}</pl-combobox>`,
+  );
+  await expect(combo(page, "Probe")).toHaveValue("Alpha");
+  await combo(page, "Probe").focus();
+  await page.keyboard.type("x");
+  await replaceOptions(page);
+  await expect(page.locator("#probe pl-option")).toHaveCount(1);
+  await page.keyboard.press("Tab");
+  await expect(combo(page, "Probe")).toHaveValue("Alphax");
+  expect(await probeValue(page)).toBe("a");
+});
+
+test("action-label adds a row for the typed text only while text is typed", async ({
+  page,
+}) => {
+  await gotoStory(page, story("action-label"));
+  const add = page.getByRole("option", { name: /^Add / });
+  await chevron(page).click();
+  await expect(listbox(page)).toBeVisible();
+  await expect(add).toHaveCount(0);
+  await page.keyboard.type("Pink Lady");
+  await expect(option(page, "Add Pink Lady")).toBeVisible();
+  await page.keyboard.press("Backspace");
+  await expect(option(page, "Add Pink Lad")).toBeVisible();
+  await combo(page).fill("");
+  await expect(add).toHaveCount(0);
+});
+
+test("choosing the action-label row fires pl-action with the text and chooses nothing", async ({
+  page,
+}) => {
+  await gotoStory(page, story("action-label"));
+  await page.evaluate(() => {
+    const log: unknown[] = [];
+    const el = document.querySelector("#combo")!;
+    for (const type of ["pl-action", "pl-change"]) {
+      el.addEventListener(type, (e) =>
+        log.push([type, (e as CustomEvent).detail]),
+      );
+    }
+    (window as unknown as { log: unknown[] }).log = log;
+  });
+  await combo(page).focus();
+  await page.keyboard.type("Pink Lady");
+  await option(page, "Add Pink Lady").click();
+  await expect(listbox(page)).toBeHidden();
+  await expect(combo(page)).toBeFocused();
+  expect(await recorded(page)).toEqual([["pl-action", { query: "Pink Lady" }]]);
+  expect(
+    await page
+      .locator("#combo")
+      .evaluate((el) => (el as never as { value: string }).value),
+  ).toBe("");
+});
+
+test("the action-label row is reached with the arrow keys and chosen with Enter", async ({
+  page,
+}) => {
+  await gotoStory(page, story("action-label"));
+  await record(page, "pl-action");
+  await combo(page).focus();
+  await page.keyboard.type("Pink");
+  await page.keyboard.press("ArrowDown");
+  expect(await activeDescendant(page)).toBe("Add Pink");
+  await page.keyboard.press("Enter");
+  await expect(listbox(page)).toBeHidden();
+  expect(await recorded(page)).toEqual([{ query: "Pink" }]);
+});
+
+test("action-label text replaces the built-in wording and fills the typed text in", async ({
+  page,
+}) => {
+  await gotoStory(page, story("action-label"));
+  await page
+    .locator("#combo")
+    .evaluate((el) => el.setAttribute("action-label", "New: {query}"));
+  await combo(page).focus();
+  await page.keyboard.type("Pink");
+  await expect(option(page, "New: Pink")).toBeVisible();
+});
+
+test("a slotted action option is always listed and fires pl-action instead of choosing", async ({
+  page,
+}) => {
+  await gotoStory(page, story("action-option"));
+  await page.evaluate(() => {
+    const log: unknown[] = [];
+    const el = document.querySelector("#combo")!;
+    for (const type of ["pl-action", "pl-change"]) {
+      el.addEventListener(type, (e) =>
+        log.push([type, (e as CustomEvent).detail]),
+      );
+    }
+    (window as unknown as { log: unknown[] }).log = log;
+  });
+  await combo(page).focus();
+  await page.keyboard.type("zzz");
+  expect(await listed(page)).toEqual(["Add a variety…"]);
+  await option(page, "Add a variety…").click();
+  await expect(listbox(page)).toBeHidden();
+  expect(await recorded(page)).toEqual([["pl-action", { query: "zzz" }]]);
+  // With nothing typed the query is empty and the row still comes last.
+  await combo(page).fill("");
+  // Clearing may already open the list; the chevron would close it again.
+  if (!(await listbox(page).isVisible())) await chevron(page).click();
+  await expect(listbox(page)).toBeVisible();
+  expect((await listed(page)).at(-1)).toBe("Add a variety…");
+  await option(page, "Add a variety…").click();
+  expect(await recorded(page)).toEqual([
+    ["pl-action", { query: "zzz" }],
+    ["pl-action", { query: "" }],
+  ]);
+});
+
+test("an action option is not chosen by typing its label", async ({ page }) => {
+  await gotoStory(page, story("action-option"));
+  await record(page, "pl-change");
+  await combo(page).fill("Add a variety…");
+  await page.keyboard.press("Tab");
+  await expect(combo(page)).toHaveValue("");
+  expect(await recorded(page)).toEqual([]);
+});
+
 for (const name of [
+  "manual-filter",
+  "action-label",
+  "action-option",
   "default",
   "labelled",
   "preselected",
