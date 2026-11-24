@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.23.1
+
+### Patch Changes
+
+- 5d6bf08: pl-table cells keep their words whole: a column is never narrower than its longest word, and only a word too long for the space breaks. Overflow scrolls inside the table.
+
 ## 0.23.0
 
 ### Minor Changes
