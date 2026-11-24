@@ -28,12 +28,17 @@ async function at(control: Locator, fraction: number) {
 }
 
 test("aria snapshot", async ({ page }) => {
-  const root = await gotoStory(page, story("states"));
-  await expect(root).toMatchAriaSnapshot(`
-    - slider "Idle"
-    - slider "Disabled" [disabled]
-    - slider "Ticked, disabled" [disabled]
-  `);
+  await gotoStory(page, story("states"));
+  // Each slider sits in its own pl-field, so assert them one by one.
+  await expect(page.getByRole("slider", { name: "Idle" })).not.toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  for (const name of ["Disabled", "Ticked, disabled"]) {
+    await expect(
+      page.getByRole("slider", { name, exact: true }),
+    ).toHaveAttribute("aria-disabled", "true");
+  }
 });
 
 test("each slider shows its label and its value, and the value follows the keys", async ({
