@@ -3,7 +3,8 @@ import type { PropertyValues } from "lit";
 import { AnchoredController } from "../../behaviors/anchored.ts";
 import { DismissController } from "../../behaviors/dismiss.ts";
 import { LensController } from "../../behaviors/lens.ts";
-import type { Placement, Side } from "../../behaviors/position.ts";
+import { withAlign } from "../../behaviors/position.ts";
+import type { Align, Side } from "../../behaviors/position.ts";
 import { popoverStyles } from "./popover.css.ts";
 
 /**
@@ -14,16 +15,18 @@ import { popoverStyles } from "./popover.css.ts";
  * itself), and closes on Escape (focus returns to the trigger), on a press
  * outside and when focus leaves it. An arrow points at the trigger. The panel
  * is as wide as its content, from a minimum that keeps the arrow clear of the
- * corners up to a maximum of `calc(var(--pl-spacing) * 45)`, and never wider
+ * corners up to a maximum of `--pl-popover-max-inline-size`, and never wider
  * than the viewport; longer content wraps.
  *
  * @attr {string} label - The panel's accessible name. Required.
  * @attr {string} placement - Where the panel opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.
+ * @attr {string} align - How the panel lines up with the trigger on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the trigger.
  * @attr {boolean} open - The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it.
  * @slot - The panel's content.
  * @slot trigger - The control that opens the panel.
  * @csspart panel - The floating panel.
  * @csspart arrow - The arrow pointing at the trigger.
+ * @cssprop --pl-popover-max-inline-size - The widest the panel grows before its content wraps. Default `calc(var(--pl-spacing) * 45)`.
  * @fires {CustomEvent<{ open: boolean }>} pl-toggle - The panel opened or closed. `detail.open` says which.
  */
 export class PlPopover extends LitElement {
@@ -31,11 +34,13 @@ export class PlPopover extends LitElement {
   static override properties = {
     label: { reflect: true },
     placement: { reflect: true },
+    align: { reflect: true },
     open: { type: Boolean, reflect: true },
   };
 
   declare label: string;
   declare placement: "top" | "bottom" | "start" | "end";
+  declare align: Align;
   declare open: boolean;
 
   constructor() {
@@ -45,6 +50,7 @@ export class PlPopover extends LitElement {
     );
     this.label = "";
     this.placement = "bottom";
+    this.align = "center";
     this.open = false;
     new DismissController(this, {
       enabled: () => this.open,
@@ -56,7 +62,7 @@ export class PlPopover extends LitElement {
   readonly #anchored = new AnchoredController(this, {
     anchor: () => this.#trigger ?? this,
     panel: () => this.shadowRoot!.querySelector("[part=panel]")!,
-    placement: () => this.placement as Placement,
+    placement: () => withAlign(this.placement, this.align),
     onPlace: (side) => this.#aim(side),
   });
 
@@ -142,7 +148,8 @@ export class PlPopover extends LitElement {
   protected override updated(changed: PropertyValues<this>) {
     this.#syncTrigger();
     if (!changed.has("open")) {
-      if (changed.has("placement") && this.open) this.#anchored.place();
+      if ((changed.has("placement") || changed.has("align")) && this.open)
+        this.#anchored.place();
       return;
     }
     // A panel that starts open is part of the page as loaded: it does not take focus or announce itself.

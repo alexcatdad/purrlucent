@@ -2,7 +2,8 @@ import { LitElement, html } from "lit";
 import type { PropertyValues } from "lit";
 import { AnchoredController } from "../../behaviors/anchored.ts";
 import { DismissController } from "../../behaviors/dismiss.ts";
-import type { Placement } from "../../behaviors/position.ts";
+import { withAlign } from "../../behaviors/position.ts";
+import type { Align } from "../../behaviors/position.ts";
 import { tooltipStyles } from "./tooltip.css.ts";
 
 let count = 0;
@@ -15,11 +16,19 @@ let count = 0;
  *
  * The bubble is a `role="tooltip"` element that the tooltip adds to its own
  * children, so the target can name it in `aria-describedby`: an id reference
- * cannot reach into a shadow root.
+ * cannot reach into a shadow root. For more than a line of text, put one
+ * non-interactive element (a `<div>` holding a `<dl>` or several lines) in the
+ * `content` slot: it becomes the `role="tooltip"` element and `text` is not
+ * used. Not the `<dl>` itself: `role="tooltip"` on it breaks its list semantics. The bubble
+ * wraps at `--pl-tooltip-max-inline-size`.
  *
- * @attr {string} text - What the bubble says. Required.
+ * @attr {string} text - What the bubble says. Required unless the `content` slot is used.
  * @attr {string} placement - `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.
+ * @attr {string} align - How the bubble lines up with the target on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the target.
  * @slot - The target: a control, or anything the pointer or focus can reach.
+ * @slot content - Rich, non-interactive content for the bubble, in place of `text`.
+ * @cssprop --pl-tooltip-open-delay - How long the pointer must rest on the target before the bubble shows. Default `560ms`. Keyboard focus shows it at once.
+ * @cssprop --pl-tooltip-max-inline-size - The widest the bubble grows before its content wraps. Default `calc(var(--pl-spacing) * 60)`.
  * @csspart bubble - The floating box. Invisible: its padding is the gap to the target.
  * @csspart face - The visible bubble.
  */
@@ -28,27 +37,32 @@ export class PlTooltip extends LitElement {
   static override properties = {
     text: { reflect: true },
     placement: { reflect: true },
+    align: { reflect: true },
     shown: { state: true },
   };
 
   declare text: string;
   declare placement: "top" | "bottom" | "start" | "end";
+  declare align: Align;
   declare shown: boolean;
 
   readonly #tip = document.createElement("span");
   #target: Element | undefined;
   #timer: ReturnType<typeof setTimeout> | undefined;
+  #rich: Element | undefined;
+  #described = "";
 
   readonly #anchored = new AnchoredController(this, {
     anchor: () => this.#target ?? this,
     panel: () => this.shadowRoot!.querySelector("[part=bubble]")!,
-    placement: () => this.placement as Placement,
+    placement: () => withAlign(this.placement, this.align),
   });
 
   constructor() {
     super();
     this.text = "";
     this.placement = "bottom";
+    this.align = "center";
     this.shown = false;
     this.#tip.slot = "tip";
     this.#tip.role = "tooltip";
@@ -90,7 +104,7 @@ export class PlTooltip extends LitElement {
   };
 
   #onPress = (event: PointerEvent) => {
-    if (!event.composedPath().includes(this.#tip)) this.#hide();
+    if (!event.composedPath().includes(this.#rich ?? this.#tip)) this.#hide();
   };
 
   /** Names the bubble as the target's description, keeping any description the target already has. */
@@ -101,19 +115,34 @@ export class PlTooltip extends LitElement {
     this.#reference(target, true);
   };
 
+  /** Makes the `content` element the bubble's text element, or hands that role back to the built-in one. */
+  #onContent = (event: Event) => {
+    this.#reference(this.#target, false);
+    const rich = (event.target as HTMLSlotElement).assignedElements()[0];
+    this.#rich = rich;
+    if (rich) {
+      rich.id ||= `pl-tooltip-${++count}`;
+      if (!rich.hasAttribute("role")) rich.setAttribute("role", "tooltip");
+      this.#tip.remove();
+    } else if (this.isConnected) {
+      this.append(this.#tip);
+    }
+    this.#reference(this.#target, true);
+  };
+
   #reference(target: Element | undefined, on: boolean) {
     if (!target) return;
     const ids = new Set(target.getAttribute("aria-describedby")?.split(/\s+/));
     ids.delete("");
-    if (on) ids.add(this.#tip.id);
-    else ids.delete(this.#tip.id);
+    ids.delete(this.#described);
+    if (on) ids.add((this.#described = (this.#rich ?? this.#tip).id));
     if (ids.size) target.setAttribute("aria-describedby", [...ids].join(" "));
     else target.removeAttribute("aria-describedby");
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    this.append(this.#tip);
+    if (!this.#rich) this.append(this.#tip);
   }
 
   override disconnectedCallback() {
@@ -128,7 +157,8 @@ export class PlTooltip extends LitElement {
 
   protected override updated(changed: PropertyValues<this>) {
     if (!changed.has("shown")) {
-      if (changed.has("placement") && this.shown) this.#anchored.place();
+      if ((changed.has("placement") || changed.has("align")) && this.shown)
+        this.#anchored.place();
       return;
     }
     if (this.shown) this.#anchored.show();
@@ -138,7 +168,10 @@ export class PlTooltip extends LitElement {
   override render() {
     return html`<slot @slotchange=${this.#describe}></slot>
       <div part="bubble" popover="manual">
-        <div part="face"><slot name="tip"></slot></div>
+        <div part="face">
+          <slot name="tip"></slot>
+          <slot name="content" @slotchange=${this.#onContent}></slot>
+        </div>
       </div>`;
   }
 }

@@ -11,7 +11,7 @@ export const tooltipStyles = css`
 
     display: inline-block;
     /* Read by the element, not used: its computed value is the hover delay. A fixed time, not a motion token: the delay is behaviour and must survive reduced motion. */
-    transition-delay: 560ms;
+    transition-delay: var(--pl-tooltip-open-delay);
   }
 
   :host([hidden]) {
@@ -20,7 +20,10 @@ export const tooltipStyles = css`
 
   [part="bubble"] {
     box-sizing: border-box;
-    max-inline-size: calc(100vw - var(--pl-space-4));
+    max-inline-size: min(
+      var(--pl-tooltip-max-inline-size),
+      calc(100vw - var(--pl-space-4))
+    );
     inset: auto;
     margin: 0;
     border: 0;
@@ -36,6 +39,14 @@ export const tooltipStyles = css`
     [part="bubble"]:popover-open {
       opacity: 0;
     }
+  }
+
+  /* Above or below, an edge-aligned bubble has no side to bridge: the face, not the invisible box, lines up with the target's edge. */
+  :host([align="start"]:is([placement="top"], [placement="bottom"]))
+    [part="bubble"],
+  :host([align="end"]:is([placement="top"], [placement="bottom"]))
+    [part="bubble"] {
+    padding-inline: 0;
   }
 
   [part="face"] {
@@ -55,7 +66,8 @@ export const tooltipStyles = css`
   }
 
   /* A block, not the inline span it is made as: Firefox reports an inline box's text as overflow. */
-  ::slotted([role="tooltip"]) {
+  ::slotted([role="tooltip"]),
+  ::slotted([slot="content"]) {
     display: block;
   }
 
