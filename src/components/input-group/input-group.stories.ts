@@ -6,6 +6,7 @@ import "../input/input.ts";
 import type { PlInput } from "../input/input.ts";
 import "../textarea/textarea.ts";
 import "./input-group.ts";
+import { widths } from "../../../.storybook/widths.ts";
 
 const meta = {
   title: "Forms/Input Group",
@@ -57,6 +58,18 @@ export const Addons: Story = {
         <pl-input label="Invite link" value="example.test/invite"></pl-input>
       </pl-input-group>`,
     ]),
+};
+
+/** The width is the group's `inline-size`; the field takes what the addons leave. */
+export const Widths: Story = {
+  render: () =>
+    widths(
+      (style, label) =>
+        html`<pl-input-group style=${style}>
+          <span slot="start">$</span>
+          <pl-input placeholder=${label}>${label}</pl-input>
+        </pl-input-group>`,
+    ),
 };
 
 export const Sizes: Story = {

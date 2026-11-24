@@ -16,8 +16,14 @@ export const numberFieldStyles = [
       --_gap: calc(var(--_stw) - var(--_sw));
       --_btn: var(--pl-color-secondary);
 
-      inline-size: auto;
+      inline-size: calc(var(--pl-spacing) * 16 + var(--_stw));
       justify-items: start;
+    }
+
+    :host([stepper="outside"]) {
+      inline-size: calc(
+        var(--pl-spacing) * 15 + var(--pl-gap-controls) + var(--_stw)
+      );
     }
 
     :host([size="lg"]) {
@@ -30,13 +36,15 @@ export const numberFieldStyles = [
 
     [part="group"] {
       position: relative;
-      display: inline-flex;
+      display: flex;
       gap: var(--pl-gap-controls);
+      inline-size: 100%;
       block-size: var(--_h);
     }
 
     [part="field"] {
-      inline-size: calc(var(--pl-spacing) * 16 + var(--_stw));
+      flex: 1;
+      min-inline-size: 0;
       padding-inline-end: calc(var(--_stw) + var(--_pad));
     }
 
@@ -52,7 +60,6 @@ export const numberFieldStyles = [
     }
 
     :host([stepper="outside"]) [part="field"] {
-      inline-size: calc(var(--pl-spacing) * 15);
       padding-inline-end: var(--_pad);
     }
 

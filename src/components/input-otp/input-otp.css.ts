@@ -12,7 +12,7 @@ export const inputOtpStyles = css`
     --_edge: var(--pl-color-input-border);
 
     display: inline-grid;
-    grid-template-columns: minmax(0, max-content);
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--pl-gap-form);
     max-inline-size: 100%;
     color: var(--pl-color-foreground);

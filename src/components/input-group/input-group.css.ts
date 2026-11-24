@@ -24,7 +24,7 @@ export const inputGroupStyles = css`
     grid-template-columns:
       max-content minmax(calc(var(--pl-spacing) * 20), 1fr)
       max-content;
-    inline-size: calc(var(--pl-spacing) * 30);
+    inline-size: calc(var(--pl-spacing) * 40);
     /* Wide addons or large text grow the group instead of squeezing the field. */
     min-inline-size: min-content;
     max-inline-size: 100%;
