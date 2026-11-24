@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.14.1
+
+### Patch Changes
+
+- 48b0877: Glass catches light. Every glass surface draws a brighter specular line along its top rim, a faint catch light along its bottom rim and a narrow glow inside the top edge, through `--pl-material-edge` and the new `--pl-material-glow` and `--pl-material-rim-low` tokens. Glass buttons cast a contact shadow and a softer lifting one. The fills are unchanged.
+
 ## 0.14.0
 
 ### Minor Changes
