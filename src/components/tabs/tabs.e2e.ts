@@ -249,3 +249,43 @@ test("virtual screen reader speaks the tabs and the panel", async ({
     "end of document",
   ]);
 });
+
+test.describe("hide-scrollbar", () => {
+  const list = (page: Page) =>
+    page.locator("#control").evaluate((el) => {
+      const l = el.shadowRoot!.querySelector<HTMLElement>('[part="list"]')!;
+      return {
+        overflows: l.scrollWidth > l.clientWidth,
+        scrollbarWidth: getComputedStyle(l).scrollbarWidth,
+        barHeight: l.offsetHeight - l.clientHeight,
+      };
+    });
+
+  test("the list overflows and shows no scrollbar", async ({ page }) => {
+    await open(page, "navigation-tabs--hide-scrollbar");
+    const result = await list(page);
+    expect(result.overflows).toBe(true);
+    expect(result.barHeight).toBeLessThanOrEqual(1); // the border only
+  });
+
+  test("the list still scrolls", async ({ page }) => {
+    await open(page, "navigation-tabs--hide-scrollbar");
+    const left = await page.locator("#control").evaluate((el) => {
+      const l = el.shadowRoot!.querySelector<HTMLElement>('[part="list"]')!;
+      l.scrollLeft = 40;
+      return Math.abs(l.scrollLeft);
+    });
+    expect(left).toBeGreaterThan(0);
+  });
+
+  test("without the attribute the component does not hide the scrollbar", async ({
+    page,
+  }) => {
+    await open(page);
+    expect((await list(page)).scrollbarWidth).not.toBe("none");
+  });
+
+  test("axe finds no violations", async ({ page }) => {
+    await expectAccessible(await open(page, "navigation-tabs--hide-scrollbar"));
+  });
+});

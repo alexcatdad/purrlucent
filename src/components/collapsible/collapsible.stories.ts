@@ -48,6 +48,37 @@ export const Disabled: Story = {
   `,
 };
 
+/** A slotted `button` replaces the built-in one: the collapsible wires `aria-expanded` and `aria-controls` on it. */
+export const SlottedTrigger: Story = {
+  render: () => html`
+    <pl-collapsible id="control">
+      <button
+        id="trigger"
+        slot="trigger"
+        type="button"
+        style="font:inherit;color:inherit;background:none;border:0;padding:var(--pl-space-1) var(--pl-pad-item);inline-size:100%;text-align:start"
+      >
+        Shipping details
+      </button>
+      <p id="body" style="margin:0">
+        Orders leave the warehouse within two working days.
+      </p>
+    </pl-collapsible>
+  `,
+};
+
+/** `current` fills the row like the selected row of a sidebar. */
+export const Current: Story = {
+  render: () => html`
+    <pl-collapsible id="control" current>
+      <span slot="trigger">Shipping details</span>
+      <p id="body" style="margin:0">
+        Orders leave the warehouse within two working days.
+      </p>
+    </pl-collapsible>
+  `,
+};
+
 export const Glass: Story = {
   render: () => underGlass(render()),
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
