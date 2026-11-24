@@ -245,7 +245,17 @@ export class PlDatePicker extends LitElement {
     this._text = isIso(this.value) ? formatDay(this.value, this.#locale) : "";
   }
 
+  /** The locale the entry's day is written in. */
+  #shownIn = "";
+
   protected override willUpdate(changed: PropertyValues<this>) {
+    // The language changed: write the day again in its format, unless the
+    // person is typing.
+    const locale = this.#locale;
+    if (locale !== this.#shownIn && !this.#typing) {
+      this.#shownIn = locale;
+      if (isIso(this.value)) this.#showValue();
+    }
     if (!changed.has("value")) return;
     if (!isIso(this.value)) this.value = "";
     // A script or a reset set it: the entry follows, unless it already reads as this day.

@@ -108,7 +108,9 @@ const sv: PlMessages = {
 setMessages("sv", sv);
 ```
 
-`purrlucent/locale` defines no elements, so it is safe to import where the elements are not wanted, such as unit tests. A key the table leaves out falls back to English. A tag such as `sv-FI` matches its own registration first, then `sv`. Messages that build on another name keep its `{label}`, `{page}`, `{total}` or `{count}` slot, so a language can put it where its word order needs it. An attribute on one element, such as `close-label`, wins over both. Components read the language when they render, so set `lang` before they first render.
+`purrlucent/locale` defines no elements, so it is safe to import where the elements are not wanted, such as unit tests. A key the table leaves out falls back to English. A tag such as `sv-FI` matches its own registration first, then `sv`. Messages that build on another name keep its `{label}`, `{page}`, `{total}` or `{count}` slot, so a language can put it where its word order needs it. An attribute on one element, such as `close-label`, wins over both.
+
+The language can change while the page is open. When a `lang` attribute changes, on `<html>` or on any element, the components on the page update their text, their date and month names and the validation messages the library writes (a required checkbox, switch, radio group, select or combobox, and the date picker's own messages). They also update when `setMessages` registers text after they have rendered, or when the browser's language changes. A text field's own message, such as a required input's, comes from the browser and follows the browser's language. A `lang` set inside another component's shadow root is not watched, and an element out of the page while the language changes updates on its next render.
 
 Dates, weekday and month names come from the browser's `Intl` for the same `lang` and need no registration.
 
