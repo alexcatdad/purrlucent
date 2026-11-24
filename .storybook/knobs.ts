@@ -26,9 +26,10 @@ export type Knob = {
     }
 );
 
-// Both glass knobs write the whole overlay, which reads whichever is set.
-const overlay =
-  "light-dark(rgb(255 255 255 / var(--sb-glass-light, 82%)), color-mix(in srgb, color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 10%) var(--sb-glass-dark, 92%), transparent))";
+// Both fill knobs write the whole thin fill (bars, capsules, controls), which
+// reads whichever is set.
+const thin =
+  "light-dark(rgb(240 240 240 / var(--sb-glass-light, 56%)), color-mix(in srgb, var(--pl-color-ink) var(--sb-glass-dark, 66%), transparent))";
 
 export const knobs: Knob[] = [
   {
@@ -89,47 +90,48 @@ export const knobs: Knob[] = [
   },
   {
     key: "knobGlassLight",
-    label: "Glass fill, light",
+    label: "Thin fill, light",
     group: "Glass",
     kind: "range",
     min: 0,
     max: 100,
     step: 1,
     unit: "%",
-    shipped: 82,
+    shipped: 56,
     apply: (v) => ({
       "--sb-glass-light": `${v}%`,
-      "--pl-color-overlay": overlay,
+      "--pl-material-fill-thin": thin,
     }),
   },
   {
     key: "knobGlassDark",
-    label: "Glass fill, dark",
+    label: "Thin fill, dark",
     group: "Glass",
     kind: "range",
     min: 0,
     max: 100,
     step: 1,
     unit: "%",
-    shipped: 92,
+    shipped: 66,
     apply: (v) => ({
       "--sb-glass-dark": `${v}%`,
-      "--pl-color-overlay": overlay,
+      "--pl-material-fill-thin": thin,
     }),
   },
   {
     key: "knobBlur",
-    label: "Blur",
+    label: "Blur, thin",
     group: "Glass",
     kind: "range",
     min: 0,
     max: 40,
     step: 1,
     unit: "px",
-    shipped: 20,
+    shipped: 10,
     apply: (v) => ({
-      "--pl-blur-md": `${v}px`,
-      "--pl-blur-lg": `${v * 1.5}px`,
+      "--pl-blur-sm": `${v}px`,
+      "--pl-blur-md": `${v * 2}px`,
+      "--pl-blur-lg": `${v * 3}px`,
     }),
   },
   {
@@ -141,7 +143,7 @@ export const knobs: Knob[] = [
     max: 300,
     step: 10,
     unit: "%",
-    shipped: 160,
+    shipped: 180,
     apply: (v) => ({ "--pl-material-saturate": `saturate(${v}%)` }),
   },
   {
