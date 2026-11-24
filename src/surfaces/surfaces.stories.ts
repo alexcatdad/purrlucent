@@ -82,7 +82,7 @@ export const PatternedBackdrop: Story = {
 const media =
   "display: grid; gap: 16px; padding: 48px 16px; background: linear-gradient(120deg, #fff 0 28%, #e9a23b 28% 46%, #457b9d 46% 64%, #1d3557 64% 82%, #fff 82%)";
 
-/** pl-glass="clear": a thin dark film over a dimmed backdrop, with light text, for controls over photos and video. */
+/** pl-glass="clear": a dark film over a dimmed backdrop, with light text, for controls over photos and video. */
 export const Clear: Story = {
   render: () => html`
     <div style=${media}>

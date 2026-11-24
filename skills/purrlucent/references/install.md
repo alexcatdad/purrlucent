@@ -148,7 +148,7 @@ The glass fill, `--pl-material-glass`, is as clear as it can be while text on it
 
 ### Clear glass
 
-For controls over photos and video, such as a player's bar, set `pl-glass="clear"` on their container inside glass. Clear glass is a thin dark film over a dimmed backdrop, with light text in both color schemes, as Apple's clear variant is. Use it only over media; for everything else the regular glass reads better.
+For controls over photos and video, such as a player's bar, set `pl-glass="clear"` on their container inside glass. Clear glass is a dark film over a dimmed backdrop, with light text in both color schemes, as Apple's clear variant is. Use it only over media; for everything else the regular glass reads better.
 
 ```html
 <div pl-glass="clear">

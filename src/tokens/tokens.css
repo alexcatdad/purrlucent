@@ -506,21 +506,23 @@
       --pl-color-thumb: #fff;
     }
 
-    /* Clear glass, for controls over photos and video: a thin dark film over a
+    /* Clear glass, for controls over photos and video: a dark film over a
        dimmed backdrop, with the dark-scheme text colors, as Apple's clear
-       variant dims bright media behind it. The tokens resolve on the glass
-       element, so the clear element states its fills and filters again. */
+       variant dims bright media behind it. The film alone keeps light text at
+       4.5:1 over white, so an engine that skips the dim stays legible. The
+       tokens resolve on the glass element, so the clear element states its
+       fills and filters again. */
     [pl-material="glass"] [pl-glass="clear"],
     [pl-material="glass"][pl-glass="clear"] {
-      --pl-material-glass: rgb(0 0 0 / 35%);
-      --pl-material-dim: brightness(50%);
+      --pl-material-glass: rgb(0 0 0 / 56%);
+      --pl-material-dim: brightness(70%);
       --pl-material-bar: var(--pl-material-glass);
       --pl-material-capsule: var(--pl-material-glass);
       --pl-material-sidebar: var(--pl-material-glass);
       --pl-material-panel: var(--pl-material-glass);
       --pl-material-sheet: var(--pl-material-glass);
       --pl-material-control: var(--pl-material-glass);
-      --pl-material-control-pressed: rgb(0 0 0 / 50%);
+      --pl-material-control-pressed: rgb(0 0 0 / 68%);
       --pl-material-float: var(--pl-material-glass);
       --pl-material-field: var(--pl-material-glass);
       --pl-material-bar-filter: blur(var(--pl-blur-md)) var(--pl-material-dim)

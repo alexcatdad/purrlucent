@@ -122,9 +122,10 @@ test("glass blurs and edges each surface over a patterned backdrop", async ({
   }
 });
 
-// Clear glass dims its backdrop to half (brightness(50%)) under a 35% black
-// film, so the brightest backdrop shows as mid gray before the film: its labels
-// are measured over that and over black, in the dark colors it forces.
+// Clear glass dims its backdrop (brightness(70%)) under a 56% black film. Every
+// label holds over the dimmed white (179) and over black, in the dark colors it
+// forces, and the primary label also holds over undimmed white, for an engine
+// that skips the dim.
 test("clear glass dims its backdrop and its labels hold over white or black", async ({
   page,
 }) => {
@@ -141,13 +142,13 @@ test("clear glass dims its backdrop and its labels hold over white or black", as
   );
   for (const id of ["clear-bar", "clear-panel"]) {
     expect(await backdropFilter(page, id), id).toMatch(
-      /brightness\((0\.5|50%)\)/,
+      /brightness\((0\.7|70%)\)/,
     );
     const background = await page
       .locator(`#${id}`)
       .evaluate((el) => getComputedStyle(el).backgroundColor);
     const shown = await compositeOver(page, background, [
-      "rgb(128 128 128)",
+      "rgb(179 179 179)",
       "#000",
     ]);
     for (const over of shown)
@@ -156,6 +157,11 @@ test("clear glass dims its backdrop and its labels hold over white or black", as
           contrast(colors[role]!, over),
           `${role} on ${id}`,
         ).toBeGreaterThanOrEqual(need);
+    const [undimmed] = await compositeOver(page, background, ["#fff"]);
+    expect(
+      contrast(colors.label!, undimmed!),
+      `label on ${id} without the dim`,
+    ).toBeGreaterThanOrEqual(4.5);
   }
 });
 
