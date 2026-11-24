@@ -186,6 +186,10 @@
       "types": "./dist/types/components/message-scroller/message-scroller.d.ts",
       "default": "./dist/message-scroller.js"
     },
+    "./month-range-picker": {
+      "types": "./dist/types/components/month-range-picker/month-range-picker.d.ts",
+      "default": "./dist/month-range-picker.js"
+    },
     "./navigation-menu": {
       "types": "./dist/types/components/navigation-menu/navigation-menu.d.ts",
       "default": "./dist/navigation-menu.js"
