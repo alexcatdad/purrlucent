@@ -319,7 +319,11 @@ export class PlCombobox extends LitElement {
   #choose(option: PlOption) {
     if (option.disabled) return;
     if (option.action) {
-      const query = this.#query;
+      // Typed text stays the query after Escape; a chosen label is not typed.
+      const query =
+        this.#filtering || this.text !== this.#chosen?.label
+          ? this.text.trim()
+          : "";
       this.#hide();
       this.#emit("pl-action", { query });
       return;
