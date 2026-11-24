@@ -1,6 +1,7 @@
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { breadcrumbItemStyles, breadcrumbStyles } from "./breadcrumb.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 const chevron = svg`<svg part="separator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6 6.5-6 6.5" /></svg>`;
 
@@ -106,12 +107,12 @@ export class PlBreadcrumb extends LitElement {
   static override styles = breadcrumbStyles;
   static override properties = { label: { type: String } };
 
-  /** Accessible name of the landmark. Localize it. */
+  /** Accessible name of the landmark. Defaults to the page language's text (see `setMessages`), in English "Breadcrumb". */
   declare label: string;
 
   constructor() {
     super();
-    this.label = "Breadcrumb";
+    this.label = "";
   }
 
   override connectedCallback() {
@@ -121,11 +122,7 @@ export class PlBreadcrumb extends LitElement {
 
   protected override willUpdate(changed: PropertyValues<this>) {
     if (changed.has("label")) {
-      if (this.label) this.setAttribute("aria-label", this.label);
-      else {
-        this.removeAttribute("aria-label");
-        console.warn("pl-breadcrumb needs a label.");
-      }
+      this.setAttribute("aria-label", this.label || messages(this).breadcrumb);
     }
   }
 

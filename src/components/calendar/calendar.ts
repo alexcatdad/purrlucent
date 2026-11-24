@@ -13,12 +13,12 @@ import {
   firstDayOf,
   isIso,
   isoWeekday,
-  localeOf,
   parseIso,
   toIso,
   today,
   unavailable,
 } from "./dates.ts";
+import { localeOf, messages } from "../../behaviors/locale.ts";
 
 /** Days the calendar cannot select: a list of ISO days, or a function that says whether an ISO day is off. */
 export type PlCalendarDisabledDates = string[] | ((value: string) => boolean);
@@ -45,8 +45,8 @@ const MONDAY = "2023-01-02";
  * @attr {string} locale - A BCP 47 tag for names, the first weekday and the direction of the numbers. Defaults to the closest `lang`, else the document's, else the browser's.
  * @attr {number} first-day - The first day of the week, 1 (Monday) to 7 (Sunday). Defaults to the locale's.
  * @attr {string} name - The name submitted with a form.
- * @attr {string} prev-label - The previous month button's accessible name. Defaults to "Previous month".
- * @attr {string} next-label - The next month button's accessible name. Defaults to "Next month".
+ * @attr {string} prev-label - The previous month button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous month".
+ * @attr {string} next-label - The next month button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next month".
  * @csspart header - The row with the month buttons and the title.
  * @csspart title - The month and year.
  * @csspart nav - A month button.
@@ -98,8 +98,8 @@ export class PlCalendar extends LitElement {
     this.value = "";
     this.name = "";
     this.disabledDates = [];
-    this.prevLabel = "Previous month";
-    this.nextLabel = "Next month";
+    this.prevLabel = "";
+    this.nextLabel = "";
     this._focus = "";
   }
 
@@ -286,7 +286,7 @@ export class PlCalendar extends LitElement {
         <button
           part="nav"
           type="button"
-          aria-label=${this.prevLabel}
+          aria-label=${this.prevLabel || messages(this).previousMonth}
           aria-disabled=${this.#navOff(-1) ? "true" : nothing}
           @click=${() => this.#shift(-1)}
         >
@@ -296,7 +296,7 @@ export class PlCalendar extends LitElement {
         <button
           part="nav"
           type="button"
-          aria-label=${this.nextLabel}
+          aria-label=${this.nextLabel || messages(this).nextMonth}
           aria-disabled=${this.#navOff(1) ? "true" : nothing}
           @click=${() => this.#shift(1)}
         >

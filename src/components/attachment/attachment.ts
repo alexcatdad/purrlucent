@@ -1,15 +1,16 @@
 import { LitElement, html, nothing, type PropertyValues } from "lit";
 import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { attachmentGroupStyles, attachmentStyles } from "./attachment.css.ts";
+import { messages, type PlMessages } from "../../behaviors/locale.ts";
 
 export type PlAttachmentState =
   "idle" | "uploading" | "processing" | "error" | "done";
 export type PlAttachmentSize = "default" | "sm" | "xs";
 
-const stateText: Partial<Record<PlAttachmentState, string>> = {
-  uploading: "Uploading",
-  processing: "Processing",
-  error: "Error",
+const stateText: Partial<Record<PlAttachmentState, keyof PlMessages>> = {
+  uploading: "uploading",
+  processing: "processing",
+  error: "error",
 };
 
 // Controls that take a tab stop of their own, so the group needs none.
@@ -33,7 +34,7 @@ const interactive =
  * @attr {string} target - Where the link opens, as on `a`.
  * @attr {string} rel - The link's relationship, as on `a`.
  * @attr {boolean} clickable - Makes the card a button that fires `pl-press`. Ignored when there is an `href`.
- * @attr {string} status-label - The hidden word added to the name while the state is `uploading`, `processing` or `error`. Set it when the page is not in English.
+ * @attr {string} status-label - The hidden word added to the name while the state is `uploading`, `processing` or `error`. Defaults to the page language's text (see `setMessages`), in English "Uploading", "Processing" or "Error".
  * @fires {CustomEvent<{}>} pl-press - When a `clickable` card is activated by pointer, Enter or Space. Presses of buttons in the `actions` slot do not reach the card.
  * @slot media - An svg icon, or an image when `media="image"`. Give an image `alt=""` when the title says the same.
  * @slot title - The attachment's name. It names the link or button when the card is one.
@@ -100,7 +101,7 @@ export class PlAttachment extends LitElement {
   override render() {
     const word = stateText[this.state ?? "done"];
     const title = html`<span part="title"><slot name="title"></slot></span
-      >${word ? html`<span part="status">${this.statusLabel || word}</span>` : nothing}`;
+      >${word ? html`<span part="status">${this.statusLabel || messages(this)[word]}</span>` : nothing}`;
     return html`<div part="media" hidden>
         <slot name="media" @slotchange=${hideWhenEmpty}></slot>
       </div>

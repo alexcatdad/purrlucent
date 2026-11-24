@@ -85,21 +85,6 @@ export const dayFormat = (
     timeZone: "UTC",
   });
 
-/** The locale to use: the one asked for, else the closest lang, else the document's, else the browser's. */
-export function localeOf(host: Element, asked?: string) {
-  const locale =
-    asked ||
-    host.closest("[lang]")?.getAttribute("lang") ||
-    document.documentElement.lang ||
-    navigator.language ||
-    "en";
-  try {
-    return Intl.DateTimeFormat.supportedLocalesOf(locale)[0] ?? "en";
-  } catch {
-    return "en";
-  }
-}
-
 /**
  * The order of day, month and year a locale writes, and its separator, from a
  * formatted sample. Digits stay Latin so typed text parses the same everywhere.

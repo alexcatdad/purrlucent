@@ -7,6 +7,7 @@ import "../input-group/input-group.ts";
 import "../textarea/textarea.ts";
 import type { PlTextarea } from "../textarea/textarea.ts";
 import { promptInputStyles } from "./prompt-input.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 const sendGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5" /><path d="m5 12 7-7 7 7" /></svg>`;
 const stopGlyph = svg`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>`;
@@ -19,7 +20,7 @@ const stopGlyph = svg`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="
  * streaming) the button becomes Stop, the field stays editable for the next
  * message, and Enter sends nothing. `label` names the field for assistive
  * technology and is not shown; without it a native `<label for>` names it, and
- * without both the name is "Message". It takes part in forms like a native
+ * without both the name is the page language's "Message". It takes part in forms like a native
  * textarea (`name`, `value`, `required`, `disabled`, reset) but never submits
  * the form itself: listen for `pl-submit`.
  *
@@ -30,6 +31,8 @@ const stopGlyph = svg`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="
  * @attr {boolean} required - The form is invalid while the field is empty.
  * @attr {boolean} disabled - No focus, no send, nothing submitted.
  * @attr {boolean} busy - A reply is streaming: the send button becomes Stop.
+ * @attr {string} send-label - The send button's accessible name. Defaults to the page language's "Send".
+ * @attr {string} stop-label - The stop button's accessible name. Defaults to the page language's "Stop".
  * @slot start - Tools before the field, such as an attach button. Give an icon `pl-button` an `aria-label`.
  * @slot end - Tools before the send button, such as a model picker.
  * @fires {CustomEvent<{ value: string }>} pl-input - The text changed through editing. `detail.value` holds it.
@@ -50,6 +53,8 @@ export class PlPromptInput extends LitElement {
     required: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
     busy: { type: Boolean, reflect: true },
+    sendLabel: { attribute: "send-label" },
+    stopLabel: { attribute: "stop-label" },
   };
 
   declare value: string;
@@ -59,6 +64,8 @@ export class PlPromptInput extends LitElement {
   declare required: boolean;
   declare disabled: boolean;
   declare busy: boolean;
+  declare sendLabel: string | undefined;
+  declare stopLabel: string | undefined;
 
   readonly #internals = this.attachInternals();
   #width = 0;
@@ -251,7 +258,7 @@ export class PlPromptInput extends LitElement {
         rows="1"
         resize="none"
         size="lg"
-        label=${this.label || labelText(this.labels) || "Message"}
+        label=${this.label || labelText(this.labels) || messages(this).message}
         placeholder=${this.placeholder ?? ""}
         .value=${this.#text}
         ?disabled=${off}
@@ -265,7 +272,11 @@ export class PlPromptInput extends LitElement {
         ><pl-button
           icon
           variant="primary"
-          aria-label=${this.busy ? "Stop" : "Send"}
+          aria-label=${
+            this.busy
+              ? this.stopLabel || messages(this).stop
+              : this.sendLabel || messages(this).send
+          }
           ?disabled=${off || (!this.busy && !this.#text.trim())}
           @pl-press=${this.#onPress}
           >${this.busy ? stopGlyph : sendGlyph}</pl-button

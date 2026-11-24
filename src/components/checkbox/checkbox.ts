@@ -125,7 +125,7 @@ export class PlCheckbox extends LitElement {
     this.#internals.setFormValue(this.checked ? this.value : null);
     this.#internals.setValidity(
       { valueMissing: this.required && !this.checked },
-      nativeMessage("checkbox", "Check this box to continue."),
+      nativeMessage(this, "checkbox", "checkRequired"),
     );
   }
 

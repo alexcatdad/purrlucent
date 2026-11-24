@@ -1,14 +1,12 @@
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { backGlyph } from "../../behaviors/glyphs.ts";
 import { carouselItemStyles, carouselStyles } from "./carousel.css.ts";
+import { fill, messages } from "../../behaviors/locale.ts";
 
 const nextGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6 6.5-6 6.5" /></svg>`;
 
 /** The scroll has settled when no scroll event has come for this long, in ms. */
 const settleDelay = 150;
-
-const fill = (template: string, values: Record<string, number>) =>
-  (template ?? "").replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ""));
 
 /**
  * One slide of a `pl-carousel`, one page wide. The carousel gives it its
@@ -22,7 +20,7 @@ export class PlCarouselItem extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute("role", "group");
-    this.setAttribute("aria-roledescription", "slide");
+    this.setAttribute("aria-roledescription", messages(this).slide);
   }
 
   override render() {
@@ -47,10 +45,10 @@ export class PlCarouselItem extends LitElement {
  * images or cards; for a few labelled views use `pl-tabs`.
  *
  * @attr {string} label - The accessible name of the carousel. Always set one.
- * @attr {string} previous-label - The accessible name of the Previous button. Defaults to "Previous slide".
- * @attr {string} next-label - The accessible name of the Next button. Defaults to "Next slide".
- * @attr {string} page-label - The accessible name of a page's dot; `{page}` is its number. Defaults to "Go to slide {page}".
- * @attr {string} slide-label - The name of each slide; `{page}` is its number and `{total}` the count. Defaults to "{page} of {total}".
+ * @attr {string} previous-label - The accessible name of the Previous button. Defaults to the page language's text (see `setMessages`), in English "Previous slide".
+ * @attr {string} next-label - The accessible name of the Next button. Defaults to the page language's text (see `setMessages`), in English "Next slide".
+ * @attr {string} page-label - The accessible name of a page's dot; `{page}` is its number. Defaults to the page language's text (see `setMessages`), in English "Go to slide {page}".
+ * @attr {string} slide-label - The name of each slide; `{page}` is its number and `{total}` the count. Defaults to the page language's text (see `setMessages`), in English "{page} of {total}".
  * @fires {CustomEvent<{ index: number }>} pl-change - The current page changed after a scroll settled. `detail.index` is the zero-based page.
  * @slot - The `pl-carousel-item` slides.
  * @csspart viewport - The scrolling area.
@@ -90,10 +88,10 @@ export class PlCarousel extends LitElement {
   constructor() {
     super();
     this.label = "";
-    this.previousLabel = "Previous slide";
-    this.nextLabel = "Next slide";
-    this.pageLabel = "Go to slide {page}";
-    this.slideLabel = "{page} of {total}";
+    this.previousLabel = "";
+    this.nextLabel = "";
+    this.pageLabel = "";
+    this.slideLabel = "";
     this.index = 0;
     this.count = 0;
   }
@@ -101,7 +99,7 @@ export class PlCarousel extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute("role", "region");
-    this.setAttribute("aria-roledescription", "carousel");
+    this.setAttribute("aria-roledescription", messages(this).carousel);
   }
 
   override disconnectedCallback() {
@@ -148,7 +146,10 @@ export class PlCarousel extends LitElement {
     items.forEach((item, i) =>
       item.setAttribute(
         "aria-label",
-        fill(this.slideLabel, { page: i + 1, total: items.length }),
+        fill(this.slideLabel || messages(this).slideOf, {
+          page: i + 1,
+          total: items.length,
+        }),
       ),
     );
   }
@@ -274,7 +275,7 @@ export class PlCarousel extends LitElement {
         <button
           part="previous"
           type="button"
-          aria-label=${this.previousLabel ?? ""}
+          aria-label=${this.previousLabel || messages(this).previousSlide}
           ?disabled=${index <= 0}
           @click=${() => this.goTo(index - 1)}
         >
@@ -288,7 +289,7 @@ export class PlCarousel extends LitElement {
                 <button
                   part=${i === index ? "page current" : "page"}
                   type="button"
-                  aria-label=${fill(this.pageLabel, { page: i + 1 })}
+                  aria-label=${fill(this.pageLabel || messages(this).goToSlide, { page: i + 1 })}
                   aria-current=${i === index ? "true" : nothing}
                   @click=${() => this.goTo(i)}
                 ></button>
@@ -298,7 +299,7 @@ export class PlCarousel extends LitElement {
         <button
           part="next"
           type="button"
-          aria-label=${this.nextLabel ?? ""}
+          aria-label=${this.nextLabel || messages(this).nextSlide}
           ?disabled=${index >= count - 1}
           @click=${() => this.goTo(index + 1)}
         >

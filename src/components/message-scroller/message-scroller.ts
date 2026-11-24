@@ -5,6 +5,7 @@ import {
   messageScrollerItemStyles,
   messageScrollerStyles,
 } from "./message-scroller.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 // The edge fades' two lengths. Registered, they compute to a length, so script
 // can read them; registration is document-wide, so it is done here and not in
@@ -98,12 +99,12 @@ customElements.define("pl-message-scroller-item", PlMessageScrollerItem);
  * `start`, `end`, both separated by a space, or absent. The edges of the
  * viewport fade where there is more to see.
  *
- * @attr {string} label - The accessible name of the region. Defaults to "Messages".
+ * @attr {string} label - The accessible name of the region. Defaults to the page language's text (see `setMessages`), in English "Messages". Removed or empty, the host is no region.
  * @attr {boolean} busy - A reply is streaming; the log is `aria-busy`, so assistive technology waits for the reply before reading it.
  * @attr {boolean} auto-scroll - Follow new content while the reader is at the end. Off by default.
  * @attr {string} default-scroll-position - Where the first non-empty render opens, once: `start` (default), `end` or `last-anchor`, the last row with `scroll-anchor`, or the end when that row and what follows fit the viewport.
  * @attr {number} peek - Pixels of the previous row left visible above an anchor. Defaults to the 16-spacing-unit token.
- * @attr {string} button-label - The accessible name of the built-in scroll-to-end button. Defaults to "Scroll to latest".
+ * @attr {string} button-label - The accessible name of the built-in scroll-to-end button. Defaults to the page language's text (see `setMessages`), in English "Scroll to latest".
  * @slot - The rows: `pl-message-scroller-item` or any element.
  * @slot button - Replaces the built-in scroll-to-end button, for example a `pl-message-scroller-button` with its own label.
  * @csspart log - The log that holds the rows.
@@ -123,7 +124,7 @@ export class PlMessageScroller extends LitElement {
     buttonLabel: { attribute: "button-label" },
   };
 
-  declare label: string;
+  declare label: string | null | undefined;
   declare busy: boolean;
   declare autoScroll: boolean;
   declare defaultScrollPosition: PlMessageScrollerPosition;
@@ -175,12 +176,11 @@ export class PlMessageScroller extends LitElement {
 
   constructor() {
     super();
-    this.label = "Messages";
     this.busy = false;
     this.autoScroll = false;
     this.defaultScrollPosition = "start";
     this.peek = null;
-    this.buttonLabel = "Scroll to latest";
+    this.buttonLabel = "";
     this.addEventListener("scroll", () => {
       // A scroll while the pointer is down on the host itself is a drag of the
       // scrollbar; overlay scrollbars take no layout width to tell it by.
@@ -246,7 +246,9 @@ export class PlMessageScroller extends LitElement {
   }
 
   protected override updated(changed: PropertyValues<this>) {
-    const label = this.label ?? "";
+    // Unset names the region with the built-in text; a removed or empty label drops the role.
+    const label =
+      this.label === undefined ? messages(this).messages : (this.label ?? "");
     if (label) {
       this.setAttribute("role", "region");
       this.setAttribute("aria-label", label);
@@ -623,7 +625,7 @@ export class PlMessageScroller extends LitElement {
       <div part="overlay">
         <slot name="button"
           ><pl-message-scroller-button
-            label=${this.buttonLabel}
+            label=${this.buttonLabel || messages(this).scrollToLatest}
           ></pl-message-scroller-button
         ></slot>
       </div>`;
@@ -639,7 +641,7 @@ customElements.define("pl-message-scroller", PlMessageScroller);
  * scroll to. After it is pressed, focus moves to the scroller so the keyboard
  * keeps working when the button goes away.
  *
- * @attr {string} label - The accessible name. Defaults to "Scroll to latest".
+ * @attr {string} label - The accessible name. Defaults to the page language's text (see `setMessages`), in English "Scroll to latest".
  */
 export class PlMessageScrollerButton extends LitElement {
   static override styles = messageScrollerButtonStyles;
@@ -653,7 +655,7 @@ export class PlMessageScrollerButton extends LitElement {
 
   constructor() {
     super();
-    this.label = "Scroll to latest";
+    this.label = "";
   }
 
   override connectedCallback() {
@@ -691,7 +693,7 @@ export class PlMessageScrollerButton extends LitElement {
   override render() {
     return html`<pl-button
       icon
-      aria-label=${this.label ?? ""}
+      aria-label=${this.label || messages(this).scrollToLatest}
       @pl-press=${this.#press}
       >${arrowDown}</pl-button
     >`;

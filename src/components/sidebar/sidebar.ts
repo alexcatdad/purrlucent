@@ -3,10 +3,9 @@ import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { PlSidebarItem } from "./sidebar-item.ts";
 import { PlSidebarSection } from "./sidebar-section.ts";
 import { sidebarStyles } from "./sidebar.css.ts";
+import { fill, messages } from "../../behaviors/locale.ts";
 
 export { PlSidebarItem, PlSidebarSection };
-
-const TOGGLE_LABEL = "Sidebar";
 
 // design/icons/sidebar.svg
 const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9.5 4v16M13 10l1-2 1.5 1 1.5-1 1 2" /></svg>`;
@@ -25,7 +24,7 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * the screen widens; read the first state from `collapsed`, because
  * `pl-collapse` can fire before a listener is attached.
  *
- * @attr {string} toggle-label - The toggle button's accessible name. Defaults to "Sidebar", which becomes "<label> sidebar" when `label` is set.
+ * @attr {string} toggle-label - The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.
  * @slot - `pl-sidebar-item` and `pl-sidebar-section` children.
  * @csspart toggle - The button that hides and shows the sidebar.
  * @csspart nav - The navigation landmark.
@@ -65,7 +64,7 @@ export class PlSidebar extends LitElement {
     this.label = "";
     this.collapsed = false;
     this.size = "md";
-    this.toggleLabel = TOGGLE_LABEL;
+    this.toggleLabel = "";
   }
 
   /** The items in document order, loose or inside a section. */
@@ -230,9 +229,10 @@ export class PlSidebar extends LitElement {
         aria-expanded=${this.collapsed ? "false" : "true"}
         aria-controls="nav"
         aria-label=${
-          this.label && this.toggleLabel === TOGGLE_LABEL
-            ? `${this.label} sidebar`
-            : this.toggleLabel
+          this.toggleLabel ||
+          (this.label
+            ? fill(messages(this).sidebarFor, { label: this.label })
+            : messages(this).sidebar)
         }
         @click=${this.#toggleCollapsed}
       >

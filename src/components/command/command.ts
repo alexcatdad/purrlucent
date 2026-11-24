@@ -4,6 +4,7 @@ import { fireNative } from "../../behaviors/native-events.ts";
 import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
 import { commandStyles, groupStyles, itemStyles } from "./command.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 const glass = html`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true">
   <path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
@@ -138,11 +139,11 @@ export class PlCommandGroup extends LitElement {
  *
  * Put `autofocus` on it to focus the search field when a dialog opens.
  *
- * @attr {string} label - The accessible name of the field and the list. Defaults to "Commands".
- * @attr {string} placeholder - Hint shown while the field is empty. Defaults to "Search".
+ * @attr {string} label - The accessible name of the field and the list. Defaults to the page language's text (see `setMessages`), in English "Commands".
+ * @attr {string} placeholder - Hint shown while the field is empty. Defaults to the page language's text (see `setMessages`), in English "Search".
  * @attr {string} query - The text in the search field.
- * @attr {string} empty-label - The text shown when no item matches. Defaults to "No results".
- * @attr {string} clear-label - The clear button's accessible name. Defaults to "Clear".
+ * @attr {string} empty-label - The text shown when no item matches. Defaults to the page language's text (see `setMessages`), in English "No results".
+ * @attr {string} clear-label - The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".
  * @slot - The `pl-command-item` and `pl-command-group` children.
  * @csspart field - The shell around the search input.
  * @csspart glyph - The magnifier.
@@ -182,11 +183,11 @@ export class PlCommand extends LitElement {
 
   constructor() {
     super();
-    this.label = "Commands";
-    this.placeholder = "Search";
+    this.label = "";
+    this.placeholder = "";
     this.query = "";
-    this.emptyLabel = "No results";
-    this.clearLabel = "Clear";
+    this.emptyLabel = "";
+    this.clearLabel = "";
     this._active = null;
     this.addEventListener("click", this.#onClick);
   }
@@ -357,8 +358,8 @@ export class PlCommand extends LitElement {
           aria-expanded="true"
           aria-controls="list"
           aria-autocomplete="list"
-          aria-label=${this.label}
-          placeholder=${this.placeholder || nothing}
+          aria-label=${this.label || messages(this).commands}
+          placeholder=${this.placeholder || messages(this).search}
           .value=${this.query}
           @input=${this.#onInput}
           @keydown=${this.#onKeydown}
@@ -368,7 +369,7 @@ export class PlCommand extends LitElement {
             ? html`<button
                 part="clear"
                 type="button"
-                aria-label=${this.clearLabel}
+                aria-label=${this.clearLabel || messages(this).clear}
                 @mousedown=${(event: Event) => event.preventDefault()}
                 @click=${() => this.#clear()}
               >
@@ -381,7 +382,7 @@ export class PlCommand extends LitElement {
         part="list"
         id="list"
         role="listbox"
-        aria-label=${this.label}
+        aria-label=${this.label || messages(this).commands}
         @mousedown=${(event: Event) => event.preventDefault()}
         @pointerover=${this.#onPointerover}
       >
@@ -389,7 +390,7 @@ export class PlCommand extends LitElement {
         ${
           empty
             ? html`<div part="empty" role="option" aria-disabled="true">
-                ${this.emptyLabel}
+                ${this.emptyLabel || messages(this).noResults}
               </div>`
             : nothing
         }

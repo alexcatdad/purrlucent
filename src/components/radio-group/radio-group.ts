@@ -268,7 +268,7 @@ export class PlRadioGroup extends LitElement {
     // The host takes no focus, so a failed submit focuses the first radio.
     this.#internals.setValidity(
       { valueMissing: this.required && !this.value },
-      nativeMessage("radio", "Choose one of these options to continue."),
+      nativeMessage(this, "radio", "radioRequired"),
       this.#enabled[0],
     );
   }

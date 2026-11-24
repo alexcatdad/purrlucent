@@ -3,7 +3,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { STORY_GROUPS } from "../.storybook/groups";
 
 const placement: Record<string, readonly string[]> = {
-  Foundations: ["Tokens", "Typography", "Surfaces", "Interaction"],
+  Foundations: [
+    "Tokens",
+    "Typography",
+    "Surfaces",
+    "Interaction",
+    "Localization",
+  ],
   Actions: ["Button", "Button Group", "Toggle", "Toggle Group"],
   Forms: [
     "Field",

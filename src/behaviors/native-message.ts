@@ -1,3 +1,6 @@
+import { messages, ownMessages } from "./locale.ts";
+import type { PlMessages } from "./locale.ts";
+
 type Kind = "checkbox" | "radio" | "select";
 
 const make = (kind: Kind) => {
@@ -16,14 +19,21 @@ const make = (kind: Kind) => {
 const cache = new Map<Kind, string>();
 
 /**
- * The browser's own, localized "required" message, read from a detached native
- * control in the same state. Empty where the browser gives none.
+ * The "required" message in the element's language: the library's own text
+ * where it has that language, else the browser's localized message, read from
+ * a detached native control in the same state, else English.
  */
-export const nativeMessage = (kind: Kind, fallback: string) => {
+export const nativeMessage = (
+  host: Element,
+  kind: Kind,
+  key: keyof PlMessages,
+) => {
+  const own = ownMessages(host);
+  if (own) return own[key];
   let message = cache.get(kind);
   if (message === undefined) {
     message = make(kind).validationMessage;
     cache.set(kind, message);
   }
-  return message || fallback;
+  return message || messages(host)[key];
 };

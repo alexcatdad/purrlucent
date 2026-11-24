@@ -4,6 +4,7 @@ import { hideWhenEmpty } from "../../behaviors/slot-presence.ts";
 import { panelSurface } from "../../surfaces/surfaces.css.ts";
 import "../button/button.ts";
 import { toastStyles, toasterStyles } from "./toast.css.ts";
+import { messages } from "../../behaviors/locale.ts";
 
 export type PlToastVariant = "neutral" | "destructive";
 export type PlToastCloseReason = "close" | "escape" | "timeout" | "action";
@@ -38,7 +39,7 @@ export interface PlToastOptions {
  *
  * @attr {string} variant - `neutral` (default) or `destructive`.
  * @attr {number} duration - Milliseconds before it dismisses itself. Defaults to 6000. 0 keeps it. Ignored when there is an action.
- * @attr {string} close-label - The close button's accessible name. Defaults to "Dismiss".
+ * @attr {string} close-label - The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Dismiss".
  * @slot title - The heading.
  * @slot - The description.
  * @slot action - A `pl-button`. Pressing it closes the toast, unless its click is prevented.
@@ -70,7 +71,7 @@ export class PlToast extends LitElement {
     super();
     this.variant = "neutral";
     this.duration = 6000;
-    this.closeLabel = "Dismiss";
+    this.closeLabel = "";
     this.addEventListener("pointerenter", () => this.#hover(true));
     this.addEventListener("pointerleave", () => this.#hover(false));
     this.addEventListener("focusin", this.#onFocusin);
@@ -197,7 +198,7 @@ export class PlToast extends LitElement {
       <button
         part="close"
         type="button"
-        aria-label=${this.closeLabel || "Dismiss"}
+        aria-label=${this.closeLabel || messages(this).dismiss}
         @click=${() => this.close("close")}
       >
         ${closeGlyph}
