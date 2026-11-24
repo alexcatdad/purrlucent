@@ -2,6 +2,9 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
 import "./input.ts";
+import "../button/button.ts";
+import "../dialog/dialog.ts";
+import type { PlDialog } from "../dialog/dialog.ts";
 import type { PlInput } from "./input.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
@@ -171,4 +174,41 @@ export const Glass: Story = {
       ></pl-input>`,
     ]),
   globals: { material: "glass", theme: "dark", contrast: "more" },
+};
+
+/** A form that validates itself sets `aria-required`, `aria-describedby`, `aria-invalid` and `aria-errormessage` on the host; the field forwards them to its native input. */
+export const HostAria: Story = {
+  render: () =>
+    column(html`
+      <pl-input
+        id="input"
+        label="Email"
+        aria-required="true"
+        aria-invalid="true"
+        aria-describedby="hint"
+        aria-errormessage="problem"
+      ></pl-input>
+      <p id="hint" style="margin:0">We only use it to send the receipt.</p>
+      <p id="problem" style="margin:0">Enter an email address.</p>
+    `),
+};
+
+/** Return in a field of a form without a submit button presses the dialog's default action. */
+export const InDialog: Story = {
+  render: () => html`
+    <pl-dialog id="dialog" variant="sheet" label="Rename">
+      <form id="form" novalidate>
+        <pl-input id="first" label="Name" value="Untitled"></pl-input>
+        <pl-input id="second" label="Tag"></pl-input>
+      </form>
+      <pl-button slot="actions" cancel data-close="cancel">Cancel</pl-button>
+      <pl-button slot="actions" default data-close="rename">Rename</pl-button>
+    </pl-dialog>
+  `,
+  play: async ({ canvasElement }) => {
+    const dialog = canvasElement.querySelector<PlDialog>("#dialog")!;
+    await dialog.updateComplete;
+    dialog.show();
+    await dialog.updateComplete;
+  },
 };

@@ -9,6 +9,55 @@ import { expectWidthsIncrease } from "../../../e2e/helpers/widths.ts";
 
 const story = (name: string) => `forms-input--${name}`;
 
+test("host aria attributes reach the native input", async ({ page }) => {
+  await gotoStory(page, story("host-aria"));
+  const inner = page.locator("#input input");
+  await expect(inner).toHaveAttribute("aria-required", "true");
+  await expect(inner).toHaveAttribute("aria-invalid", "true");
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "We only use it to send the receipt. Enter an email address.",
+  );
+  await page.locator("#input").evaluate((el) => {
+    el.removeAttribute("aria-invalid");
+    el.removeAttribute("aria-required");
+  });
+  await expect(inner).not.toHaveAttribute("aria-invalid", "true");
+  await expect(inner).not.toHaveAttribute("aria-required", "true");
+  await expect(inner).toHaveAttribute(
+    "aria-description",
+    "We only use it to send the receipt.",
+  );
+  await page.locator("#input").evaluate((el) => {
+    el.removeAttribute("aria-describedby");
+  });
+  await expect(inner).not.toHaveAttribute("aria-description");
+});
+
+test("Return in a form without a submit button presses the dialog's default action", async ({
+  page,
+}) => {
+  await gotoStory(page, story("in-dialog"));
+  const dialog = page.locator("#dialog");
+  await dialog.evaluate((el) => {
+    (window as unknown as { closed: unknown[] }).closed = [];
+    el.addEventListener("pl-close", (event) =>
+      (window as unknown as { closed: unknown[] }).closed.push(
+        (event as CustomEvent).detail,
+      ),
+    );
+  });
+  await expect(page.getByRole("dialog", { name: "Rename" })).toBeVisible();
+  await page.getByRole("textbox", { name: "Name" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "Rename" })).toBeHidden();
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { closed: unknown[] }).closed,
+    ),
+  ).toEqual([{ returnValue: "rename" }]);
+});
+
 /** What the form would submit, as [name, value] pairs. */
 const submitted = (page: Page) =>
   page

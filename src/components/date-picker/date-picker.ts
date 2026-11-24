@@ -1,6 +1,7 @@
 import { LitElement, html, nothing, svg } from "lit";
 import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { FORWARDED_ARIA, forwardAria } from "../../behaviors/aria-forward.ts";
 import {
   fieldMessage,
   syncFieldMessage,
@@ -122,6 +123,7 @@ export class PlDatePicker extends LitElement {
 
   readonly #internals = this.attachInternals();
   readonly #labelWatch = new MutationObserver(() => this.#syncLabelled());
+  readonly #ariaWatch = new MutationObserver(() => this.#sync());
   #touched = false;
   #typing = false;
   /** The value last reported with pl-change. */
@@ -168,12 +170,14 @@ export class PlDatePicker extends LitElement {
       subtree: true,
       characterData: true,
     });
+    this.#ariaWatch.observe(this, { attributeFilter: FORWARDED_ARIA });
     this.#syncLabelled();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#labelWatch.disconnect();
+    this.#ariaWatch.disconnect();
   }
 
   get form() {
@@ -282,6 +286,7 @@ export class PlDatePicker extends LitElement {
     this.#setState("user-invalid", invalid);
     if (invalid) input.setAttribute("aria-invalid", "true");
     else input.removeAttribute("aria-invalid");
+    forwardAria(this, input);
     syncFieldMessage(this.renderRoot as ShadowRoot, input, invalid);
   }
 
