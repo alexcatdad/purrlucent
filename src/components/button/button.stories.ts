@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
+import "../input/input.ts";
 import "./button.ts";
 import type { PlButton } from "./button.ts";
 
@@ -21,7 +22,7 @@ const row = (content: unknown) =>
   </div>`;
 
 const variants = ["secondary", "primary", "tinted", "ghost"] as const;
-const sizes = ["md", "lg", "xl"] as const;
+const sizes = ["sm", "md", "lg", "xl"] as const;
 
 /** An action label for each variant: buttons name what they do. */
 const label = (variant: (typeof variants)[number]) =>
@@ -200,6 +201,50 @@ export const InForm: Story = {
       <pl-button type="reset">Reset</pl-button>
       <pl-button type="submit" variant="primary">Save</pl-button>
     </form>
+  `,
+};
+
+/** A small button for dense tables, toolbars and pagination. */
+export const Small: Story = {
+  render: () =>
+    row([
+      html`<pl-button id="small" size="sm">Previous</pl-button>`,
+      html`<pl-button id="small-primary" size="sm" variant="primary"
+        >${plus}Add</pl-button
+      >`,
+      html`<pl-button id="small-ghost" size="sm" variant="ghost"
+        >Clear</pl-button
+      >`,
+      html`<pl-button id="small-icon" size="sm" icon aria-label="Add row"
+        >${plus}</pl-button
+      >`,
+      html`<pl-button id="small-link" size="sm" href="#next">Next</pl-button>`,
+    ]),
+};
+
+/**
+ * Enter in a native text field submits through the submit button, also with
+ * several fields; a submit button outside the form names it with `form`, and
+ * the submitting button's `name` and `value` are sent.
+ */
+export const SubmitForm: Story = {
+  render: () => html`
+    <form
+      id="signup"
+      style="display:flex;flex-wrap:wrap;gap:var(--pl-space-2);padding:var(--pl-space-4)"
+    >
+      <input name="first" aria-label="First name" />
+      <input name="last" aria-label="Last name" />
+      <pl-input name="email" label="Email"></pl-input>
+      <pl-button type="submit" name="intent" value="save" variant="primary"
+        >Save</pl-button
+      >
+    </form>
+    <div style="padding:var(--pl-space-4)">
+      <pl-button type="submit" form="signup" name="intent" value="draft"
+        >Save as draft</pl-button
+      >
+    </div>
   `,
 };
 

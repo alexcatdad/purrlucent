@@ -79,6 +79,23 @@ export const buttonStyles = css`
     display: none;
   }
 
+  /* A dense control for tables, toolbars and pagination. Its hit region is
+     its own height; a coarse pointer raises that to the touch size. */
+  :host([size="sm"]) {
+    --_size: var(--pl-size-sm);
+
+    min-inline-size: var(--_size);
+    padding: var(--pl-space-1) var(--pl-space-2);
+    font-size: var(--pl-text-xs);
+    line-height: var(--pl-leading-tight);
+  }
+
+  :host([size="sm"]) ::slotted(svg),
+  :host([size="sm"]) pl-spinner {
+    inline-size: var(--pl-icon-sm);
+    block-size: var(--pl-icon-sm);
+  }
+
   :host([size="lg"]) {
     --_size: var(--pl-size-lg);
   }

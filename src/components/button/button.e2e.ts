@@ -16,6 +16,8 @@ const stories = [
   "busy",
   "glass",
   "links",
+  "small",
+  "submit-form",
 ];
 const labels = ["Duplicate", "Save", "Share", "Cancel"];
 
@@ -33,7 +35,7 @@ test("an icon button takes its name from aria-label", async ({ page }) => {
   const root = await gotoStory(page, "actions-button--sizes");
   await expect(
     root.getByRole("button", { name: "Add", exact: true }),
-  ).toHaveCount(3);
+  ).toHaveCount(4);
 });
 
 test("a disabled button is exposed as disabled", async ({ page }) => {
@@ -108,7 +110,146 @@ test("each size is taller than the one before", async ({ page }) => {
     .locator("pl-button:not([icon])")
     .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
   expect(heights).toEqual([...heights].sort((a, b) => a - b));
-  expect(new Set(heights).size).toBe(3);
+  expect(new Set(heights).size).toBe(4);
+});
+
+test("a small button is 24px tall and a small icon button is 24px square", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--small");
+  const box = async (id: string) => (await page.locator(id).boundingBox())!;
+  for (const id of ["#small", "#small-primary", "#small-ghost", "#small-link"])
+    expect((await box(id)).height).toBe(24);
+  const icon = await box("#small-icon");
+  expect(icon.width).toBe(24);
+  expect(icon.height).toBe(24);
+});
+
+test("a submit button submits on Enter in a native field of a form with several fields", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.data = JSON.stringify([
+        ...new FormData(form as HTMLFormElement),
+      ]);
+      form.dataset.count = String(Number(form.dataset.count ?? 0) + 1);
+    });
+  });
+  await page.getByRole("textbox", { name: "First name" }).fill("Ada");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#signup")).toHaveAttribute("data-count", "1");
+  await expect(page.locator("#signup")).toHaveAttribute(
+    "data-data",
+    JSON.stringify([
+      ["first", "Ada"],
+      ["last", ""],
+      ["email", ""],
+      ["intent", "save"],
+    ]),
+  );
+});
+
+test("Enter in a pl-input still submits through the form's submit button", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.count = String(Number(form.dataset.count ?? 0) + 1);
+    });
+  });
+  await page.getByRole("textbox", { name: "Email" }).fill("ada@example.com");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#signup")).toHaveAttribute("data-count", "1");
+});
+
+test("a disabled submit button blocks Enter in a field", async ({ page }) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.count = String(Number(form.dataset.count ?? 0) + 1);
+    });
+    form.querySelector("pl-button")!.setAttribute("disabled", "");
+  });
+  await page.getByRole("textbox", { name: "First name" }).fill("Ada");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#signup")).not.toHaveAttribute("data-count");
+});
+
+test("a submit button outside the form submits the form named by form, with its name and value", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.data = JSON.stringify([
+        ...new FormData(form as HTMLFormElement),
+      ]);
+    });
+  });
+  const draft = page.getByRole("button", { name: "Save as draft" });
+  await expect(draft).toHaveAttribute("form", "signup");
+  await draft.click();
+  await expect(page.locator("#signup")).toHaveAttribute(
+    "data-data",
+    JSON.stringify([
+      ["first", ""],
+      ["last", ""],
+      ["email", ""],
+      ["intent", "draft"],
+    ]),
+  );
+});
+
+test("only the button that submitted adds its name and value", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  await page.locator("#signup").evaluate((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.data = JSON.stringify([
+        ...new FormData(form as HTMLFormElement),
+      ]);
+    });
+  });
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  const data = await page.locator("#signup").getAttribute("data-data");
+  expect(JSON.parse(data!).filter(([k]: string[]) => k === "intent")).toEqual([
+    ["intent", "save"],
+  ]);
+  await page.locator("#signup").evaluate((form) => {
+    form.dataset.data = JSON.stringify([
+      ...new FormData(form as HTMLFormElement),
+    ]);
+  });
+  const later = await page.locator("#signup").getAttribute("data-data");
+  expect(JSON.parse(later!).map(([k]: string[]) => k)).not.toContain("intent");
+});
+
+test("form, name and value are attributes and properties", async ({ page }) => {
+  await gotoStory(page, "actions-button--submit-form");
+  const draft = page.getByRole("button", { name: "Save as draft" });
+  expect(
+    await draft.evaluate((el) => {
+      const b = el as HTMLElement & {
+        form: string;
+        name: string;
+        value: string;
+      };
+      return [b.form, b.name, b.value];
+    }),
+  ).toEqual(["signup", "intent", "draft"]);
+  await draft.evaluate((el) => {
+    (el as HTMLElement & { name: string }).name = "other";
+  });
+  await expect(draft).toHaveAttribute("name", "other");
 });
 
 test("an icon button is as wide as it is tall", async ({ page }) => {

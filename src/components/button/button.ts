@@ -1,5 +1,9 @@
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import {
+  submitImplicitly,
+  textFields,
+} from "../../behaviors/implicit-submit.ts";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { LensController } from "../../behaviors/lens.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
@@ -7,7 +11,7 @@ import "../spinner/spinner.ts";
 import { buttonStyles } from "./button.css.ts";
 
 export type PlButtonVariant = "primary" | "secondary" | "tinted" | "ghost";
-export type PlButtonSize = "md" | "lg" | "xl";
+export type PlButtonSize = "sm" | "md" | "lg" | "xl";
 
 /**
  * A button. The label is the slotted text and is required for an accessible
@@ -29,6 +33,15 @@ export type PlButtonSize = "md" | "lg" | "xl";
  * activates. The default button draws as primary unless it has another
  * variant. A destructive button cannot be the default; the dialog warns.
  *
+ * A submit button also takes Enter in a native single-line `input` of its
+ * form, as a native submit button does, and submits the form it names with
+ * `form` from outside it. Its `name` and `value` are submitted only when it
+ * is the button that submitted, as a native submit button's are.
+ *
+ * @attr {string} size - `md` (default), `sm` for dense tables and toolbars, `lg` or `xl`.
+ * @attr {string} form - The `id` of the form a submit or reset button acts on, when it is not inside that form.
+ * @attr {string} name - The name its `value` is submitted under when this button submits the form.
+ * @attr {string} value - The value submitted under `name` when this button submits the form.
  * @attr {boolean} default - The dialog's default button: Return activates it, it draws as primary and it takes initial focus.
  * @attr {boolean} cancel - The dialog's cancel button: Escape and Command-Period activate it.
  * @attr {boolean} busy - The action is running: a spinner shows before the label, the button ignores presses and stays focusable.
@@ -48,6 +61,10 @@ export class PlButton extends LitElement {
     variant: { reflect: true },
     type: { reflect: true },
     size: { reflect: true },
+    form: { reflect: true },
+    // The browser names a form control's entry from its `name` attribute.
+    name: { reflect: true },
+    value: {},
     icon: { type: Boolean, reflect: true },
     destructive: { type: Boolean, reflect: true },
     default: { type: Boolean, reflect: true },
@@ -63,6 +80,10 @@ export class PlButton extends LitElement {
   declare variant: PlButtonVariant;
   declare type: "button" | "submit" | "reset";
   declare size: PlButtonSize;
+  /** The `id` of the owning form; the browser resolves the owner from the attribute. */
+  declare form: string | null;
+  declare name: string | null;
+  declare value: string | null;
   declare icon: boolean;
   declare destructive: boolean;
   declare default: boolean;
@@ -88,6 +109,8 @@ export class PlButton extends LitElement {
   #linkLabel: string | null = null;
   /** A tabindex set on the host by a roving group, moved to the inner link. */
   #linkTabIndex: string | null = null;
+  /** The form whose Enter key this submit button answers. */
+  #enterForm: HTMLFormElement | null = null;
 
   constructor() {
     super();
@@ -95,6 +118,9 @@ export class PlButton extends LitElement {
     this.variant = "secondary";
     this.type = "button";
     this.size = "md";
+    this.form = null;
+    this.name = null;
+    this.value = null;
     this.icon = false;
     this.destructive = false;
     this.default = false;
@@ -120,11 +146,50 @@ export class PlButton extends LitElement {
     // Like a native button: submit or reset the form the button belongs to.
     this.addEventListener("pl-press", () => {
       if (this.href) return;
-      const { form } = this.pressable.internals;
-      if (this.type === "submit") form?.requestSubmit();
-      else if (this.type === "reset") form?.reset();
+      const { internals } = this.pressable;
+      const { form } = internals;
+      if (this.type === "submit" && form) {
+        // The button's entry is in the form data only while it submits.
+        if (this.name) internals.setFormValue(this.value ?? "");
+        try {
+          form.requestSubmit();
+        } finally {
+          internals.setFormValue(null);
+        }
+      } else if (this.type === "reset") form?.reset();
     });
   }
+
+  formAssociatedCallback(form: HTMLFormElement | null) {
+    this.#enterForm?.removeEventListener("keydown", this.#enter);
+    this.#enterForm = form;
+    form?.addEventListener("keydown", this.#enter);
+  }
+
+  /**
+   * Implicit submission: a native submit button is the form's default button,
+   * so Enter in a field submits it. A custom button is not one to the browser,
+   * so with several fields Enter would do nothing; this answers it.
+   */
+  #enter = (event: Event) => {
+    const { key, target, defaultPrevented, isComposing } =
+      event as KeyboardEvent;
+    const form = this.#enterForm;
+    if (
+      key !== "Enter" ||
+      defaultPrevented ||
+      isComposing ||
+      this.type !== "submit" ||
+      !(target instanceof HTMLInputElement) ||
+      !target.matches(textFields)
+    )
+      return;
+    // Only the form's first submit button is its default button.
+    const first = [...form!.elements].find(
+      (el) => (el as HTMLButtonElement).type === "submit",
+    );
+    if (first === this) submitImplicitly(form, event);
+  };
 
   override connectedCallback() {
     super.connectedCallback();
