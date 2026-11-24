@@ -107,6 +107,17 @@ export const InForm: Story = {
 
 /** The host's `aria-*` attributes reach the button, as they do on `pl-input`. */
 export const AriaForwarded: Story = {
+  parameters: {
+    // The host attributes are forwarded to the inner button, which is where they apply.
+    a11y: {
+      options: {
+        rules: {
+          "aria-allowed-attr": { enabled: false },
+          "aria-valid-attr-value": { enabled: false },
+        },
+      },
+    },
+  },
   render: () =>
     column(html`
       <label for="file">Resume</label>

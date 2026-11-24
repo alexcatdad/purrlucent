@@ -111,12 +111,14 @@ export const sidebarStyles = [
         padding-inline var(--pl-duration) var(--pl-ease-out);
     }
 
-    /* The content keeps its width while the sidebar grows and shrinks, and the
-       host clips it, so it slides instead of wrapping. */
+    /* While it collapses, the content keeps its width and the host clips it,
+       so it slides out instead of wrapping. Open, it fits its container. */
     :host(:not([data-overlay])) {
-      --_content: calc(var(--pl-spacing) * 64 - var(--pl-space-3) * 2);
-
       overflow-x: clip;
+    }
+
+    :host([collapsed]:not([data-overlay])) {
+      --_content: calc(var(--pl-spacing) * 64 - var(--pl-space-3) * 2);
     }
 
     :host([hidden]) {

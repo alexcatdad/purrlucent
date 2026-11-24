@@ -1891,7 +1891,12 @@ test.describe("an action item as a menu trigger", () => {
         ),
       )
       .toMatch(/^(home|unsupported)$/);
-    // An id reference would name nothing inside the item's own tree.
-    await expect(control(page)).not.toHaveAttribute("aria-controls");
+    // No id is copied: one would name nothing inside the item's own tree.
+    // (Element reflection itself shows as an empty attribute.)
+    expect(
+      await control(page).evaluate((button) =>
+        button.getAttribute("aria-controls"),
+      ),
+    ).not.toBe("home");
   });
 });

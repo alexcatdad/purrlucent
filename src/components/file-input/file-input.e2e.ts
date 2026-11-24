@@ -346,7 +346,8 @@ test("the host's aria attributes are forwarded to the button", async ({
     name: "Choose file",
     exact: true,
   });
-  await expect(button).toHaveAttribute("aria-required", "true");
+  // A button cannot be required in ARIA, so that one is not forwarded.
+  await expect(button).not.toHaveAttribute("aria-required");
   await expect(button).toHaveAttribute("aria-invalid", "true");
   await expect(button).toHaveAttribute(
     "aria-description",

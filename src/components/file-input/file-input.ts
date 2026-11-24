@@ -18,9 +18,10 @@ import { fileInputStyles } from "./file-input.css.ts";
  * submits the files under `name`, a reset clears it, a disabled fieldset
  * disables it, and `required` makes the form invalid while nothing is chosen.
  * It carries its own label, description and message, and also works inside a
- * `pl-field`: the host's `aria-required`, `aria-invalid`, `aria-describedby`
- * and `aria-errormessage` are forwarded to the button, and a `<label for>`
- * pointing at it names the group.
+ * `pl-field`: the host's `aria-invalid`, `aria-describedby` and
+ * `aria-errormessage` are forwarded to the button, and a `<label for>`
+ * pointing at it names the group. `aria-required` is not, since a button
+ * cannot be required in ARIA.
  *
  * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} name - The name the files are submitted under.
@@ -190,6 +191,9 @@ export class PlFileInput extends LitElement {
     // The host's own aria-invalid is forwarded; none left over once it goes.
     button.removeAttribute("aria-invalid");
     forwardAria(this, button);
+    // A button cannot be required in ARIA; `required` on the element still
+    // makes the form invalid while nothing is chosen.
+    button.removeAttribute("aria-required");
   }
 
   #toggleState(state: string, on: boolean) {
