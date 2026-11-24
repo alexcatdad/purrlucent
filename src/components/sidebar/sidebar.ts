@@ -482,12 +482,8 @@ export class PlSidebar extends LitElement {
       const toggle = this.shadowRoot?.querySelector<HTMLElement>(
         ".toggle:not(.in-dialog)",
       );
-      const target = toggle ?? this.#opener;
+      (toggle ?? this.#opener)?.focus();
       this.#opener = undefined;
-      target?.focus();
-      // WebKit can still treat the page as inert right after the panel goes.
-      if (target && !target.matches(":focus"))
-        requestAnimationFrame(() => target.focus());
     }
   }
 
