@@ -783,6 +783,59 @@ test("manual-filter lets the app replace the options on pl-input", async ({
   expect(await recorded(page)).toEqual([{ value: "Oslo" }]);
 });
 
+/** Replaces the options of `#probe` with a single one, as an app's search does. */
+const replaceOptions = (page: Page) =>
+  page.locator("#probe").evaluate((el) => {
+    el.innerHTML = `<pl-option value="d">Delta</pl-option>`;
+  });
+
+const probeValue = (page: Page) =>
+  page.locator("#probe").evaluate((el) => (el as HTMLInputElement).value);
+
+test("manual-filter: an active option the app removed is not chosen by Enter", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<pl-combobox id="probe" label="Probe" manual-filter>${abc}</pl-combobox>`,
+  );
+  await combo(page, "Probe").focus();
+  await page.keyboard.type("z");
+  await page.keyboard.press("ArrowDown");
+  await expect
+    .poll(() =>
+      combo(page, "Probe").evaluate((input) =>
+        (
+          input as HTMLInputElement & { ariaActiveDescendantElement: Element }
+        ).ariaActiveDescendantElement?.textContent?.trim(),
+      ),
+    )
+    .toBe("Alpha");
+  await replaceOptions(page);
+  await expect(page.locator("#probe pl-option")).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  expect(await probeValue(page)).toBe("");
+});
+
+test("manual-filter: leaving keeps the text and value when the app's list lacks the chosen option", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<pl-combobox id="probe" label="Probe" manual-filter value="a">${abc}</pl-combobox>`,
+  );
+  await expect(combo(page, "Probe")).toHaveValue("Alpha");
+  await combo(page, "Probe").focus();
+  await page.keyboard.type("x");
+  await replaceOptions(page);
+  await expect(page.locator("#probe pl-option")).toHaveCount(1);
+  await page.keyboard.press("Tab");
+  await expect(combo(page, "Probe")).toHaveValue("Alphax");
+  expect(await probeValue(page)).toBe("a");
+});
+
 test("action-label adds a row for the typed text only while text is typed", async ({
   page,
 }) => {

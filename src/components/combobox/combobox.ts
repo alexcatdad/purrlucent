@@ -310,7 +310,10 @@ export class PlCombobox extends LitElement {
     // Empty text beside a value that shows nothing was never typed: keep it.
     else if (this.allowCustom || (!text && (this.#chosen || !this.value))) {
       this.#setValue(text, text);
-    } else this.text = this.#chosen?.label ?? "";
+    } else if (!(this.manualFilter && this.value && !this.#chosen)) {
+      // The app's list may not hold the chosen option: then keep text and value.
+      this.text = this.#chosen?.label ?? "";
+    }
   }
 
   #choose(option: PlOption) {
@@ -416,6 +419,8 @@ export class PlCombobox extends LitElement {
 
   #onOptions = () => {
     this.#syncLabelled();
+    // An option the app removed can no longer be chosen.
+    if (this._active && !this.#rows.includes(this._active)) this._active = null;
     if (this.#start === undefined && this.#options.length) {
       this.#start =
         this.value || this.#options.find((o) => o.selected)?.optionValue || "";
