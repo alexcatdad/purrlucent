@@ -219,10 +219,11 @@ import "purrlucent/badge";
 
 A small label for a count or a status. It is presentational and takes no focus. The text always carries the meaning, so a status badge says its status in words; the variant only adds color. Put a count in context in the surrounding text, for example "Inbox" before a badge reading "3".
 
-| Attribute | Type                                                               | Default     | Description                                                                                   |
-| --------- | ------------------------------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------- |
-| `variant` | `"neutral" \| "accent" \| "success" \| "warning" \| "destructive"` | `"neutral"` | `neutral` (default), `accent`, `success`, `warning` or `destructive`.                         |
-| `dot`     | `boolean`                                                          | `false`     | A status pill: the badge keeps the neutral fill and the variant colors a dot before the text. |
+| Attribute    | Type                                                               | Default     | Description                                                                                                    |
+| ------------ | ------------------------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------- |
+| `variant`    | `"neutral" \| "accent" \| "success" \| "warning" \| "destructive"` | `"neutral"` | `neutral` (default), `accent`, `success`, `warning` or `destructive`.                                          |
+| `appearance` | `"solid" \| "soft" \| "outline"`                                   | `"solid"`   | `solid` (default), `soft` (a tinted fill under tone-colored text) or `outline` (an edge in the tone, no fill). |
+| `dot`        | `boolean`                                                          | `false`     | A status pill: the badge keeps the neutral fill and the variant colors a dot before the text.                  |
 
 **Slots**
 
@@ -2214,7 +2215,7 @@ import "purrlucent/table";
 
 ### `<pl-table>`
 
-Styles a native table. Slot one `<table>` (with `<caption>`, `<thead>`, `<tbody>`, `<th scope>`) and it keeps its table semantics: a custom element cannot sit inside `<table>`, so this one wraps it instead of replacing it. The rules are adopted as a stylesheet into the root the element is in. The wrapper scrolls when the table is wider or taller than the space it gets, and then takes a tab stop so the keyboard can scroll it. It is named by `label`, or else by the table's caption; without either, the scroll area has no accessible name. Set a `max-block-size` on the element to make `sticky-header` useful. A static table is not a grid: do not add `role=grid`.
+Styles a native table. Slot one `<table>` (with `<caption>`, `<thead>`, `<tbody>`, `<th scope>`) and it keeps its table semantics: a custom element cannot sit inside `<table>`, so this one wraps it instead of replacing it. The rules are adopted as a stylesheet into the root the element is in. The wrapper scrolls when the table is wider or taller than the space it gets, and then takes a tab stop so the keyboard can scroll it. It is named by `label`, or else by the table's caption; without either, the scroll area has no accessible name. Set a `max-block-size` on the element to make `sticky-header` useful. A static table is not a grid: do not add `role=grid`. A row with `data-interactive`, or one holding an `a[data-stretched]` link that covers the row, gets a hover tint, a focus ring and a pointer. Prefer the stretched link: other controls in that row need `position: relative` and `z-index: 1` to stay above its overlay. The page owns the role and the Enter/Space handling of a focusable `data-interactive` row. A `<th aria-sort>` holding a `<button>` is styled as a sort control, with a glyph that follows `aria-sort`; the page owns the sorting.
 
 | Attribute       | Type                  | Default | Description                                                              |
 | --------------- | --------------------- | ------- | ------------------------------------------------------------------------ |
