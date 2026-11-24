@@ -1,5 +1,5 @@
-/* Purrlucent tokens. Five palette colors and one spacing base; everything
-   else is calculated from them. Colors are light-dark() pairs and follow the
+/* Purrlucent tokens. Five palette colors, two status colors and one spacing
+   base; everything else is calculated from them. Colors are light-dark() pairs and follow the
    page's color-scheme. Every token sits in a cascade layer, so app styles
    override it. */
 @layer pl.tokens {
@@ -11,6 +11,10 @@
     --pl-color-frosted-blue: #a8dadc;
     --pl-color-cerulean: #457b9d;
     --pl-color-oxford-navy: #1d3557;
+
+    /* Status: done or healthy, and needing attention. */
+    --pl-color-sea-green: #2d7a4f;
+    --pl-color-saffron: #e9a23b;
     --pl-color-shade: color-mix(
       in srgb,
       var(--pl-color-oxford-navy),
@@ -36,6 +40,22 @@
     );
     --pl-color-accent-foreground: #fff;
     --pl-color-destructive-foreground: #fff;
+
+    /* Success is a green fill under white text; warning an amber fill under
+       navy text, as a light fill takes dark text. Each -text color is for
+       the tone's text on the page. */
+    --pl-color-success: var(--pl-color-sea-green);
+    --pl-color-success-foreground: #fff;
+    --pl-color-success-text: light-dark(
+      var(--pl-color-sea-green),
+      color-mix(in srgb, var(--pl-color-sea-green), white 55%)
+    );
+    --pl-color-warning: var(--pl-color-saffron);
+    --pl-color-warning-foreground: var(--pl-color-oxford-navy);
+    --pl-color-warning-text: light-dark(
+      color-mix(in srgb, var(--pl-color-saffron) 52%, black),
+      color-mix(in srgb, var(--pl-color-saffron), white 25%)
+    );
     --pl-color-selected: light-dark(
       var(--pl-color-accent),
       var(--pl-color-frosted-blue)

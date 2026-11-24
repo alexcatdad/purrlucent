@@ -107,14 +107,25 @@ const toneIcon = (page: Page, i: number) =>
 
 test("without a slotted icon each tone draws its own", async ({ page }) => {
   await gotoStory(page, story("tone-icons"));
-  const [info, destructive] = [
-    await toneIcon(page, 0),
-    await toneIcon(page, 1),
-  ];
-  expect(info.width).toBeGreaterThan(0);
-  expect(destructive.width).toBeGreaterThan(0);
-  expect(destructive.paths).not.toBe(info.paths);
-  expect([info.hidden, destructive.hidden]).toEqual(["true", "true"]);
+  // Info, success, warning and destructive, in story order.
+  const icons = [];
+  for (const i of [0, 1, 2, 3]) icons.push(await toneIcon(page, i));
+  for (const icon of icons) {
+    expect(icon.width).toBeGreaterThan(0);
+    expect(icon.hidden).toBe("true");
+  }
+  expect(new Set(icons.map((icon) => icon.paths)).size).toBe(4);
+});
+
+test("no-close: the banner has no close button and stays open", async ({
+  page,
+}) => {
+  await gotoStory(page, story("persistent"));
+  const banner = page.locator("#persistent");
+  await expect(banner).toBeVisible();
+  await expect(banner.getByRole("button")).toHaveCount(0);
+  await page.keyboard.press("Tab");
+  await expect(banner).toBeVisible();
 });
 
 test("without icon: the icon part is not rendered", async ({ page }) => {

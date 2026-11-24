@@ -417,6 +417,38 @@ for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
   });
 }
 
+test("fit-content: items take their text's width on one line, and the group scrolls to a focused item", async ({
+  page,
+}) => {
+  await open(page, "actions-toggle-group--fit-content");
+  const group = page.locator("#control");
+  const items = await page.locator("pl-toggle-group-item").evaluateAll((els) =>
+    els.map((el) => {
+      const box = el.getBoundingClientRect();
+      return { width: Math.round(box.width), height: box.height };
+    }),
+  );
+  expect(new Set(items.map((item) => item.width)).size).toBeGreaterThan(1);
+  expect(new Set(items.map((item) => item.height)).size).toBe(1);
+  const { scroll, client } = await group.evaluate((el) => ({
+    scroll: el.scrollWidth,
+    client: el.clientWidth,
+  }));
+  expect(scroll).toBeGreaterThan(client);
+  await page.getByRole("radio", { name: "All 4.1k" }).focus();
+  await page.keyboard.press("End");
+  const last = page.getByRole("radio", { name: "Other 12" });
+  await expect(last).toBeFocused();
+  await expect(last).toBeInViewport();
+  const [groupBox, lastBox] = [
+    await group.boundingBox(),
+    await last.boundingBox(),
+  ];
+  expect(lastBox!.x + lastBox!.width).toBeLessThanOrEqual(
+    groupBox!.x + groupBox!.width + 1,
+  );
+});
+
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await open(page));
 });

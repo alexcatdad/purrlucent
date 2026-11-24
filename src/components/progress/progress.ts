@@ -8,6 +8,7 @@ import { progressStyles } from "./progress.css.ts";
  * @attr {number} value - How much is done, from 0 to `max`. Leave it out for indeterminate.
  * @attr {number} max - The value that means done. Defaults to 100.
  * @attr {string} label - The accessible name.
+ * @attr {string} tone - The fill's color: the accent (default), `success`, `warning` or `destructive`. Say the state in words too; color alone does not carry it.
  * @csspart fill - The done part of the bar, or the moving segment when indeterminate.
  */
 export class PlProgress extends LitElement {
@@ -16,11 +17,13 @@ export class PlProgress extends LitElement {
     value: { type: Number },
     max: { type: Number },
     label: {},
+    tone: { reflect: true },
   };
 
   declare value: number | undefined;
   declare max: number;
   declare label: string;
+  declare tone: "success" | "warning" | "destructive" | undefined;
 
   readonly #internals = this.attachInternals();
 

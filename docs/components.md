@@ -217,9 +217,10 @@ import "purrlucent/badge";
 
 A small label for a count or a status. It is presentational and takes no focus. The text always carries the meaning, so a status badge says its status in words; the variant only adds color. Put a count in context in the surrounding text, for example "Inbox" before a badge reading "3".
 
-| Attribute | Type                                     | Default     | Description                                     |
-| --------- | ---------------------------------------- | ----------- | ----------------------------------------------- |
-| `variant` | `"neutral" \| "accent" \| "destructive"` | `"neutral"` | `neutral` (default), `accent` or `destructive`. |
+| Attribute | Type                                                               | Default     | Description                                                                                   |
+| --------- | ------------------------------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------- |
+| `variant` | `"neutral" \| "accent" \| "success" \| "warning" \| "destructive"` | `"neutral"` | `neutral` (default), `accent`, `success`, `warning` or `destructive`.                         |
+| `dot`     | `boolean`                                                          | `false`     | A status pill: the badge keeps the neutral fill and the variant colors a dot before the text. |
 
 **Slots**
 
@@ -227,6 +228,7 @@ A small label for a count or a status. It is presentational and takes no focus. 
 
 **Parts**
 
+- `dot`: The status dot, shown with `dot`.
 - `label`: The text.
 
 ## Banner
@@ -239,16 +241,17 @@ import "purrlucent/banner";
 
 A notification banner: an icon, a title, a message, optional actions and a close button. It is a live region (`status`, or `alert` for the destructive tone) and never takes focus when it appears. The close button hides the banner and fires `pl-close`.
 
-| Attribute     | Type                      | Default     | Description                                                |
-| ------------- | ------------------------- | ----------- | ---------------------------------------------------------- |
-| `open`        | `boolean`                 | `false`     | The banner is showing.                                     |
-| `tone`        | `"info" \| "destructive"` | `"info"`    | `info` (default) or `destructive`.                         |
-| `close-label` | `string`                  | `"Dismiss"` | The close button's accessible name. Defaults to "Dismiss". |
-| `no-icon`     | `boolean`                 | `false`     | Shows no icon, not the tone's own either.                  |
+| Attribute     | Type                                                | Default     | Description                                                                                        |
+| ------------- | --------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------- |
+| `open`        | `boolean`                                           | `false`     | The banner is showing.                                                                             |
+| `tone`        | `"info" \| "success" \| "warning" \| "destructive"` | `"info"`    | `info` (default), `success`, `warning` or `destructive`.                                           |
+| `close-label` | `string`                                            | `"Dismiss"` | The close button's accessible name. Defaults to "Dismiss".                                         |
+| `no-icon`     | `boolean`                                           | `false`     | Shows no icon, not the tone's own either.                                                          |
+| `no-close`    | `boolean`                                           | `false`     | Shows no close button, for a banner that stays until its cause is gone, such as a lost connection. |
 
 **Slots**
 
-- `icon`: An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, an error mark for `destructive`.
+- `icon`: An `svg` shown as a tile. Without one, the tone draws its own: information for `info`, a check for `success`, a triangle for `warning`, an error mark for `destructive`.
 - `title`: The heading.
 - default: The message.
 - `actions`: Buttons below the message.
@@ -1648,11 +1651,12 @@ import "purrlucent/progress";
 
 A progress bar. With a `value` it shows how far along the work is; without one it shows that work is going on. Name it with `label`.
 
-| Attribute | Type                  | Default | Description                                                        |
-| --------- | --------------------- | ------- | ------------------------------------------------------------------ |
-| `value`   | `number \| undefined` |         | How much is done, from 0 to `max`. Leave it out for indeterminate. |
-| `max`     | `number`              | `100`   | The value that means done. Defaults to 100.                        |
-| `label`   | `string`              | `""`    | The accessible name.                                               |
+| Attribute | Type                                                   | Default | Description                                                                                                                               |
+| --------- | ------------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `number \| undefined`                                  |         | How much is done, from 0 to `max`. Leave it out for indeterminate.                                                                        |
+| `max`     | `number`                                               | `100`   | The value that means done. Defaults to 100.                                                                                               |
+| `label`   | `string`                                               | `""`    | The accessible name.                                                                                                                      |
+| `tone`    | `"success" \| "warning" \| "destructive" \| undefined` |         | The fill's color: the accent (default), `success`, `warning` or `destructive`. Say the state in words too; color alone does not carry it. |
 
 **Parts**
 
@@ -2310,13 +2314,14 @@ One choice in a `pl-toggle-group`. The slot holds a text label or an svg icon. A
 
 A row of equal-width items that offers one required choice, as a radio group. Arrow keys, Home and End move focus and select; they follow the visual direction under `dir="rtl"`. Space, Tab and the arrows follow the APG radio group pattern; Home and End are extras. Enter does not select, as with a native radio. Always set `label` (or `aria-label`): without either the group has no accessible name. It takes part in forms like a radio group: it submits `name` with the selected value, a form reset returns it to its starting selection, and a disabled fieldset disables it.
 
-| Attribute  | Type                   | Default | Description                                                                                                                                   |
-| ---------- | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`    | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                       |
-| `name`     | `string`               | `""`    | The name submitted with a form.                                                                                                               |
-| `label`    | `string`               | `""`    | The accessible name of the group.                                                                                                             |
-| `size`     | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                 |
-| `disabled` | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it. |
+| Attribute     | Type                   | Default | Description                                                                                                                                               |
+| ------------- | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `string`               | `""`    | The value of the selected item. Defaults to the item marked `selected`, else the first.                                                                   |
+| `name`        | `string`               | `""`    | The name submitted with a form.                                                                                                                           |
+| `label`       | `string`               | `""`    | The accessible name of the group.                                                                                                                         |
+| `size`        | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                             |
+| `fit-content` | `boolean`              | `false` | Each item is as wide as its text instead of all sharing one width, and a group wider than its room scrolls sideways. For many items of different lengths. |
+| `disabled`    | `boolean`              | `false` | Disables the whole group: no focus, no feedback, nothing submitted. To disable one item, set `disabled` on that item; arrows and Tab skip it.             |
 
 **Slots**
 
