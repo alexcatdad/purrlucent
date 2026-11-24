@@ -11,7 +11,8 @@ const owned = new WeakSet<Element>();
  * text, set as `aria-label` and `aria-description`. A native
  * `<fieldset>` in the shadow root would not disable the slotted fields, which
  * are not its descendants, so `disabled` turns off every control inside, as a
- * native disabled fieldset does, including ones added later.
+ * native disabled fieldset does, including ones added later, and sets
+ * `aria-disabled` on the group.
  *
  * @attr {boolean} disabled - Disables every control inside. A control that was already disabled stays so when this is cleared.
  * @slot legend - The group's name.
@@ -56,6 +57,9 @@ export class PlFieldset extends LitElement {
   }
 
   protected override updated() {
+    // The group reports itself off, so its legend and labels read as inactive.
+    if (this.disabled) this.setAttribute("aria-disabled", "true");
+    else this.removeAttribute("aria-disabled");
     this.#sync();
     this.#name();
   }

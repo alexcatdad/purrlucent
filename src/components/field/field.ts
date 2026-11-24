@@ -40,7 +40,8 @@ type Control = HTMLElement & {
  * - A control with its own role (a native input, `pl-checkbox`, `pl-switch`,
  *   `pl-slider`, `pl-radio-group`) gets the label's text as `aria-label`, the
  *   description (and the error while `invalid`) as `aria-description`, and,
- *   while `invalid`, `aria-invalid` and `aria-errormessage`. Text, not id
+ *   while `invalid`, `aria-invalid` and `aria-errormessage`; an error without
+ *   its own `role` or `aria-live` becomes a polite live region. Text, not id
  *   references into the slots, which crash Firefox.
  * - A `pl-input`, `pl-textarea`, `pl-number-field`, `pl-select`, `pl-combobox`
  *   or `pl-date-picker` keeps its edit control in a shadow root that an id
@@ -179,6 +180,10 @@ export class PlField extends LitElement {
     if (!control) return;
 
     const errorIds = errors.map((el) => idOf(el, "pl-field-error"));
+    // aria-errormessage points at these, so they are announced when they appear.
+    for (const el of errors)
+      if (!el.hasAttribute("aria-live") && !el.hasAttribute("role"))
+        el.setAttribute("aria-live", "polite");
     const name = control.localName;
     if (name.includes("-") && !customElements.get(name)) {
       // Not upgraded yet: wire again once it is, as nothing else will signal it.
