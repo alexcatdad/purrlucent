@@ -7,14 +7,20 @@ import type { ReactiveController, ReactiveControllerHost } from "lit";
  * a native button does). `enter: false` leaves Enter alone, as a native
  * checkbox does.
  * While the pointer or Space is down the custom state `:state(pressed)` is set.
- * Key events from a descendant of the host are ignored.
+ * Key events from a descendant of the host are ignored. `keys: () => false`
+ * leaves Enter and Space alone, for a host whose shadow root holds a native
+ * control that handles them, such as a link.
  * The controller uses `opts.internals` when given, otherwise it calls
  * `attachInternals()` itself; a host that also needs ElementInternals passes its
  * own or reads `internals`, so `attachInternals()` runs only once.
  */
 export class PressableController implements ReactiveController {
   readonly #host: ReactiveControllerHost & HTMLElement;
-  readonly #opts: { disabled: () => boolean; enter?: boolean };
+  readonly #opts: {
+    disabled: () => boolean;
+    enter?: boolean;
+    keys?: () => boolean;
+  };
   readonly #internals: ElementInternals;
   #pressed = false;
   #spaceDown = false;
@@ -24,6 +30,7 @@ export class PressableController implements ReactiveController {
     opts: {
       disabled: () => boolean;
       enter?: boolean;
+      keys?: () => boolean;
       internals?: ElementInternals;
     },
   ) {
@@ -98,7 +105,12 @@ export class PressableController implements ReactiveController {
 
   #keydown = (event: Event) => {
     const { key, repeat, target } = event as KeyboardEvent;
-    if (this.#opts.disabled() || target !== this.#host) return;
+    if (
+      this.#opts.disabled() ||
+      target !== this.#host ||
+      this.#opts.keys?.() === false
+    )
+      return;
     if (key === " ") {
       event.preventDefault(); // keeps the page from scrolling
       this.#spaceDown = true;

@@ -827,3 +827,73 @@ test("a long title ends in an ellipsis and keeps its accessible name", async ({
     .evaluate((el) => el.getBoundingClientRect().toJSON());
   expect(items[0]!.top).toBeLessThan(title.bottom);
 });
+
+test.describe("link buttons", () => {
+  test("a link is the toolbar's one tab stop when it comes first", async ({
+    page,
+  }) => {
+    await openStory(page, "links");
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#back a")).toBeFocused();
+    await expect(page.locator("#back")).not.toHaveAttribute("tabindex");
+    await expect(page.locator("#open a")).toHaveAttribute("tabindex", "-1");
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#add")).not.toBeFocused();
+    await expect(page.locator("#open a")).not.toBeFocused();
+  });
+
+  test("arrow keys, Home and End move between links and buttons", async ({
+    page,
+  }) => {
+    await openStory(page, "links");
+    await page.locator("#back a").focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("#add")).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("#open a")).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.locator("#add")).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(page.locator("#open a")).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(page.locator("#back a")).toBeFocused();
+  });
+
+  test("the tab stop stays on the link last focused", async ({ page }) => {
+    await openStory(page, "links");
+    await page.locator("#back a").focus();
+    await page.keyboard.press("End");
+    await expect(page.locator("#open a")).toHaveAttribute("tabindex", "0");
+    await expect(page.locator("#back a")).toHaveAttribute("tabindex", "-1");
+  });
+
+  test("Enter on a link in the toolbar follows it", async ({ page }) => {
+    await openStory(page, "links");
+    await page.locator("#open a").focus();
+    await page.keyboard.press("Enter");
+    await expect
+      .poll(() => page.evaluate(() => location.hash))
+      .toBe("#contracts");
+  });
+
+  test("an icon link named by aria-label raises no missing-name warning", async ({
+    page,
+  }) => {
+    const warnings: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "warning") warnings.push(message.text());
+    });
+    await openStory(page, "links");
+    await expect(page.locator("#back a")).toHaveAttribute(
+      "aria-label",
+      "Back to list",
+    );
+    expect(warnings.filter((text) => text.includes("accessible name"))).toEqual(
+      [],
+    );
+  });
+
+  test("axe finds no WCAG 2.2 AA violations", async ({ page }) => {
+    await expectAccessible(await openStory(page, "links"));
+  });
+});
