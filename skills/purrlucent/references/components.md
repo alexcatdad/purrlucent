@@ -40,6 +40,7 @@ This page is generated from the code by `bun scripts/component-docs.ts`. Each co
 - [Menubar](#menubar): `pl-menubar`
 - [Message](#message): `pl-message`, `pl-message-group`
 - [Message scroller](#message-scroller): `pl-message-scroller-item`, `pl-message-scroller`, `pl-message-scroller-button`
+- [Month range picker](#month-range-picker): `pl-month-range-picker`
 - [Navigation menu](#navigation-menu): `pl-navigation-item`, `pl-navigation-menu`
 - [Number field](#number-field): `pl-number-field`
 - [Pagination](#pagination): `pl-pagination`
@@ -1485,6 +1486,51 @@ A button that scrolls its `pl-message-scroller` to the end. The scroller draws o
 | Attribute | Type     | Default | Description                                                                                                   |
 | --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------- |
 | `label`   | `string` | `""`    | The accessible name. Defaults to the page language's text (see `setMessages`), in English "Scroll to latest". |
+
+## Month range picker
+
+```ts
+import "purrlucent/month-range-picker";
+```
+
+### `<pl-month-range-picker>`
+
+Chooses a range of whole months, one year at a time. The months of the year on show are a `grid` of three columns with one tab stop. The first month chosen starts the range and the second ends it, in either order; the value is always ordered. Leaving the picker after one month, or closing its popover, chooses that month alone. The arrow keys move by a month (Up and Down by a row), Page Up and Page Down by a year, Home and End go to January and December, and Enter or Space chooses. Month names and the direction follow the locale. By default it is a button that shows the range and opens the months in a popover; with `inline` the months show in place. It takes part in forms like a native input: it submits `name` with its value and a reset returns it to its `value` attribute.
+
+| Attribute     | Type                  | Default | Description                                                                                                                                      |
+| ------------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `value`       | `string`              | `""`    | The range, `yyyy-mm/yyyy-mm` with the start first, or empty. A single month is the same month twice. The `value` property holds the current one. |
+| `min`         | `string \| undefined` |         | The earliest month that can be chosen, `yyyy-mm`.                                                                                                |
+| `max`         | `string \| undefined` |         | The latest month that can be chosen, `yyyy-mm`.                                                                                                  |
+| `inline`      | `boolean`             | `false` | Shows the months in place instead of a button and a popover.                                                                                     |
+| `clearable`   | `boolean`             | `false` | Shows a Clear button that empties the value.                                                                                                     |
+| `disabled`    | `boolean`             | `false` | Nothing can be chosen and the value is not submitted.                                                                                            |
+| `label`       | `string`              | `""`    | The accessible name of the button and the months. Defaults to the page language's text (see `setMessages`), in English "Choose months".          |
+| `placeholder` | `string`              | `""`    | The button's text while the value is empty. Defaults to the label.                                                                               |
+| `locale`      | `string \| undefined` |         | A BCP 47 tag for month names and direction. Defaults to the closest `lang`, else the document's, else the browser's.                             |
+| `name`        | `string`              | `""`    | The name submitted with a form.                                                                                                                  |
+| `prev-label`  | `string`              | `""`    | The previous year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous year".                |
+| `next-label`  | `string`              | `""`    | The next year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next year".                        |
+| `clear-label` | `string`              | `""`    | The Clear button's text. Defaults to the page language's text (see `setMessages`), in English "Clear".                                           |
+| `_focus`      | `number`              | `-1`    | The month index that holds the tab stop, and with it the year on show; -1 until one is chosen or focused.                                        |
+| `_anchor`     | `number`              | `-1`    | The first month of a range still being chosen, or -1.                                                                                            |
+
+**Parts**
+
+- `trigger`: The button that opens the popover.
+- `panel`: The months and their header.
+- `header`: The row with the year buttons and the year.
+- `title`: The year.
+- `nav`: A year button.
+- `grid`: The table of months.
+- `month`: A month cell.
+- `clear`: The Clear button.
+
+**Events**
+
+- `pl-change`: A range was chosen or cleared. `detail.start` and `detail.end` are `yyyy-mm`, or empty when cleared. Choosing the range that is already chosen fires nothing.
+- `input`: After each pl-change, as a native input fires it.
+- `change`: After each pl-change, as a native input fires it.
 
 ## Navigation menu
 

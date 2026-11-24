@@ -26,6 +26,7 @@ const placement: Record<string, readonly string[]> = {
     "Slider",
     "Date Picker",
     "Calendar",
+    "Month Range Picker",
   ],
   Text: ["Badge", "Kbd", "Marker"],
   Navigation: [

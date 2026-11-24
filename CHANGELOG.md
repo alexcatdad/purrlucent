@@ -1,5 +1,21 @@
 # purrlucent
 
+## 0.18.0
+
+### Minor Changes
+
+- 22540c2: New `pl-month-range-picker`: chooses a range of whole months, one year at a time in a three-column grid, as a button with a popover or `inline`. The first month starts the range and the second ends it, in either order; leaving after one month chooses that month alone. The value is `yyyy-mm/yyyy-mm`, it takes part in forms, and month names follow the locale. New message keys: `chooseMonths`, `previousYear`, `nextYear` and `labelValue`.
+
+### Patch Changes
+
+- d92d450: The published package no longer carries a `prepare` script, so package managers no longer record an install script for it.
+
+## 0.17.0
+
+### Minor Changes
+
+- 55ef5f5: Built-in text follows the page language. `setMessages(lang, messages)` registers an app's text for a language once, and every component inside an element with that `lang` uses it, also inside other components; English is built in. The data-table column and row menus, the prompt-input Send and Stop buttons, the carousel's role words and the sidebar item's disclosure name are now translatable too, and prompt-input gains `send-label` and `stop-label`. Label attributes now default to empty and still win over the registered text. Breadcrumb and pagination always have a name.
+
 ## 0.16.1
 
 ### Patch Changes

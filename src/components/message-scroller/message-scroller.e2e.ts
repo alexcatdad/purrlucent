@@ -507,8 +507,16 @@ test.describe("auto-scroll", () => {
     const el = scroller(page);
     await expect.poll(() => toEnd(el)).toBeLessThan(2);
     await el.hover();
-    await page.mouse.wheel(0, -300);
-    await expect.poll(() => toEnd(el)).toBeGreaterThan(100);
+    // WebKit spreads a wheel's scroll over frames. If its first step brings a
+    // skipped row into view and the row shrinks to its real size, the browser
+    // clamps the offset to the end and drops the rest of the wheel, as if it
+    // never moved; the reader would wheel again.
+    await expect
+      .poll(async () => {
+        if ((await toEnd(el)) < 2) await page.mouse.wheel(0, -300);
+        return toEnd(el);
+      })
+      .toBeGreaterThan(100);
     await grow(el);
     await frames(page);
     expect(await toEnd(el)).toBeGreaterThan(100);

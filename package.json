@@ -1,6 +1,6 @@
 {
   "name": "purrlucent",
-  "version": "0.16.1",
+  "version": "0.18.0",
   "description": "Accessible web components built with Lit: form controls, menus, dialogs and navigation for any framework, following Apple's Human Interface Guidelines.",
   "keywords": [
     "web-components",
@@ -186,6 +186,10 @@
       "types": "./dist/types/components/message-scroller/message-scroller.d.ts",
       "default": "./dist/message-scroller.js"
     },
+    "./month-range-picker": {
+      "types": "./dist/types/components/month-range-picker/month-range-picker.d.ts",
+      "default": "./dist/month-range-picker.js"
+    },
     "./navigation-menu": {
       "types": "./dist/types/components/navigation-menu/navigation-menu.d.ts",
       "default": "./dist/navigation-menu.js"
@@ -295,7 +299,6 @@
     "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" playwright.config.ts && stylelint --allow-empty-input \"src/**/*.css\" && bun scripts/style-check.ts",
     "fmt:check": "bun fmt --check",
     "typecheck": "tsc",
-    "prepare": "lefthook install",
     "hig:check": "bun scripts/hig-check.ts check",
     "hig:rubric": "bun scripts/hig-check.ts rubric",
     "hig:review": "bun scripts/rubric-prompt.ts review origin/main",
