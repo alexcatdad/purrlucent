@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.10.2
+
+### Patch Changes
+
+- 6e2ada2: A `fit-content` `pl-toggle-group` that scrolls shows no scrollbar. Where scrollbars always show, it drew a line under the labels; the edge fade already says there is more, and touch, a trackpad and the arrow keys still scroll it.
+
 ## 0.10.1
 
 ### Patch Changes
