@@ -516,13 +516,257 @@ test("model: the footer shows aggregates", async ({ page }) => {
 test("model: a heading button reports pl-sort", async ({ page }) => {
   await open(page, grouped);
   await record(page, "pl-sort");
-  await page.getByRole("button", { name: "Salary (k)" }).click();
+  await page.getByRole("button", { name: "Salary (k)", exact: true }).click();
   expect(await events(page)).toEqual([
     { column: "salary", direction: "ascending" },
   ]);
 });
 
 for (const id of [grouped, groupedRtl])
+  test(`axe finds no violations in ${id}`, async ({ page }) => {
+    await expectAccessible(await open(page, id));
+  });
+
+const interactive = "data-data-table--model-interactive";
+const interactiveRtl = "data-data-table--model-interactive-rtl";
+
+const headingMenu = (page: Page, heading: string) =>
+  page.getByRole("button", {
+    name: `Column options ${heading}`,
+    exact: true,
+  });
+
+const menuItem = (page: Page, name: string, role = "menuitem") =>
+  page.getByRole(role as "menuitem", { name, exact: true });
+
+const menuActions: [string, string, string, object][] = [
+  [
+    "Role",
+    "Sort descending",
+    "pl-sort",
+    { column: "role", direction: "descending" },
+  ],
+  ["Role", "Hide", "pl-column-visibility", { column: "role", visible: false }],
+  ["Role", "Move earlier", "pl-column-order", { column: "role", index: 0 }],
+  ["Role", "Move later", "pl-column-order", { column: "role", index: 2 }],
+  ["Role", "Pin to start", "pl-column-pin", { column: "role", side: "start" }],
+  ["Role", "Pin to end", "pl-column-pin", { column: "role", side: "end" }],
+  ["Name", "Unpin", "pl-column-pin", { column: "name", side: null }],
+  ["Role", "Group by", "pl-column-group", { column: "role", grouped: true }],
+];
+
+for (const [heading, item, event, detail] of menuActions)
+  test(`model: ${heading} menu, ${item} fires ${event}`, async ({ page }) => {
+    await open(page, interactive);
+    await record(page, event);
+    await headingMenu(page, heading).click();
+    await menuItem(page, item).click();
+    expect(await events(page)).toEqual([detail]);
+  });
+
+test("model: the first column cannot move earlier and a column cannot hide when it must stay", async ({
+  page,
+}) => {
+  await open(page, interactive);
+  await headingMenu(page, "Name").click();
+  await expect(menuItem(page, "Move earlier")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await expect(menuItem(page, "Hide")).toHaveCount(0);
+});
+
+test("model: the Columns menu has a checkbox per column and fires pl-column-visibility", async ({
+  page,
+}) => {
+  await open(page, interactive);
+  await record(page, "pl-column-visibility");
+  await page.getByRole("button", { name: "Columns", exact: true }).click();
+  await expect(menuItem(page, "City", "menuitemcheckbox")).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await expect(menuItem(page, "Name", "menuitemcheckbox")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await menuItem(page, "City", "menuitemcheckbox").click();
+  expect(await events(page)).toEqual([{ column: "city", visible: false }]);
+  await expect(page.getByRole("columnheader", { name: "City" })).toHaveCount(0);
+});
+
+test("model: a heading filter offers the facets and fires pl-filter with its column", async ({
+  page,
+}) => {
+  await open(page, interactive);
+  await record(page, "pl-filter");
+  await page.getByRole("button", { name: "Filter Role, show options" }).click();
+  await page
+    .getByRole("option", { name: "Lead engineer", exact: true })
+    .click();
+  expect(await events(page)).toEqual([
+    { value: "Lead engineer", column: "role" },
+  ]);
+  await expect(page.locator("#control tbody tr")).toHaveCount(1);
+});
+
+test("model: a row menu fires pl-row-pin", async ({ page }) => {
+  await open(page, interactive);
+  await record(page, "pl-row-pin");
+  await page
+    .getByRole("button", { name: "Row options Ada Lovelace", exact: true })
+    .click();
+  await menuItem(page, "Pin to top").click();
+  await expect(page.locator("#control tr[data-row-pin='top']")).toHaveCount(1);
+  await page
+    .getByRole("button", { name: "Row options Ada Lovelace", exact: true })
+    .click();
+  await menuItem(page, "Unpin row").click();
+  expect(await events(page)).toEqual([
+    { row: "ada", side: "top" },
+    { row: "ada", side: null },
+  ]);
+});
+
+const handle = (page: Page, heading: string) =>
+  page.getByRole("separator", { name: `Resize ${heading}`, exact: true });
+
+test("model: a resize handle is a vertical separator with its width", async ({
+  page,
+}) => {
+  await open(page, interactive);
+  await expect(handle(page, "Role")).toHaveAttribute(
+    "aria-orientation",
+    "vertical",
+  );
+  await expect(handle(page, "Role")).toHaveAttribute("aria-valuenow", "200");
+});
+
+test("model: arrow keys on a resize handle fire pl-column-resize", async ({
+  page,
+}) => {
+  await open(page, interactive);
+  await record(page, "pl-column-resize");
+  await handle(page, "Role").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(handle(page, "Role")).toHaveAttribute("aria-valuenow", "204");
+  await page.keyboard.press("ArrowRight");
+  await expect(handle(page, "Role")).toHaveAttribute("aria-valuenow", "208");
+  await page.keyboard.press("ArrowLeft");
+  await expect(handle(page, "Role")).toHaveAttribute("aria-valuenow", "204");
+  expect(await events(page)).toEqual([
+    { column: "role", width: 204 },
+    { column: "role", width: 208 },
+    { column: "role", width: 204 },
+  ]);
+});
+
+test("model: RTL: the arrow keys widen away from the cell, to the left", async ({
+  page,
+}) => {
+  await open(page, interactiveRtl);
+  await handle(page, "Role").focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(handle(page, "Role")).toHaveAttribute("aria-valuenow", "204");
+});
+
+/** Drags a handle by dx pixels with the mouse and returns the widths it reported. */
+const drag = async (page: Page, dx: number) => {
+  await record(page, "pl-column-resize");
+  const box = (await handle(page, "Role").boundingBox())!;
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + dx, y, { steps: 5 });
+  await page.mouse.up();
+  const widths = (await events(page)) as { width: number }[];
+  return widths.map((e) => e.width);
+};
+
+test("model: dragging the handle right widens a column", async ({ page }) => {
+  await open(page, interactive);
+  const widths = await drag(page, 40);
+  expect(widths.length).toBeGreaterThan(0);
+  expect(widths.at(-1)).toBeGreaterThan(200);
+});
+
+test("model: RTL: dragging the handle left fires a larger width", async ({
+  page,
+}) => {
+  await open(page, interactiveRtl);
+  const widths = await drag(page, -40);
+  expect(widths.length).toBeGreaterThan(0);
+  expect(widths.at(-1)).toBeGreaterThan(200);
+});
+
+const cell = (page: Page, id: string) =>
+  page.locator(`#control td[data-cell="${id}"]`);
+
+test("model: shift-click selects a rectangle", async ({ page }) => {
+  await open(page, interactive);
+  await record(page, "pl-cell-select");
+  await cell(page, "ada-role").click();
+  await cell(page, "grace-salary").click({ modifiers: ["Shift"] });
+  expect((await events(page)).at(-1)).toEqual({
+    cells: [
+      "ada-role",
+      "ada-city",
+      "ada-salary",
+      "grace-role",
+      "grace-city",
+      "grace-salary",
+    ],
+  });
+  await expect(page.locator("#control td[data-selected]")).toHaveCount(6);
+});
+
+test("model: shift-arrow extends the range from the focused cell", async ({
+  page,
+}) => {
+  await open(page, interactive);
+  await record(page, "pl-cell-select");
+  await cell(page, "ada-role").click();
+  await page.keyboard.press("Shift+ArrowRight");
+  await expect(cell(page, "ada-city")).toBeFocused();
+  await page.keyboard.press("Shift+ArrowDown");
+  expect((await events(page)).at(-1)).toEqual({
+    cells: ["ada-role", "ada-city", "grace-role", "grace-city"],
+  });
+});
+
+test("model: every control is reachable with the keyboard", async ({
+  page,
+  browserName,
+}) => {
+  // WebKit's Tab order skips buttons by default; the other controls are covered above.
+  test.skip(browserName === "webkit", "Tab skips buttons in WebKit");
+  await open(page, interactive);
+  await page.getByRole("button", { name: "Columns", exact: true }).focus();
+  const seen = new Set<string>();
+  for (let i = 0; i < 80; i++) {
+    await page.keyboard.press("Tab");
+    seen.add(
+      await page.evaluate(() => {
+        let el: Element | null = document.activeElement;
+        while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+        return el?.getAttribute("aria-label") ?? el?.textContent?.trim() ?? "";
+      }),
+    );
+  }
+  for (const label of [
+    "Name",
+    "Column options Name",
+    "Resize Name",
+    "Column options Role",
+    "Filter Role",
+    "Resize Role",
+    "Row options Ada Lovelace",
+  ])
+    expect(seen).toContain(label);
+});
+
+for (const id of [interactive, interactiveRtl])
   test(`axe finds no violations in ${id}`, async ({ page }) => {
     await expectAccessible(await open(page, id));
   });
