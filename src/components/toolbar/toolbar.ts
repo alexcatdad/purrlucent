@@ -118,6 +118,11 @@ const isNamed = (item: HTMLElement) =>
     hasValue(item, name),
   ) ||
   item.textContent?.trim() ||
+  // A link button carries its aria-label on the link in its shadow root.
+  hasValue(
+    item.shadowRoot?.querySelector('[part="link"]') ?? item,
+    "aria-label",
+  ) ||
   [...item.querySelectorAll("[aria-label], img[alt]")].some(
     (el) => hasValue(el, "aria-label") || hasValue(el, "alt"),
   );

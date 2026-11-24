@@ -31,6 +31,29 @@ export const buttonStyles = css`
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
+  /* A link wraps the label; its ::after covers the whole face, so the face is
+     the link's hit area and focus draws the button's ring around it. */
+  [part="link"] {
+    display: inline-flex;
+    border-radius: inherit;
+    color: inherit;
+    text-decoration: none;
+    cursor: inherit;
+    outline: none;
+  }
+
+  [part="link"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  [part="link"]:focus-visible::after {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: var(--pl-ring-offset);
+  }
+
   [part="label"] {
     display: inline-flex;
     align-items: center;
@@ -188,6 +211,10 @@ export const buttonStyles = css`
 
     :host(:is([disabled], :disabled)) {
       color: GrayText;
+    }
+
+    [part="link"]:focus-visible::after {
+      outline-color: Highlight;
     }
 
     :host::before {
