@@ -6,9 +6,13 @@ import "./spinner.ts";
 import type { PlSpinner } from "./spinner.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Feedback/Spinner",
   component: "pl-spinner",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -21,6 +25,12 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ label: "Loading", size: ["md", "sm", "lg"] }),
+  render: ({ label, size }) =>
+    html`<pl-spinner label=${label} size=${size}></pl-spinner>`,
+};
 
 export const Default: Story = {
   render: () => html`<pl-spinner id="spinner" label="Loading"></pl-spinner>`,

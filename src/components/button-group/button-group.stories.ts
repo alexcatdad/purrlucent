@@ -4,17 +4,25 @@ import { expect, userEvent } from "storybook/test";
 import "../button/button.ts";
 import "./button-group.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Actions/Button Group",
   component: "pl-button-group",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
 
 type Story = StoryObj;
 
-const render = () => html`
-  <pl-button-group id="control" label="Document actions">
+const buttonGroup = (orientation: string) => html`
+  <pl-button-group
+    id="control"
+    label="Document actions"
+    orientation=${orientation}
+  >
     <pl-button>Cut</pl-button>
     <pl-button>Copy</pl-button>
     <pl-button>Paste</pl-button>
@@ -22,6 +30,13 @@ const render = () => html`
 `;
 
 const pad = "padding:var(--pl-space-4)";
+
+const render = () => buttonGroup("horizontal");
+
+export const Playground: Story = {
+  ...playground({ orientation: ["horizontal", "vertical"] }, ["pl-press"]),
+  render: ({ orientation }) => buttonGroup(orientation),
+};
 
 export const Default: Story = { render };
 

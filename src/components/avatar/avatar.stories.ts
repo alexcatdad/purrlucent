@@ -5,9 +5,13 @@ import "./avatar.ts";
 import type { PlAvatar } from "./avatar.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Cards & Lists/Avatar",
   component: "pl-avatar",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -30,6 +34,20 @@ const row = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({
+    name: "Ada Lovelace",
+    size: ["md", "sm", "lg", "xl"],
+    showPhoto: false,
+  }),
+  render: ({ name, size, showPhoto }) =>
+    html`<pl-avatar
+      name=${name}
+      size=${size}
+      .src=${showPhoto ? photo : ""}
+    ></pl-avatar>`,
+};
 
 export const Default: Story = {
   render: () =>

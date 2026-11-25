@@ -4,9 +4,13 @@ import "../field/field.ts";
 import "./file-input.ts";
 import type { PlFileInput } from "./file-input.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/File Input",
   component: "pl-file-input",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -22,6 +26,18 @@ const column = (content: unknown) =>
 
 const sample = (name: string, type = "text/plain") =>
   new File(["sample"], name, { type });
+
+export const Playground: Story = {
+  ...playground({ label: "Attachment", multiple: false, disabled: false }, [
+    "pl-change",
+  ]),
+  render: ({ label, multiple, disabled }) =>
+    html`<pl-file-input
+      label=${label}
+      ?multiple=${multiple}
+      ?disabled=${disabled}
+    ></pl-file-input>`,
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

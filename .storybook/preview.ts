@@ -2,6 +2,7 @@ import type { Preview } from "@storybook/web-components-vite";
 import "../src/tokens/tokens.css";
 import { backdrop } from "./backdrop.css.ts";
 import { applyKnobs, knobs } from "./knobs.ts";
+import componentDocs from "./component-docs.mdx";
 
 if (backdrop.styleSheet)
   document.adoptedStyleSheets = [
@@ -49,27 +50,7 @@ const preview: Preview = {
     ...Object.fromEntries(knobs.map((knob) => [knob.key, ""])),
   },
   parameters: {
-    // Storybook reads storySort statically, so the order is a literal here;
-    // scripts/story-titles.test.ts keeps it equal to STORY_GROUPS.
-    options: {
-      storySort: {
-        order: [
-          "Foundations",
-          "Actions",
-          "Forms",
-          "Text",
-          "Navigation",
-          "Menus",
-          "Dialogs",
-          "Feedback",
-          "Cards & Lists",
-          "Containers",
-          "Data",
-          "AI & Chat",
-          "Patterns",
-        ],
-      },
-    },
+    docs: { page: componentDocs },
     a11y: {
       test: "error",
       // Axe ships the WCAG 2.2 AA target-size rule (24px) switched off.

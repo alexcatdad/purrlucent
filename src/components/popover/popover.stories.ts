@@ -5,9 +5,13 @@ import "../button/button.ts";
 import "./popover.ts";
 import type { PlPopover } from "./popover.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Dialogs/Popover",
   component: "pl-popover",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -49,6 +53,17 @@ const popover = (attrs: {
     >
     ${content}
   </pl-popover>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      placement: ["bottom", "top", "start", "end"],
+      align: ["center", "start", "end"],
+    },
+    ["pl-toggle"],
+  ),
+  render: ({ placement, align }) => stage(popover({ placement, align })),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

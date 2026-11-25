@@ -7,7 +7,14 @@ import "../menu/menu.ts";
 import "./sidebar.ts";
 import type { PlSidebar } from "./sidebar.ts";
 
-const meta = { title: "Navigation/Sidebar" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Navigation/Sidebar",
+  component: "pl-sidebar",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
@@ -37,6 +44,12 @@ const render = ({
     <pl-sidebar-item id="settings" href="#settings">Settings</pl-sidebar-item>
   </pl-sidebar>
 `;
+
+export const Playground: Story = {
+  ...playground({ selectChild: false }, ["pl-change", "pl-collapse"]),
+  render: ({ selectChild }) =>
+    render({ child: selectChild, open: selectChild }),
+};
 
 /** A selected top-level item and a closed group. */
 export const Default: Story = { render: () => render() };

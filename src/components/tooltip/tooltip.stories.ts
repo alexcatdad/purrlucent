@@ -5,9 +5,13 @@ import "../button/button.ts";
 import "./tooltip.ts";
 import type { PlTooltip } from "./tooltip.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Dialogs/Tooltip",
   component: "pl-tooltip",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -26,6 +30,11 @@ const tip = (placement = "bottom", id = "tip") =>
   html`<pl-tooltip id=${id} text="Add a new item" placement=${placement}>
     <pl-button>Add</pl-button>
   </pl-tooltip>`;
+
+export const Playground: Story = {
+  ...playground({ placement: ["bottom", "top", "start", "end"] }),
+  render: ({ placement }) => stage(tip(placement)),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

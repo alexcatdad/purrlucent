@@ -5,9 +5,13 @@ import "./date-picker.ts";
 import type { PlDatePicker } from "./date-picker.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Date Picker",
   component: "pl-date-picker",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -21,6 +25,21 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ label: "Date", size: ["md", "lg", "xl"], disabled: false }, [
+    "pl-input",
+    "pl-change",
+  ]),
+  render: ({ label, size, disabled }) =>
+    html`<pl-date-picker
+      locale="en-US"
+      value="2026-11-18"
+      size=${size}
+      ?disabled=${disabled}
+      >${label}</pl-date-picker
+    >`,
+};
 
 // Fixed days and an explicit locale, so no story depends on the date or the browser.
 // Stories that other tests open as they are have no play function.

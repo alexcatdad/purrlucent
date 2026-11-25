@@ -6,9 +6,13 @@ import "../button/button.ts";
 import "../input/input.ts";
 import "./toolbar.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Navigation/Toolbar",
   component: "pl-toolbar",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -76,6 +80,12 @@ const render = ({
       <pl-toolbar-group>${parts.filter((_, i) => grouped[i])}</pl-toolbar-group>
       ${parts.filter((_, i) => i > first && !grouped[i])}
     </pl-toolbar>`;
+};
+
+export const Playground: Story = {
+  ...playground({ disableAdd: false, scrolled: false }, ["pl-press"]),
+  render: ({ disableAdd, scrolled }) =>
+    render({ disabled: disableAdd ? [1] : [], scrolled }),
 };
 
 export const Default: Story = { render: () => render() };

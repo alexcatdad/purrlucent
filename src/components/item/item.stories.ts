@@ -4,9 +4,13 @@ import "../button/button.ts";
 import "./item.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Cards & Lists/Item",
   component: "pl-item",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -29,6 +33,20 @@ const doc = html`<svg slot="media" viewBox="0 0 24 24" aria-hidden="true">
     />
   </g>
 </svg>`;
+
+export const Playground: Story = {
+  ...playground({
+    heading: "Quarterly report",
+    description: "Edited yesterday",
+  }),
+  render: ({ heading, description }) =>
+    list(
+      html`<pl-item
+        >${doc}<strong slot="title">${heading}</strong
+        ><span slot="description">${description}</span></pl-item
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

@@ -5,9 +5,13 @@ import "./card.ts";
 import { isolate } from "../../../.storybook/isolate.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Cards & Lists/Card",
   component: "pl-card",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -31,6 +35,21 @@ const full = (rtl = false) =>
     <pl-button slot="footer">Cancel plan</pl-button>
     <pl-button slot="footer" variant="primary">Add member</pl-button>
   </pl-card>`;
+
+export const Playground: Story = {
+  ...playground({
+    heading: "Team plan",
+    description: "Billed every month.",
+    content: "Five members share this plan.",
+  }),
+  render: ({ heading, description, content }) =>
+    frame(
+      html`<pl-card
+        ><strong slot="title">${heading}</strong
+        ><span slot="description">${description}</span>${content}</pl-card
+      >`,
+    ),
+};
 
 export const Default: Story = { render: () => frame(full()) };
 

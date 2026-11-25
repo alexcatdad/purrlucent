@@ -3,9 +3,13 @@ import { html } from "lit";
 import "../select/select.ts";
 import "./month-range-picker.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Month Range Picker",
   component: "pl-month-range-picker",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -18,6 +22,19 @@ const row = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ label: "Period", inline: false, clearable: true }, [
+    "pl-change",
+  ]),
+  render: ({ label, inline, clearable }) =>
+    html`<pl-month-range-picker
+      label=${label}
+      value="2026-02/2026-05"
+      ?inline=${inline}
+      ?clearable=${clearable}
+    ></pl-month-range-picker>`,
+};
 
 // Fixed months, so no story depends on the date it is opened on.
 /** A button that shows the range and opens the months in a popover. */

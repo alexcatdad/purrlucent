@@ -5,14 +5,21 @@ import { isolate } from "../../../.storybook/isolate.ts";
 import "./tabs.ts";
 import type { PlTabs } from "./tabs.ts";
 
-const meta = { title: "Navigation/Tabs" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Navigation/Tabs",
+  component: "pl-tabs",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
 type Story = StoryObj;
 
-const tabs = (rtl: boolean) => html`
-  <pl-tabs id="control" label="Account">
+const tabs = (rtl: boolean, orientation = "horizontal") => html`
+  <pl-tabs id="control" label="Account" orientation=${orientation}>
     <pl-tab value="profile">Profile</pl-tab>
     <pl-tab value="security">Security</pl-tab>
     <pl-tab value="billing">Billing</pl-tab>
@@ -35,6 +42,11 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlTabs>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+export const Playground: Story = {
+  ...playground({ orientation: ["horizontal", "vertical"] }, ["pl-change"]),
+  render: ({ orientation }) => tabs(false, orientation),
 };
 
 // Stories that other tests open as they are have no play function: a play

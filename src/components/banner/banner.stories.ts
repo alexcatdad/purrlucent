@@ -6,9 +6,13 @@ import "../button/button.ts";
 import "./banner.ts";
 import type { PlBanner } from "./banner.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Feedback/Banner",
   component: "pl-banner",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -39,6 +43,24 @@ const review = (rtl = false) =>
       "Starts in 10 minutes in the large meeting room on the second floor.",
     )}
   </pl-banner>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      heading: "Changes saved",
+      tone: ["info", "success", "warning", "destructive"],
+      showIcon: true,
+    },
+    ["pl-close"],
+  ),
+  render: ({ heading, tone, showIcon }) =>
+    column(
+      html`<pl-banner open tone=${tone} ?no-icon=${!showIcon}
+        ><strong slot="title">${heading}</strong>Your document is available
+        offline.</pl-banner
+      >`,
+    ),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

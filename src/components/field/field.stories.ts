@@ -9,9 +9,13 @@ import "../switch/switch.ts";
 import "../textarea/textarea.ts";
 import "./field.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Field",
   component: "pl-field",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -24,6 +28,22 @@ const column = (content: unknown, width = "28rem") =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({
+    label: "Email",
+    description: "We only use it to send your receipt.",
+    orientation: ["vertical", "horizontal", "responsive"],
+  }),
+  render: ({ label, description, orientation }) =>
+    column(
+      html`<pl-field orientation=${orientation}
+        ><label slot="label">${label}</label
+        ><pl-input type="email" placeholder="you@example.com"></pl-input
+        ><span slot="description">${description}</span></pl-field
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

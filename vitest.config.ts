@@ -21,7 +21,7 @@ export default defineConfig({
         plugins: [
           storybookTest({
             configDir: `${import.meta.dirname}/.storybook`,
-            storybookScript: "bun run storybook --no-open",
+            storybookScript: "bun run storybook --ci",
           }),
         ],
         test: {

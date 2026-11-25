@@ -5,9 +5,13 @@ import "./progress.ts";
 import type { PlProgress } from "./progress.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Feedback/Progress",
   component: "pl-progress",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,12 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ label: "Upload", value: [50, 0, 25, 75, 100] }),
+  render: ({ label, value }) =>
+    html`<pl-progress label=${label} value=${value}></pl-progress>`,
+};
 
 export const Default: Story = {
   render: () =>

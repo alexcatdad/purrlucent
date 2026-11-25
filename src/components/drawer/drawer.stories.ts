@@ -8,9 +8,13 @@ import "./drawer.ts";
 import type { PlDialog } from "../dialog/dialog.ts";
 import type { PlDrawer } from "./drawer.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Dialogs/Drawer",
   component: "pl-drawer",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -85,6 +89,23 @@ const open = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
   const el = canvasElement.querySelector<PlDrawer>("#drawer")!;
   await el.updateComplete;
   expect(el.open).toBe(true);
+};
+
+export const Playground: Story = {
+  ...playground({ side: ["bottom", "start", "end"], dismissible: true }, [
+    "pl-open",
+    "pl-close",
+    "pl-cancel",
+  ]),
+  render: ({ side, dismissible }) =>
+    scene(
+      "Show drawer",
+      html`<pl-drawer side=${side} ?dismissible=${dismissible}
+        >${heading}
+        <p>Choose how to share this photo.</p>
+        ${footer}</pl-drawer
+      >`,
+    ),
 };
 
 // Stories that other tests open as they are have no play function.

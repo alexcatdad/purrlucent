@@ -7,9 +7,13 @@ import "../menu/menu.ts";
 import "./context-menu.ts";
 import type { PlMenu } from "../menu/menu.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Menus/Context Menu",
   component: "pl-context-menu",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -85,6 +89,15 @@ const openMenu = async (canvasElement: HTMLElement) => {
   await waitFor(() => expect(menu.open).toBe(true));
   await menu.updateComplete;
   await settled(canvasElement);
+};
+
+export const Playground: Story = {
+  ...playground({ disableEditing: false }, [
+    "pl-open",
+    "pl-close",
+    "pl-select",
+  ]),
+  render: ({ disableEditing }) => stage(region(disableEditing)),
 };
 
 // Stories that other tests open as they are have no play function.

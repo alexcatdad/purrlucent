@@ -8,9 +8,13 @@ import "../select/select.ts";
 import "./dialog.ts";
 import type { PlDialog } from "./dialog.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Dialogs/Dialog",
   component: "pl-dialog",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -158,6 +162,11 @@ const open = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
   const el = canvasElement.querySelector<PlDialog>("#dialog")!;
   await el.updateComplete;
   expect(el.open).toBe(true);
+};
+
+export const Playground: Story = {
+  ...playground({ stackedActions: false }, ["pl-cancel", "pl-close"]),
+  render: ({ stackedActions }) => scene("Show alert", draft(stackedActions)),
 };
 
 // Stories that other tests open as they are have no play function.

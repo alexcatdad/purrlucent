@@ -13,7 +13,14 @@ import type {
   PlPin,
 } from "./data-table.ts";
 
-const meta = { title: "Data/Data Table" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Data/Data Table",
+  component: "pl-data-table",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
@@ -50,6 +57,22 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlDataTable>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+export const Playground: Story = {
+  ...playground({ caption: "Pioneers", selectable: false, filterable: false }, [
+    "pl-sort",
+    "pl-selection-change",
+    "pl-filter",
+  ]),
+  render: ({ caption, selectable, filterable }) =>
+    html`<pl-data-table
+      caption=${caption}
+      ?selectable=${selectable}
+      ?filterable=${filterable}
+      .columns=${columns}
+      .rows=${rows}
+    ></pl-data-table>`,
 };
 
 // Stories that other tests open as they are have no play function: a play

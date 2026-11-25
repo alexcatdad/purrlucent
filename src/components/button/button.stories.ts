@@ -5,9 +5,13 @@ import "../input/input.ts";
 import "./button.ts";
 import type { PlButton } from "./button.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Actions/Button",
   component: "pl-button",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -50,6 +54,22 @@ const countPresses = (id: string) => {
   const presses = { count: 0 };
   button.addEventListener("pl-press", () => presses.count++);
   return { button, presses };
+};
+
+export const Playground: Story = {
+  ...playground(
+    {
+      label: "Save",
+      variant: ["secondary", "primary", "tinted", "ghost"],
+      size: ["md", "sm", "lg", "xl"],
+      disabled: false,
+    },
+    ["pl-press"],
+  ),
+  render: ({ label, variant, size, disabled }) =>
+    html`<pl-button variant=${variant} size=${size} ?disabled=${disabled}
+      >${label}</pl-button
+    >`,
 };
 
 export const Default: Story = {

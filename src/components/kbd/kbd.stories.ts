@@ -3,9 +3,13 @@ import { html } from "lit";
 import "./kbd.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Text/Kbd",
   component: "pl-kbd",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -14,6 +18,11 @@ type Story = StoryObj;
 
 const row =
   "display:flex;align-items:center;gap:var(--pl-space-2);padding:var(--pl-space-4)";
+
+export const Playground: Story = {
+  ...playground({ shortcut: "⌘K" }),
+  render: ({ shortcut }) => html`<pl-kbd>${shortcut}</pl-kbd>`,
+};
 
 export const Default: Story = {
   render: () => html`<pl-kbd id="key">⌘K</pl-kbd>`,

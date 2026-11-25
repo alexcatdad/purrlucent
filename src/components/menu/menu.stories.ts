@@ -5,9 +5,13 @@ import "../button/button.ts";
 import "./menu.ts";
 import type { PlMenu, PlMenuItem } from "./menu.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Menus/Menu",
   component: "pl-menu",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -126,6 +130,23 @@ const openSubmenu = async (canvasElement: HTMLElement) => {
   await userEvent.keyboard("{ArrowDown}");
   await settled(canvasElement);
   return el;
+};
+
+export const Playground: Story = {
+  ...playground(
+    {
+      triggerLabel: "Edit",
+      placement: ["bottom-start", "bottom-end", "top-start", "top-end"],
+    },
+    ["pl-select", "pl-toggle"],
+  ),
+  render: ({ triggerLabel, placement }) =>
+    column(
+      html`<pl-menu label=${triggerLabel} placement=${placement}
+        >${pullDown(triggerLabel)}<pl-menu-item>Undo</pl-menu-item
+        ><pl-menu-item>Redo</pl-menu-item></pl-menu
+      >`,
+    ),
 };
 
 // Stories that other tests open as they are have no play function.

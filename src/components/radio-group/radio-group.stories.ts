@@ -4,9 +4,13 @@ import { expect, userEvent } from "storybook/test";
 import "./radio-group.ts";
 import type { PlRadioGroup } from "./radio-group.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Radio Group",
   component: "pl-radio-group",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -15,8 +19,14 @@ type Story = StoryObj;
 
 const pad = "padding:var(--pl-space-4)";
 
-const render = () => html`
-  <pl-radio-group id="control" label="Open folders in" style=${pad}>
+const radioGroup = (orientation: string, disabled: boolean) => html`
+  <pl-radio-group
+    id="control"
+    label="Open folders in"
+    orientation=${orientation}
+    ?disabled=${disabled}
+    style=${pad}
+  >
     <pl-radio value="tabs">Tabs</pl-radio>
     <pl-radio value="windows">New windows</pl-radio>
     <pl-radio value="split">Split view</pl-radio>
@@ -27,6 +37,15 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlRadioGroup>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+const render = () => radioGroup("vertical", false);
+
+export const Playground: Story = {
+  ...playground({ orientation: ["vertical", "horizontal"], disabled: false }, [
+    "pl-change",
+  ]),
+  render: ({ orientation, disabled }) => radioGroup(orientation, disabled),
 };
 
 // Stories that other tests open as they are have no play function: a play

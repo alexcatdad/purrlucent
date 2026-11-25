@@ -7,9 +7,13 @@ import "./command.ts";
 import type { PlCommand } from "./command.ts";
 import type { PlDialog } from "../dialog/dialog.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Menus/Command",
   component: "pl-command",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -59,6 +63,16 @@ const palette = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlCommand>("#command")!;
   await el.updateComplete;
   return { el, input: el.shadowRoot!.querySelector("input")! };
+};
+
+export const Playground: Story = {
+  ...playground({ placeholder: "Search commands" }, ["pl-input", "pl-select"]),
+  render: ({ placeholder }) =>
+    column(
+      html`<pl-command label="Commands" placeholder=${placeholder}
+        >${commands}</pl-command
+      >`,
+    ),
 };
 
 // Stories that other tests open as they are have no play function.

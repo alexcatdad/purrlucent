@@ -1,5 +1,4 @@
-// The sidebar groups, in display order. preview.ts repeats them as a literal
-// (Storybook reads storySort statically); the story-titles test keeps both equal.
+// The sidebar groups, in display order.
 export const STORY_GROUPS = [
   "Foundations",
   "Actions",

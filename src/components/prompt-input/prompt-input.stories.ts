@@ -3,9 +3,13 @@ import { html } from "lit";
 import "../button/button.ts";
 import "./prompt-input.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "AI & Chat/Prompt Input",
   component: "pl-prompt-input",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -31,6 +35,23 @@ const plus = html`<svg
   <path d="M12 5v14" />
   <path d="M5 12h14" />
 </svg>`;
+
+export const Playground: Story = {
+  ...playground({ placeholder: "Ask anything", busy: false, disabled: false }, [
+    "pl-input",
+    "pl-change",
+    "pl-submit",
+    "pl-stop",
+  ]),
+  render: ({ placeholder, busy, disabled }) =>
+    column(
+      html`<pl-prompt-input
+        placeholder=${placeholder}
+        ?busy=${busy}
+        ?disabled=${disabled}
+      ></pl-prompt-input>`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

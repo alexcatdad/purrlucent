@@ -8,9 +8,13 @@ import "../textarea/textarea.ts";
 import "./input-group.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Input Group",
   component: "pl-input-group",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -25,6 +29,17 @@ const column = (content: unknown) =>
   </div>`;
 
 const link = svg`<svg slot="start" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" /><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" /></svg>`;
+
+export const Playground: Story = {
+  ...playground({ prefix: "$", suffix: "USD" }, ["pl-input", "pl-change"]),
+  render: ({ prefix, suffix }) =>
+    column(
+      html`<pl-input-group
+        ><span slot="start">${prefix}</span><pl-input>Amount</pl-input
+        ><span slot="end">${suffix}</span></pl-input-group
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

@@ -5,9 +5,13 @@ import "./separator.ts";
 import type { PlSeparator } from "./separator.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Containers/Separator",
   component: "pl-separator",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -15,6 +19,18 @@ export default meta;
 type Story = StoryObj;
 
 const box = "padding:var(--pl-space-4);inline-size:20rem";
+
+export const Playground: Story = {
+  ...playground({ orientation: ["horizontal", "vertical"] }),
+  render: ({ orientation }) =>
+    html`<div
+      style="display:flex;flex-direction:${orientation === "vertical" ? "row" : "column"};gap:var(--pl-space-3);padding:var(--pl-space-4)"
+    >
+      <span>Account</span
+      ><pl-separator orientation=${orientation}></pl-separator
+      ><span>Notifications</span>
+    </div>`,
+};
 
 /** Decoration by default: assistive technology skips it. */
 export const Default: Story = {

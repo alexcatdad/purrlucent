@@ -3,9 +3,13 @@ import { html } from "lit";
 import "./bubble.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "AI & Chat/Bubble",
   component: "pl-bubble",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -27,6 +31,18 @@ const variants = [
   "outline",
   "ghost",
 ] as const;
+
+export const Playground: Story = {
+  ...playground({
+    text: "Can you summarize the meeting notes?",
+    align: ["end", "start"],
+    variant: ["default", "secondary", "muted", "tinted", "outline", "ghost"],
+  }),
+  render: ({ text, align, variant }) =>
+    column(
+      html`<pl-bubble align=${align} variant=${variant}>${text}</pl-bubble>`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>
