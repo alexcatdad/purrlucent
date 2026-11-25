@@ -1,5 +1,15 @@
 # purrlucent
 
+## 0.27.0
+
+### Minor Changes
+
+- eb035bf: Magnify page and card textures through Safari glass, with optional rim refraction.
+
+### Patch Changes
+
+- 4f2a04e: pl-table reads `--pl-table-header-weight` and `--pl-table-link-weight` (default 600) for its header cells and plain cell links, so a page can set either weight.
+
 ## 0.26.0
 
 ### Minor Changes
