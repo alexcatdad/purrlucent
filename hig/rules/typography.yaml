@@ -54,11 +54,11 @@
   source: https://developer.apple.com/design/human-interface-guidelines/typography
   rule: Long passages use loose leading, scanned lists and tables use normal leading, and no line height is tighter than the text needs.
   check: automated
-  test: src/typography/typography.e2e.ts > paragraphs use loose leading and every line height clears the font size
+  test: src/typography/typography.e2e.ts > body text has at least 1.5 leading and every line height clears the font size
   layer: surfaces
 - id: typography/12
   source: https://developer.apple.com/design/human-interface-guidelines/typography
   rule: Running text and inline code stay at readable sizes.
   check: automated
-  test: src/typography/typography.e2e.ts > body text is at least 13 CSS pixels and code is not smaller than 12
+  test: src/typography/typography.e2e.ts > body text is 16 CSS pixels and code is not smaller than 12
   layer: surfaces
