@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.25.1
+
+### Patch Changes
+
+- abe3a86: pl-badge with text gets 8px of padding before its rounded ends; a count such as "3" or "99+" keeps the narrow, round badge.
+
 ## 0.25.0
 
 ### Minor Changes
