@@ -90,7 +90,12 @@ test("DIAGNOSTIC webkit texture lens state", async ({ page, browserName }) => {
       return `rejected: ${String(error)} ${(error as Error)?.stack ?? ""}`;
     }
   }, engine);
-  expect({ first, later, lensRequests, errors, load }).toBe("diagnostic");
+  const counts: Record<string, number> = {};
+  for (const line of errors) {
+    const key = line.replace(/pl-[a-z-]+/, "x");
+    counts[key] = (counts[key] ?? 0) + 1;
+  }
+  expect(JSON.stringify({ counts, first, later, load })).toBe("diagnostic");
 });
 
 test("textured glass uses the browser default and honors lens overrides", async ({
