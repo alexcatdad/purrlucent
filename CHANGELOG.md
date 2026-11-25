@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.23.2
+
+### Patch Changes
+
+- 7388080: Form controls re-render when `disabled` is set back to false through the property, so inner fields and buttons are enabled again.
+
 ## 0.23.1
 
 ### Patch Changes
