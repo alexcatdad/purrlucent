@@ -259,3 +259,52 @@ export const Glass: Story = {
     expect(root.getAttribute("dir")).toBe("rtl");
   },
 };
+
+const textures = [
+  "dots",
+  "soft-bands",
+  "fine-grain",
+  "fluted-lines",
+  "contours",
+  "color-glow",
+  "fine-grid",
+  "soft-waves",
+] as const;
+
+/** Compare the same glass toolbar over each texture in light and dark. */
+export const BackgroundTextures: Story = {
+  globals: { material: "glass" },
+  args: { drift: false, fade: "default" },
+  argTypes: {
+    drift: { control: "boolean" },
+    fade: { control: "select", options: ["default", "corner", "none"] },
+  },
+  render: ({ drift, fade }) =>
+    html` <div style="display:grid;gap:var(--pl-space-4)">
+      ${textures.map(
+        (texture) =>
+          html` <section>
+            <h3>${texture}</h3>
+            <div
+              style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--pl-space-2)"
+            >
+              ${["light", "dark"].map(
+                (theme) =>
+                  html` <div
+                    pl-texture=${texture}
+                    pl-texture-motion=${drift ? "drift" : "none"}
+                    style=${`color-scheme:${theme};padding:var(--pl-space-6);background-color:var(--pl-color-surface-canvas);color:var(--pl-color-foreground);border-radius:var(--pl-radius-panel);${fade === "default" ? "" : `--pl-texture-fade:${fade === "none" ? "none" : "linear-gradient(to top left,black,transparent 75%)"}`}`}
+                  >
+                    <span>${theme}</span>
+                    <pl-toolbar floating size="md" label="Collection"
+                      ><pl-toolbar-title
+                        >Collection</pl-toolbar-title
+                      ></pl-toolbar
+                    >
+                  </div>`,
+              )}
+            </div>
+          </section>`,
+      )}
+    </div>`,
+};
