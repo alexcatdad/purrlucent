@@ -304,6 +304,12 @@ export class LensEngine implements ReactiveController {
       if (!this.#elements.has(el)) {
         hosts.set(el, undefined);
         resizes.observe(el);
+        // WebKit delivers the first observation at a rendering update, which
+        // a settled page may not schedule once this loads late. A frame
+        // request schedules one and refreshes the element.
+        requestAnimationFrame(() => {
+          if (hosts.has(el)) refresh(el);
+        });
       } else refresh(el);
     }
     this.#elements = next;
