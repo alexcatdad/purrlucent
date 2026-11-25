@@ -69,7 +69,7 @@ export const monthRangePickerStyles = css`
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: start;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);
@@ -81,6 +81,7 @@ export const monthRangePickerStyles = css`
   }
 
   [part="trigger"]:disabled {
+    cursor: var(--pl-cursor-disabled);
     background: var(--pl-color-muted-disabled);
     box-shadow: 0 0 0 1px var(--pl-color-border);
     color: var(--pl-color-disabled-foreground);
@@ -159,7 +160,7 @@ export const monthRangePickerStyles = css`
     color: var(--pl-color-foreground);
     font: inherit;
     text-align: start;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -174,6 +175,7 @@ export const monthRangePickerStyles = css`
   }
 
   [part="preset"]:disabled {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 
@@ -210,7 +212,7 @@ export const monthRangePickerStyles = css`
     border-radius: var(--pl-radius-full);
     background: none;
     color: var(--pl-color-accent-text);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -235,6 +237,7 @@ export const monthRangePickerStyles = css`
   }
 
   [part="nav"][aria-disabled="true"] {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 
@@ -257,7 +260,7 @@ export const monthRangePickerStyles = css`
     block-size: var(--_cell);
     padding: 0;
     border-radius: var(--pl-radius-full);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     text-align: center;
     white-space: nowrap;
     user-select: none;
@@ -358,6 +361,7 @@ export const monthRangePickerStyles = css`
   }
 
   [part~="month"][aria-disabled="true"] {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

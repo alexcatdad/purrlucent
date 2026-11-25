@@ -103,7 +103,7 @@ export const itemStyles = css`
     padding-inline: var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);

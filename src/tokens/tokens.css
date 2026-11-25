@@ -257,6 +257,8 @@
     --pl-ring-width: calc(var(--pl-spacing) / 2);
     --pl-ring-offset: calc(var(--pl-ring-width) / 2);
     --pl-duration-fast: 120ms;
+    --pl-cursor-interactive: pointer; /* The cursor over anything that acts on click; set it to default for the macOS arrow. */
+    --pl-cursor-disabled: not-allowed; /* The cursor over a disabled control; set it to default for the arrow. */
     --pl-duration: 200ms;
     --pl-duration-slow: 280ms;
     --pl-ease-out: cubic-bezier(0.2, 0, 0, 1);

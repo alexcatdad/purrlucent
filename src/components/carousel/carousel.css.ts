@@ -76,7 +76,7 @@ export const carouselStyles = css`
     background-color: transparent;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
   }
 
@@ -137,6 +137,7 @@ export const carouselStyles = css`
   }
 
   button:disabled {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

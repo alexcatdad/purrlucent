@@ -48,7 +48,7 @@ export const fileInputStyles = [
       backdrop-filter: var(--pl-material-control-filter);
       color: var(--pl-color-foreground);
       font: inherit;
-      cursor: default;
+      cursor: var(--pl-cursor-interactive);
       transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
     }
 
@@ -62,6 +62,7 @@ export const fileInputStyles = [
     }
 
     [part="button"]:disabled {
+      cursor: var(--pl-cursor-disabled);
       background: var(--pl-color-secondary-disabled);
       color: var(--pl-color-disabled-foreground);
     }

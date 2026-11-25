@@ -110,7 +110,7 @@ export const itemStyles = css`
     min-block-size: var(--_size);
     min-inline-size: max(var(--_min), var(--pl-size-hit-min));
     padding: var(--pl-space-1) var(--_pad);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     overflow-wrap: anywhere;
     text-align: center;
     user-select: none;

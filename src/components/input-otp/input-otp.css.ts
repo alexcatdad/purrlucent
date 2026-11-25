@@ -133,7 +133,7 @@ export const inputOtpStyles = css`
   }
 
   :host(:disabled) [part="field"] {
-    cursor: default;
+    cursor: var(--pl-cursor-disabled);
   }
 
   @media (forced-colors: active) {

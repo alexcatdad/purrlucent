@@ -91,7 +91,7 @@ export const tableDocumentStyles = css`
    */
   pl-table tr:is([data-interactive], :has(a[data-stretched])) {
     position: relative;
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
   }
 
   /* A plain link in a cell takes the accent; a stretched link keeps the row. */
@@ -153,7 +153,7 @@ export const tableDocumentStyles = css`
     color: inherit;
     font: inherit;
     text-align: inherit;
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 

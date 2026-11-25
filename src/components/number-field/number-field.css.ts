@@ -110,7 +110,7 @@ export const numberFieldStyles = [
       font-size: var(--pl-text-sm);
       outline: 0;
       isolation: isolate;
-      cursor: default;
+      cursor: var(--pl-cursor-interactive);
       touch-action: manipulation;
       transition: color var(--pl-duration-fast) var(--pl-ease-out);
     }
@@ -182,6 +182,7 @@ export const numberFieldStyles = [
     }
 
     [part="stepper"] button:disabled {
+      cursor: var(--pl-cursor-disabled);
       color: var(--pl-color-disabled-foreground);
     }
 

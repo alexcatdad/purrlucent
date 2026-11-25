@@ -26,7 +26,7 @@ export const buttonStyles = css`
     color: var(--_fg);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: center;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }

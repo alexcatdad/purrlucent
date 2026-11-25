@@ -31,7 +31,7 @@ export const collapsibleStyles = css`
     color: inherit;
     font: inherit;
     text-align: start;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -61,6 +61,7 @@ export const collapsibleStyles = css`
 
   .trigger:disabled,
   .trigger:disabled .chevron {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

@@ -148,7 +148,7 @@ export const bubbleStyles = css`
   button[part="body"] {
     min-block-size: var(--pl-size-hit-min);
     min-inline-size: var(--pl-size-hit-min);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   a[part="body"]::before,
@@ -258,7 +258,7 @@ export const reactionsStyles = css`
     background: none;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   ::slotted(button:focus-visible) {

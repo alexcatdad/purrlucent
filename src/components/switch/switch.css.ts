@@ -30,7 +30,7 @@ export const switchStyles = css`
     padding-block: max(0px, calc((var(--_hit) - var(--_row)) / 2));
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
   }
 
@@ -137,6 +137,7 @@ export const switchStyles = css`
   }
 
   :host(:disabled) {
+    cursor: var(--pl-cursor-disabled);
     opacity: 0.5;
   }
 

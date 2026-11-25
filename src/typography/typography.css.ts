@@ -288,7 +288,7 @@ export const proseStyles = css`
     min-block-size: var(--pl-size-hit-min);
     font-weight: 600;
     list-style: none;
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
   }
 
   .pl-prose summary::-webkit-details-marker {

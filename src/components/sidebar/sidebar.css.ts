@@ -17,7 +17,7 @@ const face = css`
     background: transparent;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   .control::before,

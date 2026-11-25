@@ -52,7 +52,7 @@ export const itemStyles = css`
     font: inherit;
     text-decoration: none;
     white-space: nowrap;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   [part="control"]::before {
@@ -142,7 +142,7 @@ export const itemStyles = css`
     padding: var(--pl-space-1) var(--pl-pad-item);
     color: inherit;
     text-decoration: none;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     outline: none;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }

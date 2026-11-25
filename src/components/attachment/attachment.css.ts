@@ -138,7 +138,7 @@ export const attachmentStyles = css`
     font: inherit;
     font-weight: 700;
     text-align: start;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   [part="title"] {

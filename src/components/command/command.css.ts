@@ -52,7 +52,7 @@ export const itemStyles = css`
     border-radius: var(--pl-radius-row);
     padding-block: max(0px, calc((var(--pl-size-row) - 1lh) / 2));
     padding-inline: var(--pl-pad-item);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);
@@ -98,6 +98,7 @@ export const itemStyles = css`
   }
 
   :host([disabled]) {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

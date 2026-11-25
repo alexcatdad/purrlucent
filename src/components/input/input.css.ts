@@ -127,7 +127,7 @@ export const fieldStyles = css`
     background: var(--pl-color-muted-disabled);
     box-shadow: 0 0 0 1px var(--pl-color-border);
     color: var(--pl-color-disabled-foreground);
-    cursor: default;
+    cursor: var(--pl-cursor-disabled);
   }
 
   :host(:disabled) [part="control"] {
@@ -245,7 +245,7 @@ export const inputStyles = [
       border-radius: var(--pl-radius-full);
       background: none;
       color: var(--pl-color-muted-foreground);
-      cursor: default;
+      cursor: var(--pl-cursor-interactive);
       transition:
         color var(--pl-duration-fast) var(--pl-ease-out),
         opacity var(--pl-duration-slow) var(--pl-ease-out);

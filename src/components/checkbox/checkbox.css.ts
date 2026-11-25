@@ -26,7 +26,7 @@ export const boxStyles = css`
     min-inline-size: var(--pl-size-hit-min);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
   }
 
@@ -149,6 +149,7 @@ export const boxStyles = css`
   }
 
   :host(:state(disabled)) {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

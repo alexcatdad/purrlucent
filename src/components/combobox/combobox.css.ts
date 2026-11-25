@@ -67,7 +67,7 @@ export const comboboxStyles = css`
     padding: 0;
     background: none;
     color: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   [part="button"]::before {
@@ -109,6 +109,7 @@ export const comboboxStyles = css`
   }
 
   :host(:disabled) [part="button"] {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

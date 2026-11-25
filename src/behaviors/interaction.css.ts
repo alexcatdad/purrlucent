@@ -48,7 +48,7 @@ export const interactionStyles = css`
 
   :host(:is([disabled], :disabled, :state(disabled))) {
     color: var(--pl-color-disabled-foreground);
-    cursor: default;
+    cursor: var(--pl-cursor-disabled);
   }
 
   :host(:focus-visible) {
