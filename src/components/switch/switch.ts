@@ -103,7 +103,8 @@ export class PlSwitch extends LitElement {
   }
 
   formDisabledCallback() {
-    this.requestUpdate();
+    // Deferred: reflecting `disabled` calls this mid-update, where a request is dropped.
+    queueMicrotask(() => this.requestUpdate());
   }
 
   // After the update, so a changed `disabled` attribute is already reflected.
