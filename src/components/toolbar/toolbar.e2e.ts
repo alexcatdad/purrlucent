@@ -381,14 +381,8 @@ test("the toolbar surface has a backdrop blur under glass and none when solid", 
   await openStory(page);
   expect(await filter()).toBe("none");
   await openStory(page, "default", "material:glass");
-  // Chromium refracts first through the toolbar's own lens filter.
-  await expect
-    .poll(filter)
-    .toMatch(
-      test.info().project.name === "chromium"
-        ? /^url\("#pl-lens-\d+"\) blur\([\d.]+px\) saturate\(/
-        : /^blur\([\d.]+px\) saturate\(/,
-    );
+  // The frost stays on the face. A visible texture carries the displacement.
+  await expect.poll(filter).toMatch(/blur\([\d.]+px\) saturate\(/);
 });
 
 test("a solid page never loads the glass lens, and switching to glass loads it", async ({

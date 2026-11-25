@@ -1,3 +1,4 @@
+import { previewTexture } from "../../../.storybook/backdrop.css.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
@@ -81,7 +82,7 @@ export const Playground: Story = {
 export const Default: Story = {
   render: () =>
     box(
-      html`<pl-attachment>
+      html`<pl-attachment pl-texture=${previewTexture()}>
         ${doc}
         <span slot="title">Quarterly report.pdf</span>
         <span slot="description">PDF, 2.4 MB</span>
@@ -127,7 +128,11 @@ export const States: Story = {
           <span slot="title">processing.pdf</span>
           <span slot="description">Reading the file</span>
         </pl-attachment>
-        <pl-attachment id="state-error" state="error">
+        <pl-attachment
+          pl-texture=${previewTexture()}
+          id="state-error"
+          state="error"
+        >
           ${doc}
           <span slot="title">error.pdf</span>
           <span slot="description">File is too large. The limit is 10 MB.</span>
@@ -144,7 +149,7 @@ export const States: Story = {
 export const Uploading: Story = {
   render: () =>
     box(
-      html`<pl-attachment state="uploading">
+      html`<pl-attachment pl-texture=${previewTexture()} state="uploading">
         ${doc}
         <span slot="title">Quarterly report.pdf</span>
         <span slot="description">Uploading, 40%</span>
@@ -156,7 +161,7 @@ export const Uploading: Story = {
 export const ErrorState: Story = {
   render: () =>
     box(
-      html`<pl-attachment state="error">
+      html`<pl-attachment pl-texture=${previewTexture()} state="error">
         ${doc}
         <span slot="title">Quarterly report.pdf</span>
         <span slot="description">File is too large. The limit is 10 MB.</span>
@@ -182,7 +187,11 @@ export const Sizes: Story = {
 export const Vertical: Story = {
   render: () =>
     html`<div style="max-inline-size:14rem">
-      <pl-attachment orientation="vertical" media="image">
+      <pl-attachment
+        pl-texture=${previewTexture()}
+        orientation="vertical"
+        media="image"
+      >
         ${picture()}
         <span slot="title">Sketch.png</span>
         <span slot="description">PNG, 640 KB</span>
@@ -195,7 +204,7 @@ export const Vertical: Story = {
 export const Link: Story = {
   render: () =>
     box(
-      html`<pl-attachment href="#report">
+      html`<pl-attachment pl-texture=${previewTexture()} href="#report">
         ${doc}
         <span slot="title">Quarterly report.pdf</span>
         <span slot="description">PDF, 2.4 MB</span>
@@ -208,7 +217,11 @@ export const Link: Story = {
 export const Clickable: Story = {
   render: () =>
     box(
-      html`<pl-attachment id="clickable" clickable>
+      html`<pl-attachment
+        pl-texture=${previewTexture()}
+        id="clickable"
+        clickable
+      >
         ${doc}
         <span slot="title">Quarterly report.pdf</span>
         <span slot="description">PDF, 2.4 MB</span>
@@ -230,7 +243,7 @@ export const CompactLink: Story = {
 export const LongText: Story = {
   render: () =>
     box(
-      html`<pl-attachment href="#long">
+      html`<pl-attachment pl-texture=${previewTexture()} href="#long">
         ${doc}
         <span slot="title"
           >A file name that is long enough that it has to wrap onto a second
@@ -302,7 +315,7 @@ export const GroupFew: Story = {
 export const Rtl: Story = {
   render: () =>
     box(
-      html`<pl-attachment href="#report">
+      html`<pl-attachment pl-texture=${previewTexture()} href="#report">
         ${doc}
         <span slot="title">Quarterly report.pdf</span>
         <span slot="description">PDF, 2.4 MB</span>

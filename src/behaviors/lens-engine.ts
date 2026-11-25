@@ -157,13 +157,20 @@ function refresh(element: HTMLElement, restyle = false) {
   const h = element.offsetHeight;
   const style = getComputedStyle(element);
   const glass = !!(w && h && style.backdropFilter !== "none");
-  const clip = webkit ? textureLens(element, glass, restyle) : undefined;
-  if (glass && (supported || clip)) {
+  const copy = textureLens(element, glass, restyle, supported);
+  const clip = copy?.rim ? copy.clip : undefined;
+  if (copy) element.style.removeProperty("--pl-lens");
+  if (glass && (clip || (supported && !copy))) {
     const radius = Number.parseFloat(style.borderTopLeftRadius);
     const r = Math.round(Math.min(radius || 0, w / 2, h / 2));
-    if (previous?.key === `${w} ${h} ${r}` && (!clip || clip.style.filter))
+    const tree = (clip ?? element).getRootNode() as Tree;
+    if (
+      previous?.key === `${w} ${h} ${r}` &&
+      previous.filter.getRootNode() === tree &&
+      (clip ? clip.style.filter : element.style.getPropertyValue("--pl-lens"))
+    )
       return;
-    const lens = lensFor((clip ?? element).getRootNode() as Tree, w, h, r);
+    const lens = lensFor(tree, w, h, r);
     if (clip) clip.style.filter = `url(#${lens.filter.id})`;
     else element.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
     hosts.set(element, lens);
@@ -184,8 +191,7 @@ const resizes =
         };
         // A texture copy starts observing its source. Register it outside the
         // current delivery, which may already have visited that ancestor.
-        if (webkit) requestAnimationFrame(update);
-        else update();
+        requestAnimationFrame(update);
       })
     : undefined;
 
@@ -203,12 +209,13 @@ const solidPreference =
 function refreshMaterials() {
   for (const el of hosts.keys()) refresh(el, true);
 }
-const texturePreferences = webkit
-  ? [
-      matchMedia("(prefers-color-scheme: dark)"),
-      matchMedia("(prefers-reduced-motion: reduce)"),
-    ]
-  : [];
+const texturePreferences =
+  supported || webkit
+    ? [
+        matchMedia("(prefers-color-scheme: dark)"),
+        matchMedia("(prefers-reduced-motion: reduce)"),
+      ]
+    : [];
 function watchMaterial(host: HTMLElement) {
   const roots: Tree[] = [];
   if (!materialTrees.size) {
@@ -233,23 +240,21 @@ function watchMaterial(host: HTMLElement) {
         )
           refreshMaterials();
       });
-      if (webkit && tree instanceof ShadowRoot)
+      if (tree instanceof ShadowRoot)
         tree.addEventListener("scroll", schedulePlacement, true);
       observer.observe(tree, {
         subtree: true,
         attributes: true,
-        attributeFilter: webkit
-          ? [
-              "pl-material",
-              "pl-glass",
-              "pl-texture",
-              "pl-texture-lens",
-              "pl-texture-motion",
-              "pl-theme",
-              "style",
-              "class",
-            ]
-          : ["pl-material", "pl-glass"],
+        attributeFilter: [
+          "pl-material",
+          "pl-glass",
+          "pl-texture",
+          "pl-texture-lens",
+          "pl-texture-motion",
+          "pl-theme",
+          "style",
+          "class",
+        ],
       });
       watch = { observer, users: 0 };
       materialTrees.set(tree, watch);
@@ -305,7 +310,7 @@ export class LensEngine implements ReactiveController {
   }
 
   #detach(el: HTMLElement) {
-    if (webkit) dropTexture(el);
+    dropTexture(el);
     resizes?.unobserve(el);
     const lens = hosts.get(el);
     if (lens) {
@@ -321,7 +326,7 @@ export class LensEngine implements ReactiveController {
     for (const tree of this.#trees) {
       const watch = materialTrees.get(tree)!;
       if (--watch.users === 0) {
-        if (webkit && tree instanceof ShadowRoot)
+        if (tree instanceof ShadowRoot)
           tree.removeEventListener("scroll", schedulePlacement, true);
         watch.observer.disconnect();
         materialTrees.delete(tree);

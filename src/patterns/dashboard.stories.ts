@@ -1,6 +1,8 @@
+import { patternPanel } from "../../.storybook/backdrop.css.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, nothing, svg } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { LensController } from "../behaviors/lens.ts";
 import "../components/badge/badge.ts";
 import "../components/button/button.ts";
 import "../components/card/card.ts";
@@ -237,6 +239,7 @@ class DashboardDemo extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "pl-card");
     this.narrow = false;
     this.range = "8";
     this.sortKey = "id";
@@ -465,9 +468,15 @@ class DashboardDemo extends LitElement {
       container-type: inline-size;
       border: 1px solid var(--pl-color-border);
       border-radius: var(--pl-radius-panel);
-      background: var(--pl-color-background);
+      background: var(--sb-pattern-canvas, var(--pl-color-background));
       color: var(--pl-color-foreground);
       font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
+    }
+
+    pl-card {
+      ${patternPanel}
+      --_panel-base: var(--pl-color-surface-content);
+      border-radius: var(--sb-panel-radius, var(--pl-radius-control));
     }
 
     .layout {
