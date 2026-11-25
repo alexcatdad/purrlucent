@@ -179,8 +179,14 @@ test("scrolling is native: the keyboard scrolls the focused region", async ({
   await el.focus();
   await page.keyboard.press("PageDown");
   await expect.poll(() => el.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
-  await page.keyboard.press("End");
-  await expect.poll(() => toEnd(el)).toBeLessThan(2);
+  // Rows skipped by content-visibility take their real height once End brings
+  // them into view, so the end can move; End again reaches the new end.
+  await expect
+    .poll(async () => {
+      await page.keyboard.press("End");
+      return toEnd(el);
+    })
+    .toBeLessThan(2);
 });
 
 test("data-scrollable lists the edges that can still be scrolled toward", async ({

@@ -171,7 +171,10 @@ export class PlSelect extends LitElement {
     this.addEventListener("keydown", this.#onKeydown);
     this.addEventListener("click", this.#onClick);
     // A label added after the select still names it before it is read out.
-    this.addEventListener("focusin", () => this.requestUpdate());
+    // Not for an option: opening the list focuses one inside updated().
+    this.addEventListener("focusin", (event) => {
+      if (!(event.target as Element).closest("pl-option")) this.requestUpdate();
+    });
   }
 
   get #options(): PlOption[] {

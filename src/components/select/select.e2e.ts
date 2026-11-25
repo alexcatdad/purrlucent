@@ -74,6 +74,31 @@ test("a click opens the list with the choice focused and a second click closes i
   await expect(listbox(page)).toBeHidden();
 });
 
+test("opening the list schedules no second update from inside an update", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  await page
+    .locator("pl-select")
+    .first()
+    .evaluate((el) => {
+      const host = el as HTMLElement & {
+        updated(changed: unknown): void;
+        isUpdatePending: boolean;
+      };
+      const updated = host.updated.bind(host);
+      host.updated = (changed) => {
+        updated(changed);
+        if (host.isUpdatePending) host.dataset.reupdated = "";
+      };
+    });
+  await trigger(page).click();
+  await expect(option(page, "Fuji")).toBeFocused();
+  await expect(page.locator("pl-select").first()).not.toHaveAttribute(
+    "data-reupdated",
+  );
+});
+
 test("clicking an option chooses it, closes the list and returns focus", async ({
   page,
 }) => {
