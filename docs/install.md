@@ -14,7 +14,7 @@ pnpm and Yarn work the same way. The package is ES modules only and has one depe
 
 ## Verify the package
 
-Every version is built and published by the repository's release workflow on GitHub Actions, with no npm token, and carries a provenance statement: a signed record of the commit and workflow that built it. The package page on npmjs.com links to both. To check the signatures and provenance of what you installed:
+From 0.27.1, every version is built and published by the repository's release workflow on GitHub Actions, with no npm token, and carries a provenance statement: a signed record of the commit and workflow that built it. The package page on npmjs.com links to both. To check the signatures and provenance of what you installed:
 
 ```sh
 npm audit signatures

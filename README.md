@@ -38,7 +38,7 @@ import "purrlucent/switch";
 </form>
 ```
 
-Every version is published from GitHub Actions with a provenance statement. The [install guide](docs/install.md) covers installing, verifying the package, the page background, fonts, light and dark, glass mode and theming. For a React app, see [Use with React](docs/react.md).
+From 0.27.1, every version is published from GitHub Actions with a provenance statement. The [install guide](docs/install.md) covers installing, verifying the package, the page background, fonts, light and dark, glass mode and theming. For a React app, see [Use with React](docs/react.md).
 
 ## Security
 
