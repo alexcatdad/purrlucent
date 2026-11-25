@@ -1,5 +1,12 @@
 # purrlucent
 
+## 0.28.2
+
+### Patch Changes
+
+- e271e7c: The glass lens loads only when glass is on. Until an element sits inside `pl-material="glass"`, the controls and navigation that refract glass read no layout and observe no resizes, and the lens code (about 4 KB gzipped) is not downloaded. A page using `purrlucent/button` alone loads 5.7 KB gzipped instead of 9.2 KB. Under glass the lens arrives with one extra request; until then the surface shows the frosted fill. The lens now follows the `pl-material="glass"` attribute: a page that sets the `--pl-material-*-filter` tokens without it gets the frosted fill and no lens.
+- e271e7c: Component styles ship minified. An app's minifier leaves the CSS inside the components' scripts alone, so they now come without comments and indentation: about 14% less to download, such as 4.8 KB instead of 5.7 KB gzipped for `purrlucent/button` and 95.6 KB instead of 110.9 KB for the whole package.
+
 ## 0.28.1
 
 ### Patch Changes
