@@ -13,7 +13,7 @@ export const cardStyles = css`
     flex-direction: column;
     gap: var(--pl-space-4);
     box-sizing: border-box;
-    background: var(--pl-color-raised);
+    background: var(--pl-color-surface-content);
     backdrop-filter: none;
     border: 1px solid var(--pl-color-frame);
     border-radius: var(--pl-radius-control);
@@ -57,6 +57,7 @@ export const cardStyles = css`
     grid-area: title;
     font-weight: 700;
     font-size: var(--pl-text-base);
+    line-height: var(--pl-leading-body);
   }
 
   slot[name="description"] {

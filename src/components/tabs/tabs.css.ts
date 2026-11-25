@@ -77,7 +77,7 @@ export const tabStyles = css`
     min-block-size: var(--pl-size-md);
     padding: var(--pl-space-1) var(--pl-pad-control);
     color: var(--pl-color-muted-foreground);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
     white-space: nowrap;
   }

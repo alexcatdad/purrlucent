@@ -39,6 +39,8 @@ const calendarGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
  * of the disabled days, makes the form invalid. Alt and Down Arrow in the entry
  * open the calendar.
  *
+ * The default width is 44 spacing units (176px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+ *
  * @attr {string} value - The starting day, `yyyy-mm-dd`. The `value` property holds the current one.
  * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} size - `md` (default), `lg` or `xl`.

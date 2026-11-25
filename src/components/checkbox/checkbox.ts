@@ -94,6 +94,11 @@ export class PlCheckbox extends LitElement {
     this.indeterminate = this.hasAttribute("indeterminate");
   }
 
+  formStateRestoreCallback(state: string) {
+    this.checked = state === "true";
+    this.indeterminate = false;
+  }
+
   formDisabledCallback() {
     // Deferred: reflecting `disabled` calls this mid-update, where a request is dropped.
     queueMicrotask(() => this.requestUpdate());
@@ -123,7 +128,11 @@ export class PlCheckbox extends LitElement {
     this.#state("checked", this.checked);
     this.#state("indeterminate", this.indeterminate);
     this.#state("disabled", disabled);
-    this.#internals.setFormValue(this.checked ? this.value : null);
+    // The state string is what formStateRestoreCallback receives.
+    this.#internals.setFormValue(
+      this.checked ? this.value : null,
+      String(this.checked),
+    );
     this.#internals.setValidity(
       { valueMissing: this.required && !this.checked },
       nativeMessage(this, "checkbox", "checkRequired"),

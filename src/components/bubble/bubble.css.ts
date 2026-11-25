@@ -21,7 +21,7 @@ export const bubbleStyles = css`
     box-sizing: border-box;
     inline-size: fit-content;
     max-inline-size: var(--pl-bubble-max-inline-size);
-    font: 400 var(--pl-text-base) / var(--pl-leading-loose) var(--pl-font-sans);
+    font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
   }
 
   :host([hidden]) {
@@ -121,7 +121,7 @@ export const bubbleStyles = css`
     box-sizing: content-box;
     inline-size: var(--pl-icon-md);
     block-size: var(--pl-icon-md);
-    padding-block: calc((var(--pl-leading-loose) - var(--pl-icon-md)) / 2);
+    padding-block: calc((var(--pl-leading-body) - var(--pl-icon-md)) / 2);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -148,7 +148,7 @@ export const bubbleStyles = css`
   button[part="body"] {
     min-block-size: var(--pl-size-hit-min);
     min-inline-size: var(--pl-size-hit-min);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   a[part="body"]::before,
@@ -258,7 +258,7 @@ export const reactionsStyles = css`
     background: none;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   ::slotted(button:focus-visible) {

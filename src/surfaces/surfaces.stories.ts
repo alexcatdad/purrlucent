@@ -238,7 +238,7 @@ export const LensingPrototype: Story = {
     >
       <div
         id="lens"
-        style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 999px; background: var(--pl-material-glass, var(--pl-color-overlay)); box-shadow: var(--pl-material-edge), var(--pl-shadow-lg); backdrop-filter: blur(2px) saturate(160%); backdrop-filter: url(#pl-lens) blur(2px) saturate(160%); color: var(--pl-color-foreground); font: 600 var(--pl-text-base) / var(--pl-leading-normal) var(--pl-font-sans)"
+        style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 999px; background: var(--pl-material-glass, var(--pl-color-overlay)); box-shadow: var(--pl-material-edge), var(--pl-shadow-lg); backdrop-filter: blur(2px) saturate(160%); backdrop-filter: url(#pl-lens) blur(2px) saturate(160%); color: var(--pl-color-foreground); font: 600 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans)"
       >
         Lensed glass
       </div>

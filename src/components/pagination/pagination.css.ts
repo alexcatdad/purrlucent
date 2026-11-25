@@ -55,7 +55,7 @@ export const paginationStyles = css`
     font: inherit;
     font-variant-numeric: inherit;
     text-decoration: none;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
@@ -100,6 +100,7 @@ export const paginationStyles = css`
   }
 
   .control:is(:disabled, [aria-disabled="true"]) {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

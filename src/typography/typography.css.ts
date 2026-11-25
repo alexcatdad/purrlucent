@@ -20,7 +20,7 @@ export const proseStyles = css`
     font-family: var(--pl-font-sans);
     font-size: var(--pl-text-base);
     font-weight: 400;
-    line-height: var(--pl-leading-loose);
+    line-height: var(--pl-leading-body);
     overflow-wrap: break-word;
   }
 
@@ -51,7 +51,7 @@ export const proseStyles = css`
 
   .pl-prose :is(h3, h4) {
     font-size: var(--pl-text-base);
-    line-height: var(--pl-leading-loose);
+    line-height: var(--pl-leading-body);
   }
 
   .pl-prose h4 {
@@ -71,7 +71,7 @@ export const proseStyles = css`
   .pl-prose :is(ul, ol) {
     margin-block: 0 var(--pl-space-4);
     padding-inline-start: var(--pl-indent);
-    line-height: var(--pl-leading-normal);
+    line-height: var(--pl-leading-body);
   }
 
   .pl-prose li + li {
@@ -102,7 +102,7 @@ export const proseStyles = css`
     inline-size: 100%;
     margin-block: 0 var(--pl-space-4);
     border-collapse: collapse;
-    line-height: var(--pl-leading-normal);
+    line-height: var(--pl-leading-loose);
   }
 
   .pl-prose :is(th, td) {
@@ -125,7 +125,7 @@ export const proseStyles = css`
     margin-block: var(--pl-space-4) var(--pl-space-1);
     font-size: var(--pl-text-base);
     font-weight: 600;
-    line-height: var(--pl-leading-loose);
+    line-height: var(--pl-leading-body);
   }
 
   .pl-prose h6 {
@@ -209,7 +209,7 @@ export const proseStyles = css`
 
   .pl-prose dl {
     margin-block: var(--pl-space-2) var(--pl-space-4);
-    line-height: var(--pl-leading-normal);
+    line-height: var(--pl-leading-body);
   }
 
   .pl-prose dt {
@@ -258,7 +258,7 @@ export const proseStyles = css`
   .pl-prose address {
     margin-block: var(--pl-space-2) var(--pl-space-4);
     font-style: normal;
-    line-height: var(--pl-leading-normal);
+    line-height: var(--pl-leading-body);
   }
 
   .pl-prose pre {
@@ -288,7 +288,7 @@ export const proseStyles = css`
     min-block-size: var(--pl-size-hit-min);
     font-weight: 600;
     list-style: none;
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
   }
 
   .pl-prose summary::-webkit-details-marker {

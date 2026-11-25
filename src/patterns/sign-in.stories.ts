@@ -497,8 +497,7 @@ class SignInDemo extends LitElement {
       box-sizing: border-box;
       inline-size: min(100%, calc(var(--pl-spacing) * 100));
       color: var(--pl-color-foreground);
-      font: 400 var(--pl-text-base) / var(--pl-leading-normal)
-        var(--pl-font-sans);
+      font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
     }
 
     form {

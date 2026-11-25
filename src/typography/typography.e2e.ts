@@ -158,23 +158,22 @@ test("no text is lighter than regular weight", async ({ page }) => {
   for (const weight of weights) expect(weight).toBeGreaterThanOrEqual(400);
 });
 
-test("body text is at least 13 CSS pixels and code is not smaller than 12", async ({
+test("body text is 16 CSS pixels and code is not smaller than 12", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
-  expect(
-    (await style(page, "#prose > p:not(.lead)")).size,
-  ).toBeGreaterThanOrEqual(13);
+  expect((await style(page, "#prose > p:not(.lead)")).size).toBe(16);
   expect((await style(page, "#prose code")).size).toBeGreaterThanOrEqual(12);
 });
 
-test("paragraphs use loose leading and every line height clears the font size", async ({
+test("body text has at least 1.5 leading and every line height clears the font size", async ({
   page,
 }) => {
   await gotoStory(page, story("default"));
   const p = await style(page, "#prose > p:not(.lead)");
   const li = await style(page, "#prose li");
-  expect(p.lineHeight).toBeGreaterThan(li.lineHeight);
+  expect(p.lineHeight / p.size).toBeGreaterThanOrEqual(1.5);
+  expect(li.lineHeight / li.size).toBeGreaterThanOrEqual(1.5);
   const rows = await page
     .locator("#prose :is(h1, h2, h3, h4, p, li, td, th)")
     .evaluateAll((els) =>

@@ -103,7 +103,7 @@ export const handleStyles = css`
   :host([disabled]) {
     --_color: var(--pl-color-foreground-faint);
 
-    cursor: default;
+    cursor: var(--pl-cursor-disabled);
   }
 
   :host(:focus-visible) {

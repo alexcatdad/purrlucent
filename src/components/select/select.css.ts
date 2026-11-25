@@ -62,7 +62,7 @@ export const selectStyles = css`
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     text-align: start;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);
@@ -87,6 +87,7 @@ export const selectStyles = css`
   }
 
   [part="trigger"][aria-disabled="true"] {
+    cursor: var(--pl-cursor-disabled);
     background: var(--pl-color-secondary-disabled);
     color: var(--pl-color-disabled-foreground);
   }
@@ -208,7 +209,7 @@ export const optionStyles = css`
     padding-inline: var(--_label) var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);
@@ -253,6 +254,7 @@ export const optionStyles = css`
   }
 
   :host([aria-disabled="true"]) {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

@@ -54,6 +54,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * text has been typed. While the app's lookup is running, `busy` keeps the "no
  * results" row from showing.
  *
+ * The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+ *
  * @attr {string} value - The chosen option's value, or the custom text.
  * @attr {string} text - The visible text of the field.
  * @attr {string} name - The name submitted with a form.
@@ -242,6 +244,12 @@ export class PlCombobox extends LitElement {
     this.#syncText();
     // An unchanged value schedules no update, but the touched state must clear.
     this.#syncForm();
+  }
+
+  formStateRestoreCallback(state: string) {
+    this.value = state;
+    this.#filtering = false;
+    this.#syncText();
   }
 
   /** The form value, validity and the shown message, kept in step with `value`. */

@@ -30,8 +30,7 @@ export const switchStyles = css`
     padding-block: max(0px, calc((var(--_hit) - var(--_row)) / 2));
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
-    cursor: default;
-    user-select: none;
+    cursor: var(--pl-cursor-interactive);
   }
 
   :host([hidden]) {
@@ -61,6 +60,7 @@ export const switchStyles = css`
     background-color: var(--pl-color-track);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
+    user-select: none;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -137,6 +137,7 @@ export const switchStyles = css`
   }
 
   :host(:disabled) {
+    cursor: var(--pl-cursor-disabled);
     opacity: 0.5;
   }
 

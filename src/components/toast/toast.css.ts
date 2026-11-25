@@ -140,7 +140,7 @@ export const toastStyles = css`
     border-radius: var(--pl-radius-full);
     background: none;
     color: var(--pl-color-muted-foreground);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 

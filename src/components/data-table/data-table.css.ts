@@ -43,7 +43,7 @@ export const dataTableStyles = css`
     color: inherit;
     font: inherit;
     text-align: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -199,7 +199,7 @@ export const dataTableStyles = css`
     border-radius: var(--pl-radius-control);
     background: none;
     color: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   button.expand:focus-visible {
@@ -267,7 +267,7 @@ export const dataTableStyles = css`
     border-radius: var(--pl-radius-control);
     background: none;
     color: var(--pl-color-muted-foreground);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   .menu-button svg {

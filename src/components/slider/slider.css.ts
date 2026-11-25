@@ -25,7 +25,7 @@ export const sliderStyles = css`
     block-size: max(var(--_h), var(--pl-size-hit-min));
     vertical-align: middle;
     touch-action: pan-y;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
   }
 
@@ -117,6 +117,7 @@ export const sliderStyles = css`
 
   /* The thumb stays as it is idle; only the fill and the ticks go muted. */
   :host(:disabled) {
+    cursor: var(--pl-cursor-disabled);
     --_fill: light-dark(var(--pl-color-muted-5), var(--pl-color-muted-4));
   }
 

@@ -21,6 +21,7 @@ export const fieldsetStyles = css`
 
   [part="legend"] {
     font-size: var(--pl-text-base);
+    line-height: var(--pl-leading-body);
     font-weight: 600;
     overflow-wrap: anywhere;
   }

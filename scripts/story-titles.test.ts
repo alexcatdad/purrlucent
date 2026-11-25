@@ -7,6 +7,7 @@ const placement: Record<string, readonly string[]> = {
     "Tokens",
     "Typography",
     "Surfaces",
+    "Density",
     "Interaction",
     "Localization",
   ],

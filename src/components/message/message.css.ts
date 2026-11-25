@@ -15,7 +15,7 @@ export const messageStyles = css`
       ". header"
       "avatar content"
       ". footer";
-    font: 400 var(--pl-text-base) / var(--pl-leading-loose) var(--pl-font-sans);
+    font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
     color: var(--pl-color-foreground);
     overflow-wrap: anywhere;
   }

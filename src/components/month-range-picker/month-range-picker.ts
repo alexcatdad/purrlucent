@@ -20,6 +20,17 @@ import {
 
 const forwardGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6 6.5-6 6.5" /></svg>`;
 
+const calendarGlyph = svg`<svg part="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>`;
+
+const chevronsGlyph = svg`<svg part="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4 -4l4 4" /><path d="M16 15l-4 4l-4 -4" /></svg>`;
+
+/** A ready-made range, with its months as `yyyy-mm`. */
+export interface PlMonthRangePreset {
+  label: string;
+  start: string;
+  end: string;
+}
+
 /** A formatter for months in the Gregorian calendar, at UTC. */
 const monthFormat = (locale: string, options: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat(locale, {
@@ -38,10 +49,15 @@ const monthFormat = (locale: string, options: Intl.DateTimeFormatOptions) =>
  * December, and Enter or Space chooses. Month names and the direction follow
  * the locale.
  *
- * By default it is a button that shows the range and opens the months in a
- * popover; with `inline` the months show in place. It takes part in forms like
- * a native input: it submits `name` with its value and a reset returns it to
- * its `value` attribute.
+ * By default it is a field, laid out like `pl-select` (a calendar icon, the
+ * range or the placeholder, a chevron), that opens the months in a popover;
+ * with `inline` the months show in place. A `slot="label"` element is a visible
+ * label above the field. The range shows as one band: the months between the
+ * ends are tinted, the ends are filled, and after the first month is chosen
+ * the months up to the one under the pointer or focus preview the end. The
+ * `presets` property adds buttons that each choose a ready-made range. It
+ * takes part in forms like a native input: it submits `name` with its value
+ * and a reset returns it to its `value` attribute.
  *
  * @attr {string} value - The range, `yyyy-mm/yyyy-mm` with the start first, or empty. A single month is the same month twice. The `value` property holds the current one.
  * @attr {string} min - The earliest month that can be chosen, `yyyy-mm`.
@@ -49,20 +65,29 @@ const monthFormat = (locale: string, options: Intl.DateTimeFormatOptions) =>
  * @attr {boolean} inline - Shows the months in place instead of a button and a popover.
  * @attr {boolean} clearable - Shows a Clear button that empties the value.
  * @attr {boolean} disabled - Nothing can be chosen and the value is not submitted.
- * @attr {string} label - The accessible name of the button and the months. Defaults to the page language's text (see `setMessages`), in English "Choose months".
- * @attr {string} placeholder - The button's text while the value is empty. Defaults to the label.
+ * @attr {string} label - The accessible name of the field and the months when there is no slotted label. Defaults to the page language's text (see `setMessages`), in English "Choose months".
+ * @attr {string} placeholder - The field's text while the value is empty. Defaults to the label.
+ * @prop {Array<{ label: string; start: string; end: string }>} presets - Ready-made ranges shown as buttons beside the months (under them when narrow). `start` and `end` are `yyyy-mm`. Choosing one sets the range, fires the same events as choosing it by hand and closes the popover. A preset outside `min` and `max` is disabled. Empty by default, which shows no list. Property only.
  * @attr {string} locale - A BCP 47 tag for month names and direction. Defaults to the closest `lang`, else the document's, else the browser's.
  * @attr {string} name - The name submitted with a form.
  * @attr {string} prev-label - The previous year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous year".
  * @attr {string} next-label - The next year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next year".
  * @attr {string} clear-label - The Clear button's text. Defaults to the page language's text (see `setMessages`), in English "Clear".
- * @csspart trigger - The button that opens the popover.
- * @csspart panel - The months and their header.
+ * @slot label - The visible label.
+ * @csspart label - The visible label.
+ * @csspart trigger - The button that opens the popover, shaped as a field.
+ * @csspart icon - The calendar icon in the trigger.
+ * @csspart value - The range, or the placeholder in the muted colour.
+ * @csspart glyph - The chevron in the trigger.
+ * @csspart panel - The months, and the presets beside them.
+ * @csspart months - The header, the table of months and the Clear button.
+ * @csspart presets - The list of preset buttons.
+ * @csspart preset - A preset button.
  * @csspart header - The row with the year buttons and the year.
  * @csspart title - The year.
  * @csspart nav - A year button.
  * @csspart grid - The table of months.
- * @csspart month - A month cell.
+ * @csspart month - A month cell. It also has `start` or `end` (a cap of the range, or of the preview of it), or `between` (inside the band), and `start end` when the range is one month.
  * @csspart clear - The Clear button.
  * @fires {CustomEvent<{ value: string; start: string; end: string }>} pl-change - A range was chosen or cleared. `detail.start` and `detail.end` are `yyyy-mm`, or empty when cleared. Choosing the range that is already chosen fires nothing.
  * @fires input - After each pl-change, as a native input fires it.
@@ -85,8 +110,11 @@ export class PlMonthRangePicker extends LitElement {
     prevLabel: { attribute: "prev-label" },
     nextLabel: { attribute: "next-label" },
     clearLabel: { attribute: "clear-label" },
+    presets: { attribute: false },
     _focus: { state: true },
     _anchor: { state: true },
+    _preview: { state: true },
+    _labelled: { state: true },
   };
 
   declare value: string;
@@ -102,12 +130,21 @@ export class PlMonthRangePicker extends LitElement {
   declare prevLabel: string;
   declare nextLabel: string;
   declare clearLabel: string;
+  declare presets: PlMonthRangePreset[];
   /** The month index that holds the tab stop, and with it the year on show; -1 until one is chosen or focused. */
   declare _focus: number;
   /** The first month of a range still being chosen, or -1. */
   declare _anchor: number;
+  /** The month the pointer or focus is on while a range is being chosen, which would end it; -1 for none. */
+  declare _preview: number;
+  declare _labelled: boolean;
 
   readonly #internals = this.attachInternals();
+  // Editing a slotted label's text fires no slotchange, so the light DOM is watched.
+  readonly #watch = new MutationObserver(() => {
+    this.#syncLabelled();
+    this.requestUpdate();
+  });
 
   constructor() {
     super();
@@ -121,16 +158,41 @@ export class PlMonthRangePicker extends LitElement {
     this.prevLabel = "";
     this.nextLabel = "";
     this.clearLabel = "";
+    this.presets = [];
     this._focus = -1;
     this._anchor = -1;
+    this._preview = -1;
+    this._labelled = false;
   }
 
   get form() {
     return this.#internals.form;
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.#watch.observe(this, {
+      subtree: true,
+      characterData: true,
+      childList: true,
+    });
+    this.#syncLabelled();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#watch.disconnect();
+  }
+
+  #syncLabelled() {
+    this._labelled = !!this.querySelector(
+      ":scope > [slot=label]",
+    )?.textContent?.trim();
+  }
+
   formResetCallback() {
     this._anchor = -1;
+    this._preview = -1;
     this.value = this.getAttribute("value") ?? "";
   }
 
@@ -163,6 +225,8 @@ export class PlMonthRangePicker extends LitElement {
 
   protected override updated(changed: PropertyValues<this>) {
     if (changed.has("value")) this.#internals.setFormValue(this.value || null);
+    if (this._labelled) this.#internals.states.add("labelled");
+    else this.#internals.states.delete("labelled");
   }
 
   get #off() {
@@ -198,12 +262,17 @@ export class PlMonthRangePicker extends LitElement {
     );
   }
 
+  get #trigger() {
+    return this.renderRoot.querySelector<HTMLElement>('[part="trigger"]');
+  }
+
   get #popover() {
     return this.renderRoot.querySelector<PlPopover>("pl-popover");
   }
 
   #commit(value: string) {
     this._anchor = -1;
+    this._preview = -1;
     if (value === this.value) return;
     this.value = value;
     const range = parseRange(value);
@@ -234,6 +303,23 @@ export class PlMonthRangePicker extends LitElement {
       return;
     }
     this.#commit(toRange(this._anchor, index));
+    this.#popover?.hide();
+  }
+
+  /** A preset's months as ordered indexes, or undefined when it is not a range. */
+  #presetRange(preset: PlMonthRangePreset) {
+    const start = parseMonth(preset.start);
+    const end = parseMonth(preset.end);
+    return start === undefined || end === undefined
+      ? undefined
+      : ([Math.min(start, end), Math.max(start, end)] as const);
+  }
+
+  #choosePreset(preset: PlMonthRangePreset) {
+    const range = this.#presetRange(preset);
+    if (this.#off || !range) return;
+    this._focus = range[0];
+    this.#commit(toRange(...range));
     this.#popover?.hide();
   }
 
@@ -294,6 +380,35 @@ export class PlMonthRangePicker extends LitElement {
     }
   };
 
+  #monthAt(target: EventTarget | null) {
+    const at = (target as HTMLElement | null)
+      ?.closest?.<HTMLElement>("[data-month]")
+      ?.getAttribute("data-month");
+    return at == null ? -1 : Number(at);
+  }
+
+  // While a range is being chosen, the month under the pointer or focus previews its end.
+  #onPointerover = (event: PointerEvent) => {
+    if (this._anchor >= 0 && event.pointerType !== "touch")
+      this._preview = this.#monthAt(event.target);
+  };
+
+  #onPointerleave = () => {
+    if (this._anchor >= 0)
+      this._preview = this.#monthAt(
+        (this.renderRoot as ShadowRoot).activeElement,
+      );
+  };
+
+  #onFocusin = (event: FocusEvent) => {
+    if (this._anchor >= 0) this._preview = this.#monthAt(event.target);
+  };
+
+  #onGridFocusout = (event: FocusEvent) => {
+    if (!(event.currentTarget as Node).contains(event.relatedTarget as Node))
+      this._preview = -1;
+  };
+
   /** A pointer is down inside the panel. Safari does not focus a pressed button, so focus leaves with no target. */
   #pressing = false;
 
@@ -333,7 +448,7 @@ export class PlMonthRangePicker extends LitElement {
       : format.formatRange(start, end);
   }
 
-  #panel() {
+  #panel(name: string) {
     const text = messages(this);
     const locale = this.#locale;
     const focus = this.#focusMonth;
@@ -345,19 +460,30 @@ export class PlMonthRangePicker extends LitElement {
     const long = monthFormat(locale, { month: "long", year: "numeric" });
     const now = thisMonth();
     const range = parseRange(this.value);
+    // What is chosen: the pending first month alone, else the range.
     const [start, end] =
       this._anchor >= 0 ? [this._anchor, this._anchor] : (range ?? [-1, -1]);
+    // What is drawn: the same, but with the previewed month as the other end.
+    const ahead = this._preview >= 0 && !this.#unavailable(this._preview);
+    const [from, to] =
+      this._anchor >= 0 && ahead
+        ? [
+            Math.min(this._anchor, this._preview),
+            Math.max(this._anchor, this._preview),
+          ]
+        : [start, end];
     const off = this.#off;
 
     const cell = (index: number) => {
       const unavailable = this.#unavailable(index);
       const chosen = index >= start && index <= end;
+      const band = index >= from && index <= to;
       const edge = [
-        index === start ? "start" : "",
-        index === end ? "end" : "",
+        index === from ? "start" : "",
+        index === to ? "end" : "",
       ].filter(Boolean);
       return html`<td
-        part=${["month", ...edge, chosen && !edge.length ? "between" : ""]
+        part=${["month", ...edge, band && !edge.length ? "between" : ""]
           .filter(Boolean)
           .join(" ")}
         role="gridcell"
@@ -378,78 +504,136 @@ export class PlMonthRangePicker extends LitElement {
       @focusout=${this.#onFocusout}
       @pointerdown=${this.#onPointerdown}
     >
-      <div part="header">
-        <button
-          part="nav"
-          type="button"
-          aria-label=${this.prevLabel || text.previousYear}
-          aria-disabled=${off || this.#navOff(-1) ? "true" : nothing}
-          @click=${() => this.#shift(-1)}
+      <div part="months">
+        <div part="header">
+          <button
+            part="nav"
+            type="button"
+            aria-label=${this.prevLabel || text.previousYear}
+            aria-disabled=${off || this.#navOff(-1) ? "true" : nothing}
+            @click=${() => this.#shift(-1)}
+          >
+            ${backGlyph}
+          </button>
+          <div part="title" id="title" aria-live="polite">${title}</div>
+          <button
+            part="nav"
+            type="button"
+            aria-label=${this.nextLabel || text.nextYear}
+            aria-disabled=${off || this.#navOff(1) ? "true" : nothing}
+            @click=${() => this.#shift(1)}
+          >
+            ${forwardGlyph}
+          </button>
+        </div>
+        <table
+          part="grid"
+          role="grid"
+          aria-label=${fill(text.labelValue, {
+            label: name,
+            value: title,
+          })}
+          aria-multiselectable="true"
+          @keydown=${this.#onKeydown}
+          @pointerover=${this.#onPointerover}
+          @pointerleave=${this.#onPointerleave}
+          @focusin=${this.#onFocusin}
+          @focusout=${this.#onGridFocusout}
         >
-          ${backGlyph}
-        </button>
-        <div part="title" id="title" aria-live="polite">${title}</div>
-        <button
-          part="nav"
-          type="button"
-          aria-label=${this.nextLabel || text.nextYear}
-          aria-disabled=${off || this.#navOff(1) ? "true" : nothing}
-          @click=${() => this.#shift(1)}
-        >
-          ${forwardGlyph}
-        </button>
+          <tbody>
+            ${[0, 1, 2, 3].map(
+              (row) =>
+                html`<tr>
+                  ${[0, 1, 2].map((col) => cell(year * 12 + row * 3 + col))}
+                </tr>`,
+            )}
+          </tbody>
+        </table>
+        ${
+          this.clearable
+            ? html`<pl-button
+                part="clear"
+                variant="ghost"
+                size="sm"
+                ?disabled=${off || (!this.value && this._anchor < 0)}
+                @pl-press=${this.#clear}
+                >${this.clearLabel || text.clear}</pl-button
+              >`
+            : nothing
+        }
       </div>
-      <table
-        part="grid"
-        role="grid"
-        aria-label=${fill(text.labelValue, {
-          label: this.label || text.chooseMonths,
-          value: title,
-        })}
-        aria-multiselectable="true"
-        @keydown=${this.#onKeydown}
-      >
-        <tbody>
-          ${[0, 1, 2, 3].map(
-            (row) =>
-              html`<tr>
-                ${[0, 1, 2].map((col) => cell(year * 12 + row * 3 + col))}
-              </tr>`,
-          )}
-        </tbody>
-      </table>
       ${
-        this.clearable
-          ? html`<pl-button
-              part="clear"
-              variant="ghost"
-              size="sm"
-              ?disabled=${off || (!this.value && this._anchor < 0)}
-              @pl-press=${this.#clear}
-              >${this.clearLabel || text.clear}</pl-button
-            >`
+        this.presets.length
+          ? html`<div part="presets" role="group" aria-label=${text.presets}>
+              ${this.presets.map((preset) => {
+                const range = this.#presetRange(preset);
+                return html`<button
+                  part="preset"
+                  type="button"
+                  ?disabled=${
+                    off ||
+                    !range ||
+                    this.#unavailable(range[0]) ||
+                    this.#unavailable(range[1])
+                  }
+                  @click=${() => this.#choosePreset(preset)}
+                >
+                  ${preset.label}
+                </button>`;
+              })}
+            </div>`
           : nothing
       }
     </div>`;
   }
 
+  /** The label's text, else the `label` attribute, else the built-in name. */
+  get #name() {
+    return this._labelled
+      ? [...this.querySelectorAll(":scope > [slot=label]")]
+          .map((el) => el.textContent?.trim())
+          .join(" ")
+      : this.label || messages(this).chooseMonths;
+  }
+
   override render() {
-    if (this.inline) return this.#panel();
+    const name = this.#name;
+    if (this.inline) return this.#panel(name);
     const text = messages(this);
-    const label = this.label || text.chooseMonths;
     const shown = this.#text();
-    return html`<pl-popover label=${label} @pl-toggle=${this.#onToggle}>
-      <pl-button
-        slot="trigger"
-        part="trigger"
-        aria-label=${ifDefined(
-          shown ? fill(text.labelValue, { label, value: shown }) : undefined,
-        )}
-        ?disabled=${this.#off}
-        >${shown || this.placeholder || label}</pl-button
+    const hint = this.placeholder || (this._labelled ? "" : name);
+    const value = shown || hint;
+    // The text alone does not name the field when a label sits above it or a placeholder replaces the name.
+    const label = shown
+      ? fill(text.labelValue, { label: name, value: shown })
+      : hint && hint !== name
+        ? fill(text.labelValue, { label: name, value: hint })
+        : this._labelled
+          ? name
+          : undefined;
+    return html`<span
+        part="label"
+        @click=${() => !this.#off && this.#trigger?.focus()}
+        ><slot name="label"></slot
+      ></span>
+      <pl-popover
+        label=${name}
+        ?data-presets=${this.presets.length > 0}
+        @pl-toggle=${this.#onToggle}
       >
-      ${this.#panel()}
-    </pl-popover>`;
+        <button
+          slot="trigger"
+          part="trigger"
+          type="button"
+          aria-label=${ifDefined(label)}
+          ?disabled=${this.#off}
+        >
+          ${calendarGlyph}
+          <span part="value" class=${shown ? "" : "placeholder"}>${value}</span>
+          ${chevronsGlyph}
+        </button>
+        ${this.#panel(name)}
+      </pl-popover>`;
   }
 }
 

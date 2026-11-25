@@ -47,8 +47,12 @@ export async function expectNoOverflowAtTextZoom(
       // Inline boxes cannot scroll; Firefox still reports a scrollWidth for them.
       // Text fields scroll a value longer than their box by design.
       // Shapes and text inside an <svg> are not CSS boxes and cannot scroll.
+      // Text that truncates with an ellipsis is clipped by design; its full
+      // text stays in the accessible name and a title.
+      const style = getComputedStyle(node);
       if (
-        getComputedStyle(node).display !== "inline" &&
+        style.display !== "inline" &&
+        style.textOverflow !== "ellipsis" &&
         !node.matches("input, textarea, svg *") &&
         node.scrollWidth > node.clientWidth
       )

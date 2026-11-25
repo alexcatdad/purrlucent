@@ -10,12 +10,25 @@ import { css } from "lit";
 export const tableDocumentStyles = css`
   pl-table {
     --_row: var(--pl-size-md);
+    --_pad-y: var(--pl-pad-cell-y);
+  }
+
+  /* An explicit density wins over the page's. */
+  pl-table[density="regular"] {
+    --_row: calc(var(--pl-spacing) * 8);
     --_pad-y: var(--pl-space-2);
   }
 
   pl-table[density="compact"] {
-    --_row: var(--pl-size-row);
+    --_row: calc(var(--pl-spacing) * 6);
     --_pad-y: var(--pl-space-1);
+  }
+
+  @media (pointer: coarse) {
+    pl-table[density="regular"],
+    pl-table[density="compact"] {
+      --_row: var(--pl-touch-min);
+    }
   }
 
   pl-table > table {
@@ -78,19 +91,21 @@ export const tableDocumentStyles = css`
    */
   pl-table tr:is([data-interactive], :has(a[data-stretched])) {
     position: relative;
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
   }
 
-  /* A plain link in a cell takes the accent; a stretched link keeps the row. */
+  /* A plain link in a cell takes the accent and is underlined, so it reads as
+     a link among text; a stretched link keeps the row. */
   pl-table a:not([data-stretched]) {
     color: var(--pl-color-accent-text);
     font-weight: 600;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   @media (hover: hover) {
     pl-table a:not([data-stretched]):hover {
-      text-decoration: underline;
+      text-decoration-thickness: 0.125em;
     }
   }
 
@@ -140,7 +155,7 @@ export const tableDocumentStyles = css`
     color: inherit;
     font: inherit;
     text-align: inherit;
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
     transition: color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -191,7 +206,7 @@ export const tableDocumentStyles = css`
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
-    background: var(--pl-color-raised);
+    background: var(--pl-color-surface-content);
   }
 
   /* The header floats over rows, so it keeps its own edge while it sticks. */
@@ -253,7 +268,7 @@ export const tableStyles = css`
     overflow: auto;
     max-block-size: inherit;
     border: 1px solid var(--pl-color-frame);
-    background: var(--pl-color-raised);
+    background: var(--pl-color-surface-content);
     border-radius: var(--pl-radius-panel);
   }
 

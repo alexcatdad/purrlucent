@@ -17,7 +17,7 @@ const face = css`
     background: transparent;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
   }
 
   .control::before,
@@ -78,7 +78,7 @@ const face = css`
 const rowMd = css`
   --_text: var(--pl-text-sm);
   --_leading: var(--pl-leading-normal);
-  --_row: max(calc(var(--pl-spacing) * 8), var(--pl-size-hit-min));
+  --_row: max(var(--pl-size-nav), var(--pl-size-hit-min));
   --_glyph: var(--pl-icon-md);
   --_head: calc(var(--pl-spacing) * 4.5);
   --_head-text: var(--pl-text-xs);
@@ -87,8 +87,8 @@ const rowMd = css`
 
 const rowLg = css`
   --_text: var(--pl-text-lg);
-  --_leading: var(--pl-leading-loose);
-  --_row: max(calc(var(--pl-spacing) * 10), var(--pl-size-hit-min));
+  --_leading: var(--pl-leading-body);
+  --_row: max(var(--pl-size-nav-lg), var(--pl-size-hit-min));
   --_glyph: calc(var(--pl-spacing) * 4.5);
   --_head: var(--pl-icon-lg);
   --_head-text: var(--pl-text-sm);
@@ -353,14 +353,22 @@ export const itemStyles = [
       padding-inline-start: calc(var(--pl-pad-item) + var(--pl-indent));
     }
 
+    /* A label that does not fit ends in an ellipsis; the item then offers the
+       full text as its title. */
     .label {
       grid-column: 3;
-      overflow-wrap: anywhere;
+      min-inline-size: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
-    /* The second line is muted and smaller than the label. */
+    /* The second line is muted and smaller than the label, and truncates too. */
     ::slotted([slot="description"]) {
       display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       font-size: var(--pl-text-xs);
       line-height: var(--pl-leading-tight);
       font-weight: 400;
@@ -395,14 +403,47 @@ export const itemStyles = [
       block-size: var(--_s);
     }
 
-    /* The grip of a reorderable item sits at the trailing end, past the
-       detail; the control leaves room for it. */
+    /* The grip of a reorderable item floats over the trailing end of the row,
+       so it takes no room from the label while hidden. Its width comes from the
+       icon, not the row; a coarse pointer gets the touch size from its hit area.
+       Shown, the label and detail fade out beneath it. */
     :host([reorderable]) {
+      --_grip: calc(var(--pl-icon-md) + var(--pl-space-2));
+      /* How far the label and detail fade under a shown grip; hidden, the fade
+         sits past their end, so they show whole. The text fades rather than
+         a fill covering it, so any row fill or glass shows through unchanged. */
+      --_fade: calc(var(--pl-space-2) * -1);
+
       position: relative;
     }
 
-    :host([reorderable]) .control {
-      padding-inline-end: calc(var(--pl-pad-item) + var(--pl-size-hit-min));
+    :host([reorderable]) .label,
+    :host([reorderable]) ::slotted([slot="detail"]) {
+      mask-image: linear-gradient(
+        to left,
+        transparent var(--_fade),
+        Canvas calc(var(--_fade) + var(--pl-space-2))
+      );
+    }
+
+    :host([reorderable]:dir(rtl)) .label,
+    :host([reorderable]:dir(rtl)) ::slotted([slot="detail"]) {
+      mask-image: linear-gradient(
+        to right,
+        transparent var(--_fade),
+        Canvas calc(var(--_fade) + var(--pl-space-2))
+      );
+    }
+
+    :host([reorderable]:focus-within),
+    :host([reorderable][data-dragging]) {
+      --_fade: var(--_grip);
+    }
+
+    @media (hover: hover) {
+      :host([reorderable]:hover) {
+        --_fade: var(--_grip);
+      }
     }
 
     .handle {
@@ -412,7 +453,7 @@ export const itemStyles = [
       z-index: 1;
       display: grid;
       place-items: center;
-      inline-size: var(--pl-size-hit-min);
+      inline-size: var(--_grip);
       color: var(--pl-color-muted-foreground);
       cursor: grab;
       touch-action: none;
@@ -438,6 +479,14 @@ export const itemStyles = [
       .handle {
         opacity: 1;
       }
+    }
+
+    /* The hit area reaches the minimum size toward the label. */
+    .handle::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: min(0px, calc(100% - var(--pl-size-hit-min))) 0;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -493,6 +542,96 @@ export const itemStyles = [
 
     :host(:dir(rtl)[expanded]) .chevron {
       transform: scaleX(-1) rotate(90deg);
+    }
+
+    /* By default the chevron follows the label and the detail, so the icons
+       and labels of group and plain rows share their edges. With
+       chevron="start" the leading column above stays. Beside a link, the
+       disclosure button takes the trailing end and the link leaves room. */
+    :host(:not([chevron="start"])) {
+      --_chev-w: calc(
+        var(--pl-icon-md) + var(--pl-space-1) + var(--pl-pad-item)
+      );
+    }
+
+    :host(:not([chevron="start"])[expandable][href]:not([action])) {
+      --_chev-w: max(
+        var(--pl-size-hit-min),
+        calc(var(--pl-icon-md) + var(--pl-space-1) + var(--pl-pad-item))
+      );
+    }
+
+    :host(:not([chevron="start"])) .control,
+    :host(:not([chevron="start"])) .disclosure {
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+    }
+
+    :host(:not([chevron="start"])) .icon {
+      grid-column: 1;
+    }
+
+    :host(:not([chevron="start"])) .label {
+      grid-column: 2;
+    }
+
+    :host(:not([chevron="start"])) ::slotted([slot="detail"]) {
+      grid-column: 3;
+    }
+
+    :host(:not([chevron="start"])) .control > .chevron {
+      grid-column: 4;
+      margin-inline-start: var(--pl-space-1);
+    }
+
+    :host(:not([chevron="start"])[expandable][href]:not([action])) .control {
+      padding-inline-end: calc(var(--pl-pad-item) + var(--_chev-w));
+    }
+
+    :host(:not([chevron="start"])) .disclosure {
+      inset-inline: auto 0;
+      inline-size: var(--_chev-w);
+      justify-content: flex-end;
+      padding-inline: 0 var(--pl-pad-item);
+    }
+
+    /* The grip stays clear of the chevron. */
+    :host(:not([chevron="start"])[expandable]) .handle {
+      inset-inline-end: var(--_chev-w);
+    }
+
+    /* Where the grip is always shown, its width is reserved in the row, so it
+       never covers the label, its ellipsis or the detail. */
+    @media (pointer: coarse), (hover: none) {
+      :host([reorderable]) .label,
+      :host([reorderable]) ::slotted([slot="detail"]),
+      :host([reorderable]:dir(rtl)) .label,
+      :host([reorderable]:dir(rtl)) ::slotted([slot="detail"]) {
+        mask-image: none;
+      }
+
+      :host([reorderable]) .control {
+        padding-inline-end: calc(var(--pl-pad-item) + var(--_grip));
+      }
+
+      :host(
+          :not([chevron="start"])[reorderable][expandable][href]:not([action])
+        )
+        .control {
+        padding-inline-end: calc(
+          var(--pl-pad-item) + var(--_chev-w) + var(--_grip)
+        );
+      }
+
+      :host(:not([chevron="start"])[reorderable][expandable]:not([href]))
+        .control
+        > .chevron {
+        margin-inline-start: calc(var(--pl-space-1) + var(--_grip));
+      }
+
+      :host(:not([chevron="start"])[reorderable][expandable]:not([href]))
+        .control {
+        padding-inline-end: var(--pl-pad-item);
+      }
     }
 
     /* The fill alone is faint, so increased contrast adds a stroke. */

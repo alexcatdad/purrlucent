@@ -49,7 +49,7 @@ export const calendarStyles = css`
     border-radius: var(--pl-radius-full);
     background: none;
     color: var(--pl-color-accent-text);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
@@ -74,6 +74,7 @@ export const calendarStyles = css`
   }
 
   [part="nav"][aria-disabled="true"] {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 
@@ -108,7 +109,7 @@ export const calendarStyles = css`
     block-size: var(--_cell);
     padding: 0;
     border-radius: var(--pl-radius-full);
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     font-variant-numeric: tabular-nums;
     text-align: center;
     white-space: nowrap;
@@ -137,6 +138,7 @@ export const calendarStyles = css`
   }
 
   [part="day"][aria-disabled="true"] {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

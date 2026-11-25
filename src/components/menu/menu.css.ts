@@ -103,7 +103,7 @@ export const itemStyles = css`
     padding-inline: var(--pl-pad-item);
     outline: none;
     white-space: nowrap;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       color var(--pl-duration-fast) var(--pl-ease-out);
@@ -134,11 +134,23 @@ export const itemStyles = css`
     opacity: 1;
   }
 
+  /* The gap sits in this wrapper, not on the icon: page CSS that zeroes
+     margins reaches a slotted element but never the shadow tree. An empty
+     slot adds no width and no gap. */
+  .icon {
+    flex: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon[data-filled] {
+    padding-inline-end: var(--pl-gap-icon);
+  }
+
   ::slotted([slot="icon"]) {
     flex: none;
-    inline-size: var(--pl-icon-sm);
-    block-size: var(--pl-icon-sm);
-    margin-inline-end: var(--pl-gap-icon);
+    inline-size: var(--pl-icon-md);
+    block-size: var(--pl-icon-md);
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -249,7 +261,7 @@ export const itemStyles = css`
 
   :host([disabled]) {
     color: var(--pl-color-disabled-foreground);
-    pointer-events: none;
+    cursor: var(--pl-cursor-disabled);
   }
 
   :host([disabled]) [part="description"] {

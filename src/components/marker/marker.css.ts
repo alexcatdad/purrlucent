@@ -85,7 +85,7 @@ export const markerStyles = [
       font: inherit;
       text-align: start;
       text-decoration: none;
-      cursor: default;
+      cursor: var(--pl-cursor-interactive);
       transition: color var(--pl-duration-fast) var(--pl-ease-out);
     }
 

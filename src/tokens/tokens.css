@@ -201,33 +201,24 @@
     );
     --pl-color-frame: light-dark(var(--pl-color-border), transparent);
 
-    /* Control heights. The default is above HIG's macOS default control
-       size (28pt), so a control reads at web text sizes; lg and xl step up
-       from it. */
-    --pl-visual-sm: calc(var(--pl-spacing) * 6);
-    --pl-visual-md: calc(var(--pl-spacing) * 8);
-    --pl-visual-lg: calc(var(--pl-spacing) * 9);
-    --pl-visual-xl: calc(var(--pl-spacing) * 10);
-    --pl-size-sm: var(--pl-visual-sm);
-    --pl-size-md: var(--pl-visual-md);
-    --pl-size-lg: var(--pl-visual-lg);
-    --pl-size-xl: var(--pl-visual-xl);
-    --pl-size-bar: max(
-      calc(var(--pl-spacing) * 13),
-      calc(var(--pl-size-xl) + var(--pl-space-4))
+    /* The page's layers, back to front: the canvas the page sits on, the
+       content (cards, table boxes) raised on it, the chrome (sidebars,
+       toolbars) a step darker than the canvas, and the overlay (popovers,
+       menus) above all. Components read these, so one override restyles a
+       layer. */
+    --pl-color-surface-canvas: var(--pl-color-background);
+    --pl-color-surface-content: var(--pl-color-raised);
+    --pl-color-surface-chrome: light-dark(
+      color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 93.7%),
+      color-mix(in srgb, var(--pl-color-ink), black 26%)
     );
+    --pl-color-surface-overlay: var(--pl-color-overlay);
 
     /* Hit regions (design/decisions.md item 4). A coarse pointer gets 44px,
        HIG's iOS default control size. A fine pointer gets the default
        control height, and never less than 24px, WCAG 2.2 AA's target
        minimum. */
     --pl-touch-min: 2.75rem;
-    --pl-size-hit-min: max(1.5rem, var(--pl-visual-md));
-
-    /* A row in a menu or list popup stays compact, as menus do on macOS:
-       WCAG's 24px target with a fine pointer, the touch size with a coarse
-       one. */
-    --pl-size-row: calc(var(--pl-spacing) * 6);
     --pl-spacing: 0.25rem;
 
     /* Radii by role, larger for a coarse pointer, as Apple's controls grow
@@ -266,17 +257,20 @@
     --pl-ring-width: calc(var(--pl-spacing) / 2);
     --pl-ring-offset: calc(var(--pl-ring-width) / 2);
     --pl-duration-fast: 120ms;
+    --pl-cursor-interactive: pointer; /* The cursor over anything that acts on click; set it to default for the macOS arrow. */
+    --pl-cursor-disabled: not-allowed; /* The cursor over a disabled control; set it to default for the arrow. */
     --pl-duration: 200ms;
     --pl-duration-slow: 280ms;
     --pl-ease-out: cubic-bezier(0.2, 0, 0, 1);
     --pl-text-xs: 0.75rem;
     --pl-text-sm: 0.8125rem;
-    --pl-text-base: 0.875rem;
-    --pl-text-lg: 0.9375rem;
+
+    /* Editable text inside fields; a coarse pointer raises it to at least
+       1rem so iOS Safari does not zoom on focus. */
+    --pl-text-field: var(--pl-text-sm);
+    --pl-text-base: 1rem; /* Body text: the web default. */
+    --pl-text-lg: 1.125rem; /* Headings and emphasis; below the WCAG large-text size. */
     --pl-text-xl: 1.25rem;
-    --pl-leading-tight: calc(var(--pl-spacing) * 3.5);
-    --pl-leading-normal: calc(var(--pl-spacing) * 4);
-    --pl-leading-loose: calc(var(--pl-spacing) * 5);
     --pl-icon-sm: calc(var(--pl-spacing) * 3);
     --pl-icon-md: calc(var(--pl-spacing) * 4);
     --pl-icon-lg: calc(var(--pl-spacing) * 5);
@@ -361,10 +355,7 @@
         color-mix(in srgb, var(--pl-color-ink) 60%, transparent),
         color-mix(in srgb, var(--pl-color-paper) 55%, transparent)
       );
-      --pl-color-sidebar: light-dark(
-        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 93.7%),
-        color-mix(in srgb, var(--pl-color-ink), black 26%)
-      );
+      --pl-color-sidebar: var(--pl-color-surface-chrome);
       --pl-color-overlay: light-dark(
         rgb(255 255 255 / 94%),
         color-mix(in srgb, var(--pl-color-ink) 94%, transparent)
@@ -384,16 +375,77 @@
     }
   }
 
-  /* Touch: every control is at least 44 by 44. */
+  /* Density. Compact is the default; data-pl-density="comfortable" on :root or
+     any ancestor raises the vertical metrics together (control and row
+     heights, line heights, cell padding) and leaves widths, font sizes and
+     horizontal padding as they are. Control heights are above HIG's macOS
+     default control size (28pt), so a control reads at web text sizes; lg and
+     xl step up from it. A menu or sidebar row stays compact, as menus do on
+     macOS. */
+  :root,
+  [data-pl-density="compact"] {
+    --pl-visual-sm: calc(var(--pl-spacing) * 6);
+    --pl-visual-md: calc(var(--pl-spacing) * 8);
+    --pl-visual-lg: calc(var(--pl-spacing) * 9);
+    --pl-visual-xl: calc(var(--pl-spacing) * 10);
+    --pl-visual-row: calc(var(--pl-spacing) * 6);
+    --pl-visual-nav: calc(var(--pl-spacing) * 8);
+    --pl-visual-nav-lg: calc(var(--pl-spacing) * 10);
+    --pl-leading-tight: calc(var(--pl-spacing) * 3.5);
+    --pl-leading-normal: calc(var(--pl-spacing) * 4);
+    --pl-leading-loose: calc(var(--pl-spacing) * 5);
+    --pl-leading-body: calc(var(--pl-spacing) * 6);
+    --pl-pad-cell-y: var(--pl-space-2);
+  }
+
+  [data-pl-density="comfortable"] {
+    --pl-visual-sm: calc(var(--pl-spacing) * 8);
+    --pl-visual-md: calc(var(--pl-spacing) * 9.5);
+    --pl-visual-lg: calc(var(--pl-spacing) * 10.5);
+    --pl-visual-xl: calc(var(--pl-spacing) * 11.5);
+    --pl-visual-row: calc(var(--pl-spacing) * 9);
+    --pl-visual-nav: calc(var(--pl-spacing) * 9);
+    --pl-visual-nav-lg: calc(var(--pl-spacing) * 11);
+    --pl-leading-tight: calc(var(--pl-spacing) * 4.5);
+    --pl-leading-normal: calc(var(--pl-spacing) * 5);
+    --pl-leading-loose: calc(var(--pl-spacing) * 6);
+    --pl-leading-body: calc(var(--pl-spacing) * 7);
+    --pl-pad-cell-y: var(--pl-space-3);
+  }
+
+  /* What follows a density is set on the same elements, so it is read again
+     where the density changes. */
+  :root,
+  [data-pl-density] {
+    --pl-size-sm: var(--pl-visual-sm);
+    --pl-size-md: var(--pl-visual-md);
+    --pl-size-lg: var(--pl-visual-lg);
+    --pl-size-xl: var(--pl-visual-xl);
+    --pl-size-nav: var(--pl-visual-nav);
+    --pl-size-nav-lg: var(--pl-visual-nav-lg);
+    --pl-size-row: var(--pl-visual-row);
+    --pl-size-bar: max(
+      calc(var(--pl-spacing) * 13),
+      calc(var(--pl-size-xl) + var(--pl-space-4))
+    );
+    --pl-size-hit-min: max(1.5rem, var(--pl-visual-md));
+  }
+
+  /* Touch: every control is at least 44 by 44, at either density. */
   @media (pointer: coarse) {
-    :root {
+    :root,
+    [data-pl-density] {
       --pl-size-sm: max(var(--pl-touch-min), var(--pl-visual-sm));
       --pl-size-md: max(var(--pl-touch-min), var(--pl-visual-md));
       --pl-size-lg: max(var(--pl-touch-min), var(--pl-visual-lg));
       --pl-size-xl: max(var(--pl-touch-min), var(--pl-visual-xl));
       --pl-size-hit-min: var(--pl-touch-min);
-      --pl-size-row: var(--pl-touch-min);
+      --pl-size-row: max(var(--pl-touch-min), var(--pl-visual-row));
+    }
+
+    :root {
       --pl-radius-control: calc(var(--pl-spacing) * 3);
+      --pl-text-field: max(1rem, var(--pl-text-sm));
     }
   }
 }
@@ -426,13 +478,13 @@
     --pl-material-field: var(--pl-color-input);
     --pl-material-float: var(--pl-color-background);
 
-    /* The focus ring and the selection on glass: the pink deepened in light
+    /* The focus ring and the selection on glass: the accent deepened in light
        and lifted in dark, so each holds 3:1 on the thin fill over any
-       backdrop, and on every solid ground. Increased contrast gives them its
-       own ring and selection colors. */
+       backdrop, and on every solid ground. They follow the app's accent.
+       Increased contrast gives them its own ring and selection colors. */
     --pl-material-ring: light-dark(
-      oklch(from var(--pl-color-hot-pink) 26% c h),
-      color-mix(in srgb, var(--pl-color-hot-pink), white 55%)
+      oklch(from var(--pl-color-accent) 26% c h),
+      oklch(from var(--pl-color-accent) 92% c h)
     );
     --pl-material-selected: var(--pl-material-ring);
 

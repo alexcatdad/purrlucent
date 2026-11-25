@@ -172,7 +172,7 @@ export const drawerStyles = css`
     padding: 0;
     background: none;
     color: var(--pl-color-muted-foreground);
-    cursor: pointer;
+    cursor: var(--pl-cursor-interactive);
   }
 
   [part="bar"] {
@@ -211,6 +211,7 @@ export const drawerStyles = css`
   [part="title"] {
     font-weight: 700;
     font-size: var(--pl-text-base);
+    line-height: var(--pl-leading-body);
   }
 
   ::slotted([slot="title"]) {

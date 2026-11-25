@@ -169,7 +169,7 @@ body {
 
 Glass is thin, as Apple's is: a pale film in light and an ink one in dark, `--pl-material-glass-thin`, under a 4px frost and a strong color boost, with a rim light and a soft shadow. Bars, controls, sidebars, panels, popups and sheets all take it. Over any backdrop, black to white, primary text on it holds 3.5:1 and the focus ring and selection 3:1; over mid-grey and lighter backdrops in light, and over any backdrop in dark, primary text reaches 4.5:1. Grey, pink and red text drop lower over dark backdrops, so keep them for text that is not essential, or give the area behind the glass a lighter tone. Tabs, breadcrumbs, pagination, the select and tinted and destructive buttons keep a thicker fill, `--pl-material-glass`, so their colored text holds 4.5:1.
 
-A text-only button in a glass bar takes the primary text color. On glass the focus ring and the selection are a deep pink in light and a light one in dark. A toolbar with `floating` becomes a capsule that floats over the content.
+A text-only button in a glass bar takes the primary text color. On glass the focus ring and the selection follow your accent: `--pl-material-ring` and `--pl-material-selected` are `--pl-color-accent` deepened in light and lifted in dark, so each holds 3:1 on the thin fill. With the default accent they are a deep pink in light and a light one in dark. Set `--pl-color-accent` and both follow; override either token to set it directly. A toolbar with `floating` becomes a capsule that floats over the content.
 
 In Chromium, toolbars, menubars, navigation menus, buttons, segmented controls, popovers, menus, the select's list, dialogs and drawers also refract: each bends what is behind its rim through an SVG filter sized to it, which the component adds to its own tree. Safari and Firefox keep the frosted glass, as they cannot draw an SVG filter in `backdrop-filter`.
 
@@ -216,7 +216,58 @@ The default accent is hot pink, a light color, so its fill takes ink text. A dar
 
 Radii follow role and pointer. `--pl-radius-control` (8px, 12px for a coarse pointer) rounds buttons, fields and groups; `--pl-radius-panel` (16px) rounds dialogs, popovers, menus, sheets and sidebars. Two follow from them, so nested curves stay parallel: `--pl-radius-control-inner` is the control radius minus the 2px a face sits inside it, and `--pl-radius-row` is the panel radius minus a panel's padding, for menu and list rows. `--pl-radius-full` makes a pill.
 
+Editable text in fields is `--pl-text-field`: the small text size on a fine pointer, and at least 1rem on a coarse one, so iOS Safari does not zoom the page on focus.
+
+Controls show the pointing hand, and disabled controls the not-allowed cursor. `--pl-cursor-interactive` (default `pointer`) and `--pl-cursor-disabled` (default `not-allowed`) set them; set either to `default` for the macOS arrow:
+
+```css
+:root {
+  --pl-cursor-interactive: default;
+  --pl-cursor-disabled: default;
+}
+```
+
 The tokens are in the `pl.tokens` cascade layer, so your unlayered styles win without extra selectors. Keep your colors readable: the contrast checks apply to the defaults, not to your overrides.
+
+### Surfaces
+
+Four tokens name the page's layers, back to front. Components read them, so one override restyles a layer.
+
+| Token                        | Layer                                                | Default                                            |
+| ---------------------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| `--pl-color-surface-canvas`  | The page                                             | `--pl-color-background`                            |
+| `--pl-color-surface-content` | Cards and table boxes                                | `--pl-color-raised`                                |
+| `--pl-color-surface-chrome`  | Sidebars and toolbars, a step darker than the canvas | Ink toward paper in light, darker than ink in dark |
+| `--pl-color-surface-overlay` | Popovers and menus                                   | `--pl-color-overlay`                               |
+
+```css
+:root {
+  --pl-color-surface-chrome: oklch(94% 0.01 350deg);
+}
+```
+
+### Density
+
+Controls are compact by default. Set `data-pl-density="comfortable"` on `:root`, or on any ancestor, to raise the vertical metrics together:
+
+| Metric                            | Compact          | Comfortable      |
+| --------------------------------- | ---------------- | ---------------- |
+| Control `sm`, `md`, `lg`, `xl`    | 24, 32, 36, 40px | 32, 38, 42, 46px |
+| Menu and list row                 | 24px             | 36px             |
+| Sidebar row                       | 32px             | 36px             |
+| Line height, tight, normal, loose | 14, 16, 20px     | 18, 20, 24px     |
+| Table cell vertical padding       | 8px              | 12px             |
+
+Widths, font sizes and horizontal padding do not change, and a coarse pointer keeps its 44px minimum. `data-pl-density="compact"` is the default, so it can reset a region inside a comfortable one.
+
+```html
+<html data-pl-density="comfortable">
+  ...
+  <pl-table density="compact">...</pl-table>
+</html>
+```
+
+A `pl-table` with its own `density` (`regular` or `compact`) keeps it; without one it follows the page.
 
 ### Parts
 

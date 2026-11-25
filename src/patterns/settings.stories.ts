@@ -246,8 +246,7 @@ class SettingsDemo extends LitElement {
       border-radius: var(--pl-radius-panel);
       background: var(--pl-color-background);
       color: var(--pl-color-foreground);
-      font: 400 var(--pl-text-base) / var(--pl-leading-normal)
-        var(--pl-font-sans);
+      font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
     }
 
     h1 {
@@ -257,8 +256,7 @@ class SettingsDemo extends LitElement {
 
     h2 {
       margin: 0;
-      font: 600 var(--pl-text-base) / var(--pl-leading-tight)
-        var(--pl-font-sans);
+      font: 600 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
     }
 
     p {

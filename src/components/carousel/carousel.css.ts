@@ -12,7 +12,7 @@ export const carouselStyles = css`
 
     display: block;
     color: var(--pl-color-foreground);
-    font: 400 var(--pl-text-base) / var(--pl-leading-normal) var(--pl-font-sans);
+    font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
   }
 
   :host([hidden]) {
@@ -76,7 +76,7 @@ export const carouselStyles = css`
     background-color: transparent;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--pl-cursor-interactive);
     user-select: none;
   }
 
@@ -137,6 +137,7 @@ export const carouselStyles = css`
   }
 
   button:disabled {
+    cursor: var(--pl-cursor-disabled);
     color: var(--pl-color-disabled-foreground);
   }
 

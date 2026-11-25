@@ -24,6 +24,7 @@ const attributes = {
   material: "pl-material",
   theme: "data-theme",
   contrast: "data-contrast",
+  density: "data-pl-density",
   dir: "dir",
 } as const;
 
@@ -33,6 +34,7 @@ const preview: Preview = {
     theme: toolbar("Color theme", ["system", "light", "dark"]),
     contrast: toolbar("Contrast", ["normal", "more"]),
     dir: toolbar("Text direction", ["ltr", "rtl"]),
+    density: toolbar("Density", ["compact", "comfortable"]),
     // The token knobs live in the Tokens panel (manager.ts), not the toolbar.
     ...Object.fromEntries(
       knobs.map((knob) => [knob.key, { description: knob.label }]),
@@ -43,6 +45,7 @@ const preview: Preview = {
     theme: "system",
     contrast: "normal",
     dir: "ltr",
+    density: "compact",
     ...Object.fromEntries(knobs.map((knob) => [knob.key, ""])),
   },
   parameters: {
@@ -92,7 +95,7 @@ const preview: Preview = {
       // Story text outside components renders in the library's type, not the
       // browser's default serif.
       document.body.style.font =
-        "var(--pl-text-base) / var(--pl-leading-normal) var(--pl-font-sans)";
+        "var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans)";
       document.body.style.color = "var(--pl-color-foreground)";
       return story();
     },

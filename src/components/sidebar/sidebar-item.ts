@@ -1,4 +1,5 @@
 import { LitElement, html, nothing, svg } from "lit";
+import type { PropertyValues } from "lit";
 import { fill, messages } from "../../behaviors/locale.ts";
 import { parseLevel, type SidebarLevel } from "./level.ts";
 import { itemStyles } from "./sidebar.css.ts";
@@ -38,7 +39,7 @@ const detail = html`<slot name="detail"></slot>`;
  * @attr {string} toggle-label - The disclosure button's accessible name when a link has one beside it. Defaults to the page language's text (see `setMessages`), in English "<item label>, show items".
  * @attr {boolean} action - Renders a button that does not take the selection; `href` and `selected` are ignored and it never has a disclosure. Use it for a menu trigger or a command. `aria-haspopup`, `aria-expanded` and `aria-controls` set on the item, as `pl-menu` does for its trigger, are passed on to the button that holds focus; `aria-controls` only where the browser can point into the page.
  * @attr {string} size - `md` or `lg`, the row size of this item. Defaults to the sidebar's `size`.
- * @slot - The item label.
+ * @slot - The item label. A label wider than the row ends in an ellipsis on one line, and its full text becomes the control's title.
  * @slot icon - A leading svg icon, tinted with the accent text color. A `pl-avatar` here is sized to fit the row.
  * @slot description - A second, muted line under the label.
  * @slot detail - Trailing muted text, such as a count.
@@ -66,6 +67,8 @@ export class PlSidebarItem extends LitElement {
     action: { type: Boolean, reflect: true },
     size: { reflect: true },
     reorderable: { type: Boolean, reflect: true },
+    chevron: { reflect: true },
+    _full: { state: true },
   };
 
   declare href: string | undefined;
@@ -74,15 +77,20 @@ export class PlSidebarItem extends LitElement {
   declare size: "md" | "lg" | undefined;
   /** Set by the sidebar when it is `reorderable` and this is a level 1 item. */
   declare reorderable: boolean;
+  /** Set by the sidebar: `end` or `start`, where the disclosure chevron sits. */
+  declare chevron: "end" | "start";
   /** Set by the sidebar when level 2 items follow this one. */
   declare expandable: boolean;
   declare expanded: boolean;
   declare toggleLabel: string;
+  /** The full text of a label or description that is cut off, shown as the control's title. */
+  declare _full: string | undefined;
 
   #level: SidebarLevel = 1;
 
   // A menu sets these on the host; the focused control inside needs them.
   readonly #forwarded = new MutationObserver(() => this.requestUpdate());
+  readonly #resized = new ResizeObserver(() => this.#measure());
 
   constructor() {
     super();
@@ -92,6 +100,7 @@ export class PlSidebarItem extends LitElement {
     this.toggleLabel = "";
     this.action = false;
     this.reorderable = false;
+    this.chevron = "end";
   }
 
   override connectedCallback() {
@@ -100,12 +109,39 @@ export class PlSidebarItem extends LitElement {
       attributes: true,
       attributeFilter: ["aria-haspopup", "aria-expanded", "aria-controls"],
     });
+    this.#resized.observe(this);
+    // Text changes in the light DOM raise no slotchange, so measure on approach.
+    this.addEventListener("pointerenter", this.#measure);
+    this.addEventListener("focusin", this.#measure);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.#forwarded.disconnect();
+    this.#resized.disconnect();
+    this.removeEventListener("pointerenter", this.#measure);
+    this.removeEventListener("focusin", this.#measure);
   }
+
+  protected override firstUpdated() {
+    this.renderRoot.addEventListener("slotchange", this.#measure);
+  }
+
+  protected override updated(changed: PropertyValues<this>) {
+    if (changed.size) this.#measure();
+    this.#controls();
+  }
+
+  /** Sets the title to the text that is cut off, so the full label is one hover away. */
+  #measure = () => {
+    const cut = (el: Element | null) => !!el && el.scrollWidth > el.clientWidth;
+    const description = this.querySelector<HTMLElement>("[slot=description]");
+    const parts = [
+      cut(this.renderRoot.querySelector(".label")) && this.#text(),
+      cut(description) && description?.textContent?.trim(),
+    ].filter(Boolean);
+    this._full = parts.join(" ") || undefined;
+  };
 
   protected override willUpdate() {
     // An action never takes the selection, whatever the app set.
@@ -146,10 +182,9 @@ export class PlSidebarItem extends LitElement {
     return children;
   }
 
-  /** The disclosure button's name: `toggle-label`, else "<label>, show items". */
-  #name() {
-    if (this.toggleLabel) return this.toggleLabel;
-    const text = [...this.childNodes]
+  /** The label text: the children that are not in a named slot. */
+  #text() {
+    return [...this.childNodes]
       .filter((node) =>
         node instanceof Element ? !node.slot : node.nodeType === Node.TEXT_NODE,
       )
@@ -157,10 +192,15 @@ export class PlSidebarItem extends LitElement {
       .join("")
       .replace(/\s+/g, " ")
       .trim();
-    return fill(messages(this).showItemsFor, { label: text });
   }
 
-  protected override updated() {
+  /** The disclosure button's name: `toggle-label`, else "<label>, show items". */
+  #name() {
+    if (this.toggleLabel) return this.toggleLabel;
+    return fill(messages(this).showItemsFor, { label: this.#text() });
+  }
+
+  #controls() {
     type Controls = HTMLElement & { ariaControlsElements?: Element[] | null };
     // The controlled items sit in the light DOM, out of reach of an id reference.
     const button = this.renderRoot.querySelector<Controls>(".disclosure");
@@ -200,6 +240,7 @@ export class PlSidebarItem extends LitElement {
       return html`<button
         class="control"
         part="control"
+        title=${this._full ?? nothing}
         type="button"
         aria-keyshortcuts=${keys}
         aria-haspopup=${this.getAttribute("aria-haspopup") ?? nothing}
@@ -207,30 +248,51 @@ export class PlSidebarItem extends LitElement {
       >
         ${icon}${label}${detail}
       </button>`;
-    if (this.expandable && this.href)
-      // A destination and a disclosure: two controls, the button first.
+    if (this.expandable && this.href) {
+      // A destination and a disclosure: two controls, the button on the
+      // chevron's side, so it follows the link at the end and precedes it at
+      // the start.
+      const button = html`<button
+        class="disclosure"
+        part="disclosure"
+        type="button"
+        aria-expanded=${this.expanded ? "true" : "false"}
+        aria-label=${this.#name()}
+        @click=${this.#toggle}
+      >
+        ${chevron}
+      </button>`;
+      const link = html`<a
+        class="control"
+        part="control"
+        title=${this._full ?? nothing}
+        href=${this.href}
+        aria-current=${this.selected ? "page" : nothing}
+        aria-keyshortcuts=${keys}
+        @slotchange=${() => this.requestUpdate()}
+        >${icon}${label}${detail}</a
+      >`;
+      return this.chevron === "start"
+        ? html`${button}${link}`
+        : html`${link}${button}`;
+    }
+    if (this.expandable && this.chevron !== "start")
       return html`<button
-          class="disclosure"
-          part="disclosure"
-          type="button"
-          aria-expanded=${this.expanded ? "true" : "false"}
-          aria-label=${this.#name()}
-          @click=${this.#toggle}
-        >
-          ${chevron}</button
-        ><a
-          class="control"
-          part="control"
-          href=${this.href}
-          aria-current=${this.selected ? "page" : nothing}
-          aria-keyshortcuts=${keys}
-          @slotchange=${() => this.requestUpdate()}
-          >${icon}${label}${detail}</a
-        >`;
+        class="control"
+        part="control"
+        title=${this._full ?? nothing}
+        type="button"
+        aria-expanded=${this.expanded ? "true" : "false"}
+        aria-keyshortcuts=${keys}
+        @click=${this.#toggle}
+      >
+        ${icon}${label}${detail}${chevron}
+      </button>`;
     if (this.expandable)
       return html`<button
         class="control"
         part="control"
+        title=${this._full ?? nothing}
         type="button"
         aria-expanded=${this.expanded ? "true" : "false"}
         aria-keyshortcuts=${keys}
@@ -242,6 +304,7 @@ export class PlSidebarItem extends LitElement {
       ? html`<a
           class="control"
           part="control"
+          title=${this._full ?? nothing}
           href=${this.href}
           aria-current=${this.selected ? "page" : nothing}
           aria-keyshortcuts=${keys}
@@ -251,6 +314,7 @@ export class PlSidebarItem extends LitElement {
         html`<button
           class="control"
           part="control"
+          title=${this._full ?? nothing}
           type="button"
           aria-current=${this.selected ? "page" : nothing}
           aria-keyshortcuts=${keys}
