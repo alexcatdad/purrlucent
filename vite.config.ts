@@ -25,12 +25,19 @@ const minifyTemplateCss = (): Plugin => {
     ]),
   );
   const minify = (body: string, id: string) => {
+    // Lit reads the cooked string and this reads the raw text, so an escape
+    // would come out changed.
+    if (body.includes("\\"))
+      throw new Error(`${id}: a css\`\` template holds a backslash`);
     const holes: { expr: string; mark: string }[] = [];
     const source = body.replace(/\$\{([^}]*)\}/g, (_, expr: string, at) => {
       const before = body.slice(0, at);
       const inBlock = before.split("{").length > before.split("}").length;
       const n = holes.length;
-      const mark = inBlock ? `--pl-hole-${n}:0` : `.pl-hole-${n}{--pl-hole:0}`;
+      // Each rule differs, so the minifier cannot merge two adjacent holes.
+      const mark = inBlock
+        ? `--pl-hole-${n}:0`
+        : `.pl-hole-${n}{--pl-hole:${n}}`;
       holes.push({ expr, mark });
       return inBlock ? `${mark};` : mark;
     });
