@@ -173,7 +173,7 @@ test("a disabled item cannot be activated or focused", async ({ page }) => {
   await gotoStory(page, story("default"));
   await recordSelects(page);
   await trigger(page).click();
-  await item(page, "Paste ⌘V").click();
+  await item(page, "Paste ⌘V").click({ force: true });
   await expect(menu(page)).toBeVisible();
   await expect(item(page, "Paste ⌘V")).not.toBeFocused();
   expect(await selects(page)).toEqual([]);

@@ -414,7 +414,7 @@ test("a disabled button takes no focus from a click or Tab, as a native one", as
   await root.evaluate((el) =>
     el.insertAdjacentHTML(
       "beforeend",
-      `<button id="before">Before</button><pl-button id="off" disabled>Off</pl-button><button id="after">After</button>`,
+      `<button id="before" tabindex="0">Before</button><pl-button id="off" disabled>Off</pl-button><button id="after" tabindex="0">After</button>`,
     ),
   );
   const active = () => page.evaluate(() => document.activeElement?.id);
