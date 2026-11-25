@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, type PropertyValues } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
@@ -45,6 +46,7 @@ export class PlRadio extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=box]");
     this.value = "";
     this.checked = false;
     this.size = "md";

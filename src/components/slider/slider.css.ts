@@ -53,7 +53,7 @@ export const sliderStyles = css`
     overflow: hidden;
     border-radius: var(--pl-radius-full);
     background-color: var(--pl-color-track);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
   }
 

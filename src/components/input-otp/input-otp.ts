@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import {
@@ -92,6 +93,7 @@ export class PlInputOtp extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=box]");
     this.addEventListener("invalid", () => {
       this.#touched = true;
       this.#sync();

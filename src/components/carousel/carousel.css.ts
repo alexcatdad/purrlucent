@@ -85,7 +85,7 @@ export const carouselStyles = css`
   [part="next"] {
     border-radius: var(--pl-radius-control);
     background-color: var(--pl-material-capsule);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }

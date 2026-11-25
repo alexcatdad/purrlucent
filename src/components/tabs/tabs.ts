@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { interactionStyles } from "../../behaviors/interaction.css.ts";
@@ -141,6 +142,7 @@ export class PlTabs extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=list]");
     this.value = "";
     this.orientation = "horizontal";
     this.label = "";

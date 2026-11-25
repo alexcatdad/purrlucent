@@ -152,6 +152,7 @@ export class PlSelect extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=trigger]");
     new LensController(this, () =>
       this.renderRoot.querySelector<HTMLElement>("[part=listbox]"),
     );

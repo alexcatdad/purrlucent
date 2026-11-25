@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing, svg } from "lit";
 import {
   closeGlyph,
@@ -57,6 +58,7 @@ export class PlBanner extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.open = false;
     this.tone = "info";
     this.closeLabel = "";

@@ -57,7 +57,7 @@ export const selectStyles = css`
     padding: 0;
     padding-inline-start: var(--_pad);
     background: var(--_face);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

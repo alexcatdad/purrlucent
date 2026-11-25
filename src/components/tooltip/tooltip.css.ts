@@ -55,7 +55,7 @@ export const tooltipStyles = css`
     border-radius: var(--pl-radius-control);
     padding: var(--pl-space-1) var(--pl-space-1-5);
     background: var(--pl-material-panel);
-    backdrop-filter: var(--pl-material-panel-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-panel-filter);
     overflow-wrap: anywhere;
     box-shadow:
       var(--pl-material-edge),

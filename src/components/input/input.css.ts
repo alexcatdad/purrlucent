@@ -80,7 +80,7 @@ export const fieldStyles = css`
     padding-inline: var(--_pad);
     border-radius: var(--pl-radius-control);
     background: var(--pl-material-field);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow:
       var(--pl-material-edge),
       0 0 0 1px var(--_edge);

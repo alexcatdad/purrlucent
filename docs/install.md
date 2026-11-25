@@ -171,7 +171,7 @@ Glass is thin, as Apple's is: a pale film in light and an ink one in dark, `--pl
 
 A text-only button in a glass bar takes the primary text color. On glass the focus ring and the selection follow your accent: `--pl-material-ring` and `--pl-material-selected` are `--pl-color-accent` deepened in light and lifted in dark, so each holds 3:1 on the thin fill. With the default accent they are a deep pink in light and a light one in dark. Set `--pl-color-accent` and both follow; override either token to set it directly. Text on the selection reads `--pl-material-selected-foreground`: white on the deepened fill in light and ink on the lifted one in dark, so it holds 4.5:1 for any accent. Your `--pl-color-accent-foreground` stays for solid accent fills. A toolbar with `floating` becomes a capsule that floats over the content.
 
-In Chromium, toolbars, menubars, navigation menus, buttons, segmented controls, popovers, menus, the select's list, dialogs and drawers also refract: each bends what is behind its rim through an SVG filter sized to it, which the component adds to its own tree. Safari and Firefox keep the frosted glass, as they cannot draw an SVG filter in `backdrop-filter`.
+In Chromium, glass surfaces sample the live backdrop through a size-aware lens. Letters, photos and patterned backgrounds follow the same refraction profile: the rim bends the image and the interior gently magnifies it. Safari and Firefox use the frosted fill because their backdrop filters do not draw SVG displacement.
 
 ### Clear glass
 

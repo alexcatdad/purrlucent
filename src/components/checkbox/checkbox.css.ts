@@ -55,7 +55,7 @@ export const boxStyles = css`
     margin-block-start: calc((1lh - var(--_box)) / 2);
     border-radius: var(--_r);
     background-color: var(--_off);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-selected-foreground);
     user-select: none;

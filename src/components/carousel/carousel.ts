@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { backGlyph } from "../../behaviors/glyphs.ts";
 import { carouselItemStyles, carouselStyles } from "./carousel.css.ts";
@@ -91,6 +92,7 @@ export class PlCarousel extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=previous], [part=next]");
     this.label = "";
     this.previousLabel = "";
     this.nextLabel = "";

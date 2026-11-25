@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing, svg } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { paginationStyles } from "./pagination.css.ts";
@@ -62,6 +63,7 @@ export class PlPagination extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.page = 1;
     this.total = 1;
     this.label = "";

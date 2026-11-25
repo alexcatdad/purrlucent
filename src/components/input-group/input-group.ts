@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html } from "lit";
 import { inputGroupStyles } from "./input-group.css.ts";
 
@@ -29,6 +30,7 @@ export class PlInputGroup extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=shell]");
     this.addEventListener("focusin", (event) =>
       this.#setState("focused", event.target === this.#field),
     );

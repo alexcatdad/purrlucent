@@ -58,7 +58,7 @@ export const switchStyles = css`
     margin-block-start: calc((var(--_row) - var(--_h)) / 2);
     border-radius: var(--pl-radius-full);
     background-color: var(--pl-color-track);
-    backdrop-filter: var(--pl-material-control-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
     user-select: none;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);

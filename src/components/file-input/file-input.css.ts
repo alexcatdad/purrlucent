@@ -45,7 +45,7 @@ export const fileInputStyles = [
       border: 0;
       border-radius: var(--pl-radius-control-inner);
       background: var(--pl-material-control);
-      backdrop-filter: var(--pl-material-control-filter);
+      backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
       color: var(--pl-color-foreground);
       font: inherit;
       cursor: var(--pl-cursor-interactive);
