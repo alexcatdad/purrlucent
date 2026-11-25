@@ -33,7 +33,7 @@ const clearGlyph = svg`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 
  * @attr {string} type - `text` (default), `search`, `password`, `email`, `url`, `tel` or `number`. A search field gets a magnifier and a clear button, and Escape clears it.
  * @attr {string} value - The starting value. The `value` property holds the current one.
  * @attr {string} label - The accessible name when there is no slotted label.
- * @attr {string} size - `md` (default), `lg` or `xl`.
+ * @attr {string} size - `md` (default), `sm` for dense rows (the height of a small button), `lg` or `xl`.
  * @attr {string} name - The name submitted with a form.
  * @attr {string} placeholder - Hint shown while empty.
  * @attr {boolean} required - The form is invalid while the field is empty.
@@ -92,7 +92,7 @@ export class PlInput extends LitElement {
   declare type: string;
   declare value: string;
   declare label: string | undefined;
-  declare size: "md" | "lg" | "xl";
+  declare size: "sm" | "md" | "lg" | "xl";
   declare name: string;
   declare placeholder: string | undefined;
   declare required: boolean;

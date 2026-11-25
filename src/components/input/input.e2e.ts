@@ -139,6 +139,34 @@ test("widths story sizes the control", async ({ page }) => {
   await expectWidthsIncrease(page, "pl-input");
 });
 
+test("sizes grow from sm, and a small search field keeps its clear button inside", async ({
+  page,
+}) => {
+  await gotoStory(page, story("sizes"));
+  const heights = await page
+    .locator("pl-input")
+    .evaluateAll((els) =>
+      els.map(
+        (el) =>
+          el
+            .shadowRoot!.querySelector('[part="field"]')!
+            .getBoundingClientRect().height,
+      ),
+    );
+  expect(heights).toHaveLength(4);
+  expect(heights).toEqual([...heights].sort((a, b) => a - b));
+  expect(new Set(heights).size).toBe(4);
+  // Firefox lays out to a subpixel short of the token size.
+  expect(heights[0]).toBeCloseTo(24, 1);
+  const small = page.locator("pl-input").first();
+  await small.evaluate((el) => el.setAttribute("type", "search"));
+  const clear = small.locator('[part="clear"]');
+  await expect(clear).toBeVisible();
+  const box = (await clear.boundingBox())!;
+  const shell = (await small.locator('[part="field"]').boundingBox())!;
+  expect(box.height).toBeLessThanOrEqual(shell.height + 0.5);
+});
+
 test("a slotted label names the input and a click on it focuses the field", async ({
   page,
 }) => {

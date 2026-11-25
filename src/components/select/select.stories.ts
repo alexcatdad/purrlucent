@@ -111,7 +111,7 @@ export const Labelled: Story = {
 export const Sizes: Story = {
   render: () =>
     column(
-      (["md", "lg", "xl"] as const).map(
+      (["sm", "md", "lg", "xl"] as const).map(
         (size) =>
           html`<pl-select label="Apple variety, ${size}" size=${size}>
             <pl-option selected>McIntosh</pl-option>

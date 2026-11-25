@@ -23,6 +23,13 @@ export const fieldStyles = css`
     display: none;
   }
 
+  /* A dense field, the height of a small button; a coarse pointer raises it
+     to the touch size. The text keeps its size. */
+  :host([size="sm"]) {
+    --_h: var(--pl-size-sm);
+    --_pad: var(--pl-space-2);
+  }
+
   :host([size="lg"]) {
     --_h: var(--pl-size-lg);
   }
@@ -254,6 +261,13 @@ export const inputStyles = [
       @starting-style {
         opacity: 0;
       }
+    }
+
+    /* A small field's clear button is the field's height, as a small button's
+       hit region is its own. */
+    :host([size="sm"]) [part="clear"] {
+      inline-size: var(--_h);
+      block-size: var(--_h);
     }
 
     [part="clear"] svg {
