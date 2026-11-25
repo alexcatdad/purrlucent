@@ -201,6 +201,29 @@ test("a disabled prompt disables the field and Send", async ({ page }) => {
   );
 });
 
+for (const via of ["attribute", "property"] as const)
+  test(`the field follows disabled on, off and on again, set by ${via}`, async ({
+    page,
+  }) => {
+    const root = await gotoStory(page, story("default"));
+    const set = (on: boolean) =>
+      root.locator("pl-prompt-input").evaluate(
+        (el, [on, via]) => {
+          if (via === "property")
+            (el as HTMLElement & { disabled: boolean }).disabled = on;
+          else el.toggleAttribute("disabled", on);
+        },
+        [on, via] as const,
+      );
+    for (const on of [true, false, true, false]) {
+      await set(on);
+      if (on) await expect(field(root)).toBeDisabled();
+      else await expect(field(root)).toBeEnabled();
+    }
+    await field(root).fill("Hello");
+    await expect(field(root)).toHaveValue("Hello");
+  });
+
 test("the field grows with its text, stops at a maximum, scrolls, and shrinks again", async ({
   page,
 }) => {

@@ -95,7 +95,8 @@ export class PlCheckbox extends LitElement {
   }
 
   formDisabledCallback() {
-    this.requestUpdate();
+    // Deferred: reflecting `disabled` calls this mid-update, where a request is dropped.
+    queueMicrotask(() => this.requestUpdate());
   }
 
   #state(name: string, on: boolean) {

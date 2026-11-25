@@ -228,7 +228,8 @@ export class PlButton extends LitElement {
   }
 
   formDisabledCallback() {
-    this.requestUpdate();
+    // Deferred: reflecting `disabled` calls this mid-update, where a request is dropped.
+    queueMicrotask(() => this.requestUpdate());
   }
 
   // An icon link's name moves to the inner link before it renders.
