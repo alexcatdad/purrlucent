@@ -193,6 +193,32 @@ test("a one-digit badge is round", async ({ page }) => {
   expect(many.width).toBeGreaterThan(box.width);
 });
 
+test("a text badge gets room before its rounded ends; a count stays narrow", async ({
+  page,
+}) => {
+  await gotoStory(page, story("variants"));
+  const pad = (id: string) =>
+    page
+      .locator(id)
+      .evaluate((el) =>
+        Number.parseFloat(getComputedStyle(el).paddingInlineStart),
+      );
+  const wide = await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.inlineSize = "var(--pl-space-2)";
+    document.body.append(probe);
+    const width = probe.getBoundingClientRect().width;
+    probe.remove();
+    return width;
+  });
+  expect(Math.abs((await pad("#neutral")) - wide)).toBeLessThanOrEqual(1);
+  await gotoStory(page, story("counts"));
+  expect(await pad("#many")).toBeLessThan(wide);
+  // Text typed in later gets the same room.
+  await page.locator("#one").evaluate((el) => (el.textContent = "New"));
+  await expect.poll(() => pad("#one")).toBeCloseTo(wide, 0);
+});
+
 test("under rtl the text is still shown", async ({ page }) => {
   await gotoStory(page, story("rtl"));
   await expect(page.locator("#badge")).toHaveText("3");
