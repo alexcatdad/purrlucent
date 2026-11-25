@@ -13,9 +13,11 @@ const browsers = { chrome: 156, edge: 156, firefox: 159, safari: 26, ios: 26 };
 /**
  * Minifies the CSS in each css`` template of the *.css.ts files. An app's
  * minifier leaves template text alone, so without this every component ships
- * its styles with their comments and indentation. An interpolation becomes a
- * placeholder Lightning CSS keeps: a custom property inside a block, a rule
- * outside one; a template with no block is a declaration list.
+ * its styles with their comments and indentation. An interpolation that stands
+ * for whole declarations or rules becomes a placeholder Lightning CSS keeps: a
+ * custom property inside a block, a rule outside one. A template with an
+ * interpolation anywhere else, such as inside a value, stays as written. A
+ * template with no block is a declaration list.
  */
 const minifyTemplateCss = (): Plugin => {
   const targets = Object.fromEntries(
@@ -30,8 +32,11 @@ const minifyTemplateCss = (): Plugin => {
     if (body.includes("\\"))
       throw new Error(`${id}: a css\`\` template holds a backslash`);
     const holes: { expr: string; mark: string }[] = [];
+    let inValue = false;
     const source = body.replace(/\$\{([^}]*)\}/g, (_, expr: string, at) => {
       const before = body.slice(0, at);
+      const last = before.trimEnd().at(-1);
+      if (last !== undefined && !"{};".includes(last)) inValue = true;
       const inBlock = before.split("{").length > before.split("}").length;
       const n = holes.length;
       // Each rule differs, so the minifier cannot merge two adjacent holes.
@@ -41,6 +46,7 @@ const minifyTemplateCss = (): Plugin => {
       holes.push({ expr, mark });
       return inBlock ? `${mark};` : mark;
     });
+    if (inValue) return body;
     // Minify only: the styles keep the vendor prefixes they were written with.
     const options = {
       filename: id,
@@ -68,7 +74,8 @@ const minifyTemplateCss = (): Plugin => {
     name: "pl-minify-template-css",
     enforce: "pre",
     transform(code, id) {
-      if (!id.endsWith(".css.ts")) return;
+      // Shipped styles only; Storybook's own styles stay as written.
+      if (!id.startsWith(`${root}/src/`) || !id.endsWith(".css.ts")) return;
       return {
         code: code.replace(
           /(?<![.\w])css`([^`]*)`/g,
