@@ -264,6 +264,10 @@
     --pl-ease-out: cubic-bezier(0.2, 0, 0, 1);
     --pl-text-xs: 0.75rem;
     --pl-text-sm: 0.8125rem;
+
+    /* Editable text inside fields; a coarse pointer raises it to at least
+       1rem so iOS Safari does not zoom on focus. */
+    --pl-text-field: var(--pl-text-sm);
     --pl-text-base: 0.875rem;
     --pl-text-lg: 0.9375rem;
     --pl-text-xl: 1.25rem;
@@ -439,6 +443,7 @@
 
     :root {
       --pl-radius-control: calc(var(--pl-spacing) * 3);
+      --pl-text-field: max(1rem, var(--pl-text-sm));
     }
   }
 }
@@ -477,7 +482,7 @@
        Increased contrast gives them its own ring and selection colors. */
     --pl-material-ring: light-dark(
       oklch(from var(--pl-color-accent) 26% c h),
-      oklch(from var(--pl-color-accent) 85% c h)
+      oklch(from var(--pl-color-accent) 92% c h)
     );
     --pl-material-selected: var(--pl-material-ring);
 

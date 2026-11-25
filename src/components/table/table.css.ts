@@ -94,16 +94,18 @@ export const tableDocumentStyles = css`
     cursor: var(--pl-cursor-interactive);
   }
 
-  /* A plain link in a cell takes the accent; a stretched link keeps the row. */
+  /* A plain link in a cell takes the accent and is underlined, so it reads as
+     a link among text; a stretched link keeps the row. */
   pl-table a:not([data-stretched]) {
     color: var(--pl-color-accent-text);
     font-weight: 600;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   @media (hover: hover) {
     pl-table a:not([data-stretched]):hover {
-      text-decoration: underline;
+      text-decoration-thickness: 0.125em;
     }
   }
 

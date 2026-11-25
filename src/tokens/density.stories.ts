@@ -20,7 +20,7 @@ type Story = StoryObj;
 export const Controls: Story = {
   render: () => html`
     <div
-      style="display:grid;justify-items:start;gap:var(--pl-space-3);padding:var(--pl-space-4);min-block-size:calc(var(--pl-spacing) * 90)"
+      style="display:grid;justify-items:start;align-content:start;align-items:start;gap:var(--pl-space-3);padding:var(--pl-space-4);min-block-size:calc(var(--pl-spacing) * 90)"
     >
       <pl-button>Button</pl-button>
       <pl-input label="Name"></pl-input>

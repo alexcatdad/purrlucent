@@ -302,6 +302,7 @@ export class PlMenu extends LitElement {
     this.addEventListener("keydown", this.#onKeydown);
     this.addEventListener("click", this.#onClick);
     this.addEventListener("pointerover", this.#onPointerover);
+    this.addEventListener("mousedown", this.#onMousedown);
   }
 
   get #parent(): PlMenuItem | null {
@@ -510,12 +511,18 @@ export class PlMenu extends LitElement {
     }
   };
 
+  // A press on a disabled row takes no focus: it stays where it was.
+  #onMousedown = (event: MouseEvent) => {
+    if (this.#owns(event)?.closest("pl-menu-item")?.disabled)
+      event.preventDefault();
+  };
+
   #onPointerover = (event: PointerEvent) => {
     if (event.pointerType === "touch") return;
     clearTimeout(this.#hover);
     const target = this.#owns(event);
     const item = target?.closest("pl-menu-item");
-    if (!item) return;
+    if (!item || item.disabled) return;
     item.focus({ preventScroll: true });
     this.#hover = setTimeout(() => {
       if (item.submenu) this.#openSub(item, false);

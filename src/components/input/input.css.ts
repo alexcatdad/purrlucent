@@ -108,6 +108,7 @@ export const fieldStyles = css`
     background: none;
     color: inherit;
     font: inherit;
+    font-size: var(--pl-text-field);
     caret-color: var(--pl-color-accent-text);
     appearance: none;
   }

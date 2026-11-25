@@ -196,6 +196,10 @@ export class PlSelect extends LitElement {
     this.value = this.#start ?? "";
   }
 
+  formStateRestoreCallback(state: string) {
+    this.value = state;
+  }
+
   formDisabledCallback() {
     this.requestUpdate();
   }

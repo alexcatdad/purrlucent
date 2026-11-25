@@ -216,6 +216,8 @@ The default accent is hot pink, a light color, so its fill takes ink text. A dar
 
 Radii follow role and pointer. `--pl-radius-control` (8px, 12px for a coarse pointer) rounds buttons, fields and groups; `--pl-radius-panel` (16px) rounds dialogs, popovers, menus, sheets and sidebars. Two follow from them, so nested curves stay parallel: `--pl-radius-control-inner` is the control radius minus the 2px a face sits inside it, and `--pl-radius-row` is the panel radius minus a panel's padding, for menu and list rows. `--pl-radius-full` makes a pill.
 
+Editable text in fields is `--pl-text-field`: the small text size on a fine pointer, and at least 1rem on a coarse one, so iOS Safari does not zoom the page on focus.
+
 Controls show the pointing hand, and disabled controls the not-allowed cursor. `--pl-cursor-interactive` (default `pointer`) and `--pl-cursor-disabled` (default `not-allowed`) set them; set either to `default` for the macOS arrow:
 
 ```css

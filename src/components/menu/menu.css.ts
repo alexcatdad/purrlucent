@@ -261,7 +261,7 @@ export const itemStyles = css`
 
   :host([disabled]) {
     color: var(--pl-color-disabled-foreground);
-    pointer-events: none;
+    cursor: var(--pl-cursor-disabled);
   }
 
   :host([disabled]) [part="description"] {

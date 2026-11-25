@@ -459,13 +459,16 @@ test("fit-content: the edges with more items past them fade", async ({
   expect(
     await group.evaluate((el) => getComputedStyle(el).maskImage),
   ).toContain("gradient");
-  // The fade is the hint; a classic scrollbar would underline the labels.
-  expect(
-    await group.evaluate((el) => ({
-      bar: (el as HTMLElement).offsetHeight - el.clientHeight,
-      width: getComputedStyle(el).scrollbarWidth,
-    })),
-  ).toEqual({ bar: 0, width: "none" });
+});
+
+test("fit-content: the overflowing group keeps a thin themed scrollbar", async ({
+  page,
+}) => {
+  await open(page, "actions-toggle-group--fit-content");
+  const style = await page
+    .locator("#control")
+    .evaluate((el) => getComputedStyle(el).scrollbarWidth);
+  expect(style).toBe("thin");
 });
 
 test("fit-content: items take their text's width on one line, and the group scrolls to a focused item", async ({

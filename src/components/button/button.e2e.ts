@@ -337,7 +337,7 @@ test("a disabled fieldset makes the button inert, as a native button is", async 
   const log = page.locator("#f");
   const button = page.locator("#b");
   await expect(button).toHaveAttribute("aria-disabled", "true");
-  await expect(button).toHaveAttribute("tabindex", "-1");
+  await expect(button).not.toHaveAttribute("tabindex");
   await button.focus();
   await page.keyboard.press("Enter");
   await page.keyboard.press("Space");
@@ -407,6 +407,29 @@ test("a click on a disabled button reaches no listener", async ({ page }) => {
   await expect(button).toHaveAttribute("data-clicks", "0");
 });
 
+test("a disabled button takes no focus from a click or Tab, as a native one", async ({
+  page,
+}) => {
+  const root = await gotoStory(page, "actions-button--default");
+  await root.evaluate((el) =>
+    el.insertAdjacentHTML(
+      "beforeend",
+      `<button id="before">Before</button><pl-button id="off" disabled>Off</pl-button><button id="after">After</button>`,
+    ),
+  );
+  const active = () => page.evaluate(() => document.activeElement?.id);
+  await expect(page.locator("#off")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.locator("#off")).not.toHaveAttribute("tabindex");
+  await page.locator("#before").focus();
+  await page.locator("#off").click({ force: true });
+  expect(await active()).not.toBe("off");
+  await page.locator("#before").focus();
+  await page.keyboard.press("Tab");
+  expect(await active()).toBe("after");
+  await page.keyboard.press("Shift+Tab");
+  expect(await active()).toBe("before");
+});
+
 test("a button keeps its own tabindex, also across disabling", async ({
   page,
 }) => {
@@ -420,7 +443,7 @@ test("a button keeps its own tabindex, also across disabling", async ({
   const button = page.locator("#r");
   await expect(button).toHaveAttribute("tabindex", "-1");
   await button.evaluate((el) => el.setAttribute("disabled", ""));
-  await expect(button).toHaveAttribute("tabindex", "-1");
+  await expect(button).not.toHaveAttribute("tabindex");
   await button.evaluate((el) => el.removeAttribute("disabled"));
   await expect(button).not.toHaveAttribute("aria-disabled");
   await expect(button).toHaveAttribute("tabindex", "-1");

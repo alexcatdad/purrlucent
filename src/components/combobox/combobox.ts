@@ -246,6 +246,12 @@ export class PlCombobox extends LitElement {
     this.#syncForm();
   }
 
+  formStateRestoreCallback(state: string) {
+    this.value = state;
+    this.#filtering = false;
+    this.#syncText();
+  }
+
   /** The form value, validity and the shown message, kept in step with `value`. */
   #syncForm() {
     // Not rendered yet: the first update syncs.

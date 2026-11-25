@@ -435,7 +435,7 @@ test("data-numeric aligns like align=end with tabular figures", async ({
   expect(end).toBe("start");
 });
 
-test("a plain link takes the accent, and underlines on hover", async ({
+test("a plain link takes the accent and is underlined at rest", async ({
   page,
 }) => {
   await open(page, "data-table--links");
@@ -448,7 +448,7 @@ test("a plain link takes the accent, and underlines on hover", async ({
     await resolve(page, "color", "var(--pl-color-accent-text)"),
   );
   expect(Number(style.weight)).toBeGreaterThanOrEqual(600);
-  expect(style.line).toBe("none");
+  expect(style.line).toBe("underline");
   await link.hover();
   await expect
     .poll(() => link.evaluate((el) => getComputedStyle(el).textDecorationLine))

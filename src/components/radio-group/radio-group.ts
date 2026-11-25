@@ -210,6 +210,10 @@ export class PlRadioGroup extends LitElement {
     this.value = this.#initial;
   }
 
+  formStateRestoreCallback(state: string) {
+    this.value = state;
+  }
+
   formDisabledCallback() {
     this.requestUpdate();
   }

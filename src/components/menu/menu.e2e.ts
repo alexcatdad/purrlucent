@@ -173,9 +173,20 @@ test("a disabled item cannot be activated or focused", async ({ page }) => {
   await gotoStory(page, story("default"));
   await recordSelects(page);
   await trigger(page).click();
-  await item(page, "Paste ⌘V").click({ force: true });
+  await item(page, "Paste ⌘V").click();
   await expect(menu(page)).toBeVisible();
+  await expect(item(page, "Paste ⌘V")).not.toBeFocused();
   expect(await selects(page)).toEqual([]);
+});
+
+test("a disabled item shows the not-allowed cursor", async ({ page }) => {
+  await gotoStory(page, story("default"));
+  await trigger(page).click();
+  await expect(item(page, "Paste ⌘V")).toBeVisible();
+  const cursor = await item(page, "Paste ⌘V").evaluate(
+    (el) => getComputedStyle(el).cursor,
+  );
+  expect(cursor).toBe("not-allowed");
 });
 
 test("arrows keep working after the pointer passes a disabled item", async ({

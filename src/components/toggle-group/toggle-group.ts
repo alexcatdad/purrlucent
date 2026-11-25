@@ -195,6 +195,10 @@ export class PlToggleGroup extends LitElement {
     if (this.#initial !== undefined) this.value = this.#initial;
   }
 
+  formStateRestoreCallback(state: string) {
+    this.value = state;
+  }
+
   formDisabledCallback() {
     this.requestUpdate();
   }

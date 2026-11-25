@@ -27,7 +27,6 @@ export const boxStyles = css`
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     cursor: var(--pl-cursor-interactive);
-    user-select: none;
   }
 
   :host([hidden]) {
@@ -59,6 +58,7 @@ export const boxStyles = css`
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-selected-foreground);
+    user-select: none;
     transition:
       background-color var(--pl-duration-fast) var(--pl-ease-out),
       opacity var(--pl-duration-fast) var(--pl-ease-out);

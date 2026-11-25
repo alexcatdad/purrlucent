@@ -266,7 +266,8 @@ export class PlButton extends LitElement {
       this.#off = off;
       if (off) {
         this.#tabindex = this.getAttribute("tabindex");
-        this.tabIndex = -1;
+        // No tabindex at all: -1 would still let a click or focus() take focus.
+        this.removeAttribute("tabindex");
         this.setAttribute("aria-disabled", "true");
       } else {
         if (this.#tabindex === null) this.removeAttribute("tabindex");

@@ -31,7 +31,6 @@ export const switchStyles = css`
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
     cursor: var(--pl-cursor-interactive);
-    user-select: none;
   }
 
   :host([hidden]) {
@@ -61,6 +60,7 @@ export const switchStyles = css`
     background-color: var(--pl-color-track);
     backdrop-filter: var(--pl-material-control-filter);
     box-shadow: var(--pl-material-edge);
+    user-select: none;
     transition: background-color var(--pl-duration-fast) var(--pl-ease-out);
   }
 
