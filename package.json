@@ -1,6 +1,6 @@
 {
   "name": "purrlucent",
-  "version": "0.28.0",
+  "version": "0.28.1",
   "description": "Accessible web components built with Lit: form controls, menus, dialogs and navigation for any framework, following Apple's Human Interface Guidelines.",
   "keywords": [
     "web-components",
