@@ -51,7 +51,12 @@ export default defineConfig({
         this.emitFile({
           type: "asset",
           fileName: "tokens.css",
-          source: readFileSync(resolve(root, "src/tokens/tokens.css")),
+          source: readFileSync(
+            resolve(root, "src/tokens/tokens.css"),
+            "utf8",
+          ).replace('@import url("./texture-paint.css");', () =>
+            readFileSync(resolve(root, "src/tokens/texture-paint.css"), "utf8"),
+          ),
         });
         this.emitFile({
           type: "asset",

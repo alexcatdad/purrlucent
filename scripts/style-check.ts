@@ -70,6 +70,7 @@ if (import.meta.main) {
     if (
       !file.startsWith("src/") ||
       file === tokensPath ||
+      file === "src/tokens/texture-paint.css" ||
       !/\.css(\.ts)?$/.test(file)
     )
       continue;
