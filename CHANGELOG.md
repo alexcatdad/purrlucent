@@ -1,5 +1,12 @@
 # purrlucent
 
+## 0.26.0
+
+### Minor Changes
+
+- 0e60094: Add eight opt-in page and card background textures with optional drift, configurable fades and accessibility preferences.
+- f975ad5: Apply a size-aware bevel and gentle magnification to glass controls and navigation surfaces on browsers with SVG backdrop refraction.
+
 ## 0.25.1
 
 ### Patch Changes
