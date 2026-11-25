@@ -1,3 +1,4 @@
+import { html } from "lit";
 import type { Preview } from "@storybook/web-components-vite";
 import "../src/tokens/tokens.css";
 import { backdrop } from "./backdrop.css.ts";
@@ -58,7 +59,7 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (story, { globals }) => {
+    (story, { globals, viewMode }) => {
       for (const [global, attribute] of Object.entries(attributes)) {
         document.documentElement.setAttribute(attribute, globals[global]);
       }
@@ -70,6 +71,8 @@ const preview: Preview = {
       // backdrop scene instead (backdrop.css.ts), so the inline paint steps aside.
       const glass = globals.material === "glass";
       document.body.toggleAttribute("data-backdrop", glass);
+      if (glass) document.body.setAttribute("pl-texture", "fine-grid");
+      else document.body.removeAttribute("pl-texture");
       document.body.style.background = glass
         ? ""
         : "var(--pl-color-background)";
@@ -78,7 +81,15 @@ const preview: Preview = {
       document.body.style.font =
         "var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans)";
       document.body.style.color = "var(--pl-color-foreground)";
-      return story();
+      const content = story();
+      return glass && viewMode === "docs"
+        ? html`<div
+            pl-texture="fine-grid"
+            style="background-color:var(--pl-color-background);color:var(--pl-color-foreground)"
+          >
+            ${content}
+          </div>`
+        : content;
     },
   ],
 };

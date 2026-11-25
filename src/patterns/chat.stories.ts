@@ -1,3 +1,5 @@
+import { patternPanel } from "../../.storybook/backdrop.css.ts";
+import { LensController } from "../behaviors/lens.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import {
   LitElement,
@@ -193,6 +195,7 @@ class ChatDemo extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.seed = "empty";
     this.draft = "";
     this.rows = [];
@@ -340,7 +343,7 @@ class ChatDemo extends LitElement {
       margin-inline: auto;
       border: 1px solid var(--pl-color-border);
       border-radius: var(--pl-radius-panel);
-      background: var(--pl-color-background);
+      ${patternPanel}
       color: var(--pl-color-foreground);
       font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
     }

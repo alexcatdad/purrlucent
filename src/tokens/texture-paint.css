@@ -174,3 +174,10 @@
     }
   }
 }
+
+/* An authored tile is shared by the source and each shadow-tree lens. */
+@layer pl.texture-art {
+  :where([pl-texture])::before {
+    background: var(--pl-texture-background, revert-layer);
+  }
+}

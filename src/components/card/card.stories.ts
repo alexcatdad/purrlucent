@@ -1,3 +1,4 @@
+import { previewTexture } from "../../../.storybook/backdrop.css.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
@@ -24,7 +25,7 @@ const frame = (content: unknown) =>
   </div>`;
 
 const full = (rtl = false) =>
-  html`<pl-card>
+  html`<pl-card pl-texture=${previewTexture()}>
     <strong slot="title">Team plan</strong>
     <span slot="description">${isolate(rtl, "Billed every month.")}</span>
     <pl-button slot="actions">Edit</pl-button>

@@ -1,3 +1,5 @@
+import { patternPanel } from "../../.storybook/backdrop.css.ts";
+import { LensController } from "../behaviors/lens.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, type PropertyValues } from "lit";
 import { plaintextRtl } from "../../.storybook/isolate.ts";
@@ -81,6 +83,7 @@ class SignInDemo extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "pl-card");
     this.step = "credentials";
     this.mode = "password";
     this.logo = false;
@@ -490,6 +493,12 @@ class SignInDemo extends LitElement {
   }
 
   static override styles = css`
+    pl-card {
+      ${patternPanel}
+      --_panel-base: var(--pl-color-surface-content);
+      border-radius: var(--sb-panel-radius, var(--pl-radius-control));
+    }
+
     ${plaintextRtl}
 
     :host {

@@ -1,4 +1,4 @@
-import { css, unsafeCSS } from "lit";
+import { css, nothing, unsafeCSS } from "lit";
 
 // Storybook only: a scene for glass stories to refract. It paints the page
 // behind the library, so nothing under src/ ships it. Three overlapping radial
@@ -16,8 +16,27 @@ const hue = (color: string) =>
     `color-mix(in srgb, var(--pl-color-${color}) 20%, var(--pl-color-background))`,
   );
 
+// Give glass controls on an opaque content surface a local texture to sample.
+export const previewTexture = () =>
+  document.body.hasAttribute("data-backdrop") ? "fine-grid" : nothing;
+
+/** Pattern shells and their cards follow the material selected in Storybook. */
+export const patternPanel = css`
+  position: relative;
+  background: var(
+    --sb-panel-fill,
+    var(--_panel-base, var(--pl-color-background))
+  );
+  backdrop-filter: var(--pl-lens,) var(--pl-material-panel-filter);
+  box-shadow: var(--pl-material-edge), var(--sb-panel-shadow, 0 0 transparent);
+`;
+
 export const backdrop = css`
   body[data-backdrop] {
+    --sb-pattern-canvas: transparent;
+    --sb-panel-fill: var(--pl-material-panel);
+    --sb-panel-shadow: var(--pl-elevation-panel);
+    --sb-panel-radius: var(--pl-radius-panel);
     background:
       radial-gradient(circle at 20% 15%, ${hue("hot-pink")} 0, transparent 45%),
       radial-gradient(circle at 80% 30%, ${hue("red")} 0, transparent 40%),

@@ -1,3 +1,4 @@
+import { previewTexture } from "../../../.storybook/backdrop.css.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent, waitFor } from "storybook/test";
@@ -46,6 +47,7 @@ const rows = [
 
 const render = () => html`
   <pl-data-table
+    pl-texture=${previewTexture()}
     id="control"
     caption="Pioneers"
     .columns=${columns}
@@ -67,6 +69,7 @@ export const Playground: Story = {
   ]),
   render: ({ caption, selectable, filterable }) =>
     html`<pl-data-table
+      pl-texture=${previewTexture()}
       caption=${caption}
       ?selectable=${selectable}
       ?filterable=${filterable}
@@ -94,6 +97,7 @@ export const MoreContrast: Story = { render, globals: { contrast: "more" } };
 export const Sorted: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       sort-column="age"
@@ -108,6 +112,7 @@ export const Sorted: Story = {
 export const Selectable: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       selectable
@@ -131,6 +136,7 @@ const roster = [
 export const Filterable: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       filterable
@@ -146,6 +152,7 @@ export const Filterable: Story = {
 export const Paginated: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       page-size="4"
@@ -342,6 +349,7 @@ const modelGrouped = () => {
   const open = new Set(["eng"]);
   return html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Teams"
       style="max-inline-size: calc(var(--pl-spacing) * 120)"
@@ -444,6 +452,7 @@ const modelInteractive = () => {
     };
   return html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="People"
       row-menu
@@ -493,6 +502,7 @@ export const ModelInteractiveRtl: Story = {
 export const RichCells: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       .columns=${columns}
@@ -519,6 +529,7 @@ export const RichCells: Story = {
 export const ModelRichCells: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="People"
       cell-select
@@ -563,6 +574,7 @@ export const ModelRichCells: Story = {
 export const Empty: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       selectable
@@ -583,6 +595,7 @@ const stickyHeight = `calc(2px + var(--pl-leading-normal) + var(--pl-space-3) * 
 export const StickyHeader: Story = {
   render: () => html`
     <pl-data-table
+      pl-texture=${previewTexture()}
       id="control"
       caption="Pioneers"
       sticky-header

@@ -800,6 +800,11 @@
   inherits: true;
 }
 
+@property --pl-texture-background {
+  syntax: "*";
+  inherits: true;
+}
+
 @property --pl-texture-size {
   syntax: "*";
   inherits: true;
