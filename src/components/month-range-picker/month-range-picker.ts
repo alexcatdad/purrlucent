@@ -139,7 +139,8 @@ export class PlMonthRangePicker extends LitElement {
   }
 
   formDisabledCallback() {
-    this.requestUpdate();
+    // Deferred: reflecting `disabled` calls this mid-update, where a request is dropped.
+    queueMicrotask(() => this.requestUpdate());
   }
 
   /** Moves focus to the month that holds the tab stop. */

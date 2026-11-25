@@ -146,7 +146,8 @@ export class PlFileInput extends LitElement {
   }
 
   formDisabledCallback() {
-    this.requestUpdate();
+    // Deferred: reflecting `disabled` calls this mid-update, where a request is dropped.
+    queueMicrotask(() => this.requestUpdate());
   }
 
   // After the update, so the inner input and button already match the state.
