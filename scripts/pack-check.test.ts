@@ -166,6 +166,7 @@ export function App() {
         <pl-option value="a">A</pl-option>
       </pl-select>
       <pl-dialog ref={dialog} variant="alert" className="x" />
+      <pl-month-range-picker presets={[{ label: "Q1", start: "2026-01", end: "2026-03" }]} />
       {/* @ts-expect-error not a prop of pl-button */}
       <pl-button notAProp />
       {/* @ts-expect-error the detail of a select's pl-change has no text */}

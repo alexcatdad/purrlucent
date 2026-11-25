@@ -14,6 +14,14 @@ const types = reactTypes({
             { fieldName: "disabled" },
             { fieldName: "_labelled" },
           ],
+          members: [
+            { kind: "field", name: "value" },
+            { kind: "field", name: "options" },
+            { kind: "field", name: "form", readonly: true },
+            { kind: "field", name: "formAssociated", static: true },
+            { kind: "field", name: "internal", privacy: "private" },
+            { kind: "method", name: "show" },
+          ],
           events: [
             { name: "pl-change", type: { text: "CustomEvent" } },
             {
@@ -41,9 +49,9 @@ test("each element imports its class from the emitted declarations", () => {
   expect(types).not.toContain("helper");
 });
 
-test("public attributes become props and typed events become on<event> props", () => {
+test("public attributes and writable property-only fields become props, and typed events become on<event> props", () => {
   expect(types).toContain(
-    '"pl-select": PlElement<PlSelect, "value" | "disabled", { "pl-change": CustomEvent<{ value: string }>; "pl-input": CustomEvent }>;',
+    '"pl-select": PlElement<PlSelect, "value" | "disabled" | "options", { "pl-change": CustomEvent<{ value: string }>; "pl-input": CustomEvent }>;',
   );
   expect(types).not.toContain("_labelled");
   expect(types).toContain(

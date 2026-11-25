@@ -13,6 +13,13 @@ type Declaration = {
   name: string;
   tagName?: string;
   attributes?: { fieldName?: string }[];
+  members?: {
+    kind: string;
+    name: string;
+    static?: boolean;
+    privacy?: string;
+    readonly?: boolean;
+  }[];
   events?: { name: string; type?: { text: string } }[];
 };
 export type Manifest = {
@@ -31,12 +38,23 @@ export function reactTypes(manifest: Manifest): string {
     for (const d of module.declarations ?? []) {
       if (!d.tagName) continue;
       imports.push(`import type { ${d.name} } from "${from}";`);
-      // Private state (a leading underscore) is not part of the element's API.
+      // Attributes plus property-only fields (such as an array), which React
+      // sets as properties too. Private state (a leading underscore) is not
+      // part of the element's API.
       const props = [
         ...new Set(
-          (d.attributes ?? [])
-            .map((a) => a.fieldName)
-            .filter((f): f is string => !!f && !f.startsWith("_")),
+          [
+            ...(d.attributes ?? []).map((a) => a.fieldName),
+            ...(d.members ?? [])
+              .filter(
+                (m) =>
+                  m.kind === "field" &&
+                  !m.static &&
+                  !m.readonly &&
+                  (m.privacy ?? "public") === "public",
+              )
+              .map((m) => m.name),
+          ].filter((f): f is string => !!f && !f.startsWith("_")),
         ),
       ];
       // The analyzer also lists a helper's `new CustomEvent(name)` as an event
