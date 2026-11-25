@@ -21,6 +21,18 @@ export function textureStyleChanged(target: Node) {
 function textureBehind(face: HTMLElement) {
   for (let el: Element | null = face; el;) {
     if (el instanceof HTMLElement && el.hasAttribute("pl-texture")) return el;
+    if (el !== face) {
+      const { backgroundColor, backgroundImage } = getComputedStyle(el);
+      // A nearer painted background hides the texture. Preserve live-backdrop
+      // rendering here, e.g. a toolbar above an opaque scrolling list.
+      if (
+        backgroundImage !== "none" ||
+        (!backgroundColor.includes("/") &&
+          !backgroundColor.startsWith("rgba(") &&
+          backgroundColor !== "transparent")
+      )
+        return null;
+    }
     const root: Node = el.getRootNode();
     el =
       el.assignedSlot ??
@@ -37,16 +49,29 @@ class TextureCopy {
   constructor(
     readonly source: HTMLElement,
     face: HTMLElement,
+    readonly defaultRim: boolean,
   ) {
     const { clip, plane } = this;
     clip.setAttribute("aria-hidden", "true");
+    // The pressable face at -1 paints its fill over the refracted backdrop.
     clip.style.cssText =
-      "position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;opacity:.67;z-index:-1";
+      "position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;opacity:.67;z-index:-2";
     plane.style.cssText = "position:absolute;left:0;top:0;transform-origin:0 0";
     const root = clip.attachShadow({ mode: "open" });
     if (!sheet) {
       sheet = new CSSStyleSheet();
-      sheet.replaceSync(paint);
+      sheet.replaceSync(
+        paint +
+          `
+        [data-artwork]::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: var(--pl-material-panel);
+        }
+        [data-artwork]::before { filter: var(--pl-material-dim, none); }
+      `,
+      );
     }
     root.adoptedStyleSheets = [sheet];
     root.append(plane);
@@ -55,7 +80,8 @@ class TextureCopy {
     this.resize.observe(clip);
   }
   get rim() {
-    return this.source.getAttribute("pl-texture-lens") === "rim";
+    const mode = this.source.getAttribute("pl-texture-lens");
+    return mode === "rim" || (mode !== "center" && this.defaultRim);
   }
 
   place() {
@@ -83,6 +109,11 @@ class TextureCopy {
   sync(style: CSSStyleDeclaration) {
     const { plane, source } = this;
     plane.setAttribute("pl-texture", source.getAttribute("pl-texture")!);
+    // Opaque artwork also needs the glass tint above the copied image.
+    plane.toggleAttribute(
+      "data-artwork",
+      !!style.getPropertyValue("--pl-texture-background").trim(),
+    );
     for (const name of [
       "--pl-spacing",
       "--pl-color-saffron",
@@ -131,11 +162,12 @@ export function dropTexture(face: HTMLElement) {
   }
 }
 
-/** Returns the filter target only when the texture requests rim refraction. */
+/** Paint the known backdrop above the frost so its refracted detail stays visible. */
 export function textureLens(
   face: HTMLElement,
   glass: boolean,
   restyle: boolean,
+  defaultRim: boolean,
 ) {
   const source = glass ? textureBehind(face) : null;
   let copy = copies.get(face);
@@ -146,7 +178,7 @@ export function textureLens(
   if (!source) return;
   if (copy && !restyle) {
     copy.place();
-    return copy.rim ? copy.clip : undefined;
+    return copy;
   }
   const style = getComputedStyle(source, "::before");
   if (style.content === "none" || style.backgroundImage === "none") {
@@ -158,10 +190,10 @@ export function textureLens(
       window.addEventListener("scroll", schedulePlacement, true);
       window.addEventListener("resize", schedulePlacement);
     }
-    copy = new TextureCopy(source, face);
+    copy = new TextureCopy(source, face, defaultRim);
     copies.set(face, copy);
   }
   copy.sync(style);
-  if (copy.rim) return copy.clip;
-  copy.clip.style.removeProperty("filter");
+  if (!copy.rim) copy.clip.style.removeProperty("filter");
+  return copy;
 }

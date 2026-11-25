@@ -14,7 +14,7 @@ import {
 } from "./surfaces.css.ts";
 
 /** Defines a bare host that wears one surface, so each surface is tested on its own. */
-const defineDemo = (tag: string, surface: CSSResult) =>
+const defineDemo = (tag: string, surface: CSSResult, lenses = false) =>
   customElements.define(
     tag,
     class extends LitElement {
@@ -26,6 +26,10 @@ const defineDemo = (tag: string, surface: CSSResult) =>
           }
         `,
       ];
+      constructor() {
+        super();
+        if (lenses) new LensController(this);
+      }
       override render() {
         return html`<slot></slot>`;
       }
@@ -47,9 +51,9 @@ customElements.define(
   },
 );
 
-defineDemo("pl-bar-demo", barSurface);
-defineDemo("pl-panel-demo", panelSurface);
-defineDemo("pl-sheet-demo", sheetSurface);
+defineDemo("pl-bar-demo", barSurface, true);
+defineDemo("pl-panel-demo", panelSurface, true);
+defineDemo("pl-sheet-demo", sheetSurface, true);
 defineDemo("pl-list-row-demo", listRowSurface);
 defineDemo("pl-field-demo", fieldShell);
 
@@ -89,7 +93,8 @@ export const TextOnly: Story = {
 export const PatternedBackdrop: Story = {
   render: () =>
     html`<div
-      style="padding: 16px; background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 24px 24px"
+      pl-texture="fine-grid"
+      style="padding: 16px; --pl-texture-background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 24px 24px"
     >
       ${render()}
     </div>`,
@@ -98,12 +103,12 @@ export const PatternedBackdrop: Story = {
 
 /** Bright media with white, color and dark areas: what clear glass sits over. */
 const media =
-  "display: grid; gap: 16px; padding: 48px 16px; background: linear-gradient(120deg, #fff 0 28%, #e9a23b 28% 46%, #457b9d 46% 64%, #1d3557 64% 82%, #fff 82%)";
+  "display: grid; gap: 16px; padding: 48px 16px; --pl-texture-background: linear-gradient(120deg, #fff 0 28%, #e9a23b 28% 46%, #457b9d 46% 64%, #1d3557 64% 82%, #fff 82%)";
 
 /** pl-glass="clear": a dark film over a dimmed backdrop, with light text, for controls over photos and video. */
 export const Clear: Story = {
   render: () => html`
-    <div style=${media}>
+    <div pl-texture="fine-grid" style=${media}>
       <pl-bar-demo id="clear-bar" pl-glass="clear">
         <pl-button>Play</pl-button>
         0:42 of 3:10
@@ -141,7 +146,8 @@ const scene = encodeURIComponent(
 export const OverAPicture: Story = {
   render: () => html`
     <div
-      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); min-block-size: 460px; border-radius: var(--pl-radius-panel); overflow: hidden; background: linear-gradient(light-dark(transparent, rgb(0 0 0 / 55%)), light-dark(transparent, rgb(0 0 0 / 55%))), url('data:image/svg+xml;utf8,${scene}') center / cover"
+      pl-texture="fine-grid"
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); min-block-size: 460px; border-radius: var(--pl-radius-panel); overflow: hidden; --pl-texture-background: linear-gradient(light-dark(transparent, rgb(0 0 0 / 55%)), light-dark(transparent, rgb(0 0 0 / 55%))), url('data:image/svg+xml;utf8,${scene}') center / cover"
     >
       <div></div>
       <div
@@ -185,62 +191,6 @@ export const OverAPicture: Story = {
             <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
           </pl-toggle-group>
         </span>
-      </div>
-    </div>
-  `,
-  globals: { material: "glass" },
-};
-
-/*
- * The first lensing prototype, with one fixed map; the library's lens
- * (behaviors/lens.ts) sizes its map to each control. The backdrop is displaced at the
- * edges through an SVG filter, as Apple's glass bends what is behind it. The
- * map's red channel runs left to right and its green top to bottom, so the
- * centre (128, 128) does not move and the edges pull outward; a blurred
- * neutral inset keeps the middle still. Chromium renders backdrop-filter with
- * an SVG url(); other engines keep the plain blur declared before it.
- */
-const lensMap = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><defs><linearGradient id="x"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#f00"/></linearGradient><linearGradient id="y" x2="0" y2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#0f0"/></linearGradient><filter id="soft"><feGaussianBlur stdDeviation="14"/></filter></defs><rect width="200" height="200" fill="url(#x)"/><rect width="200" height="200" fill="url(#y)" style="mix-blend-mode:screen"/><rect x="34" y="34" width="132" height="132" rx="40" fill="rgb(128,128,0)" filter="url(#soft)"/></svg>`,
-);
-
-export const LensingPrototype: Story = {
-  render: () => html`
-    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
-      <filter
-        id="pl-lens"
-        x="0"
-        y="0"
-        width="100%"
-        height="100%"
-        color-interpolation-filters="sRGB"
-      >
-        <feImage
-          href="data:image/svg+xml;utf8,${lensMap}"
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          preserveAspectRatio="none"
-          result="map"
-        />
-        <feDisplacementMap
-          in="SourceGraphic"
-          in2="map"
-          scale="-36"
-          xChannelSelector="R"
-          yChannelSelector="G"
-        />
-      </filter>
-    </svg>
-    <div
-      style="padding: 48px 16px; background: repeating-linear-gradient(90deg, #457b9d 0 12px, #f1faee 12px 24px), #f1faee"
-    >
-      <div
-        id="lens"
-        style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 999px; background: var(--pl-material-glass, var(--pl-color-overlay)); box-shadow: var(--pl-material-edge), var(--pl-shadow-lg); backdrop-filter: blur(2px) saturate(160%); backdrop-filter: url(#pl-lens) blur(2px) saturate(160%); color: var(--pl-color-foreground); font: 600 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans)"
-      >
-        Lensed glass
       </div>
     </div>
   `,

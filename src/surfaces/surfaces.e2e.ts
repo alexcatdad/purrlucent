@@ -30,11 +30,11 @@ const openStory = async (page: Page, globals = "", id = story) => {
 
 const patterned = "foundations-surfaces--patterned-backdrop";
 
-test("WebKit magnifies a still texture and creates a rim map only on request", async ({
+test("textured glass uses the browser default and honors lens overrides", async ({
   page,
   browserName,
 }) => {
-  test.skip(browserName !== "webkit");
+  test.skip(browserName === "firefox");
   await openStory(
     page,
     "material:glass",
@@ -43,15 +43,21 @@ test("WebKit magnifies a still texture and creates a rim map only on request", a
   const source = page.locator('div[pl-texture="fine-grid"]').first();
   const toolbar = source.locator("pl-toolbar");
   const copy = toolbar.locator('span[pl-texture="fine-grid"]');
-  await expect(copy).toHaveCSS("transform", /^matrix\(1\.064,/);
-  await expect(toolbar.locator("filter")).toHaveCount(0);
+  const rim = toolbar.locator("feDisplacementMap");
+  const defaultCount = browserName === "chromium" ? 1 : 0;
+  await expect(rim).toHaveCount(defaultCount);
+  if (browserName === "webkit")
+    await expect(copy).toHaveCSS("transform", /^matrix\(1\.064,/);
   expect(
     await copy.evaluate((el) => getComputedStyle(el, "::before").animationName),
   ).toBe("none");
-  await source.evaluate((el) => el.setAttribute("pl-texture-lens", "rim"));
-  await expect(toolbar.locator("feDisplacementMap")).toHaveCount(1);
-  await source.evaluate((el) => el.removeAttribute("pl-texture-lens"));
+  await source.evaluate((el) => el.setAttribute("pl-texture-lens", "center"));
+  await expect(copy).toHaveCSS("transform", /^matrix\(1\.064,/);
   await expect(toolbar.locator("filter")).toHaveCount(0);
+  await source.evaluate((el) => el.setAttribute("pl-texture-lens", "rim"));
+  await expect(rim).toHaveCount(1);
+  await source.evaluate((el) => el.removeAttribute("pl-texture-lens"));
+  await expect(rim).toHaveCount(defaultCount);
   await page.emulateMedia({ contrast: "more" });
   await expect(copy).toHaveCount(0);
 });

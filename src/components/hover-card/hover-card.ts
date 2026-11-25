@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { AnchoredController } from "../../behaviors/anchored.ts";
 import { DismissController } from "../../behaviors/dismiss.ts";
+import { LensController } from "../../behaviors/lens.ts";
 import type { Placement, Side } from "../../behaviors/position.ts";
 import { hoverCardStyles } from "./hover-card.css.ts";
 
@@ -55,6 +56,7 @@ export class PlHoverCard extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=panel]");
     this.label = "";
     this.placement = "bottom";
     this.open = false;

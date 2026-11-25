@@ -1,3 +1,4 @@
+import { previewTexture } from "../../../.storybook/backdrop.css.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "../button/button.ts";
@@ -51,7 +52,7 @@ export const Playground: Story = {
 export const Default: Story = {
   render: () =>
     list(
-      html`<pl-item>
+      html`<pl-item pl-texture=${previewTexture()}>
         ${doc}
         <strong slot="title">Quarterly report</strong>
         <span slot="description">Edited yesterday</span>
@@ -64,7 +65,7 @@ export const Default: Story = {
 export const Link: Story = {
   render: () =>
     list(
-      html`<pl-item href="#report">
+      html`<pl-item pl-texture=${previewTexture()} href="#report">
         ${doc}
         <strong slot="title">Quarterly report</strong>
         <span slot="description">Edited yesterday</span>
@@ -96,7 +97,7 @@ export const List: Story = {
 export const LongText: Story = {
   render: () =>
     list(
-      html`<pl-item href="#long">
+      html`<pl-item pl-texture=${previewTexture()} href="#long">
         ${doc}
         <span slot="title"
           >A title that is long enough that it has to wrap onto a second
@@ -114,7 +115,7 @@ export const LongText: Story = {
 export const Rtl: Story = {
   render: () =>
     list(
-      html`<pl-item href="#report">
+      html`<pl-item pl-texture=${previewTexture()} href="#report">
         ${doc}
         <strong slot="title">Quarterly report</strong>
         <span slot="description">Edited yesterday</span>

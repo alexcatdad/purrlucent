@@ -16,6 +16,17 @@ export const dataTableStyles = css`
     max-block-size: inherit;
   }
 
+  /* An authored texture on the host is the table's canvas. Sticky cells
+     keep their opaque fill so scrolling rows stay behind them. */
+  :host([pl-texture]) pl-table::part(scroller),
+  :host([pl-texture])
+    pl-table:not([sticky-header])
+    table.model
+    thead
+    th:not([data-pin]) {
+    background-color: transparent;
+  }
+
   .filter {
     display: grid;
     margin-block-end: var(--pl-space-3);

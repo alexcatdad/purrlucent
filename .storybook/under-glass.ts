@@ -8,7 +8,7 @@ export const underGlass = (content: TemplateResult): TemplateResult => html`
     role="region"
     aria-label="Content under a glass toolbar"
     tabindex="0"
-    style="max-block-size: calc(var(--pl-spacing) * 120); overflow: auto; background: var(--pl-color-background);"
+    style="max-block-size: calc(var(--pl-spacing) * 120); overflow: auto;"
     @scroll=${(event: Event) => {
       const region = event.currentTarget as HTMLElement;
       const bar = region.querySelector("pl-toolbar");

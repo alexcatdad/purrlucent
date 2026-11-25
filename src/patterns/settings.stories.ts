@@ -1,3 +1,5 @@
+import { patternPanel } from "../../.storybook/backdrop.css.ts";
+import { LensController } from "../behaviors/lens.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, nothing } from "lit";
 import { plaintextRtl } from "../../.storybook/isolate.ts";
@@ -54,6 +56,7 @@ class SettingsDemo extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.email = "sam@example.test";
     this.attempted = false;
     this.tab = "general";
@@ -244,7 +247,7 @@ class SettingsDemo extends LitElement {
       padding: var(--pl-space-6);
       border: 1px solid var(--pl-color-border);
       border-radius: var(--pl-radius-panel);
-      background: var(--pl-color-background);
+      ${patternPanel}
       color: var(--pl-color-foreground);
       font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
     }
