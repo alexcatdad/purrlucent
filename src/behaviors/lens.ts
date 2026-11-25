@@ -1,11 +1,18 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
+import {
+  dropTexture,
+  schedulePlacement,
+  textureLens,
+  textureStyleChanged,
+} from "./texture-lens.ts";
 
 /*
  * Refraction for glass, as Apple's glass bends what is behind its rim. Each
  * host gets an SVG displacement filter sized to its box, and the host's own
  * backdrop-filter reads it as --pl-lens ahead of the blur. Only Chromium draws
  * an SVG filter in backdrop-filter (WebKit bug 245510; Firefox drops the
- * displacement there), so other engines keep the plain frost. The filter must
+ * displacement there). WebKit can magnify a known texture painted into the face.
+ * The filter must
  * live in the host's own tree (the document, or the shadow root that holds the
  * host), and a reference to a missing filter drops the whole backdrop-filter,
  * so the variable is set only while its filter is in place.
@@ -13,6 +20,10 @@ import type { ReactiveController, ReactiveControllerHost } from "lit";
 
 const supported =
   typeof navigator !== "undefined" && "userAgentData" in navigator;
+const webkit =
+  !supported &&
+  typeof navigator !== "undefined" &&
+  navigator.vendor === "Apple Computer, Inc.";
 
 // feDisplacementMap measures offsets in CSS pixels. Use the same optical
 // profile for every backdrop and scale it to the surface's longest side.
@@ -139,17 +150,21 @@ function release(lens: Lens) {
 
 const hosts = new Map<HTMLElement, Lens | undefined>();
 
-function refresh(element: HTMLElement) {
+function refresh(element: HTMLElement, restyle = false) {
   const previous = hosts.get(element);
   const w = element.offsetWidth;
   const h = element.offsetHeight;
   const style = getComputedStyle(element);
-  if (w && h && style.backdropFilter !== "none") {
+  const glass = !!(w && h && style.backdropFilter !== "none");
+  const clip = webkit ? textureLens(element, glass, restyle) : undefined;
+  if (glass && (supported || clip)) {
     const radius = Number.parseFloat(style.borderTopLeftRadius);
     const r = Math.round(Math.min(radius || 0, w / 2, h / 2));
-    if (previous?.key === `${w} ${h} ${r}`) return;
-    const lens = lensFor(element.getRootNode() as Tree, w, h, r);
-    element.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
+    if (previous?.key === `${w} ${h} ${r}` && (!clip || clip.style.filter))
+      return;
+    const lens = lensFor((clip ?? element).getRootNode() as Tree, w, h, r);
+    if (clip) clip.style.filter = `url(#${lens.filter.id})`;
+    else element.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
     hosts.set(element, lens);
   } else if (previous) {
     element.style.removeProperty("--pl-lens");
@@ -159,10 +174,17 @@ function refresh(element: HTMLElement) {
 }
 
 const resizes =
-  supported && typeof ResizeObserver !== "undefined"
+  (supported || webkit) && typeof ResizeObserver !== "undefined"
     ? new ResizeObserver((entries) => {
-        for (const { target } of entries)
-          if (hosts.has(target as HTMLElement)) refresh(target as HTMLElement);
+        const update = () => {
+          for (const { target } of entries)
+            if (hosts.has(target as HTMLElement))
+              refresh(target as HTMLElement);
+        };
+        // A texture copy starts observing its source. Register it outside the
+        // current delivery, which may already have visited that ancestor.
+        if (webkit) requestAnimationFrame(update);
+        else update();
       })
     : undefined;
 
@@ -171,18 +193,28 @@ const materialTrees = new Map<
   Tree,
   { observer: MutationObserver; users: number }
 >();
-const solidPreference = supported
-  ? matchMedia(
-      "(prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active)",
-    )
-  : undefined;
+const solidPreference =
+  supported || webkit
+    ? matchMedia(
+        "(prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active)",
+      )
+    : undefined;
 function refreshMaterials() {
-  for (const el of hosts.keys()) refresh(el);
+  for (const el of hosts.keys()) refresh(el, true);
 }
+const texturePreferences = webkit
+  ? [
+      matchMedia("(prefers-color-scheme: dark)"),
+      matchMedia("(prefers-reduced-motion: reduce)"),
+    ]
+  : [];
 function watchMaterial(host: HTMLElement) {
   const roots: Tree[] = [];
-  if (!materialTrees.size)
+  if (!materialTrees.size) {
     solidPreference?.addEventListener("change", refreshMaterials);
+    for (const pref of texturePreferences)
+      pref.addEventListener("change", refreshMaterials);
+  }
   for (
     let tree = host.getRootNode() as Tree;
     ;
@@ -190,11 +222,33 @@ function watchMaterial(host: HTMLElement) {
   ) {
     let watch = materialTrees.get(tree);
     if (!watch) {
-      const observer = new MutationObserver(refreshMaterials);
+      const observer = new MutationObserver((records) => {
+        if (
+          records.some(
+            (r) =>
+              (r.attributeName !== "style" && r.attributeName !== "class") ||
+              textureStyleChanged(r.target),
+          )
+        )
+          refreshMaterials();
+      });
+      if (webkit && tree instanceof ShadowRoot)
+        tree.addEventListener("scroll", schedulePlacement, true);
       observer.observe(tree, {
         subtree: true,
         attributes: true,
-        attributeFilter: ["pl-material", "pl-glass"],
+        attributeFilter: webkit
+          ? [
+              "pl-material",
+              "pl-glass",
+              "pl-texture",
+              "pl-texture-lens",
+              "pl-texture-motion",
+              "pl-theme",
+              "style",
+              "class",
+            ]
+          : ["pl-material", "pl-glass"],
       });
       watch = { observer, users: 0 };
       materialTrees.set(tree, watch);
@@ -251,6 +305,7 @@ export class LensController implements ReactiveController {
   }
 
   #detach(el: HTMLElement) {
+    if (webkit) dropTexture(el);
     resizes?.unobserve(el);
     const lens = hosts.get(el);
     if (lens) {
@@ -266,12 +321,17 @@ export class LensController implements ReactiveController {
     for (const tree of this.#trees) {
       const watch = materialTrees.get(tree)!;
       if (--watch.users === 0) {
+        if (webkit && tree instanceof ShadowRoot)
+          tree.removeEventListener("scroll", schedulePlacement, true);
         watch.observer.disconnect();
         materialTrees.delete(tree);
       }
     }
     this.#trees = [];
-    if (!materialTrees.size)
+    if (!materialTrees.size) {
       solidPreference?.removeEventListener("change", refreshMaterials);
+      for (const pref of texturePreferences)
+        pref.removeEventListener("change", refreshMaterials);
+    }
   }
 }

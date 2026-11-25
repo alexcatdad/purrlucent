@@ -150,6 +150,8 @@ Set `pl-texture` on `html` or `body` for a viewport background, or on a containe
 
 Textures are still by default. Add `pl-texture-motion="drift"` for motion and set `--pl-texture-motion` to a duration to change its speed. Reduced motion keeps the pattern still. Increased contrast and forced colors hide it.
 
+In Safari, glass controls magnify the nearest Purrlucent texture by 6.4%. The texture and its magnified copy share an animation clock. For a bent rim, add `pl-texture-lens="rim"` to the textured page or card. Rendering the rim on several large animated surfaces takes more frame time.
+
 `--pl-texture-color` sets the accent for the colored patterns. Fine grain uses neutral light and dark flecks. `--pl-texture-size` sets the repeat distance of tiled patterns, and `--pl-texture-dot` sets the dot radius. Dots fade toward one corner by default. Set `--pl-texture-fade` to a CSS mask gradient or `none` on any textured surface.
 
 ## Glass mode
@@ -186,7 +188,7 @@ Glass is thin, as Apple's is: a pale film in light and an ink one in dark, `--pl
 
 A text-only button in a glass bar takes the primary text color. On glass the focus ring and the selection follow your accent: `--pl-material-ring` and `--pl-material-selected` are `--pl-color-accent` deepened in light and lifted in dark, so each holds 3:1 on the thin fill. With the default accent they are a deep pink in light and a light one in dark. Set `--pl-color-accent` and both follow; override either token to set it directly. Text on the selection reads `--pl-material-selected-foreground`: white on the deepened fill in light and ink on the lifted one in dark, so it holds 4.5:1 for any accent. Your `--pl-color-accent-foreground` stays for solid accent fills. A toolbar with `floating` becomes a capsule that floats over the content.
 
-In Chromium, glass surfaces sample the live backdrop through a size-aware lens. Letters, photos and patterned backgrounds follow the same refraction profile: the rim bends the image and the interior gently magnifies it. Safari and Firefox use the frosted fill because their backdrop filters do not draw SVG displacement.
+In Chromium, glass surfaces sample the live backdrop through a size-aware lens. Letters, photos and patterned backgrounds follow the same refraction profile: the rim bends the image and the interior gently magnifies it. Safari uses frosted glass with magnification over Purrlucent textures. Other Safari backdrops and Firefox use the frosted fill.
 
 ### Clear glass
 

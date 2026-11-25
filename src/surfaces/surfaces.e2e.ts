@@ -30,6 +30,32 @@ const openStory = async (page: Page, globals = "", id = story) => {
 
 const patterned = "foundations-surfaces--patterned-backdrop";
 
+test("WebKit magnifies a still texture and creates a rim map only on request", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== "webkit");
+  await openStory(
+    page,
+    "material:glass",
+    "foundations-surfaces--background-textures",
+  );
+  const source = page.locator('div[pl-texture="fine-grid"]').first();
+  const toolbar = source.locator("pl-toolbar");
+  const copy = toolbar.locator('span[pl-texture="fine-grid"]');
+  await expect(copy).toHaveCSS("transform", /^matrix\(1\.064,/);
+  await expect(toolbar.locator("filter")).toHaveCount(0);
+  expect(
+    await copy.evaluate((el) => getComputedStyle(el, "::before").animationName),
+  ).toBe("none");
+  await source.evaluate((el) => el.setAttribute("pl-texture-lens", "rim"));
+  await expect(toolbar.locator("feDisplacementMap")).toHaveCount(1);
+  await source.evaluate((el) => el.removeAttribute("pl-texture-lens"));
+  await expect(toolbar.locator("filter")).toHaveCount(0);
+  await page.emulateMedia({ contrast: "more" });
+  await expect(copy).toHaveCount(0);
+});
+
 const backdropFilter = (page: Page, id: string) =>
   page.locator(`#${id}`).evaluate((el) => getComputedStyle(el).backdropFilter);
 
