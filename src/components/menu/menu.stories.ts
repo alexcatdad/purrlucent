@@ -315,6 +315,23 @@ export const PlacementEnd: Story = {
   },
 };
 
+const centred = (placement: string) =>
+  html`<div
+    style="display:grid;place-items:center;min-block-size:calc(var(--pl-spacing) * 90)"
+  >
+    ${placed(placement)}
+  </div>`;
+
+/** `end-start` opens beside the trigger with the menu's top level with the trigger's. */
+export const PlacementEndStart: Story = {
+  render: () => centred("end-start"),
+};
+
+/** `end-end` opens beside the trigger with the menu's bottom level with the trigger's. `start-start` and `start-end` do the same on the other side. */
+export const PlacementEndEnd: Story = {
+  render: () => centred("end-end"),
+};
+
 /** A menu opened from code with `show()` focuses its first item. */
 export const FromCode: Story = {
   render: () => column(edit),

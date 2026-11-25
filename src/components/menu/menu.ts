@@ -255,7 +255,7 @@ export class PlMenuLabel extends LitElement {
  *
  * @attr {string} label - The accessible name of the menu.
  * @attr {boolean} open - The menu is showing.
- * @attr {string} placement - Where the menu opens from its trigger: `bottom-start` (default), `bottom-end`, `top-start`, `top-end`, `start` or `end`. It flips when the side has no room.
+ * @attr {string} placement - Where the menu opens from its trigger: `bottom-start` (default), `bottom-end`, `top-start`, `top-end`, `start` or `end` (beside the trigger, centred), or `start-start`, `start-end`, `end-start` or `end-end` (beside the trigger, with the menu's top, for `-start`, or bottom, for `-end`, level with the trigger's). Start and end follow the text direction. It flips when the side has no room. From a `pl-sidebar-item`, a side placement opens past the sidebar's edge.
  * @slot trigger - A focusable control that opens the menu. It gets `aria-haspopup` and `aria-expanded`.
  * @slot header - Non-interactive content above the items, such as a name and email block or an empty state.
  * @slot - The `pl-menu-item`, `pl-menu-separator` and `pl-menu-label` children.
@@ -539,7 +539,19 @@ export class PlMenu extends LitElement {
         : (this.#trigger ?? this.shadowRoot!.querySelector("[part=point]")!);
       // A point has no edge to keep clear of; a trigger gets the list's margin as a gap.
       list.style.marginBlock = this.#atPoint ? "0" : "";
-      position(anchor, list, this.#atPoint ? "bottom-start" : this.placement);
+      const placement = this.#atPoint ? "bottom-start" : this.placement;
+      // A sidebar row clears the sidebar's edge, not its own, past the padding and glass edge.
+      const sidebar =
+        /^(start|end)/.test(placement) &&
+        this.#trigger?.matches("pl-sidebar-item")
+          ? this.#trigger.closest("pl-sidebar")
+          : null;
+      const edge =
+        sidebar?.shadowRoot?.querySelector("dialog[open]") ?? sidebar;
+      // A side placement has no gap of its own: an aligned one, or one off a sidebar, takes the block gap.
+      list.style.marginInline =
+        edge || /^(start|end)-/.test(placement) ? "var(--pl-space-1)" : "";
+      position(anchor, list, placement, edge ?? anchor);
       return;
     }
     const anchor = parent.shadowRoot!.querySelector("[part=anchor]")!;

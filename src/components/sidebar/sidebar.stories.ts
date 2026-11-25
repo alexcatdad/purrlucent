@@ -346,6 +346,23 @@ export const AccountMenu: Story = {
   `,
 };
 
+/** A menu with a side placement opens past the sidebar's edge when an `action` item triggers it. */
+export const MenuBesideSidebar: Story = {
+  render: () => html`
+    <pl-sidebar id="sidebar" label="Workspace" collapse-below="0">
+      <pl-menu id="menu" label="Account" placement="end-start">
+        <pl-sidebar-item id="account" slot="trigger" action
+          ><pl-avatar slot="icon" name="Ada Lovelace"></pl-avatar>Ada
+          Lovelace</pl-sidebar-item
+        >
+        <pl-menu-item>Profile</pl-menu-item>
+        <pl-menu-item>Sign Out</pl-menu-item>
+      </pl-menu>
+      <pl-sidebar-item id="home" href="#home" selected>Home</pl-sidebar-item>
+    </pl-sidebar>
+  `,
+};
+
 /** An `action` item as the trigger of a `pl-menu`: the button that holds focus carries `aria-haspopup` and `aria-expanded`. */
 export const MenuTrigger: Story = {
   render: () => html`

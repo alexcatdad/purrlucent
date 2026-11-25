@@ -6,7 +6,11 @@ export type Placement =
   | "top"
   | "bottom"
   | "start"
-  | "end";
+  | "end"
+  | "start-start"
+  | "start-end"
+  | "end-start"
+  | "end-end";
 
 /** The side of the anchor the overlay ended up on, after flipping. */
 export type Side = "top" | "bottom" | "left" | "right";
@@ -33,13 +37,16 @@ const clamp = (value: number, size: number, viewport: number) =>
  * preferred one has no room, and keeps an 8px viewport inset. Stands in for CSS anchor
  * positioning until Firefox supports it. "start" and "end" follow the anchor's text direction:
  * as a suffix they align the overlay's edge with the anchor's; alone they put the overlay beside
- * the anchor. "top" and "bottom" alone centre it. The overlay's margins are the gap to the
- * anchor. Returns the side it took.
+ * the anchor. "top" and "bottom" alone centre it. Beside the anchor, "start" and "end" centre the
+ * overlay on it and a suffix lines up its top ("-start") or bottom ("-end") with the anchor's.
+ * The overlay's margins are the gap to the anchor. `edge` is the element a side placement clears
+ * instead of the anchor, such as the sidebar a row sits in. Returns the side it took.
  */
 export function position(
   anchor: Element,
   overlay: HTMLElement,
   placement: Placement,
+  edge: Element = anchor,
 ): Side {
   // Fixed first: an in-flow overlay can size differently (stretch, wrap).
   overlay.style.position = "fixed";
@@ -63,12 +70,19 @@ export function position(
 
   if (beside) {
     const preferLeft = (head === "start") !== rtl;
-    const before = a.left - outerW;
-    const after = a.right;
+    const e = edge.getBoundingClientRect();
+    const before = e.left - outerW;
+    const after = e.right;
     const [first, second] = preferLeft ? [before, after] : [after, before];
     const left = pick(first, second, (n) => fits(n, outerW, clientWidth));
+    const top =
+      tail === "start"
+        ? a.top - margin("Top")
+        : tail === "end"
+          ? a.bottom - height - margin("Top")
+          : a.top + a.height / 2 - outerH / 2;
     overlay.style.left = `${clamp(left, outerW, clientWidth)}px`;
-    overlay.style.top = `${clamp(a.top + a.height / 2 - outerH / 2, outerH, clientHeight)}px`;
+    overlay.style.top = `${clamp(top, outerH, clientHeight)}px`;
     return left === before ? "left" : "right";
   }
 
