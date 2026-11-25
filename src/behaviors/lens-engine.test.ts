@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { displacementMap } from "./lens.ts";
+import { displacementMap } from "./lens-engine.ts";
 
 // An odd-sized surface places a pixel at the optical centre.
 const map = displacementMap(121, 121, 8);

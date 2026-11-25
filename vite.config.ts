@@ -1,8 +1,91 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { defineConfig } from "vite";
+import { Features, transform, transformStyleAttribute } from "lightningcss";
+import { defineConfig, type Plugin } from "vite";
 
 const root = import.meta.dirname;
+
+// Support policy: the last two versions of each evergreen browser (as of
+// 2026-11-20). Vite's default target is older and makes Lightning CSS
+// rewrite light-dark() into media queries.
+const browsers = { chrome: 156, edge: 156, firefox: 159, safari: 26, ios: 26 };
+
+/**
+ * Minifies the CSS in each css`` template of the *.css.ts files. An app's
+ * minifier leaves template text alone, so without this every component ships
+ * its styles with their comments and indentation. An interpolation that stands
+ * for whole declarations or rules becomes a placeholder Lightning CSS keeps: a
+ * custom property inside a block, a rule outside one. A template with an
+ * interpolation anywhere else, such as inside a value, stays as written. A
+ * template with no block is a declaration list.
+ */
+const minifyTemplateCss = (): Plugin => {
+  const targets = Object.fromEntries(
+    Object.entries(browsers).map(([name, major]) => [
+      name === "ios" ? "ios_saf" : name,
+      major << 16,
+    ]),
+  );
+  const minify = (body: string, id: string) => {
+    // Lit reads the cooked string and this reads the raw text, so an escape
+    // would come out changed.
+    if (body.includes("\\"))
+      throw new Error(`${id}: a css\`\` template holds a backslash`);
+    const holes: { expr: string; mark: string }[] = [];
+    let inValue = false;
+    const source = body.replace(/\$\{([^}]*)\}/g, (_, expr: string, at) => {
+      const before = body.slice(0, at);
+      const last = before.trimEnd().at(-1);
+      if (last !== undefined && !"{};".includes(last)) inValue = true;
+      const inBlock = before.split("{").length > before.split("}").length;
+      const n = holes.length;
+      // Each rule differs, so the minifier cannot merge two adjacent holes.
+      const mark = inBlock
+        ? `--pl-hole-${n}:0`
+        : `.pl-hole-${n}{--pl-hole:${n}}`;
+      holes.push({ expr, mark });
+      return inBlock ? `${mark};` : mark;
+    });
+    if (inValue) return body;
+    // Minify only: the styles keep the vendor prefixes they were written with.
+    const options = {
+      filename: id,
+      minify: true,
+      targets,
+      exclude: Features.VendorPrefixes,
+      errorRecovery: false,
+    };
+    const result = source.includes("{")
+      ? transform({ ...options, code: Buffer.from(source) })
+      : transformStyleAttribute({ ...options, code: Buffer.from(source) });
+    if (result.warnings.length)
+      throw new Error(
+        `${id}: ${result.warnings.map((w) => w.message).join("; ")}`,
+      );
+    let out = result.code.toString().replace(/[\\`]/g, "\\$&");
+    for (const { expr, mark } of holes) {
+      if (out.split(mark).length !== 2)
+        throw new Error(`${id}: lost the placeholder for \${${expr}}`);
+      out = out.replace(mark, `\${${expr}}`);
+    }
+    return out;
+  };
+  return {
+    name: "pl-minify-template-css",
+    enforce: "pre",
+    transform(code, id) {
+      // Shipped styles only; Storybook's own styles stay as written.
+      if (!id.startsWith(`${root}/src/`) || !id.endsWith(".css.ts")) return;
+      return {
+        code: code.replace(
+          /(?<![.\w])css`([^`]*)`/g,
+          (_, body: string) => `css\`${minify(body, id)}\``,
+        ),
+        map: null,
+      };
+    },
+  };
+};
 const components = readdirSync(resolve(root, "src/components"), {
   withFileTypes: true,
 })
@@ -42,6 +125,7 @@ const tailwindCss = () => {
 
 export default defineConfig({
   plugins: [
+    minifyTemplateCss(),
     {
       // Ships the generated tokens as the purrlucent/tokens.css export.
       name: "pl-tokens-css",
@@ -67,10 +151,7 @@ export default defineConfig({
     },
   ],
   build: {
-    // Support policy: the last two versions of each evergreen browser (as of
-    // 2026-11-20). Vite's default target is older and makes Lightning CSS
-    // rewrite light-dark() into media queries.
-    target: ["chrome156", "edge156", "firefox159", "safari26", "ios26"],
+    target: Object.entries(browsers).map(([name, major]) => name + major),
     lib: {
       entry: {
         index: resolve(root, "src/index.ts"),
