@@ -81,6 +81,10 @@ export class LensController implements ReactiveController {
   #engine?: LensEngine;
   #trees: Tree[] = [];
   #check = () => {
+    // TEMPORARY diagnostic
+    console.debug(
+      `[lens] check ${this.#host.localName} glass=${inGlass(this.#host)} connected=${this.#host.isConnected}`,
+    );
     if (!inGlass(this.#host)) return;
     this.#stopWaiting();
     // A failed load is dropped, so a later check imports again.
@@ -90,6 +94,10 @@ export class LensController implements ReactiveController {
     });
     engine.then(
       ({ LensEngine }) => {
+        // TEMPORARY diagnostic
+        console.debug(
+          `[lens] loaded ${this.#host.localName} engine=${!!this.#engine} connected=${this.#host.isConnected} waiting=${waiting.has(this.#check)}`,
+        );
         // Skip when the host left, or came back outside glass, while loading.
         if (this.#engine || !this.#host.isConnected || waiting.has(this.#check))
           return;
@@ -97,7 +105,9 @@ export class LensController implements ReactiveController {
         this.#engine.hostConnected();
       },
       // Without the lens the surface keeps its frosted fill; wait to try again.
-      () => {
+      (error: unknown) => {
+        // TEMPORARY diagnostic
+        console.debug(`[lens] failed ${String(error)}`);
         if (this.#host.isConnected && !waiting.has(this.#check)) this.#wait();
       },
     );
@@ -126,6 +136,8 @@ export class LensController implements ReactiveController {
   }
 
   hostDisconnected() {
+    // TEMPORARY diagnostic
+    console.debug(`[lens] disconnected ${this.#host.localName}`);
     this.#stopWaiting();
     this.#engine?.hostDisconnected();
     this.#engine = undefined;
