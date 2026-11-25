@@ -9,7 +9,7 @@ purrlucent is a library of `pl-*` custom elements with design tokens. The elemen
 
 ## Quick start
 
-Install the package from its GitHub Release; it is not on the npm registry. [references/install.md](references/install.md) has the URL; use the latest release unless the project pins a version. With npm 12 or later, add `allow-remote=root` to the project's `.npmrc` first.
+Install `purrlucent` from the npm registry with the project's package manager, such as `npm install purrlucent` or `bun add purrlucent`. Use the latest version unless the project pins one. [references/install.md](references/install.md) has the setup details.
 
 In the app entry, import the tokens once and each component once. A child element comes with its parent's import. Paint the page with the tokens, because control fills are translucent and tint whatever is behind them:
 
@@ -68,4 +68,4 @@ Test in a real browser, such as Vitest browser mode or Playwright. jsdom and hap
 
 ## Upgrading
 
-Install again with the new version in the release URL, and install the skill pinned to the same version so its references match. If an element misbehaves, report it on the [purrlucent issues](https://github.com/alexcatdad/purrlucent/issues).
+Install the new version with the project's package manager, and install the skill pinned to the same version so its references match. If an element misbehaves, report it on the [purrlucent issues](https://github.com/alexcatdad/purrlucent/issues).

@@ -1,33 +1,23 @@
 # Install purrlucent
 
-purrlucent is published as a GitHub Release. It is not on the npm registry or GitHub Packages. Each release has one package file, `purrlucent-<version>.tgz`, and you install it from its URL. No token is needed.
-
-The URL has this form:
-
-```text
-https://github.com/alexcatdad/purrlucent/releases/download/v<version>/purrlucent-<version>.tgz
-```
-
-Replace `<version>` with a version from the [releases page](https://github.com/alexcatdad/purrlucent/releases).
-
-## Install with Bun
+purrlucent is on the npm registry. Install it with your package manager:
 
 ```sh
-bun add purrlucent@https://github.com/alexcatdad/purrlucent/releases/download/v<version>/purrlucent-<version>.tgz
+npm install purrlucent
 ```
-
-## Install with npm 12 or later
-
-From npm 12, `allow-remote` defaults to `none`, so npm refuses to install from a URL. Set it to `root` in your project's `.npmrc`. This allows only the URLs listed in your own `package.json`:
-
-```ini
-allow-remote=root
-```
-
-Then install:
 
 ```sh
-npm install purrlucent@https://github.com/alexcatdad/purrlucent/releases/download/v<version>/purrlucent-<version>.tgz
+bun add purrlucent
+```
+
+pnpm and Yarn work the same way. The package is ES modules only and has one dependency, `lit`. The chart also needs its optional peer, `@tanstack/charts`.
+
+## Verify the package
+
+From 0.27.1, every version is built and published by the repository's release workflow on GitHub Actions, with no npm token, and carries a provenance statement: a signed record of the commit and workflow that built it. The package page on npmjs.com links to both. To check the signatures and provenance of what you installed:
+
+```sh
+npm audit signatures
 ```
 
 ## Use it
@@ -135,7 +125,7 @@ The package also ships the skill in `node_modules/purrlucent/dist/skills/purrluc
 
 ## Upgrade
 
-The version is part of the URL. To upgrade, install again with the new version in the URL.
+Install the latest version with `npm install purrlucent@latest` or `bun add purrlucent@latest`, and update the agent skill to the same version. The [changelog](https://github.com/alexcatdad/purrlucent/blob/main/CHANGELOG.md) lists what each version changes.
 
 ## Background textures
 

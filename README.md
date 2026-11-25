@@ -1,5 +1,10 @@
 # Purrlucent
 
+[![npm](https://img.shields.io/npm/v/purrlucent)](https://www.npmjs.com/package/purrlucent)
+[![CI](https://github.com/alexcatdad/purrlucent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alexcatdad/purrlucent/actions/workflows/ci.yml)
+[![License](https://img.shields.io/npm/l/purrlucent)](LICENSE)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/purrlucent)](https://bundlephobia.com/package/purrlucent)
+
 Web components for apps: buttons, form controls, menus, dialogs and navigation, built with Lit and plain CSS custom properties. They work in any framework or none, follow Apple's Human Interface Guidelines as guidance, and have their own look.
 
 - **Framework-agnostic.** Standard custom elements with shadow DOM. Each one has its own import path.
@@ -16,6 +21,10 @@ The [component reference](docs/components.md) lists every element with its attri
 
 ## Use
 
+```sh
+npm install purrlucent
+```
+
 ```ts
 import "purrlucent/tokens.css";
 import "purrlucent/button";
@@ -29,7 +38,7 @@ import "purrlucent/switch";
 </form>
 ```
 
-Purrlucent is published as a GitHub Release, not on the npm registry. The [install guide](docs/install.md) covers installing, the page background, fonts, light and dark, glass mode and theming. For a React app, see [Use with React](docs/react.md).
+From 0.27.1, every version is published from GitHub Actions with a provenance statement. The [install guide](docs/install.md) covers installing, verifying the package, the page background, fonts, light and dark, glass mode and theming. For a React app, see [Use with React](docs/react.md).
 
 ## Security
 
