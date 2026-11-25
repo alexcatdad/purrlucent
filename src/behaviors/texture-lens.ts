@@ -53,8 +53,9 @@ class TextureCopy {
   ) {
     const { clip, plane } = this;
     clip.setAttribute("aria-hidden", "true");
+    // The pressable face at -1 paints its fill over the refracted backdrop.
     clip.style.cssText =
-      "position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;opacity:.67;z-index:-1";
+      "position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;opacity:.67;z-index:-2";
     plane.style.cssText = "position:absolute;left:0;top:0;transform-origin:0 0";
     const root = clip.attachShadow({ mode: "open" });
     if (!sheet) {
