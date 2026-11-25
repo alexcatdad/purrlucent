@@ -61,6 +61,8 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
       - run: bun run build
+      # The packed package: exports, type paths and fields npm and bundlers read.
+      - run: bun run lint:package
 
   # The browser-test image (.github/e2e-image): browsers, their system packages
   # and fonts preinstalled, so the browser jobs pull it instead of installing.
