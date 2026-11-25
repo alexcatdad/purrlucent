@@ -225,7 +225,7 @@ export const sidebarStyles = [
       padding: 0;
       overflow: hidden;
       background: var(--pl-material-sidebar);
-      backdrop-filter: var(--pl-material-sidebar-filter);
+      backdrop-filter: var(--pl-lens,) var(--pl-material-sidebar-filter);
       box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
       color: var(--pl-color-foreground);
       font: inherit;

@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
@@ -56,6 +57,7 @@ export class PlSwitch extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=track]");
     this.checked = false;
     this.name = "";
     this.value = "on";

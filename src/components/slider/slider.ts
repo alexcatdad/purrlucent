@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, type PropertyValues } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { sliderStyles } from "./slider.css.ts";
@@ -68,6 +69,7 @@ export class PlSlider extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=track]");
     this.value = 0;
     this.min = 0;
     this.max = 100;

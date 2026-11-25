@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
@@ -150,6 +151,7 @@ export class PlCombobox extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=field], [part=listbox]");
     // A blocked submit or reportValidity() is an interaction too.
     this.addEventListener("invalid", () => {
       this.#touched = true;

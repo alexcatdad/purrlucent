@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing } from "lit";
 import {
   closeGlyph,
@@ -84,6 +85,7 @@ export class PlToast extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.variant = "neutral";
     this.duration = 6000;
     this.closeLabel = "";

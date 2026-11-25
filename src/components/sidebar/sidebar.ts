@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
 import { PlSidebarItem } from "./sidebar-item.ts";
@@ -121,6 +122,8 @@ export class PlSidebar extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
+    new LensController(this, "dialog");
     this.label = "";
     this.collapsed = false;
     this.size = "md";

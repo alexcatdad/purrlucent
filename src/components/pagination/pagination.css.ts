@@ -11,7 +11,7 @@ export const paginationStyles = css`
 
     display: block;
     background: var(--pl-material-capsule-strong);
-    backdrop-filter: var(--pl-material-bar-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-bar-filter);
     box-shadow: var(--pl-material-edge);
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);

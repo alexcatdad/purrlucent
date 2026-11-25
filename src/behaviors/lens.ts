@@ -14,45 +14,53 @@ import type { ReactiveController, ReactiveControllerHost } from "lit";
 const supported =
   typeof navigator !== "undefined" && "userAgentData" in navigator;
 
-/** How far, in pixels, the rim pulls the backdrop inward. */
-const SCALE = 70;
+// feDisplacementMap measures offsets in CSS pixels. Use the same optical
+// profile for every backdrop and scale it to the surface's longest side.
+const lensScale = (w: number, h: number) =>
+  Math.ceil(2 * (23 + 0.03 * Math.max(w, h)));
 
-/**
- * A displacement map for a w×h rounded rectangle of radius r, as RGBA bytes.
- * Red carries x and green y, 128 is still. Inside the bezel the backdrop is
- * pulled toward the centre, most at the rim; the middle does not move.
- */
-export function displacementMap(w: number, h: number, r: number) {
-  const bezel = Math.max(4, Math.min(36, Math.min(w, h) / 2));
-  const data = new Uint8ClampedArray(w * h * 4);
-  const hx = w / 2;
-  const hy = h / 2;
-  for (let y = 0; y < h; y++)
-    for (let x = 0; x < w; x++) {
-      // Distance inside the rounded rectangle, and the outward normal.
-      const px = x + 0.5 - hx;
-      const py = y + 0.5 - hy;
-      const qx = Math.abs(px) - (hx - r);
-      const qy = Math.abs(py) - (hy - r);
-      let inside: number;
-      let nx = 0;
-      let ny = 0;
-      if (qx > 0 && qy > 0) {
-        const l = Math.hypot(qx, qy);
-        inside = r - l;
-        nx = (qx / l) * Math.sign(px);
-        ny = (qy / l) * Math.sign(py);
-      } else {
-        inside = r - Math.max(qx, qy);
-        if (qx > qy) nx = Math.sign(px);
-        else ny = Math.sign(py);
-      }
-      const t = inside > 0 && inside < bezel ? 1 - inside / bezel : 0;
-      const i = (y * w + x) * 4;
-      data[i] = 128 - nx * t * t * 127;
-      data[i + 1] = 128 - ny * t * t * 127;
-      data[i + 2] = 128;
-      data[i + 3] = 255;
+function lensAxis(length: number, samples: number) {
+  return Array.from({ length: samples }, (_, i) => {
+    const position = ((i + 0.5) * length) / samples;
+    const edge = Math.min(position, length - position);
+    return {
+      edge,
+      bevel:
+        Math.min(23, length / 3) *
+        (Math.exp(-position / 9) - Math.exp(-(length - position) / 9)),
+      zoom: (position - length / 2) * 0.06,
+      interior: 1 - Math.exp(-edge / 12),
+    };
+  });
+}
+
+/** Red and green encode the horizontal and vertical displacement of the backdrop. */
+export function displacementMap(
+  w: number,
+  h: number,
+  radius: number,
+  cols = w,
+  rows = h,
+) {
+  const data = new Uint8ClampedArray(cols * rows * 4);
+  const scale = lensScale(w, h);
+  const xs = lensAxis(w, cols);
+  const ys = lensAxis(h, rows);
+  let offset = 0;
+  for (const y of ys)
+    for (const x of xs) {
+      const outside =
+        x.edge < radius &&
+        y.edge < radius &&
+        (radius - x.edge) ** 2 + (radius - y.edge) ** 2 > radius ** 2;
+      data[offset++] = outside
+        ? 128
+        : 255 * (0.5 + (x.bevel - x.zoom * y.interior) / scale);
+      data[offset++] = outside
+        ? 128
+        : 255 * (0.5 + (y.bevel - y.zoom * x.interior) / scale);
+      data[offset++] = 128;
+      data[offset++] = 255;
     }
   return data;
 }
@@ -89,11 +97,19 @@ function lensFor(tree: Tree, w: number, h: number, r: number): Lens {
   let lens = entry.lenses.get(key);
   if (!lens) {
     const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = Math.min(w, 512);
+    canvas.height = Math.min(h, 512);
     canvas
       .getContext("2d")!
-      .putImageData(new ImageData(displacementMap(w, h, r), w, h), 0, 0);
+      .putImageData(
+        new ImageData(
+          displacementMap(w, h, r, canvas.width, canvas.height),
+          canvas.width,
+          canvas.height,
+        ),
+        0,
+        0,
+      );
     const filter = document.createElementNS(NS, "filter");
     filter.id = `pl-lens-${next++}`;
     for (const [name, value] of Object.entries({
@@ -106,7 +122,7 @@ function lensFor(tree: Tree, w: number, h: number, r: number): Lens {
       "color-interpolation-filters": "sRGB",
     }))
       filter.setAttribute(name, value);
-    filter.innerHTML = `<feFlood flood-color="rgb(128 128 128)" result="still"/><feImage href="${canvas.toDataURL()}" width="${w}" height="${h}" preserveAspectRatio="none" result="rim"/><feMerge result="map"><feMergeNode in="still"/><feMergeNode in="rim"/></feMerge><feDisplacementMap in="SourceGraphic" in2="map" scale="${SCALE}" xChannelSelector="R" yChannelSelector="G"/>`;
+    filter.innerHTML = `<feFlood flood-color="rgb(128 128 128)" result="still"/><feImage href="${canvas.toDataURL()}" width="${w}" height="${h}" preserveAspectRatio="none" result="rim"/><feMerge result="map"><feMergeNode in="still"/><feMergeNode in="rim"/></feMerge><feDisplacementMap in="SourceGraphic" in2="map" scale="${lensScale(w, h)}" xChannelSelector="R" yChannelSelector="G"/>`;
     entry.svg.append(filter);
     lens = { filter, users: 0, key, lenses: entry.lenses };
     entry.lenses.set(key, lens);
@@ -121,28 +137,85 @@ function release(lens: Lens) {
   lens.filter.remove();
 }
 
-const hosts = new Map<Element, LensController>();
+const hosts = new Map<HTMLElement, Lens | undefined>();
+
+function refresh(element: HTMLElement) {
+  const previous = hosts.get(element);
+  const w = element.offsetWidth;
+  const h = element.offsetHeight;
+  const style = getComputedStyle(element);
+  if (w && h && style.backdropFilter !== "none") {
+    const radius = Number.parseFloat(style.borderTopLeftRadius);
+    const r = Math.round(Math.min(radius || 0, w / 2, h / 2));
+    if (previous?.key === `${w} ${h} ${r}`) return;
+    const lens = lensFor(element.getRootNode() as Tree, w, h, r);
+    element.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
+    hosts.set(element, lens);
+  } else if (previous) {
+    element.style.removeProperty("--pl-lens");
+    hosts.set(element, undefined);
+  }
+  if (previous) release(previous);
+}
+
 const resizes =
   supported && typeof ResizeObserver !== "undefined"
     ? new ResizeObserver((entries) => {
-        for (const { target } of entries) hosts.get(target)?.update();
+        for (const { target } of entries)
+          if (hosts.has(target as HTMLElement)) refresh(target as HTMLElement);
       })
     : undefined;
 
-/**
- * Gives an element a lens sized to its border box, in Chromium: the host, or
- * the element in its shadow root that draws the glass, such as a popup panel.
- * The element's own backdrop-filter reads --pl-lens.
- */
+// Material can change on an ancestor without a resize or a Lit update.
+const materialTrees = new Map<
+  Tree,
+  { observer: MutationObserver; users: number }
+>();
+const solidPreference = supported
+  ? matchMedia(
+      "(prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active)",
+    )
+  : undefined;
+function refreshMaterials() {
+  for (const el of hosts.keys()) refresh(el);
+}
+function watchMaterial(host: HTMLElement) {
+  const roots: Tree[] = [];
+  if (!materialTrees.size)
+    solidPreference?.addEventListener("change", refreshMaterials);
+  for (
+    let tree = host.getRootNode() as Tree;
+    ;
+    tree = tree.host.getRootNode() as Tree
+  ) {
+    let watch = materialTrees.get(tree);
+    if (!watch) {
+      const observer = new MutationObserver(refreshMaterials);
+      observer.observe(tree, {
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["pl-material", "pl-glass"],
+      });
+      watch = { observer, users: 0 };
+      materialTrees.set(tree, watch);
+    }
+    watch.users++;
+    roots.push(tree);
+    if (!(tree instanceof ShadowRoot)) break;
+  }
+  return roots;
+}
+
+/** A lens for the host, a rendered popup, or the matching faces inside a component. */
 export class LensController implements ReactiveController {
   #host: ReactiveControllerHost & HTMLElement;
-  #target: () => HTMLElement | null;
-  #element: HTMLElement | null = null;
-  #lens: Lens | undefined;
+  #target?: string | (() => HTMLElement | null);
+  #elements = new Set<HTMLElement>();
+  #trees: Tree[] = [];
 
   constructor(
     host: ReactiveControllerHost & HTMLElement,
-    target: () => HTMLElement | null = () => host,
+    target?: string | (() => HTMLElement | null),
   ) {
     this.#host = host;
     this.#target = target;
@@ -150,57 +223,55 @@ export class LensController implements ReactiveController {
   }
 
   hostConnected() {
-    this.#observe();
+    if (!resizes) return;
+    this.#trees = watchMaterial(this.#host);
+    this.hostUpdated();
   }
 
-  /** A target in the shadow root exists only once the host has rendered. */
   hostUpdated() {
-    this.#observe();
+    if (!resizes || !this.#host.isConnected) return;
+    const next = new Set<HTMLElement>();
+    if (typeof this.#target === "string") {
+      for (const el of this.#host.shadowRoot?.querySelectorAll<HTMLElement>(
+        this.#target,
+      ) ?? [])
+        next.add(el);
+    } else {
+      const el = this.#target ? this.#target() : this.#host;
+      if (el) next.add(el);
+    }
+    for (const el of this.#elements) if (!next.has(el)) this.#detach(el);
+    for (const el of next) {
+      if (!this.#elements.has(el)) {
+        hosts.set(el, undefined);
+        resizes.observe(el);
+      } else refresh(el);
+    }
+    this.#elements = next;
+  }
+
+  #detach(el: HTMLElement) {
+    resizes?.unobserve(el);
+    const lens = hosts.get(el);
+    if (lens) {
+      el.style.removeProperty("--pl-lens");
+      release(lens);
+    }
+    hosts.delete(el);
   }
 
   hostDisconnected() {
-    const element = this.#element;
-    if (!resizes || !element) return;
-    resizes.unobserve(element);
-    hosts.delete(element);
-    this.#use(undefined);
-    this.#element = null;
-  }
-
-  #observe() {
-    const element = resizes && this.#host.isConnected ? this.#target() : null;
-    if (element === this.#element) return;
-    this.hostDisconnected();
-    if (!element) return;
-    this.#element = element;
-    hosts.set(element, this);
-    resizes!.observe(element);
-  }
-
-  /** Builds the lens on each resize, and drops it where the element draws no
-   * backdrop (solid material, a ghost button, a fallback). An element that
-   * turns glass without resizing gets its lens on its next resize. */
-  update() {
-    const element = this.#element;
-    if (!element) return;
-    const w = element.offsetWidth;
-    const h = element.offsetHeight;
-    const style = getComputedStyle(element);
-    if (!w || !h || style.backdropFilter === "none")
-      return this.#use(undefined);
-    const radius = Number.parseFloat(style.borderTopLeftRadius);
-    const r = Math.round(Math.min(radius || 0, w / 2, h / 2));
-    this.#use(lensFor(element.getRootNode() as Tree, w, h, r));
-  }
-
-  /** The variable is set after its filter is in place and cleared before the filter goes. */
-  #use(lens: Lens | undefined) {
-    const previous = this.#lens;
-    const element = this.#element;
-    if (lens && element)
-      element.style.setProperty("--pl-lens", `url(#${lens.filter.id})`);
-    else element?.style.removeProperty("--pl-lens");
-    this.#lens = lens;
-    if (previous) release(previous);
+    for (const el of this.#elements) this.#detach(el);
+    this.#elements.clear();
+    for (const tree of this.#trees) {
+      const watch = materialTrees.get(tree)!;
+      if (--watch.users === 0) {
+        watch.observer.disconnect();
+        materialTrees.delete(tree);
+      }
+    }
+    this.#trees = [];
+    if (!materialTrees.size)
+      solidPreference?.removeEventListener("change", refreshMaterials);
   }
 }

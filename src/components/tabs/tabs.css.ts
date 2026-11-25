@@ -33,7 +33,7 @@ export const tabsStyles = css`
     overflow: auto;
     border-block-end: 1px solid var(--pl-color-border);
     background: var(--pl-material-capsule-strong);
-    backdrop-filter: var(--pl-material-bar-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-bar-filter);
     box-shadow: var(--pl-material-edge);
   }
 

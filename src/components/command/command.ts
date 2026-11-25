@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
@@ -183,6 +184,7 @@ export class PlCommand extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=field]");
     this.label = "";
     this.placeholder = "";
     this.query = "";

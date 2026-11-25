@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { AriaWatch, forwardAria } from "../../behaviors/aria-forward.ts";
@@ -73,6 +74,7 @@ export class PlFileInput extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=field], [part=button]");
     // A blocked submit or reportValidity() is an interaction too.
     this.addEventListener("invalid", () => {
       this.#touched = true;

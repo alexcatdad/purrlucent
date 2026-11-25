@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html } from "lit";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { nativeMessage } from "../../behaviors/native-message.ts";
@@ -61,6 +62,7 @@ export class PlCheckbox extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=box]");
     this.checked = false;
     this.indeterminate = false;
     this.name = "";

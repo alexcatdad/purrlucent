@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing, svg, type PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { breadcrumbItemStyles, breadcrumbStyles } from "./breadcrumb.css.ts";
@@ -112,6 +113,7 @@ export class PlBreadcrumb extends LitElement {
 
   constructor() {
     super();
+    new LensController(this);
     this.label = "";
   }
 

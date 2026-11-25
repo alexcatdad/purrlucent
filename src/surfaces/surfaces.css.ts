@@ -48,7 +48,7 @@ export const sidebarSurface = css`
     display: block;
     box-sizing: border-box;
     background: var(--pl-material-sidebar);
-    backdrop-filter: var(--pl-material-sidebar-filter);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-sidebar-filter);
     box-shadow: var(--pl-material-edge), var(--pl-elevation-panel);
     border-radius: var(--pl-radius-panel);
     color: var(--pl-color-foreground);

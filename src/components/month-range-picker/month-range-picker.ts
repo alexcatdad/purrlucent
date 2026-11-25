@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html, nothing, svg } from "lit";
 import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
@@ -148,6 +149,7 @@ export class PlMonthRangePicker extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=trigger]");
     this.value = "";
     this.inline = false;
     this.clearable = false;

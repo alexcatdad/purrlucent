@@ -1,3 +1,4 @@
+import { LensController } from "../../behaviors/lens.ts";
 import { LitElement, html } from "lit";
 import type { PropertyValues } from "lit";
 import { AnchoredController } from "../../behaviors/anchored.ts";
@@ -60,6 +61,7 @@ export class PlTooltip extends LitElement {
 
   constructor() {
     super();
+    new LensController(this, "[part=face]");
     this.text = "";
     this.placement = "bottom";
     this.align = "center";
