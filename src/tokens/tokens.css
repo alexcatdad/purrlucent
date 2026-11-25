@@ -488,6 +488,12 @@
     );
     --pl-material-selected: var(--pl-material-ring);
 
+    /* The text on the glass selection: white on the deepened fill in light,
+       ink on the lifted one in dark, so it holds 4.5:1 for any accent. It is
+       its own token because an app's accent foreground suits the solid accent
+       fill, not this one. */
+    --pl-material-selected-foreground: light-dark(#fff, var(--pl-color-ink));
+
     /* A capsule or control that shows grey, pink or red text on glass reads
        these instead, which stay thick under glass. Solid, they match. */
     --pl-material-capsule-strong: transparent;
@@ -582,6 +588,7 @@
       /* The ring and the selection that hold 3:1 on the thin fill. */
       --pl-color-ring: var(--pl-material-ring);
       --pl-color-selected: var(--pl-material-selected);
+      --pl-color-selected-foreground: var(--pl-material-selected-foreground);
 
       /* Light on the glass, as Apple's material catches it: a specular line
          along the top rim, a faint catch light around the other edges and a

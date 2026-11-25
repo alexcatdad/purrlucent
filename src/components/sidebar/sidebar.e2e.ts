@@ -2097,3 +2097,23 @@ test.describe("an action item as a menu trigger", () => {
     ).not.toBe("home");
   });
 });
+
+test.describe("a side placement from a sidebar row", () => {
+  for (const [dir, globals] of [
+    ["ltr", ""],
+    ["rtl", "dir:rtl"],
+  ] as const)
+    test(`the menu clears the sidebar's inline-end edge in ${dir}`, async ({
+      page,
+    }) => {
+      await open(page, "menu-beside-sidebar", globals);
+      await page.locator("#account button").click();
+      const popup = page.getByRole("menu", { name: "Account" });
+      await expect(popup).toBeVisible();
+      const edge = (await page.locator("#sidebar").boundingBox())!;
+      const box = (await popup.boundingBox())!;
+      if (dir === "ltr")
+        expect(box.x).toBeGreaterThanOrEqual(edge.x + edge.width - 1);
+      else expect(box.x + box.width).toBeLessThanOrEqual(edge.x + 1);
+    });
+});

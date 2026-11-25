@@ -494,6 +494,43 @@ test("the focus ring and the highlight stay visible under forced colors", async 
   expect(colors[2]).not.toBe("none");
 });
 
+test("glass selection text holds 4.5:1 when an app sets a white selected foreground on the root", async ({
+  page,
+}) => {
+  for (const theme of ["light", "dark"]) {
+    // Solid story: the app sets the selection on the root and glass sits on an element below it.
+    await gotoStory(page, story("default"), `theme:${theme}`);
+    await page.evaluate(() => {
+      const root = document.documentElement.style;
+      root.setProperty("--pl-color-selected", "#006aa7");
+      root.setProperty("--pl-color-selected-foreground", "#fff");
+      document
+        .querySelector("#menu")!
+        .parentElement!.setAttribute("pl-material", "glass");
+    });
+    await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
+    const row = item(page, "Undo ⌘Z");
+    await row.evaluate((el) => el.focus());
+    await expect
+      .poll(async () => {
+        const { color, background } = await row.evaluate((el) => {
+          const style = getComputedStyle(el);
+          return {
+            color: style.color,
+            background: style.backgroundColor,
+          };
+        });
+        const { fg, bg } = await resolveColors(page, {
+          fg: color,
+          bg: background,
+        });
+        return contrast(fg!, bg!);
+      }, theme)
+      .toBeGreaterThanOrEqual(4.5);
+  }
+});
+
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("open")));
 });
@@ -754,6 +791,59 @@ test.describe("placement", () => {
     const box = (await menu(page).boundingBox())!;
     const control = (await trigger(page).boundingBox())!;
     expect(box.y).toBeGreaterThanOrEqual(control.y + control.height);
+  });
+
+  test("end-start lines the menu's top up with the trigger's, to the inline end", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("placement-end-start"));
+    await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
+    const control = (await trigger(page).boundingBox())!;
+    const box = (await menu(page).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(control.x + control.width);
+    expect(Math.abs(box.y - control.y)).toBeLessThanOrEqual(1);
+  });
+
+  test("end-end lines the menu's bottom up with the trigger's", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("placement-end-end"));
+    await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
+    const control = (await trigger(page).boundingBox())!;
+    const box = (await menu(page).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(control.x + control.width);
+    expect(
+      Math.abs(box.y + box.height - (control.y + control.height)),
+    ).toBeLessThanOrEqual(1);
+  });
+
+  test("the aligned placements mirror under rtl", async ({ page }) => {
+    await gotoStory(page, story("placement-end-start"), "dir:rtl");
+    await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
+    const control = (await trigger(page).boundingBox())!;
+    const box = (await menu(page).boundingBox())!;
+    expect(box.x + box.width).toBeLessThanOrEqual(control.x + 1);
+    expect(Math.abs(box.y - control.y)).toBeLessThanOrEqual(1);
+  });
+
+  test("start-end opens before the trigger, bottoms level", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("placement-end-end"));
+    await page.locator("#menu").evaluate((el) => {
+      (el as unknown as { placement: string }).placement = "start-end";
+    });
+    await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
+    const control = (await trigger(page).boundingBox())!;
+    const box = (await menu(page).boundingBox())!;
+    expect(box.x + box.width).toBeLessThanOrEqual(control.x + 1);
+    expect(
+      Math.abs(box.y + box.height - (control.y + control.height)),
+    ).toBeLessThanOrEqual(1);
   });
 
   test("changing placement while open moves the menu", async ({ page }) => {
