@@ -1,5 +1,11 @@
 # purrlucent
 
+## 0.24.1
+
+### Patch Changes
+
+- 3c6b13d: The React JSX types include property-only props, such as `presets` on pl-month-range-picker, `columns` and `rows` on pl-data-table, and `data` on pl-chart.
+
 ## 0.24.0
 
 ### Minor Changes
