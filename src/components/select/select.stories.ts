@@ -5,9 +5,13 @@ import "./select.ts";
 import type { PlSelect } from "./select.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Select",
   component: "pl-select",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -27,6 +31,26 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      label: "Apple variety",
+      placeholder: "Choose a variety",
+      disabled: false,
+    },
+    ["pl-change"],
+  ),
+  render: ({ label, placeholder, disabled }) =>
+    column(
+      html`<pl-select
+        label=${label}
+        placeholder=${placeholder}
+        ?disabled=${disabled}
+        >${apples}</pl-select
+      >`,
+    ),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

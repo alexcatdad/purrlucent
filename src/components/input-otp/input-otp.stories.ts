@@ -5,9 +5,13 @@ import "./input-otp.ts";
 import type { PlInputOtp } from "./input-otp.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Input OTP",
   component: "pl-input-otp",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,19 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground(
+    { label: "Verification code", length: [6, 4, 8], disabled: false },
+    ["pl-input", "pl-change", "pl-complete"],
+  ),
+  render: ({ label, length, disabled }) =>
+    html`<pl-input-otp
+      label=${label}
+      length=${length}
+      ?disabled=${disabled}
+    ></pl-input-otp>`,
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

@@ -3,9 +3,13 @@ import { html } from "lit";
 import { expect } from "storybook/test";
 import "./breadcrumb.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Navigation/Breadcrumb",
   component: "pl-breadcrumb",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -16,6 +20,18 @@ const body = (content: unknown) =>
   html`<div style="padding:var(--pl-space-4);max-inline-size:32rem">
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ currentPage: "Quarterly review" }),
+  render: ({ currentPage }) =>
+    body(
+      html`<pl-breadcrumb
+        ><pl-breadcrumb-item href="#home">Home</pl-breadcrumb-item
+        ><pl-breadcrumb-item href="#docs">Documents</pl-breadcrumb-item
+        ><pl-breadcrumb-item>${currentPage}</pl-breadcrumb-item></pl-breadcrumb
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

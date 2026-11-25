@@ -6,7 +6,14 @@ import "./table.ts";
 import type { PlTable } from "./table.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
-const meta = { title: "Data/Table" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Data/Table",
+  component: "pl-table",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
@@ -56,6 +63,12 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlTable>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+export const Playground: Story = {
+  ...playground({ caption: "Pioneers", striped: false }),
+  render: ({ caption, striped }) =>
+    html`<pl-table ?striped=${striped}>${table(caption)}</pl-table>`,
 };
 
 /** The caption names the table, and the table keeps its native semantics. */

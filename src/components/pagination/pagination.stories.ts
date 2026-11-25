@@ -4,7 +4,14 @@ import { expect, userEvent, waitFor } from "storybook/test";
 import "./pagination.ts";
 import type { PlPagination } from "./pagination.ts";
 
-const meta = { title: "Navigation/Pagination" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Navigation/Pagination",
+  component: "pl-pagination",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
@@ -22,6 +29,12 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlPagination>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+export const Playground: Story = {
+  ...playground({ total: [10, 3, 20] }, ["pl-change"]),
+  render: ({ total }) =>
+    html`<pl-pagination label="Results" total=${total}></pl-pagination>`,
 };
 
 // Stories that other tests open as they are have no play function: a play

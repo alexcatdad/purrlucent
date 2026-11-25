@@ -5,14 +5,21 @@ import "./accordion.ts";
 import type { PlAccordion } from "./accordion.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
-const meta = { title: "Containers/Accordion" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Containers/Accordion",
+  component: "pl-accordion",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
 type Story = StoryObj;
 
-const render = () => html`
-  <pl-accordion id="control">
+const accordion = (multiple: boolean) => html`
+  <pl-accordion id="control" ?multiple=${multiple}>
     <pl-accordion-item value="shipping" heading="Shipping">
       <p>Orders leave the warehouse within two working days.</p>
     </pl-accordion-item>
@@ -29,6 +36,13 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlAccordion>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+const render = () => accordion(false);
+
+export const Playground: Story = {
+  ...playground({ multiple: false }, ["pl-toggle"]),
+  render: ({ multiple }) => accordion(multiple),
 };
 
 // Stories that other tests open as they are have no play function: a play

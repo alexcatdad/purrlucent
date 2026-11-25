@@ -6,9 +6,13 @@ import "../menu/menu.ts";
 import type { PlMenu } from "../menu/menu.ts";
 import "./menubar.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Menus/Menubar",
   component: "pl-menubar",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -69,6 +73,11 @@ const openFile = async (canvasElement: HTMLElement) => {
   await menu.updateComplete;
   expect(menu.open).toBe(true);
   await settled(canvasElement);
+};
+
+export const Playground: Story = {
+  ...playground({ disableEditMenu: false }, ["pl-select"]),
+  render: ({ disableEditMenu }) => bar(disableEditMenu),
 };
 
 // Stories that other tests open as they are have no play function.

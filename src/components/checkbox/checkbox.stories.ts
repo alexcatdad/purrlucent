@@ -1,3 +1,4 @@
+import { useArgs } from "storybook/preview-api";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { expect, userEvent } from "storybook/test";
@@ -5,9 +6,13 @@ import "../field/field.ts";
 import "./checkbox.ts";
 import type { PlCheckbox } from "./checkbox.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Checkbox",
   component: "pl-checkbox",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +25,28 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      label: "Recents",
+      checked: false,
+      size: ["md", "lg", "xl"],
+      disabled: false,
+    },
+    ["pl-change"],
+  ),
+  render: ({ label, checked, size, disabled }) => {
+    const [, updateArgs] = useArgs();
+    return html`<pl-checkbox
+      .checked=${checked}
+      @pl-change=${(event: CustomEvent<{ checked: boolean }>) => updateArgs({ checked: event.detail.checked })}
+      size=${size}
+      ?disabled=${disabled}
+      >${label}</pl-checkbox
+    >`;
+  },
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

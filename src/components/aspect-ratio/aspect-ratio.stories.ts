@@ -3,9 +3,13 @@ import { html } from "lit";
 import "./aspect-ratio.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Containers/Aspect Ratio",
   component: "pl-aspect-ratio",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -25,6 +29,16 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ ratio: ["16/9", "4/3", "1", "3/4", "21/9"] }),
+  render: ({ ratio }) =>
+    column(
+      html`<pl-aspect-ratio ratio=${ratio}
+        >${picture("Cat on a sofa")}</pl-aspect-ratio
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

@@ -4,9 +4,13 @@ import "../button/button.ts";
 import "./attachment.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Cards & Lists/Attachment",
   component: "pl-attachment",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -55,6 +59,24 @@ const remove = (name: string) =>
         stroke-linecap="round"
       /></svg
   ></pl-button>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      filename: "Quarterly report.pdf",
+      size: ["default", "sm", "xs"],
+      clickable: false,
+    },
+    ["pl-press"],
+  ),
+  render: ({ filename, size, clickable }) =>
+    box(
+      html`<pl-attachment size=${size} ?clickable=${clickable}
+        >${doc}<span slot="title">${filename}</span
+        ><span slot="description">PDF, 2.4 MB</span></pl-attachment
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

@@ -3,9 +3,13 @@ import { html } from "lit";
 import "./badge.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Text/Badge",
   component: "pl-badge",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -14,6 +18,19 @@ type Story = StoryObj;
 
 const row =
   "display:flex;align-items:center;gap:var(--pl-space-3);padding:var(--pl-space-4)";
+
+export const Playground: Story = {
+  ...playground({
+    label: "Draft",
+    variant: ["neutral", "accent", "success", "warning", "destructive"],
+    appearance: ["solid", "soft", "outline"],
+    dot: false,
+  }),
+  render: ({ label, variant, appearance, dot }) =>
+    html`<pl-badge variant=${variant} appearance=${appearance} ?dot=${dot}
+      >${label}</pl-badge
+    >`,
+};
 
 export const Default: Story = {
   render: () => html`<pl-badge id="badge">3</pl-badge>`,

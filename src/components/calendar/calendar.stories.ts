@@ -5,9 +5,13 @@ import "./calendar.ts";
 import type { PlCalendar } from "./calendar.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Calendar",
   component: "pl-calendar",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,18 @@ const row = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ locale: ["en-US", "fr-FR", "ar-EG"], firstDay: [7, 1, 6] }, [
+    "pl-change",
+  ]),
+  render: ({ locale, firstDay }) =>
+    html`<pl-calendar
+      value="2026-11-18"
+      locale=${locale}
+      first-day=${firstDay}
+    ></pl-calendar>`,
+};
 
 // Fixed days, so no story depends on the date it is opened on.
 // Stories that other tests open as they are have no play function.

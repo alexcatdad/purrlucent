@@ -5,9 +5,13 @@ import "./empty.ts";
 import { isolate } from "../../../.storybook/isolate.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Feedback/Empty",
   component: "pl-empty",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -34,6 +38,18 @@ const full = (rtl = false) =>
       >Create project</pl-button
     >
   </pl-empty>`;
+
+export const Playground: Story = {
+  ...playground({
+    heading: "No results",
+    description: "Try a different search.",
+  }),
+  render: ({ heading, description }) =>
+    html`<pl-empty
+      ><strong slot="title">${heading}</strong
+      ><span slot="description">${description}</span></pl-empty
+    >`,
+};
 
 export const Default: Story = { render: () => full() };
 

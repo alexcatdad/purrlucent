@@ -5,9 +5,13 @@ import "./textarea.ts";
 import type { PlTextarea } from "./textarea.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Text Area",
   component: "pl-textarea",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,25 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      label: "Message",
+      placeholder: "Write a message",
+      rows: [3, 1, 6],
+      disabled: false,
+    },
+    ["pl-input", "pl-change"],
+  ),
+  render: ({ label, placeholder, rows, disabled }) =>
+    html`<pl-textarea
+      label=${label}
+      placeholder=${placeholder}
+      rows=${rows}
+      ?disabled=${disabled}
+    ></pl-textarea>`,
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

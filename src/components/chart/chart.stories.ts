@@ -8,9 +8,13 @@ import "./chart.ts";
 import type { PlChart } from "./chart.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Data/Chart",
   component: "pl-chart",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -62,6 +66,11 @@ const plans = (table = false) =>
       .data=${long}
     ></pl-chart>`,
   );
+
+export const Playground: Story = {
+  ...playground({ showTable: false }, ["pl-select"]),
+  render: ({ showTable }) => plans(showTable),
+};
 
 export const Default: Story = { render: () => plans() };
 

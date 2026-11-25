@@ -6,9 +6,13 @@ import "../field/field.ts";
 import "./slider.ts";
 import type { PlSlider } from "./slider.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Slider",
   component: "pl-slider",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -59,6 +63,15 @@ const slider = (a: Attrs) =>
     ></pl-slider>
     <span slot="description">${a.value ?? 0}</span>
   </pl-field>`;
+
+export const Playground: Story = {
+  ...playground({ label: "Volume", step: ["1", "5", "10"], disabled: false }, [
+    "pl-input",
+    "pl-change",
+  ]),
+  render: ({ label, step, disabled }) =>
+    column(slider({ label, step, disabled, value: 50 })),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

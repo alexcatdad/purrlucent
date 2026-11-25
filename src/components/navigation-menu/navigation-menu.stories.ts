@@ -3,9 +3,13 @@ import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import "./navigation-menu.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Navigation/Navigation Menu",
   component: "pl-navigation-menu",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -47,6 +51,11 @@ const render = ({ label = "Main", open = false, current = "home" } = {}) =>
       >
     </pl-navigation-menu>`,
   );
+
+export const Playground: Story = {
+  ...playground({ current: ["home", "products"] }, ["pl-toggle"]),
+  render: ({ current }) => render({ current }),
+};
 
 export const Default: Story = { render: () => render() };
 

@@ -5,9 +5,13 @@ import "../avatar/avatar.ts";
 import "./skeleton.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Feedback/Skeleton",
   component: "pl-skeleton",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,18 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ shape: ["rect", "circle"], shimmer: false }),
+  render: ({ shape, shimmer }) =>
+    column(
+      html`<pl-skeleton
+        shape=${shape}
+        ?shimmer=${shimmer}
+        style=${shape === "rect" ? "inline-size:calc(var(--pl-spacing) * 50)" : ""}
+      ></pl-skeleton>`,
+    ),
+};
 
 export const Default: Story = {
   render: () =>

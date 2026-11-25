@@ -1,12 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import { expect, userEvent } from "storybook/test";
+import { useArgs } from "storybook/preview-api";
+import { expect, fn, userEvent } from "storybook/test";
 import "./switch.ts";
 import type { PlSwitch } from "./switch.ts";
 
 const meta = {
   title: "Forms/Switch",
   component: "pl-switch",
+  tags: ["autodocs"],
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        component:
+          "An on/off setting that takes effect immediately. Supply its accessible name as slotted text or with aria-label.",
+      },
+    },
+  },
 } satisfies Meta;
 
 export default meta;
@@ -19,6 +30,60 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+type PlaygroundArgs = Pick<PlSwitch, "checked" | "disabled" | "size"> & {
+  label: string;
+  "pl-change": (detail: { checked: boolean }) => void;
+};
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  args: {
+    label: "Wi-Fi",
+    checked: false,
+    disabled: false,
+    size: "md",
+    "pl-change": fn(),
+  },
+  argTypes: {
+    label: {
+      name: "Label",
+      control: "text",
+      description: "Text in the default slot.",
+    },
+    checked: {
+      name: "Checked",
+      control: "boolean",
+      description: "Current on/off state.",
+    },
+    disabled: {
+      name: "Disabled",
+      control: "boolean",
+      description: "Disables interaction.",
+    },
+    size: { name: "Size", control: "select", options: ["md", "lg", "xl"] },
+    "pl-change": { table: { disable: true } },
+  },
+  parameters: {
+    controls: {
+      disable: false,
+      include: ["Label", "Checked", "Disabled", "Size"],
+    },
+    docs: { source: { code: '<pl-switch size="md">Wi-Fi</pl-switch>' } },
+  },
+  render: ({ label, checked, disabled, size, "pl-change": onChange }) => {
+    const [, updateArgs] = useArgs<PlaygroundArgs>();
+    return html`<pl-switch
+      .checked=${checked}
+      ?disabled=${disabled}
+      size=${size}
+      @pl-change=${(event: CustomEvent<{ checked: boolean }>) => {
+        onChange(event.detail);
+        updateArgs({ checked: event.detail.checked });
+      }}
+      >${label}</pl-switch
+    >`;
+  },
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

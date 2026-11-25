@@ -5,9 +5,13 @@ import "./resizable.ts";
 import type { PlResizable } from "./resizable.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Containers/Resizable",
   component: "pl-resizable",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -28,6 +32,21 @@ const pane = (text: string) =>
   html`<div style="padding:var(--pl-pad-panel);overflow-wrap:anywhere">
     ${text}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ orientation: ["horizontal", "vertical"] }, ["pl-resize"]),
+  render: ({ orientation }) =>
+    frame(
+      html`<pl-resizable orientation=${orientation} style=${groupStyle}
+        ><pl-resizable-panel size="30" min="15"
+          >${pane("Library")}</pl-resizable-panel
+        ><pl-resizable-handle label="Resize library"></pl-resizable-handle
+        ><pl-resizable-panel min="15"
+          >${pane("Document")}</pl-resizable-panel
+        ></pl-resizable
+      >`,
+    ),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

@@ -6,9 +6,13 @@ import type { PlScrollArea } from "./scroll-area.ts";
 import "../button/button.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Containers/Scroll Area",
   component: "pl-scroll-area",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,14 @@ const frame =
 
 const lines = (count: number) =>
   Array.from({ length: count }, (_, i) => html`<p>Line ${i + 1}</p>`);
+
+export const Playground: Story = {
+  ...playground({ lineCount: [30, 2, 10, 60] }),
+  render: ({ lineCount }) =>
+    html`<pl-scroll-area label="Release notes" style=${frame}
+      >${lines(lineCount)}</pl-scroll-area
+    >`,
+};
 
 export const Default: Story = {
   render: () =>

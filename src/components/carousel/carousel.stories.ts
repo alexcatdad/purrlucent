@@ -5,7 +5,14 @@ import "../button/button.ts";
 import "./carousel.ts";
 import type { PlCarousel } from "./carousel.ts";
 
-const meta = { title: "Containers/Carousel" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Containers/Carousel",
+  component: "pl-carousel",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
@@ -31,6 +38,14 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlCarousel>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+export const Playground: Story = {
+  ...playground({ slideCount: [5, 3, 1] }, ["pl-change"]),
+  render: ({ slideCount }) =>
+    html`<pl-carousel label="Featured"
+      >${Array.from({ length: slideCount }, (_, i) => slide(i + 1))}</pl-carousel
+    >`,
 };
 
 // Stories that other tests open as they are have no play function: a play

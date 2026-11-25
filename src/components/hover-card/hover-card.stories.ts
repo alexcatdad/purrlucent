@@ -4,9 +4,13 @@ import { isolate } from "../../../.storybook/isolate.ts";
 import "../button/button.ts";
 import "./hover-card.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Dialogs/Hover Card",
   component: "pl-hover-card",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -44,6 +48,13 @@ const card = (attrs: {
     <pl-button slot="trigger" variant="tinted">purrlucent</pl-button>
     ${content(attrs.rtl ?? false)}
   </pl-hover-card>`;
+
+export const Playground: Story = {
+  ...playground({ placement: ["bottom", "top", "start", "end"] }, [
+    "pl-toggle",
+  ]),
+  render: ({ placement }) => stage(card({ placement })),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

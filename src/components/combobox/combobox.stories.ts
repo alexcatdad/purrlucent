@@ -5,9 +5,13 @@ import "./combobox.ts";
 import type { PlCombobox } from "./combobox.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Combobox",
   component: "pl-combobox",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -34,6 +38,26 @@ const field = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlCombobox>("#combo")!;
   await el.updateComplete;
   return { el, input: el.shadowRoot!.querySelector("input")! };
+};
+
+export const Playground: Story = {
+  ...playground(
+    {
+      label: "Apple variety",
+      placeholder: "Choose a variety",
+      disabled: false,
+    },
+    ["pl-input", "pl-change"],
+  ),
+  render: ({ label, placeholder, disabled }) =>
+    column(
+      html`<pl-combobox
+        label=${label}
+        placeholder=${placeholder}
+        ?disabled=${disabled}
+        >${apples}</pl-combobox
+      >`,
+    ),
 };
 
 // Stories that other tests open as they are have no play function.

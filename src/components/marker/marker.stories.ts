@@ -3,9 +3,13 @@ import { html } from "lit";
 import "../spinner/spinner.ts";
 import "./marker.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Text/Marker",
   component: "pl-marker",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -18,6 +22,20 @@ const wrap = (content: unknown) =>
 const check = html`<svg slot="icon" viewBox="0 0 24 24" aria-hidden="true">
   <path d="M5 12l5 5l10 -10" />
 </svg>`;
+
+export const Playground: Story = {
+  ...playground({
+    label: "Explored 4 files",
+    variant: ["default", "border", "separator"],
+    shimmer: false,
+  }),
+  render: ({ label, variant, shimmer }) =>
+    wrap(
+      html`<pl-marker variant=${variant} ?shimmer=${shimmer}
+        >${check}${label}</pl-marker
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () => wrap(html`<pl-marker>${check}Explored 4 files</pl-marker>`),

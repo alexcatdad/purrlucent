@@ -2,9 +2,13 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import "./message-scroller.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "AI & Chat/Message Scroller",
   component: "pl-message-scroller",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -29,6 +33,14 @@ const rows = (count: number) =>
       </p>
     </pl-message-scroller-item>`;
   });
+
+export const Playground: Story = {
+  ...playground({ messageCount: [30, 10, 3] }, ["pl-scroll"]),
+  render: ({ messageCount }) =>
+    html`<pl-message-scroller style=${frame}
+      >${rows(messageCount)}</pl-message-scroller
+    >`,
+};
 
 /** Scrolls from the start; the bottom edge fades and the button is drawn while there is more below. */
 export const Default: Story = {

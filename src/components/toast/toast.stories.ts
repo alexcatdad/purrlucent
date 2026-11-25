@@ -5,9 +5,13 @@ import "../button/button.ts";
 import "./toast.ts";
 import { PlToaster, type PlToast } from "./toast.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Feedback/Toast",
   component: "pl-toast",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -26,6 +30,25 @@ const saved = html`<pl-toast duration="0">
   <strong slot="title">Saved</strong>
   Your changes are saved.
 </pl-toast>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      heading: "Saved",
+      variant: ["default", "success", "warning", "destructive"],
+    },
+    ["pl-close"],
+  ),
+  render: ({ heading, variant }) =>
+    page(
+      html`<pl-toaster
+        ><pl-toast duration="0" variant=${variant}
+          ><strong slot="title">${heading}</strong>Your changes are
+          saved.</pl-toast
+        ></pl-toaster
+      >`,
+    ),
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

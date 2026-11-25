@@ -5,9 +5,13 @@ import "./number-field.ts";
 import type { PlNumberField } from "./number-field.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Number Field",
   component: "pl-number-field",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -20,6 +24,22 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground({ label: "Quantity", step: [1, 5, 10], disabled: false }, [
+    "pl-input",
+    "pl-change",
+  ]),
+  render: ({ label, step, disabled }) =>
+    html`<pl-number-field
+      label=${label}
+      value="3"
+      min="0"
+      max="99"
+      step=${step}
+      ?disabled=${disabled}
+    ></pl-number-field>`,
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

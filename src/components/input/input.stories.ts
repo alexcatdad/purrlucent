@@ -8,9 +8,13 @@ import type { PlDialog } from "../dialog/dialog.ts";
 import type { PlInput } from "./input.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "Forms/Input",
   component: "pl-input",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -23,6 +27,25 @@ const column = (content: unknown) =>
   >
     ${content}
   </div>`;
+
+export const Playground: Story = {
+  ...playground(
+    {
+      label: "Name",
+      placeholder: "Enter your name",
+      size: ["md", "lg", "xl"],
+      disabled: false,
+    },
+    ["pl-input", "pl-change"],
+  ),
+  render: ({ label, placeholder, size, disabled }) =>
+    html`<pl-input
+      label=${label}
+      placeholder=${placeholder}
+      size=${size}
+      ?disabled=${disabled}
+    ></pl-input>`,
+};
 
 // Stories that other tests open as they are have no play function.
 export const Default: Story = {

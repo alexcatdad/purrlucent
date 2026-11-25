@@ -5,9 +5,13 @@ import "../avatar/avatar.ts";
 import "../button/button.ts";
 import "./message.ts";
 
+import { playground } from "../../../.storybook/playground.ts";
+
 const meta = {
   title: "AI & Chat/Message",
   component: "pl-message",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
 } satisfies Meta;
 
 export default meta;
@@ -40,6 +44,21 @@ const reply = (rtl = false) =>
     ${bubble("Here is the summary you asked for.", rtl)}
     <span slot="footer">10:41</span>
   </pl-message>`;
+
+export const Playground: Story = {
+  ...playground({
+    author: "Alex",
+    text: "Can you shorten it?",
+    align: ["end", "start"],
+  }),
+  render: ({ author, text, align }) =>
+    thread(
+      html`<pl-message align=${align}
+        ><pl-avatar slot="avatar" name=${author}></pl-avatar
+        ><span slot="header">${author}</span>${bubble(text)}</pl-message
+      >`,
+    ),
+};
 
 export const Default: Story = {
   render: () => thread(reply()),

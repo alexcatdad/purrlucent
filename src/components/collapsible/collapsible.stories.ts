@@ -5,7 +5,14 @@ import "./collapsible.ts";
 import type { PlCollapsible } from "./collapsible.ts";
 import { underGlass } from "../../../.storybook/under-glass.ts";
 
-const meta = { title: "Containers/Collapsible" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Containers/Collapsible",
+  component: "pl-collapsible",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
@@ -19,6 +26,17 @@ const render = () => html`
     </p>
   </pl-collapsible>
 `;
+
+export const Playground: Story = {
+  ...playground({ heading: "Shipping details", disabled: false }, [
+    "pl-toggle",
+  ]),
+  render: ({ heading, disabled }) =>
+    html`<pl-collapsible ?disabled=${disabled}
+      ><span slot="trigger">${heading}</span>
+      <p>Orders leave the warehouse within two working days.</p></pl-collapsible
+    >`,
+};
 
 // Stories that other tests open as they are have no play function: a play
 // function would change the state before the test starts.

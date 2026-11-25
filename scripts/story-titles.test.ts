@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { STORY_GROUPS } from "../.storybook/groups";
+import config from "../.storybook/main";
 
 const placement: Record<string, readonly string[]> = {
   Foundations: [
@@ -85,12 +86,8 @@ test("the component placement matches the design", () => {
   expect(titles).toEqual(expected);
 });
 
-test("the preview sorts the sidebar by STORY_GROUPS", () => {
-  const preview = readFileSync(".storybook/preview.ts", "utf8");
-  const order = /order: \[([^\]]+)\]/.exec(preview)?.[1] ?? "";
-  expect(JSON.parse(`[${order.replace(/,\s*$/, "")}]`)).toEqual([
-    ...STORY_GROUPS,
-  ]);
+test("Storybook sorts the sidebar by STORY_GROUPS", () => {
+  expect(config.storySorts).toEqual([{ order: [...STORY_GROUPS] }]);
 });
 
 test("the placement lists every group in sidebar order", () => {

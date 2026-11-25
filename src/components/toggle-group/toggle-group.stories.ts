@@ -4,14 +4,26 @@ import { expect, userEvent } from "storybook/test";
 import "./toggle-group.ts";
 import type { PlToggleGroup } from "./toggle-group.ts";
 
-const meta = { title: "Actions/Toggle Group" } satisfies Meta;
+import { playground } from "../../../.storybook/playground.ts";
+
+const meta = {
+  title: "Actions/Toggle Group",
+  component: "pl-toggle-group",
+  tags: ["autodocs"],
+  parameters: { controls: { disable: true } },
+} satisfies Meta;
 
 export default meta;
 
 type Story = StoryObj;
 
-const render = () => html`
-  <pl-toggle-group id="control" label="Calendar range">
+const toggleGroup = (fitContent: boolean, disabled: boolean) => html`
+  <pl-toggle-group
+    id="control"
+    label="Calendar range"
+    ?fit-content=${fitContent}
+    ?disabled=${disabled}
+  >
     <pl-toggle-group-item value="day">Day</pl-toggle-group-item>
     <pl-toggle-group-item value="week">Week</pl-toggle-group-item>
     <pl-toggle-group-item value="month">Month</pl-toggle-group-item>
@@ -22,6 +34,13 @@ const control = async (canvasElement: HTMLElement) => {
   const el = canvasElement.querySelector<PlToggleGroup>("#control")!;
   await el.updateComplete;
   return el;
+};
+
+const render = () => toggleGroup(false, false);
+
+export const Playground: Story = {
+  ...playground({ fitContent: false, disabled: false }, ["pl-change"]),
+  render: ({ fitContent, disabled }) => toggleGroup(fitContent, disabled),
 };
 
 // Stories that other tests open as they are have no play function: a play
