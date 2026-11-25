@@ -269,7 +269,7 @@
        1rem so iOS Safari does not zoom on focus. */
     --pl-text-field: var(--pl-text-sm);
     --pl-text-base: 1rem; /* Body text: the web default. */
-    --pl-text-lg: 1.125rem; /* Large text for WCAG contrast. */
+    --pl-text-lg: 1.125rem; /* Headings and emphasis; below the WCAG large-text size. */
     --pl-text-xl: 1.25rem;
     --pl-icon-sm: calc(var(--pl-spacing) * 3);
     --pl-icon-md: calc(var(--pl-spacing) * 4);
