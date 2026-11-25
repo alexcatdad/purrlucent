@@ -494,19 +494,23 @@ test("the focus ring and the highlight stay visible under forced colors", async 
   expect(colors[2]).not.toBe("none");
 });
 
-test("glass selection text holds 4.5:1 with an app accent and white accent foreground", async ({
+test("glass selection text holds 4.5:1 when an app sets a white selected foreground on the root", async ({
   page,
 }) => {
   for (const theme of ["light", "dark"]) {
-    await gotoStory(page, story("default"), `material:glass;theme:${theme}`);
+    // Solid story: the app sets the selection on the root and glass sits on an element below it.
+    await gotoStory(page, story("default"), `theme:${theme}`);
     await page.evaluate(() => {
       const root = document.documentElement.style;
-      root.setProperty("--pl-color-accent", "#006aa7");
-      root.setProperty("--pl-color-accent-foreground", "#fff");
+      root.setProperty("--pl-color-selected", "#006aa7");
+      root.setProperty("--pl-color-selected-foreground", "#fff");
+      document
+        .querySelector("#menu")!
+        .parentElement!.setAttribute("pl-material", "glass");
     });
     await trigger(page).click();
     await expect(menu(page)).toBeVisible();
-    const row = item(page, "Undo");
+    const row = item(page, "Undo ⌘Z");
     await row.evaluate((el) => el.focus());
     await expect
       .poll(async () => {
