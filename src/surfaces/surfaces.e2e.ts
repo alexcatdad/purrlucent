@@ -70,7 +70,27 @@ test("DIAGNOSTIC webkit texture lens state", async ({ page, browserName }) => {
   const first = await read();
   await page.waitForTimeout(3000);
   const later = await read();
-  expect({ first, later, lensRequests, errors }).toBe("diagnostic");
+  const engine = lensRequests.find((url) => url.includes("lens-engine"));
+  const load = await page.evaluate(async (url) => {
+    if (!url) return "no engine request";
+    try {
+      const mod = (await import(url)) as {
+        LensEngine: new (host: HTMLElement) => { hostConnected(): void };
+      };
+      const bar = document
+        .querySelector('div[pl-texture="fine-grid"]')!
+        .querySelector<HTMLElement>("pl-toolbar")!;
+      new mod.LensEngine(bar).hostConnected();
+      for (let i = 0; i < 5; i++)
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      return `loaded; manual engine children: ${[...bar.shadowRoot!.children]
+        .map((c) => c.localName)
+        .join(",")}`;
+    } catch (error) {
+      return `rejected: ${String(error)} ${(error as Error)?.stack ?? ""}`;
+    }
+  }, engine);
+  expect({ first, later, lensRequests, errors, load }).toBe("diagnostic");
 });
 
 test("textured glass uses the browser default and honors lens overrides", async ({
