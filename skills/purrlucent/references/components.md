@@ -1176,27 +1176,27 @@ import "purrlucent/input";
 
 A single-line text field. A native input inside does the editing, so typing, selection, IME, autofill and mobile keyboards behave as usual. The slotted text is a visible label; without it, `label` becomes the input's accessible name, and without both a native `<label for>` names it. It takes part in forms like a native input: it submits `name` with its value, a reset returns it to its `value` attribute, a disabled fieldset disables it, and the native validity (`required`, `pattern`, `type=email`...) is the element's validity. Enter submits the form. The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
 
-| Attribute      | Type                   | Default  | Description                                                                                                                                          |
-| -------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`         | `string`               | `"text"` | `text` (default), `search`, `password`, `email`, `url`, `tel` or `number`. A search field gets a magnifier and a clear button, and Escape clears it. |
-| `value`        | `string`               | `""`     | The starting value. The `value` property holds the current one.                                                                                      |
-| `label`        | `string \| undefined`  |          | The accessible name when there is no slotted label.                                                                                                  |
-| `size`         | `"md" \| "lg" \| "xl"` | `"md"`   | `md` (default), `lg` or `xl`.                                                                                                                        |
-| `name`         | `string`               | `""`     | The name submitted with a form.                                                                                                                      |
-| `placeholder`  | `string \| undefined`  |          | Hint shown while empty.                                                                                                                              |
-| `required`     | `boolean`              | `false`  | The form is invalid while the field is empty.                                                                                                        |
-| `readonly`     | `boolean`              | `false`  | The value can be selected but not edited, and a search field cannot be cleared.                                                                      |
-| `disabled`     | `boolean`              | `false`  | No focus, nothing submitted.                                                                                                                         |
-| `minlength`    | `string \| undefined`  |          | Shortest valid value.                                                                                                                                |
-| `maxlength`    | `string \| undefined`  |          | Longest allowed value.                                                                                                                               |
-| `min`          | `string \| undefined`  |          | Smallest valid value of a `number` field.                                                                                                            |
-| `max`          | `string \| undefined`  |          | Largest valid value of a `number` field.                                                                                                             |
-| `step`         | `string \| undefined`  |          | Step of a `number` field; `any` allows decimals.                                                                                                     |
-| `pattern`      | `string \| undefined`  |          | A regular expression the value must match.                                                                                                           |
-| `autocomplete` | `string \| undefined`  |          | The autofill hint.                                                                                                                                   |
-| `inputmode`    | `string \| undefined`  |          | The virtual keyboard hint.                                                                                                                           |
-| `clear-label`  | `string`               | `""`     | The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".                                    |
-| `_labelled`    | `boolean`              | `false`  |                                                                                                                                                      |
+| Attribute      | Type                           | Default  | Description                                                                                                                                          |
+| -------------- | ------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`         | `string`                       | `"text"` | `text` (default), `search`, `password`, `email`, `url`, `tel` or `number`. A search field gets a magnifier and a clear button, and Escape clears it. |
+| `value`        | `string`                       | `""`     | The starting value. The `value` property holds the current one.                                                                                      |
+| `label`        | `string \| undefined`          |          | The accessible name when there is no slotted label.                                                                                                  |
+| `size`         | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`   | `md` (default), `sm` for dense rows (the height of a small button), `lg` or `xl`.                                                                    |
+| `name`         | `string`                       | `""`     | The name submitted with a form.                                                                                                                      |
+| `placeholder`  | `string \| undefined`          |          | Hint shown while empty.                                                                                                                              |
+| `required`     | `boolean`                      | `false`  | The form is invalid while the field is empty.                                                                                                        |
+| `readonly`     | `boolean`                      | `false`  | The value can be selected but not edited, and a search field cannot be cleared.                                                                      |
+| `disabled`     | `boolean`                      | `false`  | No focus, nothing submitted.                                                                                                                         |
+| `minlength`    | `string \| undefined`          |          | Shortest valid value.                                                                                                                                |
+| `maxlength`    | `string \| undefined`          |          | Longest allowed value.                                                                                                                               |
+| `min`          | `string \| undefined`          |          | Smallest valid value of a `number` field.                                                                                                            |
+| `max`          | `string \| undefined`          |          | Largest valid value of a `number` field.                                                                                                             |
+| `step`         | `string \| undefined`          |          | Step of a `number` field; `any` allows decimals.                                                                                                     |
+| `pattern`      | `string \| undefined`          |          | A regular expression the value must match.                                                                                                           |
+| `autocomplete` | `string \| undefined`          |          | The autofill hint.                                                                                                                                   |
+| `inputmode`    | `string \| undefined`          |          | The virtual keyboard hint.                                                                                                                           |
+| `clear-label`  | `string`                       | `""`     | The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".                                    |
+| `_labelled`    | `boolean`                      | `false`  |                                                                                                                                                      |
 
 **Slots**
 
@@ -1991,17 +1991,17 @@ One choice in a `pl-select`. Its text is the label. The select marks the chosen 
 
 A pop-up button: shows the chosen option and opens a list to choose another. It follows the select-only combobox pattern: the trigger is a combobox and the options are real light-DOM children, so focus moves to the options while the list is open and returns to the trigger on close. It takes part in forms: it submits `name` with the chosen value, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the trigger; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
 
-| Attribute     | Type                   | Default | Description                                              |
-| ------------- | ---------------------- | ------- | -------------------------------------------------------- |
-| `value`       | `string`               | `""`    | The chosen option's value. Empty when nothing is chosen. |
-| `name`        | `string`               | `""`    | The name submitted with a form.                          |
-| `label`       | `string`               | `""`    | The accessible name when there is no slotted label.      |
-| `placeholder` | `string`               | `""`    | Shown while nothing is chosen.                           |
-| `required`    | `boolean`              | `false` | The form is invalid while nothing is chosen.             |
-| `disabled`    | `boolean`              | `false` | No focus, no list, nothing submitted.                    |
-| `size`        | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                            |
-| `open`        | `boolean`              | `false` | The list is showing.                                     |
-| `_labelled`   | `boolean`              | `false` |                                                          |
+| Attribute     | Type                           | Default | Description                                                                       |
+| ------------- | ------------------------------ | ------- | --------------------------------------------------------------------------------- |
+| `value`       | `string`                       | `""`    | The chosen option's value. Empty when nothing is chosen.                          |
+| `name`        | `string`                       | `""`    | The name submitted with a form.                                                   |
+| `label`       | `string`                       | `""`    | The accessible name when there is no slotted label.                               |
+| `placeholder` | `string`                       | `""`    | Shown while nothing is chosen.                                                    |
+| `required`    | `boolean`                      | `false` | The form is invalid while nothing is chosen.                                      |
+| `disabled`    | `boolean`                      | `false` | No focus, no list, nothing submitted.                                             |
+| `size`        | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `sm` for dense rows (the height of a small button), `lg` or `xl`. |
+| `open`        | `boolean`                      | `false` | The list is showing.                                                              |
+| `_labelled`   | `boolean`                      | `false` |                                                                                   |
 
 **Slots**
 

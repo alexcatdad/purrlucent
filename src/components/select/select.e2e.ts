@@ -618,6 +618,27 @@ test("a select without a label fails axe", async ({ page }) => {
   await expect(expectAccessible(root)).rejects.toThrow();
 });
 
+test("sizes grow from sm, and sm is the small button's height", async ({
+  page,
+}) => {
+  await gotoStory(page, story("sizes"));
+  const heights = await page
+    .locator("pl-select")
+    .evaluateAll((els) =>
+      els.map(
+        (el) =>
+          el
+            .shadowRoot!.querySelector('[part="trigger"]')!
+            .getBoundingClientRect().height,
+      ),
+    );
+  expect(heights).toHaveLength(4);
+  expect(heights).toEqual([...heights].sort((a, b) => a - b));
+  expect(new Set(heights).size).toBe(4);
+  // Firefox lays out to a subpixel short of the token size.
+  expect(heights[0]).toBeCloseTo(24, 1);
+});
+
 test("no horizontal overflow at 200% text zoom", async ({ page }) => {
   await expectNoOverflowAtTextZoom(await gotoStory(page, story("sizes")));
 });

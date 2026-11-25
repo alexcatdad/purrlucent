@@ -93,7 +93,7 @@ export class PlOption extends LitElement {
  * @attr {string} placeholder - Shown while nothing is chosen.
  * @attr {boolean} required - The form is invalid while nothing is chosen.
  * @attr {boolean} disabled - No focus, no list, nothing submitted.
- * @attr {string} size - `md` (default), `lg` or `xl`.
+ * @attr {string} size - `md` (default), `sm` for dense rows (the height of a small button), `lg` or `xl`.
  * @attr {boolean} open - The list is showing.
  * @slot - The `pl-option` children.
  * @slot label - The visible label.
@@ -131,7 +131,7 @@ export class PlSelect extends LitElement {
   declare placeholder: string;
   declare required: boolean;
   declare disabled: boolean;
-  declare size: "md" | "lg" | "xl";
+  declare size: "sm" | "md" | "lg" | "xl";
   declare open: boolean;
   declare _labelled: boolean;
 

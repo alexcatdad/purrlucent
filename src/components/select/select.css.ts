@@ -27,6 +27,14 @@ export const selectStyles = css`
     display: none;
   }
 
+  /* A dense picker, the height of a small button; a coarse pointer raises it
+     to the touch size. The text keeps its size. */
+  :host([size="sm"]) {
+    --_size: var(--pl-size-sm);
+    --_pad: var(--pl-space-2);
+    --_glyph: var(--pl-icon-sm);
+  }
+
   :host([size="lg"]) {
     --_size: var(--pl-size-lg);
   }
