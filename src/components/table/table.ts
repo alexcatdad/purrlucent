@@ -38,6 +38,8 @@ function adoptTableStyles(root: Node) {
  * @attr {"regular" | "compact"} density - Row height and cell padding. Unset, it follows the page's `data-pl-density`.
  * @attr {boolean} sticky-header - The header cells stay at the top while the rows scroll.
  * @slot - A native `<table>`.
+ * @cssprop [--pl-table-header-weight=600] - The font weight of header cells. Set it on the `pl-table`, a `th` or `:root`; the table's rules are unlayered, so a utility class on a cell does not override them.
+ * @cssprop [--pl-table-link-weight=600] - The font weight of a plain link in a cell. Set it on the `pl-table`, a cell, the link or `:root`.
  * @csspart scroller - The scroll container.
  */
 export class PlTable extends LitElement {
