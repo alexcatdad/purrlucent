@@ -27,6 +27,10 @@ export const badgeStyles = css`
     vertical-align: middle;
   }
 
+  :host(:state(text)) {
+    padding-inline: var(--pl-space-2);
+  }
+
   /* The label sets its own color, so a container that colors slotted content
      (a sidebar item's detail slot) cannot take the text off its fill. */
   [part="label"] {

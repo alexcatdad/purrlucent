@@ -26,11 +26,37 @@ export class PlBadge extends LitElement {
   declare appearance: "solid" | "soft" | "outline";
   declare dot: boolean;
 
+  readonly #internals = this.attachInternals();
+  // A count (no letters, such as "3" or "99+") keeps the narrow, round badge;
+  // text with letters gets room before the rounded ends.
+  readonly #watch = new MutationObserver(() => this.#measure());
+
   constructor() {
     super();
     this.variant = "neutral";
     this.appearance = "solid";
     this.dot = false;
+  }
+
+  #measure() {
+    if (/\p{L}/u.test(this.textContent ?? ""))
+      this.#internals.states.add("text");
+    else this.#internals.states.delete("text");
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.#watch.observe(this, {
+      subtree: true,
+      characterData: true,
+      childList: true,
+    });
+    this.#measure();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#watch.disconnect();
   }
 
   override render() {
