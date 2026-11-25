@@ -137,6 +137,21 @@ The package also ships the skill in `node_modules/purrlucent/dist/skills/purrluc
 
 The version is part of the URL. To upgrade, install again with the new version in the URL.
 
+## Background textures
+
+Set `pl-texture` on `html` or `body` for a viewport background, or on a container such as `pl-card` for a local background. The values are `dots`, `soft-bands`, `fine-grain`, `fluted-lines`, `contours`, `color-glow`, `fine-grid` and `soft-waves`. They ship with `purrlucent/tokens.css`.
+
+```html
+<pl-card pl-texture="fine-grid" pl-texture-motion="drift">
+  <span slot="title">Saved items</span>
+  <pl-toolbar floating label="Collection actions">Collection</pl-toolbar>
+</pl-card>
+```
+
+Textures are still by default. Add `pl-texture-motion="drift"` for motion and set `--pl-texture-motion` to a duration to change its speed. Reduced motion keeps the pattern still. Increased contrast and forced colors hide it.
+
+`--pl-texture-color` sets the accent for the colored patterns. Fine grain uses neutral light and dark flecks. `--pl-texture-size` sets the repeat distance of tiled patterns, and `--pl-texture-dot` sets the dot radius. Dots fade toward one corner by default. Set `--pl-texture-fade` to a CSS mask gradient or `none` on any textured surface.
+
 ## Glass mode
 
 Surfaces are solid by default. To turn on glass, set `pl-material="glass"` on any ancestor, usually `<html>`:
