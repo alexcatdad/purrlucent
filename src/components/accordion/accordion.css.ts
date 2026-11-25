@@ -7,7 +7,7 @@ export const accordionStyles = css`
     display: block;
     border-block: 1px solid var(--pl-color-border);
     color: var(--pl-color-foreground);
-    font: 400 var(--pl-text-base) / var(--pl-leading-normal) var(--pl-font-sans);
+    font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
   }
 
   :host([hidden]) {

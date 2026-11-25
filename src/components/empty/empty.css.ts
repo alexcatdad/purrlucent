@@ -24,6 +24,7 @@ export const emptyStyles = css`
 
   [part="title"] {
     font-size: var(--pl-text-lg);
+    line-height: var(--pl-leading-body);
     font-weight: 700;
   }
 

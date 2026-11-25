@@ -127,6 +127,7 @@ export const dialogStyles = css`
   [part="title"] {
     font-weight: 700;
     font-size: var(--pl-text-lg);
+    line-height: var(--pl-leading-body);
   }
 
   :host([variant="alert"]) [part="title"] {

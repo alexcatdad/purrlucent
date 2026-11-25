@@ -57,6 +57,7 @@ export const cardStyles = css`
     grid-area: title;
     font-weight: 700;
     font-size: var(--pl-text-base);
+    line-height: var(--pl-leading-body);
   }
 
   slot[name="description"] {

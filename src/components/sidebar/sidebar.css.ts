@@ -87,7 +87,7 @@ const rowMd = css`
 
 const rowLg = css`
   --_text: var(--pl-text-lg);
-  --_leading: var(--pl-leading-loose);
+  --_leading: var(--pl-leading-body);
   --_row: max(var(--pl-size-nav-lg), var(--pl-size-hit-min));
   --_glyph: calc(var(--pl-spacing) * 4.5);
   --_head: var(--pl-icon-lg);

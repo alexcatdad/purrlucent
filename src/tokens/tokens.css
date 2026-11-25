@@ -268,8 +268,8 @@
     /* Editable text inside fields; a coarse pointer raises it to at least
        1rem so iOS Safari does not zoom on focus. */
     --pl-text-field: var(--pl-text-sm);
-    --pl-text-base: 0.875rem;
-    --pl-text-lg: 0.9375rem;
+    --pl-text-base: 1rem; /* Body text: the web default. */
+    --pl-text-lg: 1.125rem; /* Large text for WCAG contrast. */
     --pl-text-xl: 1.25rem;
     --pl-icon-sm: calc(var(--pl-spacing) * 3);
     --pl-icon-md: calc(var(--pl-spacing) * 4);
@@ -394,6 +394,7 @@
     --pl-leading-tight: calc(var(--pl-spacing) * 3.5);
     --pl-leading-normal: calc(var(--pl-spacing) * 4);
     --pl-leading-loose: calc(var(--pl-spacing) * 5);
+    --pl-leading-body: calc(var(--pl-spacing) * 6);
     --pl-pad-cell-y: var(--pl-space-2);
   }
 
@@ -408,6 +409,7 @@
     --pl-leading-tight: calc(var(--pl-spacing) * 4.5);
     --pl-leading-normal: calc(var(--pl-spacing) * 5);
     --pl-leading-loose: calc(var(--pl-spacing) * 6);
+    --pl-leading-body: calc(var(--pl-spacing) * 7);
     --pl-pad-cell-y: var(--pl-space-3);
   }
 

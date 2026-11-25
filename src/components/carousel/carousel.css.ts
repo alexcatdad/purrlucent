@@ -12,7 +12,7 @@ export const carouselStyles = css`
 
     display: block;
     color: var(--pl-color-foreground);
-    font: 400 var(--pl-text-base) / var(--pl-leading-normal) var(--pl-font-sans);
+    font: 400 var(--pl-text-base) / var(--pl-leading-body) var(--pl-font-sans);
   }
 
   :host([hidden]) {

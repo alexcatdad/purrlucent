@@ -211,6 +211,7 @@ export const drawerStyles = css`
   [part="title"] {
     font-weight: 700;
     font-size: var(--pl-text-base);
+    line-height: var(--pl-leading-body);
   }
 
   ::slotted([slot="title"]) {
