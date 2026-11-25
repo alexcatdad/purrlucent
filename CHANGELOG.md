@@ -1,5 +1,16 @@
 # purrlucent
 
+## 0.25.0
+
+### Minor Changes
+
+- 5f42e28: `pl-menu` takes the placements `start-start`, `start-end`, `end-start` and `end-end`: beside the trigger, with the menu's top or bottom level with the trigger's. From a `pl-sidebar-item`, a side placement opens past the sidebar's edge.
+
+### Patch Changes
+
+- 5f42e28: Add `--pl-material-selected-foreground`. On glass, text over the selection fill reads it, so it holds 4.5:1 in light and dark whatever the app sets for `--pl-color-accent-foreground`.
+- 5577c67: pl-select no longer schedules a second update when its list opens, which Lit's dev mode reported as a change-in-update warning.
+
 ## 0.24.1
 
 ### Patch Changes
