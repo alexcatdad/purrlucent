@@ -1,5 +1,30 @@
 # purrlucent
 
+## 0.24.0
+
+### Minor Changes
+
+- 0cd3e39: Body text is 16px, the web default (`--pl-text-base`), with a 24px `--pl-leading-body`; large text is 18px (`--pl-text-lg`).
+- 0cd3e39: Controls show the pointing hand and disabled controls show `not-allowed`; set `--pl-cursor-interactive` or `--pl-cursor-disabled` to `default` for the arrow.
+- 0cd3e39: Add a `data-pl-density` setting. `comfortable` on `:root` or any ancestor raises control, row and line heights and table cell padding together; `compact` is the default. A `pl-table` without a `density` attribute now follows it. Add the `--pl-color-surface-canvas`, `--pl-color-surface-content`, `--pl-color-surface-chrome` and `--pl-color-surface-overlay` tokens, and document the default width of each text field.
+- 0cd3e39: `pl-month-range-picker` has a new look. Its trigger is a field like `pl-select`, with a calendar icon, a chevron, a placeholder and a `slot="label"` label. The chosen range shows as one band with filled end caps, a preview of the range follows the pointer and keyboard focus after the first month, and this month is marked with a dot. The new `presets` property adds buttons that choose ready-made ranges.
+- 0cd3e39: `pl-sidebar-item` labels and descriptions truncate with an ellipsis on one line, and the full text shows as the control's title only when truncated. The reorder grip has a fixed width independent of the row height and no longer takes room from the label while hidden.
+
+  The disclosure chevron of a group now sits at the trailing end of the row, after the label and the detail, so icons and labels of group and plain rows line up. The new `chevron` attribute on `pl-sidebar` (`end`, the default, or `start`) restores the leading position. Beside a link, the disclosure button now follows the link in the tab order when the chevron is at the end.
+
+- 0cd3e39: Text fields render editable text at least 16px on coarse pointers, so iOS Safari does not zoom on focus; `--pl-text-field` sets the size.
+  Toggle-group overflow keeps a thin themed scrollbar.
+  Plain links in table cells are underlined at rest.
+  Select, combobox, checkbox, radio group and toggle group restore their value when the browser restores form state.
+  A disabled button takes no focus on click or Tab.
+  A disabled menu item shows the `not-allowed` cursor and still cannot be activated.
+  The label text of a checkbox and a switch can be selected.
+
+### Patch Changes
+
+- 0cd3e39: Form controls re-render when `disabled` is set back to false through the property, so inner fields and buttons are enabled again.
+- 0cd3e39: Menu item icons are 16px with the icon gap before the label, also under page resets that zero margins. On glass, the focus ring and selection follow the accent color.
+
 ## 0.23.2
 
 ### Patch Changes
