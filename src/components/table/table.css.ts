@@ -63,7 +63,7 @@ export const tableDocumentStyles = css`
   /* A header cell is a small, semibold label in the secondary colour. */
   pl-table th {
     color: var(--pl-color-muted-foreground);
-    font-weight: 600;
+    font-weight: var(--pl-table-header-weight);
   }
 
   pl-table thead th {
@@ -98,7 +98,7 @@ export const tableDocumentStyles = css`
      a link among text; a stretched link keeps the row. */
   pl-table a:not([data-stretched]) {
     color: var(--pl-color-accent-text);
-    font-weight: 600;
+    font-weight: var(--pl-table-link-weight);
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }

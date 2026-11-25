@@ -2268,6 +2268,11 @@ Styles a native table. Slot one `<table>` (with `<caption>`, `<thead>`, `<tbody>
 
 - `scroller`: The scroll container.
 
+**CSS properties**
+
+- `--pl-table-header-weight`: The font weight of header cells. Set it on the `pl-table`, a `th` or `:root`; the table's rules are unlayered, so a utility class on a cell does not override them.
+- `--pl-table-link-weight`: The font weight of a plain link in a cell. Set it on the `pl-table`, a cell, the link or `:root`.
+
 ## Tabs
 
 ```ts

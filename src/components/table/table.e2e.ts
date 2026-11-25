@@ -492,6 +492,23 @@ test("a plain link takes the accent and is underlined at rest", async ({
   ).not.toBe(style.color);
 });
 
+test("the header and link weights follow their custom properties", async ({
+  page,
+}) => {
+  await open(page, "data-table--links");
+  const weight = (selector: string) =>
+    page
+      .locator(selector)
+      .first()
+      .evaluate((el) => getComputedStyle(el).fontWeight);
+  await page.locator("pl-table").evaluate((el) => {
+    el.style.setProperty("--pl-table-header-weight", "400");
+    el.style.setProperty("--pl-table-link-weight", "400");
+  });
+  expect(await weight("pl-table th")).toBe("400");
+  expect(await weight("#plain-link")).toBe("400");
+});
+
 test("a stretched link still covers its row beside plain links", async ({
   page,
 }) => {
