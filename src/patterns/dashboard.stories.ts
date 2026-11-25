@@ -593,6 +593,14 @@ class DashboardDemo extends LitElement {
       color: var(--pl-color-muted-foreground);
     }
 
+    .orders pl-table::part(scroller) {
+      background-color: color-mix(
+        in srgb,
+        var(--pl-color-surface-content) 55%,
+        var(--sb-pattern-canvas, var(--pl-color-surface-content))
+      );
+    }
+
     .orders pl-table :is(th, td) {
       padding-inline: var(--pl-space-3);
     }
