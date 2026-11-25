@@ -391,6 +391,31 @@ test("the toolbar surface has a backdrop blur under glass and none when solid", 
     );
 });
 
+test("a solid page never loads the glass lens, and switching to glass loads it", async ({
+  page,
+  browserName,
+}) => {
+  const loads: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("lens-engine")) loads.push(request.url());
+  });
+  await openStory(page);
+  await expect(page.locator("#toolbar")).toBeVisible();
+  // Two frames: any update the toolbar's first render queued has run.
+  for (let i = 0; i < 2; i++)
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+  expect(loads).toEqual([]);
+  await page.evaluate(() =>
+    document.documentElement.setAttribute("pl-material", "glass"),
+  );
+  // Firefox draws no lens, so it never loads one.
+  if (browserName === "firefox") {
+    for (let i = 0; i < 2; i++)
+      await page.evaluate(() => new Promise(requestAnimationFrame));
+    expect(loads).toEqual([]);
+  } else await expect.poll(() => loads.length).toBeGreaterThan(0);
+});
+
 /** The accessible name of the focused item; a text field is named by its label. */
 const focusedName = (page: Page) =>
   page.evaluate(() => {
