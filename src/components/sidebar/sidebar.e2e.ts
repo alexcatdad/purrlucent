@@ -1637,15 +1637,21 @@ test.describe("reorderable", () => {
     await expect(page.getByRole("menu")).toHaveCount(0);
   });
 
-  test("pressing the grip does not select the item", async ({ page }) => {
+  test("the grip opens the menu beside the row without selecting it", async ({
+    page,
+  }) => {
     await open(page, "reorderable");
     await listen(page, "pl-change");
     const item = page.locator("#second");
     await item.evaluate((el) => {
       el.addEventListener("click", () => el.setAttribute("data-activated", ""));
     });
-    await page.locator("#second [part=handle]").click();
+    const grip = item.locator("[part=handle]");
+    await grip.click();
     await expect(page.getByRole("menuitem", { name: "Move up" })).toBeVisible();
+    const trigger = (await grip.boundingBox())!;
+    const menu = (await page.getByRole("menu").boundingBox())!;
+    expect(menu.x).toBeGreaterThanOrEqual(trigger.x + trigger.width);
     expect(await heard(page)).toEqual([]);
     await expect(item).not.toHaveAttribute("data-activated");
     await expect(page.locator("#second a")).not.toHaveAttribute("aria-current");

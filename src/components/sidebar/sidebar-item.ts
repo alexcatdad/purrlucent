@@ -241,7 +241,7 @@ export class PlSidebarItem extends LitElement {
       <pl-menu
         class="reorder-menu"
         label=${name}
-        placement="bottom-end"
+        placement="end-start"
         @click=${(event: Event) => event.stopPropagation()}
         @keydown=${this.#onReorderKeydown}
         @pl-toggle=${(event: Event) => event.stopPropagation()}
