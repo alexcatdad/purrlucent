@@ -24,8 +24,10 @@
   },
   "files": [
     "dist",
+    "kits",
     "docs/components.md",
     "docs/install.md",
+    "docs/kits.md",
     "docs/react.md",
     "SECURITY.md",
     "NOTICE",
@@ -150,6 +152,10 @@
       "types": "./dist/types/components/empty/empty.d.ts",
       "default": "./dist/empty.js"
     },
+    "./error-summary": {
+      "types": "./dist/types/components/error-summary/error-summary.d.ts",
+      "default": "./dist/error-summary.js"
+    },
     "./field": {
       "types": "./dist/types/components/field/field.d.ts",
       "default": "./dist/field.js"
@@ -265,6 +271,10 @@
     "./spinner": {
       "types": "./dist/types/components/spinner/spinner.d.ts",
       "default": "./dist/spinner.js"
+    },
+    "./step-indicator": {
+      "types": "./dist/types/components/step-indicator/step-indicator.d.ts",
+      "default": "./dist/step-indicator.js"
     },
     "./switch": {
       "types": "./dist/types/components/switch/switch.d.ts",

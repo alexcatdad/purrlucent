@@ -1,0 +1,113 @@
+import { Markdown, Meta, Source } from "@storybook/addon-docs/blocks";
+import guide from "./kits.md?raw";
+import product from "../kits/product-site/index.html?raw";
+import centered from "../kits/product-site/centered.html?raw";
+import baseStyles from "../kits/shared.css?raw";
+import chromeStyles from "../kits/site-chrome.css?raw";
+import productStyles from "../kits/product-site/styles.css?raw";
+import navigation from "../kits/site-navigation.ts?raw";
+import productMain from "../kits/product-site/main.ts?raw";
+
+export const section = (source, name) => {
+  const start = `<!-- ${name} -->`;
+  const end = `<!-- /${name} -->`;
+  const startIndex = source.indexOf(start);
+  const endIndex = source.indexOf(end, startIndex + start.length);
+  if (startIndex === -1 || endIndex === -1) {
+    throw new Error(`Missing product site section: ${name}`);
+  }
+  const lines = source
+    .slice(startIndex + start.length, endIndex)
+    .trimEnd()
+    .split("\n")
+    .slice(1);
+  const indent = lines[0].match(/^ */)[0];
+  return lines
+    .map((line) => (line.startsWith(indent) ? line.slice(indent.length) : line))
+    .join("\n");
+};
+
+export const productSections = [
+  ["Header", product, "Header"],
+  ["Split hero", product, "Hero"],
+  ["Centered hero", centered, "Hero"],
+  ["Features", product, "Features"],
+  ["FAQ", product, "FAQ"],
+  ["Closing action", product, "Closing action"],
+  ["Expanded footer", product, "Footer"],
+  ["Compact footer", centered, "Footer"],
+];
+
+export const supportingFiles = [
+  ["shared.css", "css", baseStyles],
+  ["site-chrome.css", "css", chromeStyles],
+  ["product-site/styles.css", "css", productStyles],
+  ["site-navigation.ts", "typescript", navigation],
+  ["product-site/main.ts", "typescript", productMain],
+];
+
+<Meta title="Starter kits" />
+
+<Markdown options={{ overrides: { a: { props: { target: "_top" } } } }}>
+  {guide.replace("(./install.md)", "(./?path=/docs/install--docs)")}
+</Markdown>
+
+## Live demos
+
+<ul>
+  <li>
+    <a href="./kits/product-site/index.html" target="_top">
+      Product site
+    </a>{" "}
+    ·{" "}
+    <a href="./kits/product-site/centered.html" target="_top">
+      Centered hero and compact footer
+    </a>
+  </li>
+  <li>
+    <a href="./kits/onboarding/index.html" target="_top">
+      Onboarding
+    </a>
+  </li>
+  <li>
+    <a href="./kits/admin/index.html" target="_top">
+      Admin
+    </a>
+  </li>
+  <li>
+    <a href="./kits/billing/index.html" target="_top">
+      Billing
+    </a>
+  </li>
+  <li>
+    <a href="./kits/docs/index.html" target="_top">
+      Documentation
+    </a>{" "}
+    ·{" "}
+    <a href="./kits/docs/theming.html" target="_top">
+      Theming article
+    </a>
+  </li>
+</ul>
+
+## Copy sections from the product site
+
+The split hero uses `dashboard.png` from the product site folder. Load the shared stylesheet and the section’s styles with the markup. The product entry point registers the FAQ accordion and loads the menu behavior.
+
+{productSections.map(([label, source, name]) => (
+
+  <details key={label}>
+    <summary>{label}</summary>
+    <Source language="html" code={section(source, name)} />
+  </details>
+))}
+
+### Styles and scripts
+
+{supportingFiles.map(([file, language, code]) => (
+
+  <details key={file}>
+    <summary>{file}</summary>
+    <Source language={language} code={code} />
+  </details>
+))}

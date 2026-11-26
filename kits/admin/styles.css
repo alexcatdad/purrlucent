@@ -1,0 +1,215 @@
+.app-shell {
+  display: grid;
+  grid-template-areas: "header header" "navigation content";
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--pl-space-5);
+  padding-block: var(--pl-space-5) var(--pl-space-10);
+}
+
+.app-header,
+.app-account,
+.queue-header,
+.queue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pl-space-3);
+}
+
+.app-header {
+  grid-area: header;
+  justify-content: space-between;
+  align-self: stretch;
+  border-block-end: 1px solid var(--pl-color-border);
+  padding-block-end: var(--pl-space-3);
+}
+
+.app-brand {
+  font-size: var(--pl-text-xl);
+  letter-spacing: -0.03em;
+}
+
+.app-account {
+  color: var(--pl-color-muted-foreground);
+  font-size: var(--pl-text-sm);
+}
+
+.app-navigation {
+  grid-area: navigation;
+}
+
+.app-navigation:not([collapsed], [data-overlay]) {
+  inline-size: min(21vw, 12rem);
+}
+
+.app-content {
+  grid-area: content;
+  min-inline-size: 0;
+}
+
+:where(.app-content :is(h1, h2, h3, p)) {
+  margin: 0;
+}
+
+.queue-header {
+  justify-content: space-between;
+  margin-block: var(--pl-space-1) var(--pl-space-6);
+}
+
+.queue-header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.queue-header p,
+.row-meta,
+.queue-note,
+.detail-body dt,
+#detail-placeholder {
+  color: var(--pl-color-muted-foreground);
+}
+
+.queue-header p {
+  margin-block-start: var(--pl-space-1);
+}
+
+.queue-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--pl-space-4);
+}
+
+.queue-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--pl-gap-form);
+}
+
+.queue-tools > * {
+  inline-size: 100%;
+}
+
+.queue-note,
+.row-meta,
+.detail-body dt {
+  font-size: var(--pl-text-sm);
+}
+
+.queue-note {
+  margin-block: var(--pl-space-4) var(--pl-space-2);
+}
+
+.queue-loading {
+  padding: var(--pl-space-8);
+  text-align: center;
+}
+
+.queue-actions {
+  justify-content: space-between;
+  padding-block: var(--pl-space-2);
+}
+
+.queue-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.queue-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--pl-space-2);
+  padding: var(--pl-space-2);
+  border-block-start: 1px solid var(--pl-color-border);
+}
+
+.queue-row[data-current] {
+  background: var(--pl-color-muted-3);
+}
+
+.row-title {
+  max-inline-size: 100%;
+  margin-inline-start: calc(var(--pl-pad-control) * -1);
+  color: var(--pl-color-accent-text);
+  font-weight: 600;
+}
+
+.row-title::part(label) {
+  white-space: normal;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+.row-meta {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.queue-back {
+  display: none;
+  margin-block-end: var(--pl-space-4);
+}
+
+/* Keep Back until focus moves if the two-pane layout opens under it. */
+.queue-back:focus {
+  display: inline-flex;
+}
+
+.detail-body dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pl-space-4);
+  margin: 0;
+}
+
+.detail-body dd {
+  margin: 0;
+}
+
+.detail-message {
+  margin-block: var(--pl-space-5);
+  padding-block-start: var(--pl-space-4);
+  border-block-start: 1px solid var(--pl-color-border);
+}
+
+.detail-message h3 {
+  margin-block-end: var(--pl-space-2);
+  font-size: var(--pl-text-base);
+}
+
+#detail-note:not(:empty) {
+  margin-block-start: var(--pl-space-3);
+  color: var(--pl-color-muted-foreground);
+  font-size: var(--pl-text-sm);
+}
+
+@media (max-width: 65rem) {
+  .queue-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .queue-layout:not([data-detail-open]) .queue-detail,
+  .queue-layout[data-detail-open] .queue-list {
+    display: none;
+  }
+
+  .queue-back {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    grid-template-areas: "navigation header" "content content";
+    gap: var(--pl-space-3);
+  }
+
+  .app-header {
+    border: 0;
+    padding-block-end: 0;
+  }
+}

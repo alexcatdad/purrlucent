@@ -5,6 +5,7 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { $ } from "bun";
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   readdirSync,
@@ -12,7 +13,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { basename, join } from "node:path";
+import { basename, dirname, join, sep } from "node:path";
 import { chromium } from "playwright";
 import { DOCS } from "./agent-skill.ts";
 
@@ -26,6 +27,16 @@ const app = join(
   `node_modules/.cache/pack-check-${process.pid}`,
 );
 const installed = join(app, "node_modules/purrlucent");
+const kits = join(app, "kits");
+const kitRoutes = [
+  "admin/index.html",
+  "billing/index.html",
+  "docs/index.html",
+  "docs/theming.html",
+  "onboarding/index.html",
+  "product-site/centered.html",
+  "product-site/index.html",
+];
 const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
   version: string;
   exports: Record<string, Target>;
@@ -55,6 +66,7 @@ beforeAll(async () => {
   await $`bun run build`.quiet();
   await $`bun pm pack --ignore-scripts --destination ${app}`.quiet();
   await $`tar -xzf ${join(app, `purrlucent-${manifest.version}.tgz`)} --strip-components=1 -C ${installed}`.quiet();
+  cpSync(join(installed, "kits"), kits, { recursive: true });
 }, 120_000);
 
 afterAll(() => rmSync(app, { recursive: true, force: true }));
@@ -123,7 +135,11 @@ test("the element manifest lists an element for every component", () => {
   expect(tags().length).toBeGreaterThanOrEqual(components.length);
 });
 
-test("a TypeScript app type-checks against the package", async () => {
+test("a TypeScript app and the copied starters type-check against the package", async () => {
+  const kitScripts = readdirSync(kits, { recursive: true, encoding: "utf8" })
+    .filter((file) => file.endsWith(".ts") && file !== "vite.config.ts")
+    .map((file) => join("kits", file));
+  expect(kitScripts.length).toBeGreaterThan(0);
   writeFileSync(
     join(app, "consumer.ts"),
     `${modules.map((m) => `import "${m}";`).join("\n")}
@@ -142,14 +158,73 @@ button.variant = "primary";
         moduleResolution: "bundler",
         strict: true,
         noEmit: true,
+        allowImportingTsExtensions: true,
+        noUncheckedSideEffectImports: true,
         types: [],
       },
-      files: ["consumer.ts"],
+      files: ["consumer.ts", ...kitScripts],
     }),
   );
   const result = await $`bunx tsc -p ${app}`.nothrow().quiet();
   expect(result.stdout.toString()).toBe("");
   expect(result.exitCode).toBe(0);
+}, 60_000);
+
+test("the copied starter kits build standalone pages with their linked assets", async () => {
+  await $`bunx --no-install vite build --config ${join(kits, "vite.config.ts")}`.quiet();
+  const output = join(kits, "dist");
+  const routes = readdirSync(output, { recursive: true, encoding: "utf8" })
+    .filter((file) => file.endsWith(".html"))
+    .map((file) => file.split(sep).join("/"))
+    .sort();
+  expect(routes).toEqual(kitRoutes);
+  for (const route of routes) {
+    const page = join(output, route);
+    const html = readFileSync(page, "utf8");
+    const assets = [
+      ...html.matchAll(/\b(?:href|src)="([^"]+\.(?:css|js|png))"/g),
+    ].map((match) => match[1]!);
+    const styles = assets.filter((asset) => asset.endsWith(".css"));
+    expect(styles.length, route).toBeGreaterThan(0);
+    expect(
+      assets.some((asset) => asset.endsWith(".js")),
+      route,
+    ).toBe(true);
+    if (route === "product-site/index.html") {
+      expect(
+        assets.some((asset) => asset.endsWith(".png")),
+        route,
+      ).toBe(true);
+    }
+    for (const asset of assets) {
+      expect(asset, route).toStartWith("../assets/");
+      expect(existsSync(join(dirname(page), asset)), asset).toBe(true);
+    }
+    expect(
+      styles.some((asset) =>
+        readFileSync(join(dirname(page), asset), "utf8").includes(
+          "--pl-spacing:",
+        ),
+      ),
+      route,
+    ).toBe(true);
+  }
+}, 60_000);
+
+test("the starter config builds a single copied kit twice", async () => {
+  const single = join(app, "single-kit");
+  cpSync(join(kits, "admin"), join(single, "admin"), { recursive: true });
+  for (const file of ["shared.css", "vite.config.ts"]) {
+    cpSync(join(kits, file), join(single, file));
+  }
+  const config = join(single, "vite.config.ts");
+  await $`bunx --no-install vite build --config ${config}`.quiet();
+  await $`bunx --no-install vite build --config ${config}`.quiet();
+  const routes = readdirSync(join(single, "dist"), {
+    recursive: true,
+    encoding: "utf8",
+  }).filter((file) => file.endsWith(".html"));
+  expect(routes).toEqual([join("admin", "index.html")]);
 }, 60_000);
 
 // React's types come from this repository's node_modules, above the app.

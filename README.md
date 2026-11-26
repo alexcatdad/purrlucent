@@ -36,6 +36,10 @@ From 0.27.1, every version is published from GitHub Actions with a provenance st
 - **Forms.** Input controls participate in native forms, including submission, reset, validation and disabled fieldsets.
 - **Typed.** The package ships type declarations, a Custom Elements Manifest and React 19 JSX types with typed events.
 
+## Starter kits
+
+The package includes editable product site, onboarding, admin, billing, and documentation pages. [Browse the starter kits](https://alexcatdad.github.io/purrlucent/?path=/docs/starter-kits--docs) · [Copy a kit into your project](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/kits.md)
+
 ## Components
 
 Use a date range to validate a start and end day, a combobox to search and select several values, or a data table to sort, filter and page through records. The catalog also includes navigation, dialogs, layout and feedback components.

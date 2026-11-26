@@ -29,6 +29,7 @@ This page is generated from the code by `bun scripts/component-docs.ts`. Each co
 - [Dialog](#dialog): `pl-dialog`
 - [Drawer](#drawer): `pl-drawer`
 - [Empty](#empty): `pl-empty`
+- [Error summary](#error-summary): `pl-error-summary`
 - [Field](#field): `pl-field`, `pl-fieldset`
 - [File input](#file-input): `pl-file-input`
 - [Hover card](#hover-card): `pl-hover-card`
@@ -58,6 +59,7 @@ This page is generated from the code by `bun scripts/component-docs.ts`. Each co
 - [Skeleton](#skeleton): `pl-skeleton`
 - [Slider](#slider): `pl-slider`
 - [Spinner](#spinner): `pl-spinner`
+- [Step indicator](#step-indicator): `pl-step-indicator`
 - [Switch](#switch): `pl-switch`
 - [Table](#table): `pl-table`
 - [Tabs](#tabs): `pl-tab`, `pl-tab-panel`, `pl-tabs`
@@ -1118,6 +1120,36 @@ An empty state: an optional icon, a title, a description and an action. Say what
 - `icon`: The icon tile.
 - `text`: The title and description.
 - `action`: The action row.
+
+## Error summary
+
+```ts
+import "purrlucent/error-summary";
+```
+
+### `<pl-error-summary>`
+
+A summary of form errors with links to the named controls. Place it near the start of the form and provide the same feedback at each field. After an unsuccessful submit, assign `errors`, await `updateComplete`, and call `focus()`. Errors without a visible, enabled control appear as text. An empty list hides the summary.
+
+| Attribute | Type                  | Default | Description                                                                                               |
+| --------- | --------------------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| `heading` | `string`              | `""`    | The summary title. Defaults to the page language's text (see `setMessages`), in English "Check the form". |
+| `form`    | `string \| undefined` |         | ID of the form in the same document or shadow root. Omit it inside a form.                                |
+
+**Properties**
+
+- `errors: readonly PlFieldError[]` Errors in form order. Replace the array when a message changes.
+
+**Methods**
+
+- `focus(options?: FocusOptions)`
+
+**Parts**
+
+- `summary`: The focusable group.
+- `heading`: The group's visible title.
+- `list`: The list of errors.
+- `link`: Each link to a form control.
 
 ## Field
 
@@ -2354,6 +2386,28 @@ A spinner. Without a `value` it shows that work is going on, with no way to tell
 **Parts**
 
 - `ring`: The drawing.
+
+## Step indicator
+
+```ts
+import "purrlucent/step-indicator";
+```
+
+### `<pl-step-indicator>`
+
+Shows where a person is in an ordered process. Place it near the current step's heading. The steps are text and the current one carries `aria-current="step"`. Put Back and Continue controls in the form.
+
+| Attribute      | Type                | Default | Description                                                                    |
+| -------------- | ------------------- | ------- | ------------------------------------------------------------------------------ |
+| `steps`        | `readonly string[]` | `[]`    | Step labels in order, as a JSON array in HTML or an array assigned to `steps`. |
+| `current-step` | `number`            | `1`     | One-based index of the current step. Defaults to 1.                            |
+| `label`        | `string`            | `""`    | A short accessible name for the list, such as "Account setup".                 |
+
+**Parts**
+
+- `list`: The ordered list.
+- `step`: Each step in the list.
+- `number`: The visible number of each step.
 
 ## Switch
 

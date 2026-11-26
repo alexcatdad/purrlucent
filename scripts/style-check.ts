@@ -55,9 +55,12 @@ const walk = (dir: string): string[] =>
 
 if (import.meta.main) {
   const tokensPath = "src/tokens/tokens.css";
-  const files = [...walk("src"), ...walk("e2e"), ...walk(".storybook")].filter(
-    (f) => /\.(ts|css)$/.test(f),
-  );
+  const files = [
+    ...walk("src"),
+    ...walk("e2e"),
+    ...walk("kits"),
+    ...walk(".storybook"),
+  ].filter((f) => /\.(ts|css)$/.test(f));
   const sources = Object.fromEntries(
     files.map((f) => [f, readFileSync(f, "utf8")]),
   );

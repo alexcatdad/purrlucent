@@ -1,0 +1,60 @@
+@import "purrlucent/tokens.css";
+
+:root {
+  color-scheme: light dark;
+  font-family: var(--pl-font-sans);
+  color: var(--pl-color-foreground);
+  background: var(--pl-color-background);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-size: var(--pl-text-base);
+  line-height: 1.5;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:where(button, input, textarea, select) {
+  font: inherit;
+}
+
+:where(a) {
+  color: var(--pl-color-accent-text);
+  text-underline-offset: 0.18em;
+}
+
+:where(:focus-visible) {
+  outline: var(--pl-ring-width) solid var(--pl-color-ring);
+  outline-offset: var(--pl-ring-offset);
+}
+
+.kit-container {
+  inline-size: min(100% - 2 * var(--pl-space-5), 72rem);
+  margin-inline: auto;
+}
+
+.kit-skip {
+  position: absolute;
+  inset-block-start: var(--pl-space-2);
+  inset-inline-start: var(--pl-space-2);
+  z-index: 10;
+  padding: var(--pl-space-2) var(--pl-space-4);
+  color: var(--pl-color-foreground);
+  background: var(--pl-color-background);
+}
+
+.kit-skip:not(:focus) {
+  clip-path: inset(50%);
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+}

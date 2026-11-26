@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Install Purrlucent — Documentation</title>
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="../site-chrome.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="kit-skip" href="#main">Skip to content</a>
+    <header class="kit-header">
+      <div class="kit-container kit-header-inner">
+        <a class="kit-brand" href="../product-site/index.html">
+          <span class="kit-brand-mark" aria-hidden="true"></span>Purrlucent
+        </a>
+        <nav class="kit-desktop-nav" aria-label="Main">
+          <ul class="kit-site-links">
+            <li><a href="../product-site/index.html#features">Features</a></li>
+            <li><a href="../product-site/index.html#faq">FAQ</a></li>
+            <li><a href="./index.html" aria-current="page">Docs</a></li>
+            <li><a class="kit-action" href="#install">Install</a></li>
+          </ul>
+        </nav>
+        <details class="kit-mobile-menu" data-kit-disclosure>
+          <summary class="kit-action">Menu</summary>
+          <nav aria-label="Main">
+            <ul class="kit-site-links">
+              <li>
+                <a href="../product-site/index.html#features">Features</a>
+              </li>
+              <li><a href="../product-site/index.html#faq">FAQ</a></li>
+              <li><a href="./index.html" aria-current="page">Docs</a></li>
+              <li><a class="kit-action" href="#install">Install</a></li>
+            </ul>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <div class="kit-container docs-layout">
+      <nav class="docs-side" aria-label="Guides">
+        <h2>Guides</h2>
+        <ul role="list">
+          <li><a href="./index.html" aria-current="page">Installation</a></li>
+          <li><a href="./theming.html">Theming</a></li>
+          <li>
+            <a
+              href="https://github.com/alexcatdad/purrlucent/blob/main/docs/components.md"
+              >Component reference</a
+            >
+          </li>
+        </ul>
+      </nav>
+
+      <main class="docs-page" id="main" tabindex="-1">
+        <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+          <ol role="list">
+            <li><a href="../product-site/index.html">Purrlucent</a></li>
+            <li aria-current="page">
+              <span aria-hidden="true">/</span> Installation
+            </li>
+          </ol>
+        </nav>
+
+        <article aria-labelledby="docs-title">
+          <header class="docs-intro">
+            <h1 id="docs-title">Install Purrlucent</h1>
+            <p>
+              Add the package to your project, load the design tokens, and
+              render your first component.
+            </p>
+          </header>
+
+          <details class="docs-mobile-contents" data-kit-disclosure>
+            <summary>Contents</summary>
+            <nav aria-label="Contents">
+              <ul role="list">
+                <li><a href="#install">Install the package</a></li>
+                <li><a href="#first-component">Add a component</a></li>
+                <li><a href="#page-styles">Set page styles</a></li>
+              </ul>
+              <ul role="list">
+                <li><a href="./theming.html">Theming guide</a></li>
+                <li>
+                  <a
+                    href="https://github.com/alexcatdad/purrlucent/blob/main/docs/components.md"
+                    >Component reference</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </details>
+
+          <section aria-labelledby="install">
+            <h2 id="install" tabindex="-1">Install the package</h2>
+            <p>
+              Run this command in your application’s directory. Purrlucent ships
+              as an ES module.
+            </p>
+            <figure class="docs-code">
+              <figcaption>Terminal</figcaption>
+              <pl-button size="sm" hidden aria-label="Copy install command"
+                >Copy</pl-button
+              >
+              <pre dir="ltr"><code>npm install purrlucent</code></pre>
+              <p class="docs-copy-status" role="status"></p>
+            </figure>
+          </section>
+
+          <section aria-labelledby="first-component">
+            <h2 id="first-component" tabindex="-1">Add a component</h2>
+            <p>
+              Import the design tokens once in your application entry point.
+              Import the button separately to register the
+              <code>pl-button</code> element.
+            </p>
+            <figure class="docs-code">
+              <figcaption>main.ts</figcaption>
+              <pl-button size="sm" hidden aria-label="Copy component imports"
+                >Copy</pl-button
+              >
+              <pre dir="ltr"><code>import "purrlucent/tokens.css";
+import "purrlucent/button";</code></pre>
+              <p class="docs-copy-status" role="status"></p>
+            </figure>
+            <p>Add the element wherever you need the control.</p>
+            <figure class="docs-code">
+              <figcaption>index.html</figcaption>
+              <pl-button size="sm" hidden aria-label="Copy button HTML"
+                >Copy</pl-button
+              >
+              <pre
+                dir="ltr"
+              ><code>&lt;pl-button variant="primary"&gt;Save&lt;/pl-button&gt;</code></pre>
+              <p class="docs-copy-status" role="status"></p>
+            </figure>
+          </section>
+
+          <section aria-labelledby="page-styles">
+            <h2 id="page-styles" tabindex="-1">Set page styles</h2>
+            <p>
+              Apply the background, text color, and font tokens to the page so
+              your content and controls share the same palette.
+            </p>
+            <figure class="docs-code">
+              <figcaption>styles.css</figcaption>
+              <pl-button size="sm" hidden aria-label="Copy page styles"
+                >Copy</pl-button
+              >
+              <pre dir="ltr"><code>body {
+  background: var(--pl-color-background);
+  color: var(--pl-color-foreground);
+  font-family: var(--pl-font-sans);
+}</code></pre>
+              <p class="docs-copy-status" role="status"></p>
+            </figure>
+          </section>
+        </article>
+
+        <nav class="docs-pagination" aria-label="Previous and next">
+          <a href="../product-site/index.html" rel="prev"
+            >Previous<span>Product overview</span></a
+          >
+          <a href="./theming.html" rel="next">Next<span>Theming</span></a>
+        </nav>
+      </main>
+
+      <nav class="docs-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ul role="list">
+          <li><a href="#install">Install the package</a></li>
+          <li><a href="#first-component">Add a component</a></li>
+          <li><a href="#page-styles">Set page styles</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <footer class="kit-footer">
+      <div class="kit-container kit-footer-compact">
+        <a class="kit-brand" href="../product-site/index.html">
+          <span class="kit-brand-mark" aria-hidden="true"></span>Purrlucent
+        </a>
+        <nav aria-label="Footer">
+          <ul class="kit-footer-links kit-site-links">
+            <li><a href="./index.html">Docs</a></li>
+            <li>
+              <a href="https://github.com/alexcatdad/purrlucent"
+                >Source on GitHub</a
+              >
+            </li>
+            <li>
+              <a href="https://www.npmjs.com/package/purrlucent">npm package</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
