@@ -12,9 +12,11 @@ test("the Components reference remains LTR after viewing an RTL story", async ({
   );
 
   await page.getByRole("row", { name: "Components reference" }).press("Enter");
-  await expect(
-    preview.getByRole("heading", { name: "Components", exact: true }),
-  ).toHaveCSS("direction", "ltr");
+  const heading = preview
+    .locator(".sbdocs-content")
+    .getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText("Components");
+  await expect(heading).toHaveCSS("direction", "ltr");
 });
 
 /** Right-to-left stories that hold English sentences. */
