@@ -280,10 +280,14 @@ export class PlTabs extends LitElement {
   }
 
   override render() {
+    // tabindex="-1": Firefox makes a list that scrolls a tab stop of its own,
+    // ahead of the tabs. The tabs are the tab stop, and moving between them
+    // scrolls the list.
     return html`
       <div
         part="list"
         role="tablist"
+        tabindex="-1"
         @scroll=${this.#edges}
         aria-label=${ifDefined(this.label || undefined)}
         aria-orientation=${

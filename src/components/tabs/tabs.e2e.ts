@@ -395,7 +395,9 @@ test.describe("segmented", () => {
   }) => {
     await open(page, "navigation-tabs--segmented-overflow");
     await expect(list(page)).toHaveAttribute("data-scrollable", "end");
+    // The list that scrolls is not a tab stop of its own: Tab lands on the tab.
     await page.keyboard.press("Tab");
+    await expect(tab(page, "Overview")).toBeFocused();
     await page.keyboard.press("End");
     await expect(tab(page, "Notes")).toBeFocused();
     expect(await selectedValue(page)).toBe("notes");
