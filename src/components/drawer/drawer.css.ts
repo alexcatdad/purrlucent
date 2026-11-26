@@ -98,6 +98,12 @@ export const drawerStyles = css`
     translate: var(--_off);
   }
 
+  /* While the close plays, the panel and its scrim take no presses. */
+  dialog:not([open]),
+  dialog:not([open])::backdrop {
+    pointer-events: none;
+  }
+
   dialog::backdrop {
     background: var(--pl-color-scrim);
     opacity: 1;

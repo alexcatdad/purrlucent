@@ -5,7 +5,9 @@ import { css } from "lit";
  * reads the panel material and the sheet the sheet material, so glass and its
  * solid fallbacks apply through the tokens. The padded panel fills the native
  * dialog, which keeps a press on the backdrop distinguishable from one inside.
- * Only the entry is animated; nothing waits for an animation to end.
+ * The exit is a transition of the closed state; browsers that cannot keep a
+ * closed dialog in the top layer (no `overlay`) close it at once instead.
+ * Nothing waits for an animation to end.
  */
 export const dialogStyles = css`
   :host {
@@ -57,9 +59,42 @@ export const dialogStyles = css`
     block-size: fit-content;
   }
 
-  dialog:modal::backdrop {
+  /* While the close plays, the dialog and its scrim take no presses. */
+  dialog:not([open]),
+  dialog:not([open])::backdrop {
+    pointer-events: none;
+  }
+
+  dialog:not([open]) {
+    opacity: 0;
+    scale: 0.96;
+  }
+
+  /* Keyed to the host, not :modal, so the scrim stays while the close plays. */
+  :host(:not([nonmodal])) dialog::backdrop {
     background: var(--pl-color-scrim);
     transition: opacity var(--pl-duration-slow) var(--pl-ease-out);
+  }
+
+  dialog:not([open])::backdrop {
+    opacity: 0;
+  }
+
+  @supports (overlay: auto) and (transition-behavior: allow-discrete) {
+    dialog {
+      transition:
+        opacity var(--pl-duration-slow) var(--pl-ease-out),
+        scale var(--pl-duration-slow) var(--pl-ease-out),
+        display var(--pl-duration-slow) allow-discrete,
+        overlay var(--pl-duration-slow) allow-discrete;
+    }
+
+    :host(:not([nonmodal])) dialog::backdrop {
+      transition:
+        opacity var(--pl-duration-slow) var(--pl-ease-out),
+        display var(--pl-duration-slow) allow-discrete,
+        overlay var(--pl-duration-slow) allow-discrete;
+    }
   }
 
   @starting-style {
@@ -68,7 +103,7 @@ export const dialogStyles = css`
       scale: 0.96;
     }
 
-    dialog:modal[open]::backdrop {
+    dialog[open]::backdrop {
       opacity: 0;
     }
   }
