@@ -941,6 +941,25 @@ test("a slotted description wins over the description attribute", async ({
   );
 });
 
+test("in light mode the scrim dims the page with shade at 30%", async ({
+  page,
+  browserName,
+}) => {
+  // The scrim is read through getComputedStyle, which WebKit does not report.
+  test.skip(browserName === "webkit");
+  await gotoStory(page, story("open-sheet"), "theme:light");
+  await expect(sheet(page)).toBeVisible();
+  const backdrop = await dialogEl(page)
+    .locator("dialog")
+    .evaluate((el) => getComputedStyle(el, "::backdrop").backgroundColor);
+  const [r = 1, g = 1, b = 1, a = 0] = backdrop.match(/[\d.]+/g)!.map(Number);
+  const channels = backdrop.startsWith("color(")
+    ? [r, g, b]
+    : [r, g, b].map((c) => c / 255);
+  expect(Math.max(...channels)).toBeLessThan(0.1);
+  expect(a).toBeCloseTo(0.3, 2);
+});
+
 test.describe("nonmodal", () => {
   test("opens without blocking the page, the scrim or the scroll lock", async ({
     page,
