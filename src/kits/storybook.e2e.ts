@@ -31,21 +31,24 @@ for (const { id, name, heading } of examples) {
     page,
   }) => {
     await page.goto("/?path=/docs/starter-kits--docs");
+    const managerStart = await page.evaluate(() => performance.timeOrigin);
     const preview = page.frameLocator("#storybook-preview-iframe");
     await preview.getByRole("link", { name, exact: true }).click();
     await expect(page).toHaveURL(
       new RegExp(`[?&]path=/story/starter-kits--${id}(?:&|$)`),
     );
 
-    // Selecting the story expands its group and reveals its virtualized row.
-    const sidebar = page.getByRole("navigation", { name: "Stories" });
-    const row = sidebar.getByRole("row", { name, exact: true });
-    await expect(row).toHaveAttribute("data-selected", "true");
     const frame = preview.locator("iframe").and(preview.getByTitle(name));
     const example = frame.contentFrame();
-    await expect(
-      example.getByRole("heading", { name: heading, level: 1, exact: true }),
-    ).toBeVisible();
+    await example
+      .getByRole("heading", { name: heading, level: 1, exact: true })
+      .waitFor();
+    const sidebar = page.getByRole("navigation", { name: "Stories" });
+    const row = sidebar.getByRole("row", { name, exact: true });
+    await expect(row).toHaveAttribute("aria-selected", "true");
+    expect(await page.evaluate(() => performance.timeOrigin)).toBe(
+      managerStart,
+    );
 
     if (id === "product-site") {
       await expect
@@ -74,7 +77,7 @@ for (const { id, name, heading } of examples) {
       await expect(page).toHaveURL(
         /[?&]path=\/story\/starter-kits--centered-hero(?:&|$)/,
       );
-      await expect(centered).toHaveAttribute("data-selected", "true");
+      await expect(centered).toHaveAttribute("aria-selected", "true");
     }
 
     if (id === "centered-hero") {
@@ -91,6 +94,7 @@ test("a link between kit stories keeps its section and toolbar settings on reloa
   );
   const preview = page.frameLocator("#storybook-preview-iframe");
   const product = preview.frameLocator('iframe[title="Product site"]');
+  const managerStart = await page.evaluate(() => performance.timeOrigin);
   await product
     .getByRole("main")
     .getByRole("link", { name: "Install", exact: true })
@@ -101,9 +105,20 @@ test("a link between kit stories keeps its section and toolbar settings on reloa
   );
 
   const article = preview.frameLocator('iframe[title="Documentation"]');
-  await expect(article.locator("#install:target")).toBeInViewport();
+  const section = article.getByRole("heading", {
+    name: "Install the package",
+    exact: true,
+  });
+  const sectionHash = () =>
+    section.evaluate((heading) => heading.ownerDocument.location.hash);
+  await section.waitFor();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(managerStart);
+  await expect.poll(sectionHash).toBe("#install");
+  await expect(section).toBeInViewport();
   await page.reload();
+  await section.waitFor();
   await expect(article.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(article.locator("html")).toHaveCSS("color-scheme", "dark");
-  await expect(article.locator("#install:target")).toBeInViewport();
+  await expect.poll(sectionHash).toBe("#install");
+  await expect(section).toBeInViewport();
 });

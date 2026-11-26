@@ -1,5 +1,6 @@
 import { Markdown, Meta, Source } from "@storybook/addon-docs/blocks";
 import { guideOptions } from "../.storybook/guide-markdown";
+import { openKitStory } from "../.storybook/kit-links";
 import guide from "./kits.md?raw";
 import product from "../kits/product-site/index.html?raw";
 import centered from "../kits/product-site/centered.html?raw";
@@ -49,6 +50,31 @@ export const supportingFiles = [
   ["product-site/main.ts", "typescript", productMain],
 ];
 
+export const KitLink = ({ story, children }) => {
+  const path = "/story/starter-kits--" + story;
+  const manager = window.frameElement
+    ? new URL(window.parent.location.href)
+    : null;
+  if (manager?.searchParams.get("path") !== "/docs/starter-kits--docs")
+    return (
+      <a href={"./?path=" + path} target="_top">
+        {children}
+      </a>
+    );
+  manager.searchParams.set("path", path);
+  manager.searchParams.delete("args");
+  manager.searchParams.delete("kitAnchor");
+  return (
+    <a
+      href={manager.href}
+      target="_top"
+      onClick={(event) => openKitStory(event, manager)}
+    >
+      {children}
+    </a>
+  );
+};
+
 <Meta title="Starter kits" />
 
 <Markdown options={guideOptions}>
@@ -59,37 +85,21 @@ export const supportingFiles = [
 
 <ul>
   <li>
-    <a href="./?path=/story/starter-kits--product-site" target="_top">
-      Product site
-    </a>{" "}
-    ·{" "}
-    <a href="./?path=/story/starter-kits--centered-hero" target="_top">
-      Centered hero and compact footer
-    </a>
+    <KitLink story="product-site">Product site</KitLink> ·{" "}
+    <KitLink story="centered-hero">Centered hero and compact footer</KitLink>
   </li>
   <li>
-    <a href="./?path=/story/starter-kits--onboarding" target="_top">
-      Onboarding
-    </a>
+    <KitLink story="onboarding">Onboarding</KitLink>
   </li>
   <li>
-    <a href="./?path=/story/starter-kits--admin" target="_top">
-      Admin
-    </a>
+    <KitLink story="admin">Admin</KitLink>
   </li>
   <li>
-    <a href="./?path=/story/starter-kits--billing" target="_top">
-      Billing
-    </a>
+    <KitLink story="billing">Billing</KitLink>
   </li>
   <li>
-    <a href="./?path=/story/starter-kits--documentation" target="_top">
-      Documentation
-    </a>{" "}
-    ·{" "}
-    <a href="./?path=/story/starter-kits--theming-article" target="_top">
-      Theming article
-    </a>
+    <KitLink story="documentation">Documentation</KitLink> ·{" "}
+    <KitLink story="theming-article">Theming article</KitLink>
   </li>
 </ul>
 

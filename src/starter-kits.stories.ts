@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { ref } from "lit/directives/ref.js";
+import { openKitStory } from "../.storybook/kit-links.ts";
 
 const kitStories = {
   "product-site/index.html": "product-site",
@@ -41,6 +42,10 @@ export default {
       const frame = event.currentTarget as HTMLIFrameElement;
       applyGlobals(frame);
       if (!frame.contentDocument) return;
+      if (src.hash && frame.contentDocument.URL === src.href)
+        frame.contentDocument
+          .getElementById(src.hash.slice(1))
+          ?.scrollIntoView();
       // Route links to other kit pages through their Storybook sidebar entries.
       for (const link of frame.contentDocument.querySelectorAll<HTMLAnchorElement>(
         "a[href]:not([target], [download])",
@@ -76,9 +81,12 @@ export default {
             peer.searchParams.set("kitAnchor", url.hash.slice(1));
           peer.hash = kit ? "" : url.hash;
           link.href = peer.href;
+          return peer;
         };
         pointToStory();
-        link.addEventListener("click", pointToStory);
+        link.addEventListener("click", (event) =>
+          openKitStory(event, pointToStory()),
+        );
         link.target = "_top";
       }
     };
