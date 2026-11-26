@@ -113,6 +113,7 @@ export class PlTabPanel extends LitElement {
  * @attr {string} orientation - `horizontal` (default) or `vertical`.
  * @attr {string} label - The accessible name of the tab list.
  * @attr {boolean} hide-scrollbar - Hides the scrollbar of a tab list that overflows. The list stays scrollable by touch, wheel and keyboard.
+ * @attr {boolean} stable-height - The panel area keeps the height of the tallest panel, so switching tabs does not move what follows. Every panel stays laid out: the ones not shown are invisible and `inert`, so they take no focus and are not read. Content that grows still resizes the area.
  * @slot - `pl-tab-panel` elements. `pl-tab` elements go in the tab list on their own.
  * @csspart list - The tab list.
  * @csspart panels - The wrapper around the panels.
@@ -131,14 +132,22 @@ export class PlTabs extends LitElement {
       attribute: "hide-scrollbar",
       reflect: true,
     },
+    stableHeight: {
+      type: Boolean,
+      attribute: "stable-height",
+      reflect: true,
+    },
   };
   declare value: string;
   declare hideScrollbar: boolean;
+  declare stableHeight: boolean;
   declare orientation: "horizontal" | "vertical";
   declare label: string;
   readonly #roving: RovingFocusController;
   #tabs: PlTab[] = [];
   #panels: PlTabPanel[] = [];
+  /** The panels this element made inert, so a page's own inert stays. */
+  readonly #inerted = new WeakSet<PlTabPanel>();
 
   constructor() {
     super();
@@ -147,6 +156,7 @@ export class PlTabs extends LitElement {
     this.orientation = "horizontal";
     this.label = "";
     this.hideScrollbar = false;
+    this.stableHeight = false;
     const vertical = () => this.orientation === "vertical";
     this.#roving = new RovingFocusController(this, {
       items: () => this.#enabled,
@@ -229,7 +239,17 @@ export class PlTabs extends LitElement {
       tab.setAttribute("aria-controls", idOf(panel, "pl-tab-panel"));
       panel.setAttribute("aria-labelledby", idOf(tab, "pl-tab"));
     }
-    for (const panel of this.#panels) panel.hidden = panel.value !== this.value;
+    // With stable-height every panel keeps its place in the shared cell, so
+    // the tallest sets the height; the ones not shown are inert instead.
+    for (const panel of this.#panels) {
+      const shown = panel.value === this.value;
+      panel.hidden = !shown && !this.stableHeight;
+      if (!shown && this.stableHeight) {
+        if (panel.inert) continue;
+        panel.inert = true;
+        this.#inerted.add(panel);
+      } else if (this.#inerted.delete(panel)) panel.inert = false;
+    }
     // The tab stop is the selected tab, or the first enabled one.
     this.#roving.activate(
       Math.max(

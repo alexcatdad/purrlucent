@@ -61,6 +61,20 @@ export const tabsStyles = css`
     min-inline-size: 0;
   }
 
+  /* Stable height: the panels share one cell, so the tallest sets its size. */
+  :host([stable-height]) [part="panels"] {
+    display: grid;
+  }
+
+  :host([stable-height]) ::slotted(pl-tab-panel) {
+    grid-area: 1 / 1;
+    min-inline-size: 0;
+  }
+
+  :host([stable-height]) ::slotted(pl-tab-panel[inert]) {
+    visibility: hidden;
+  }
+
   @media (forced-colors: active) {
     [part="list"] {
       border-color: CanvasText;
