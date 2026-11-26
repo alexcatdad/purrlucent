@@ -26,7 +26,7 @@ Add the registered element to your page.
 <pl-button>Save</pl-button>
 ```
 
-The guides cover package verification, page styles, light and dark modes, glass, theming and React integration. [Install guide](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/install.md) · [Use with React](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/react.md)
+The guides cover package verification, page styles, light and dark modes, glass, theming and React integration. [Install guide](https://github.com/alexcatdad/purrlucent/blob/v0.32.0/docs/install.md) · [Use with React](https://github.com/alexcatdad/purrlucent/blob/v0.32.0/docs/react.md)
 
 From 0.27.1, every version is published from GitHub Actions with a provenance statement.
 
@@ -38,19 +38,19 @@ From 0.27.1, every version is published from GitHub Actions with a provenance st
 
 ## Starter kits
 
-The package includes editable product site, onboarding, admin, billing, and documentation pages. [Browse the starter kits](https://alexcatdad.github.io/purrlucent/?path=/docs/starter-kits--docs) · [Copy a kit into your project](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/kits.md)
+The package includes editable product site, onboarding, admin, billing, and documentation pages. [Browse the starter kits](https://alexcatdad.github.io/purrlucent/?path=/docs/starter-kits--docs) · [Copy a kit into your project](https://github.com/alexcatdad/purrlucent/blob/v0.32.0/docs/kits.md)
 
 ## Components
 
 Use a date range to validate a start and end day, a combobox to search and select several values, or a data table to sort, filter and page through records. The catalog also includes navigation, dialogs, layout and feedback components.
 
-The reference lists each element’s import, attributes, properties, methods, slots, parts and events. Copies of the guides ship in the package’s `docs/` directory. [Component reference](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/components.md) · [Storybook examples](https://alexcatdad.github.io/purrlucent/?path=/story/actions-button--default)
+The reference lists each element’s import, attributes, properties, methods, slots, parts and events. Copies of the guides ship in the package’s `docs/` directory. [Component reference](https://github.com/alexcatdad/purrlucent/blob/v0.32.0/docs/components.md) · [Storybook examples](https://alexcatdad.github.io/purrlucent/?path=/story/actions-button--default)
 
 The chart uses its own import, `purrlucent/chart`, and requires the optional peer dependency `@tanstack/charts`. The root import loads the other components.
 
 ## Security
 
-See [SECURITY.md](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/SECURITY.md) to report a vulnerability.
+See [SECURITY.md](https://github.com/alexcatdad/purrlucent/blob/v0.32.0/SECURITY.md) to report a vulnerability.
 
 ## Browser support
 
