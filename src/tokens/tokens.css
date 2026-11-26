@@ -29,12 +29,11 @@
     --pl-color-sea-green: #2d7a4f;
     --pl-color-saffron: #e9a23b;
     --pl-color-shade: color-mix(in srgb, var(--pl-color-ink), black 42%);
+
+    /* Dims the page behind a modal: shade at 30% in light, as Apple's sheets
+       darken what is behind them. */
     --pl-color-scrim: light-dark(
-      color-mix(
-        in srgb,
-        color-mix(in srgb, var(--pl-color-ink), var(--pl-color-paper) 63%) 60%,
-        transparent
-      ),
+      color-mix(in srgb, var(--pl-color-shade) 30%, transparent),
       color-mix(in srgb, var(--pl-color-shade) 62%, transparent)
     );
 
