@@ -82,3 +82,28 @@ for (const { id, name, heading } of examples) {
     }
   });
 }
+
+test("a link between kit stories keeps its section and toolbar settings on reload", async ({
+  page,
+}) => {
+  await page.goto(
+    "/?path=/story/starter-kits--product-site&globals=theme:dark;dir:rtl",
+  );
+  const preview = page.frameLocator("#storybook-preview-iframe");
+  const product = preview.frameLocator('iframe[title="Product site"]');
+  await product
+    .getByRole("main")
+    .getByRole("link", { name: "Install", exact: true })
+    .click();
+  await expect(page).toHaveURL(
+    (url) =>
+      url.searchParams.get("path") === "/story/starter-kits--documentation",
+  );
+
+  const article = preview.frameLocator('iframe[title="Documentation"]');
+  await expect(article.locator("#install:target")).toBeInViewport();
+  await page.reload();
+  await expect(article.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(article.locator("html")).toHaveCSS("color-scheme", "dark");
+  await expect(article.locator("#install:target")).toBeInViewport();
+});

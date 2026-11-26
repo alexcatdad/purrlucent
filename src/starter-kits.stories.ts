@@ -24,7 +24,7 @@ export default {
     const storyPath = `/story/starter-kits--${kitStories[page]}`;
     const src = new URL(page, kitBase);
     if (manager?.searchParams.get("path") === storyPath)
-      src.hash = manager.hash;
+      src.hash = manager.searchParams.get("kitAnchor") ?? "";
 
     // Apply Storybook's globals to the kit's document after load and on updates.
     const applyGlobals = (frame: Element | null | undefined) => {
@@ -57,7 +57,8 @@ export default {
           url.pathname === "/purrlucent/"
             ? url.searchParams.get("path")
             : null;
-        const destination = Object.hasOwn(kitStories, path)
+        const kit = Object.hasOwn(kitStories, path);
+        const destination = kit
           ? `/story/starter-kits--${kitStories[path as keyof typeof kitStories]}`
           : publishedStory;
         if (!destination || manager?.searchParams.get("path") !== storyPath) {
@@ -69,7 +70,11 @@ export default {
           const peer = new URL(parent.location.href);
           peer.searchParams.set("path", destination);
           peer.searchParams.delete("args");
-          peer.hash = url.hash;
+          peer.searchParams.delete("kitAnchor");
+          // Keep the kit fragment out of the manager URL's Storybook routing.
+          if (kit && url.hash)
+            peer.searchParams.set("kitAnchor", url.hash.slice(1));
+          peer.hash = kit ? "" : url.hash;
           link.href = peer.href;
         };
         pointToStory();
