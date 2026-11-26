@@ -7,12 +7,13 @@ test.describe("with JavaScript disabled", () => {
 
   test("the form never posts its entries", async ({ page }) => {
     let posted = false;
-    await page.route(`**${kit}`, (route) => {
+    await page.route("**/*", (route) => {
       if (route.request().method() !== "POST") return route.continue();
       posted = true;
       return route.abort();
     });
     await page.goto(kit);
+    const originalUrl = page.url();
     await expect(
       page.getByText("Enable JavaScript to try the forms."),
     ).toBeVisible();
@@ -21,6 +22,7 @@ test.describe("with JavaScript disabled", () => {
       .getByRole("textbox", { name: "Email address" })
       .fill("sam@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
+    await expect(page).toHaveURL(originalUrl);
     expect(posted).toBe(false);
   });
 });
@@ -29,6 +31,7 @@ test("account creation links errors, keeps details on Back, and clears passwords
   page,
 }) => {
   await page.goto(kit);
+  await expect(page.locator("#onboarding-unavailable")).toBeHidden();
   const name = page.getByRole("textbox", { name: "Full name" });
   const email = page.getByRole("textbox", { name: "Email address" });
   await page.getByRole("button", { name: "Continue" }).click();

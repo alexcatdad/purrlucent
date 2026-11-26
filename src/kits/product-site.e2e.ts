@@ -17,13 +17,17 @@ test("the product site loads its screenshot, links to docs and exposes its FAQ",
     main.getByRole("link", { name: "Browse components" }),
   ).toHaveAttribute("href", /^https:\/\/alexcatdad\.github\.io\/purrlucent\//);
 
-  const faq = main.getByRole("button", {
+  const item = main.locator('pl-accordion-item[value="framework"]');
+  const faq = item.getByRole("button", {
     name: "Do I need a specific framework?",
+    exact: true,
   });
-  await faq.focus();
+  await expect(faq).toHaveAttribute("aria-expanded", "false");
   await faq.press("Enter");
   await expect(faq).toHaveAttribute("aria-expanded", "true");
-  await expect(main.getByText(/use it with plain HTML/)).toBeVisible();
+  await expect(
+    item.getByText("Purrlucent uses standard custom elements."),
+  ).toBeVisible();
   await expectAccessible(page.locator("body"));
 
   await main.getByRole("link", { name: "Install", exact: true }).click();

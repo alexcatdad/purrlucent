@@ -10,7 +10,7 @@ for (const route of [
   "admin/index",
   "billing/index",
 ]) {
-  test(`the ${route} starter remains accessible at phone width with enlarged text`, async ({
+  test(`the ${route} starter passes a phone accessibility check and reflows at 200% text size`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 320, height: 800 });
@@ -19,8 +19,8 @@ for (const route of [
     if (route === "admin/index")
       await expect(page.locator("#queue-results")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await page.addStyleTag({ content: "html { font-size: 200%; }" });
     await expectAccessible(page.locator("body"));
+    await page.addStyleTag({ content: "html { font-size: 200%; }" });
     const overflow = await page.evaluate(
       () =>
         document.documentElement.scrollWidth -

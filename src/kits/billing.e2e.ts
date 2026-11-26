@@ -15,16 +15,23 @@ test("confirms a plan change, retains invoice history, and restores the prior pl
 
   const choose = page.getByRole("button", { name: "Choose Scale" });
   await choose.press("Enter");
+  const confirmation = page.locator("pl-dialog#confirmation");
   const dialog = page.getByRole("dialog", { name: "Switch to Scale?" });
-  await expect(dialog.getByText(/\$480 per year/)).toBeVisible();
-  await expect(dialog.getByRole("button", { name: "Cancel" })).toBeFocused();
+  const amount = "Yearly billing · $480 per year";
+  await expect(dialog).toHaveAccessibleDescription(amount);
+  await expect(confirmation.getByText(amount, { exact: true })).toBeVisible();
+  await expect(
+    confirmation.getByRole("button", { name: "Cancel" }),
+  ).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(choose).toBeFocused();
   await expect(page.locator("#current-plan")).toHaveText("Team · Monthly");
 
   await choose.press("Enter");
-  await dialog.getByRole("button", { name: "Confirm plan change" }).click();
+  await confirmation
+    .getByRole("button", { name: "Confirm plan change" })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Demo billing" }),
   ).toBeFocused();

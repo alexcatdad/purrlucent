@@ -82,6 +82,10 @@
   gap: var(--pl-space-4);
 }
 
+.queue-list {
+  container-type: inline-size;
+}
+
 .queue-tools {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
@@ -90,6 +94,16 @@
 
 .queue-tools > * {
   inline-size: 100%;
+}
+
+.queue-tools pl-select::part(trigger) {
+  block-size: auto;
+}
+
+.queue-tools pl-select::part(value) {
+  padding-block: var(--pl-space-1);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .queue-note,
@@ -129,6 +143,11 @@
 
 .queue-row[data-current] {
   background: var(--pl-color-muted-3);
+}
+
+.queue-row > pl-badge {
+  inline-size: max-content;
+  max-inline-size: 100%;
 }
 
 .row-title {
@@ -187,6 +206,32 @@
   font-size: var(--pl-text-sm);
 }
 
+@container (max-width: 19rem) {
+  .queue-list > pl-card {
+    padding-inline: var(--pl-space-2);
+  }
+
+  .queue-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--pl-space-1);
+    padding-inline: 0;
+  }
+
+  .queue-row > pl-badge {
+    grid-area: 1 / 2;
+    justify-self: end;
+  }
+
+  .row-main {
+    grid-area: 2 / 1 / auto / -1;
+  }
+
+  .row-title {
+    margin-inline-start: 0;
+    padding-inline: var(--pl-space-1);
+  }
+}
+
 @media (max-width: 65rem) {
   .queue-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -204,12 +249,24 @@
 
 @media (max-width: 760px) {
   .app-shell {
-    grid-template-areas: "navigation header" "content content";
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--pl-space-3);
   }
 
+  .app-navigation {
+    order: -1;
+  }
+
   .app-header {
+    flex: 1 1 max-content;
+    min-inline-size: 0;
     border: 0;
     padding-block-end: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .app-content {
+    flex: 1 0 100%;
   }
 }

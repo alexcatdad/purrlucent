@@ -143,3 +143,4 @@ document.querySelector(".kit-skip")?.addEventListener("click", (event) => {
 });
 window.addEventListener("hashchange", () => showScreen(true));
 window.addEventListener("pagehide", () => clearPasswords(document));
+document.getElementById("onboarding-unavailable")!.hidden = true;
