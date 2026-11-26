@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Support queue · Fieldwork</title>
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="kit-skip" href="#main">Skip to main content</a>
+    <div class="kit-container app-shell">
+      <header class="app-header">
+        <strong class="app-brand">Fieldwork</strong>
+        <div class="app-account">
+          <pl-avatar name="Dana Kim" size="sm" aria-hidden="true"></pl-avatar>
+          <span>Demo workspace</span>
+        </div>
+      </header>
+
+      <pl-sidebar
+        class="app-navigation"
+        label="Workspace"
+        toggle-label="Workspace navigation"
+        collapse-below="760"
+      >
+        <pl-sidebar-section label="Administration">
+          <pl-sidebar-item href="#queue" id="queue-nav" selected
+            >Support queue</pl-sidebar-item
+          >
+          <pl-sidebar-item href="../billing/index.html#billing"
+            >Billing</pl-sidebar-item
+          >
+        </pl-sidebar-section>
+      </pl-sidebar>
+
+      <main class="app-content" id="main" tabindex="-1">
+        <header class="queue-header">
+          <div>
+            <h1>Support queue</h1>
+            <p>Review customer requests and resolve them as a team.</p>
+          </div>
+          <pl-button id="refresh" variant="secondary">Reload queue</pl-button>
+        </header>
+
+        <div class="queue-layout" id="queue">
+          <section class="queue-list" aria-labelledby="queue-title">
+            <pl-card>
+              <h2 slot="title" id="queue-title">Requests</h2>
+              <div class="queue-tools">
+                <pl-input
+                  id="search"
+                  type="search"
+                  placeholder="Name, subject, or ID"
+                  >Search requests</pl-input
+                >
+                <pl-select id="filter" value="all">
+                  <span slot="label">Status</span>
+                  <pl-option value="all">All statuses</pl-option>
+                  <pl-option value="open">Open</pl-option>
+                  <pl-option value="resolved">Resolved</pl-option>
+                </pl-select>
+              </div>
+              <p class="queue-note" id="queue-note" role="status">
+                Loading requests…
+              </p>
+              <div id="queue-loading" class="queue-loading">
+                <pl-spinner size="lg" aria-hidden="true"></pl-spinner>
+              </div>
+              <pl-empty id="queue-error" hidden>
+                <strong slot="title">Couldn’t load requests</strong>
+                <span slot="description"
+                  >The queue is temporarily unavailable. Try again in a
+                  moment.</span
+                >
+                <pl-button slot="action" variant="secondary" id="retry"
+                  >Retry</pl-button
+                >
+              </pl-empty>
+              <pl-empty id="queue-empty" hidden>
+                <strong slot="title">No matching requests</strong>
+                <span slot="description"
+                  >Try a different search or show all statuses.</span
+                >
+                <pl-button slot="action" variant="secondary" id="clear-filters"
+                  >Clear filters</pl-button
+                >
+              </pl-empty>
+              <div id="queue-results" hidden>
+                <div class="queue-actions">
+                  <pl-checkbox id="select-all"
+                    >Select open requests</pl-checkbox
+                  >
+                  <pl-button id="resolve" variant="secondary" disabled
+                    >Resolve selected</pl-button
+                  >
+                </div>
+                <ul
+                  class="queue-rows"
+                  id="requests"
+                  role="list"
+                  aria-label="Requests"
+                ></ul>
+              </div>
+            </pl-card>
+          </section>
+
+          <section class="queue-detail" aria-labelledby="detail-title">
+            <pl-card>
+              <h2 id="detail-title" slot="title" tabindex="-1">
+                Request details
+              </h2>
+              <pl-button id="back" class="queue-back" variant="secondary">
+                Back to requests
+              </pl-button>
+              <p id="detail-placeholder">
+                Choose a request to view its details.
+              </p>
+              <div class="detail-body" id="detail-body" hidden>
+                <dl>
+                  <div>
+                    <dt>Request</dt>
+                    <dd id="detail-id"></dd>
+                  </div>
+                  <div>
+                    <dt>Status</dt>
+                    <dd><pl-badge id="detail-status"></pl-badge></dd>
+                  </div>
+                  <div>
+                    <dt>Requested by</dt>
+                    <dd id="detail-customer"></dd>
+                  </div>
+                  <div>
+                    <dt>Received</dt>
+                    <dd id="detail-received"></dd>
+                  </div>
+                </dl>
+                <div class="detail-message">
+                  <h3>Customer message</h3>
+                  <p id="detail-message"></p>
+                </div>
+                <pl-button id="detail-action" variant="secondary"></pl-button>
+                <p id="detail-note" role="status"></p>
+              </div>
+            </pl-card>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <template id="request-template">
+      <li class="queue-row">
+        <pl-checkbox></pl-checkbox>
+        <div class="row-main">
+          <pl-button class="row-title" variant="ghost"></pl-button>
+          <span class="row-meta"></span>
+        </div>
+        <pl-badge></pl-badge>
+      </li>
+    </template>
+  </body>
+</html>

@@ -182,6 +182,29 @@ export const InForm: Story = {
   `,
 };
 
+/** Search and choose several options. A form submits the selected values under the same name. */
+export const Multiple: Story = {
+  render: () => html`
+    <form id="form" style="padding:var(--pl-space-4)">
+      <fieldset id="fieldset" style="border:0;padding:0;margin:0">
+        <pl-combobox
+          id="combo"
+          name="variety"
+          placeholder="Search varieties"
+          multiple
+          required
+        >
+          <span slot="label">Apple varieties</span>
+          <pl-option value="fuji" selected>Fuji</pl-option>
+          <pl-option value="gala">Gala</pl-option>
+          <pl-option value="granny-smith" selected>Granny Smith</pl-option>
+          <pl-option value="honeycrisp" disabled>Honeycrisp</pl-option>
+        </pl-combobox>
+      </fieldset>
+    </form>
+  `,
+};
+
 /** Opens the whole list so the open look is covered by the contrast and spacing checks. */
 export const Open: Story = {
   render: () =>

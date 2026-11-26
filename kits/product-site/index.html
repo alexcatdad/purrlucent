@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Purrlucent — Web components for your app</title>
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="../site-chrome.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <a class="kit-skip" href="#main">Skip to content</a>
+    <header class="kit-header">
+      <div class="kit-container kit-header-inner">
+        <a class="kit-brand" href="./index.html" aria-current="page">
+          <span class="kit-brand-mark" aria-hidden="true"></span>Purrlucent
+        </a>
+        <nav class="kit-desktop-nav" aria-label="Main">
+          <ul class="kit-site-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="../docs/index.html">Docs</a></li>
+            <li>
+              <a class="kit-action" href="../docs/index.html#install"
+                >Install</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <details class="kit-mobile-menu" data-kit-disclosure>
+          <summary class="kit-action">Menu</summary>
+          <nav aria-label="Main">
+            <ul class="kit-site-links">
+              <li><a href="#features">Features</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="../docs/index.html">Docs</a></li>
+              <li>
+                <a class="kit-action" href="../docs/index.html#install"
+                  >Install</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </details>
+      </div>
+    </header>
+    <!-- /Header -->
+
+    <main id="main" tabindex="-1">
+      <!-- Hero -->
+      <section class="product-hero" aria-labelledby="product-title">
+        <div class="kit-container product-hero-inner">
+          <div class="product-hero-copy">
+            <h1 id="product-title">Web components for your app.</h1>
+            <p>
+              Build forms, navigation, and data-rich screens with accessible
+              custom elements that work across frameworks.
+            </p>
+            <div class="product-actions">
+              <a
+                class="kit-action kit-action-primary"
+                href="../docs/index.html#install"
+                >Install</a
+              >
+              <a
+                class="kit-action"
+                href="https://alexcatdad.github.io/purrlucent/?path=/story/actions-button--default"
+                >Browse components</a
+              >
+            </div>
+          </div>
+          <figure class="product-preview">
+            <img
+              src="./dashboard.png"
+              alt="Analytics dashboard with revenue and order charts above a recent orders table"
+              width="1280"
+              height="800"
+              fetchpriority="high"
+            />
+            <figcaption>Purrlucent analytics dashboard</figcaption>
+          </figure>
+        </div>
+      </section>
+      <!-- /Hero -->
+
+      <!-- Feature grid -->
+      <section
+        class="kit-container product-section"
+        id="features"
+        tabindex="-1"
+        aria-labelledby="features-title"
+      >
+        <div class="product-section-intro">
+          <h2 id="features-title">Components for everyday app screens</h2>
+          <p>Use the same library for a single form or a full workspace.</p>
+        </div>
+        <ul class="product-feature-grid" role="list">
+          <li>
+            <h3>Forms</h3>
+            <p>
+              Collect choices, dates, and text with controls that participate in
+              native form submission and validation.
+            </p>
+            <a
+              href="https://alexcatdad.github.io/purrlucent/?path=/story/forms-input--default"
+              >Explore inputs</a
+            >
+          </li>
+          <li>
+            <h3>Navigation</h3>
+            <p>
+              Organize your workspace with sidebars, breadcrumbs, and menus that
+              support keyboard navigation.
+            </p>
+            <a
+              href="https://alexcatdad.github.io/purrlucent/?path=/story/navigation-navigation-menu--default"
+              >Explore navigation</a
+            >
+          </li>
+          <li>
+            <h3>Data display</h3>
+            <p>
+              Give people ways to sort and page through records, and show
+              changes over time with charts.
+            </p>
+            <a
+              href="https://alexcatdad.github.io/purrlucent/?path=/story/data-data-table--default"
+              >Explore data tables</a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <!-- /Feature grid -->
+
+      <!-- Code feature -->
+      <section class="product-band" aria-labelledby="integrate-title">
+        <div class="kit-container product-section product-split">
+          <div class="product-section-intro">
+            <h2 id="integrate-title">Import the parts you use</h2>
+            <p>
+              Import the shared tokens and register each component from its own
+              package entry. Then use the elements in HTML or in your
+              framework’s templates.
+            </p>
+            <a href="../docs/index.html#first-component"
+              >Add your first component</a
+            >
+          </div>
+          <div class="product-code">
+            <figure>
+              <figcaption>main.ts</figcaption>
+              <pre dir="ltr"><code>import "purrlucent/tokens.css";
+import "purrlucent/button";</code></pre>
+            </figure>
+            <figure>
+              <figcaption>index.html</figcaption>
+              <pre
+                dir="ltr"
+              ><code>&lt;pl-button variant="primary"&gt;Save&lt;/pl-button&gt;</code></pre>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- /Code feature -->
+
+      <!-- Theme feature -->
+      <section
+        class="kit-container product-section product-split"
+        aria-labelledby="theme-title"
+      >
+        <div class="product-section-intro">
+          <h2 id="theme-title">One palette for light and dark</h2>
+          <p>
+            Set an accent, ink, and paper color to match your app. Purrlucent’s
+            tokens derive surfaces and text colors for both schemes.
+          </p>
+          <a href="../docs/theming.html">Read the theming guide</a>
+        </div>
+        <div class="product-schemes">
+          <div class="product-scheme product-scheme-light">
+            <h3>Light</h3>
+            <ul role="list">
+              <li><span aria-hidden="true"></span>Canvas</li>
+              <li><span aria-hidden="true"></span>Text</li>
+              <li><span aria-hidden="true"></span>Accent</li>
+            </ul>
+          </div>
+          <div class="product-scheme product-scheme-dark">
+            <h3>Dark</h3>
+            <ul role="list">
+              <li><span aria-hidden="true"></span>Canvas</li>
+              <li><span aria-hidden="true"></span>Text</li>
+              <li><span aria-hidden="true"></span>Accent</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- /Theme feature -->
+
+      <!-- FAQ -->
+      <section
+        class="product-band"
+        id="faq"
+        tabindex="-1"
+        aria-labelledby="faq-title"
+      >
+        <div class="kit-container product-section product-faq">
+          <h2 id="faq-title">Frequently asked questions</h2>
+          <pl-accordion level="3">
+            <pl-accordion-item value="framework">
+              <span slot="heading">Do I need a specific framework?</span>
+              <p>
+                Purrlucent uses standard custom elements. Use it with plain
+                HTML, React, Vue, or any framework that accepts custom elements.
+              </p>
+            </pl-accordion-item>
+            <pl-accordion-item value="imports">
+              <span slot="heading">Can I load components individually?</span>
+              <p>
+                Yes. Each component has its own entry point, such as
+                <code>purrlucent/button</code>. Import the tokens once and add
+                the components you need.
+              </p>
+            </pl-accordion-item>
+            <pl-accordion-item value="license">
+              <span slot="heading">Can I use it in a commercial app?</span>
+              <p>
+                Yes. Purrlucent is available under the
+                <a
+                  href="https://github.com/alexcatdad/purrlucent/blob/main/LICENSE"
+                  >Apache 2.0 license</a
+                >.
+              </p>
+            </pl-accordion-item>
+          </pl-accordion>
+        </div>
+      </section>
+      <!-- /FAQ -->
+
+      <!-- Closing action -->
+      <section
+        class="kit-container product-section product-closing"
+        aria-labelledby="closing-title"
+      >
+        <h2 id="closing-title">Add Purrlucent to your project</h2>
+        <a
+          class="kit-action kit-action-primary"
+          href="../docs/index.html#install"
+          >Install Purrlucent</a
+        >
+      </section>
+      <!-- /Closing action -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="kit-footer">
+      <div class="kit-container kit-footer-expanded">
+        <div>
+          <a class="kit-brand" href="./index.html">
+            <span class="kit-brand-mark" aria-hidden="true"></span>Purrlucent
+          </a>
+          <p>Web components for forms, navigation, and data.</p>
+        </div>
+        <nav aria-labelledby="footer-guides">
+          <h2 id="footer-guides">Guides</h2>
+          <ul class="kit-footer-links">
+            <li><a href="../docs/index.html#install">Installation</a></li>
+            <li><a href="../docs/theming.html">Theming</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="footer-project">
+          <h2 id="footer-project">Project</h2>
+          <ul class="kit-footer-links">
+            <li>
+              <a href="https://github.com/alexcatdad/purrlucent"
+                >Source on GitHub</a
+              >
+            </li>
+            <li>
+              <a href="https://www.npmjs.com/package/purrlucent">npm package</a>
+            </li>
+            <li>
+              <a href="https://github.com/alexcatdad/purrlucent/issues"
+                >Get support</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/alexcatdad/purrlucent/blob/main/LICENSE"
+                >License</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+    <!-- /Footer -->
+  </body>
+</html>

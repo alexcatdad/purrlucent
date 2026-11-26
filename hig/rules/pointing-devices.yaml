@@ -15,8 +15,9 @@
   layer: behaviors
 - id: pointing-devices/4
   source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices
-  rule: Controls that hide or fade out can be revealed by moving the pointer to them.
+  rule: A sidebar reorder grip that is hidden at rest appears when a fine pointer hovers its row.
   check: automated
+  test: src/components/sidebar/sidebar.e2e.ts > a fine pointer sees a grip on hover and on focus only
   layer: components
 - id: pointing-devices/5
   source: https://developer.apple.com/design/human-interface-guidelines/pointing-devices

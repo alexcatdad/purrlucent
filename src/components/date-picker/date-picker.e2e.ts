@@ -35,8 +35,8 @@ test("widths story sizes the control", async ({ page }) => {
 const field = (page: Page, scope = "#picker") => page.locator(`${scope} input`);
 const button = (page: Page, scope = "#picker") =>
   page.locator(`${scope} pl-button[slot=trigger]`);
-const dialog = (page: Page) =>
-  page.getByRole("dialog", { name: "Choose date" });
+const dialog = (page: Page, name = "Choose date") =>
+  page.getByRole("dialog", { name });
 const day = (page: Page, iso: string, scope = "#picker") =>
   page.locator(`${scope} [data-date="${iso}"]`);
 
@@ -203,6 +203,117 @@ test("range: a start and an end date are shown", async ({ page }) => {
   await expect(page.getByRole("textbox", { name: "End" })).toHaveValue(
     "12/02/2026",
   );
+  await expect(
+    page.getByRole("button", { name: "Choose start date" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Choose end date" }),
+  ).toBeVisible();
+});
+
+test("range: the end preserves a reversed date and blocks submission until corrected", async ({
+  page,
+}) => {
+  await gotoStory(page, story("range"));
+  const form = page.locator("#form");
+  const end = field(page, "#end");
+  await end.fill("11/12/2026");
+  await end.press("Tab");
+  await expect(end).toHaveValue("11/12/2026");
+  await expect(end).toHaveAccessibleDescription(
+    "Choose an end date on or after the start date.",
+  );
+  expect(
+    await form.evaluate((el) => (el as HTMLFormElement).checkValidity()),
+  ).toBe(false);
+  await end.fill("11/18/2026");
+  await end.press("Tab");
+  await expect(end).not.toHaveAttribute("aria-invalid");
+  expect(
+    await form.evaluate((el) => (el as HTMLFormElement).checkValidity()),
+  ).toBe(true);
+  expect(await submitted(page)).toEqual([
+    ["start", "2026-11-18"],
+    ["end", "2026-11-18"],
+  ]);
+  await form.evaluate((el) => (el as HTMLFormElement).reset());
+  await expect(end).toHaveValue("12/02/2026");
+});
+
+test("range: calendar picks and programmatic changes update linked validity", async ({
+  page,
+}) => {
+  await gotoStory(page, story("range"));
+  await page.getByRole("button", { name: "Choose end date" }).click();
+  await expect(dialog(page, "Choose end date")).toBeVisible();
+  // The calendar is projected through the dialog's slot from the popover's light DOM.
+  await page
+    .locator("#end pl-calendar")
+    .getByRole("button", { name: "Previous month" })
+    .click();
+  await day(page, "2026-11-12", "#end").click();
+  const end = field(page, "#end");
+  await expect(end).toHaveValue("11/12/2026");
+  await expect(end).toHaveAttribute("aria-invalid", "true");
+  await page.locator("#picker").evaluate(async (el) => {
+    const picker = el as Picker;
+    picker.value = "2026-11-10";
+    await picker.updateComplete;
+  });
+  await expect(end).not.toHaveAttribute("aria-invalid");
+});
+
+test("range: disabling a fieldset and removing an endpoint clear linked errors", async ({
+  page,
+}) => {
+  await gotoStory(page, story("range"));
+  const end = field(page, "#end");
+  await end.fill("11/12/2026");
+  await end.press("Tab");
+  await expect(end).toHaveAttribute("aria-invalid", "true");
+  const fieldset = page.locator("#fieldset");
+  await fieldset.evaluate((el) => el.setAttribute("disabled", ""));
+  await expect(end).toBeDisabled();
+  expect(await submitted(page)).toEqual([]);
+  await expect(end).not.toHaveAttribute("aria-invalid");
+  await fieldset.evaluate((el) => el.removeAttribute("disabled"));
+  await expect(end).toHaveAttribute("aria-invalid", "true");
+  await page.locator("#picker").evaluate((el) => el.remove());
+  await expect(end).not.toHaveAttribute("aria-invalid");
+});
+
+test("range: a readonly end skips validation until it is editable", async ({
+  page,
+}) => {
+  await gotoStory(page, story("range"));
+  const form = page.locator("#form");
+  const end = page.locator("#end");
+  await end.evaluate(async (el) => {
+    el.setAttribute("readonly", "");
+    await (el as Picker).updateComplete;
+  });
+  await page.locator("#picker").evaluate(async (el) => {
+    const picker = el as Picker;
+    picker.value = "2026-12-03";
+    await picker.updateComplete;
+  });
+  expect(
+    await form.evaluate((el) => (el as HTMLFormElement).checkValidity()),
+  ).toBe(true);
+  expect(await submitted(page)).toEqual([
+    ["start", "2026-12-03"],
+    ["end", "2026-12-02"],
+  ]);
+  await end.evaluate(async (el) => {
+    el.removeAttribute("readonly");
+    await (el as Picker).updateComplete;
+  });
+  expect(
+    await form.evaluate((el) => (el as HTMLFormElement).checkValidity()),
+  ).toBe(false);
+  await expect(field(page, "#end")).toHaveAccessibleDescription(
+    "Choose an end date on or after the start date.",
+  );
 });
 
 test("invalid-message and range-message can be replaced", async ({ page }) => {
@@ -341,7 +452,7 @@ test("the calendar in the popover holds min, max and the disabled days", async (
   );
   await record(page);
   await day(page, "2026-11-08").click({ force: true });
-  await expect(dialog(page)).toBeVisible();
+  await expect(dialog(page, "Choose start date")).toBeVisible();
   expect(await recorded(page)).toEqual([]);
 });
 
@@ -490,5 +601,20 @@ test.describe("coarse pointer on a wide screen", () => {
     const trigger = (await button(page).boundingBox())!;
     expect(trigger.width).toBeGreaterThanOrEqual(44);
     expect(trigger.height).toBeGreaterThanOrEqual(44);
+  });
+});
+
+test.describe("coarse pointer at 320 pixels", () => {
+  test.use({ viewport: { width: 320, height: 640 }, hasTouch: true });
+
+  test("the entire calendar fits in the popover and Saturday can be picked", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("default"));
+    await button(page).tap();
+    await expect(page.getByRole("grid")).toBeInViewport({ ratio: 1 });
+    await day(page, "2026-11-21").tap();
+    await expect(dialog(page)).toBeHidden();
+    await expect(field(page)).toHaveValue("11/21/2026");
   });
 });

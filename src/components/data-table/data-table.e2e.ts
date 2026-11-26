@@ -4,6 +4,7 @@ import {
   expectNoOverflowAtTextZoom,
 } from "../../../e2e/helpers/a11y.ts";
 import { gotoStory } from "../../../e2e/helpers/story.ts";
+import type { PlDataTable } from "./data-table.ts";
 
 const story = "data-data-table--default";
 
@@ -380,6 +381,45 @@ test("pagination moves through rows", async ({ page }) => {
   expect(await firstColumn(page)).toEqual(["René Descartes"]);
   await expect(page.getByRole("button", { name: "Next page" })).toBeDisabled();
   expect(await events(page)).toEqual([{ page: 2 }, { page: 3 }]);
+});
+
+test("a 1,000-record table renders only 25 rows when pages change", async ({
+  page,
+}) => {
+  await open(page, "data-data-table--large-paginated");
+  const rows = page.locator("pl-data-table#control tbody tr");
+  await expect(rows).toHaveCount(25);
+  await expect(rows.first()).toContainText("SKU-0001");
+  await page.getByRole("button", { name: "Next page" }).click();
+  await expect(rows).toHaveCount(25);
+  await expect(rows.first()).toContainText("SKU-0026");
+  await page.getByRole("button", { name: "40", exact: true }).click();
+  await expect(rows).toHaveCount(25);
+  await expect(rows.first()).toContainText("SKU-0976");
+  await expect(rows.last()).toContainText("SKU-1000");
+  await expect(page.getByRole("button", { name: "Next page" })).toBeDisabled();
+});
+
+test("the paged table reads each row key at most once per update", async ({
+  page,
+}) => {
+  await open(page, "data-data-table--large-paginated");
+  const host = page.locator("pl-data-table#control");
+  const keyReads = await host.evaluate(async (el) => {
+    const table = el as PlDataTable;
+    let reads = 0;
+    table.rowKey = "lookupKey";
+    table.rows = table.rows.map((row) => ({
+      ...row,
+      get lookupKey() {
+        reads++;
+        return row.id;
+      },
+    }));
+    await table.updateComplete;
+    return reads;
+  });
+  expect(keyReads).toBeLessThanOrEqual(1_000);
 });
 
 test("filter then page past the end clamps", async ({ page }) => {

@@ -12,6 +12,8 @@ bun add purrlucent
 
 pnpm and Yarn work the same way. The package is ES modules only and has one dependency, `lit`. The chart also needs its optional peer, `@tanstack/charts`.
 
+To start with an editable page, see the [starter kits](./kits.md).
+
 ## Verify the package
 
 From 0.27.1, every version is built and published by the repository's release workflow on GitHub Actions, with no npm token, and carries a provenance statement: a signed record of the commit and workflow that built it. The package page on npmjs.com links to both. To check the signatures and provenance of what you installed:
@@ -33,7 +35,13 @@ import "purrlucent/button";
 <pl-button>Save</pl-button>
 ```
 
-`import "purrlucent"` loads every component at once. The [component reference](./components.md) lists each element with its attributes, slots, parts and events. For a React app, see [Use with React](./react.md).
+Each component import registers the elements it uses. For example, `purrlucent/select` registers both the select and its options. The root import registers the full set except the chart. To use a chart, install the optional peer `@tanstack/charts` and import `purrlucent/chart`.
+
+The [component reference](./components.md) lists the API for each element. React 19 applications can use the [JSX setup example](./react.md#set-up).
+
+### Large tables
+
+`pl-data-table` displays every row by default. Set `page-size="25"` to display 25 at a time while sorting, filtering and selection still use the complete client-side dataset. [Try the paged example with 1,000 records](https://alexcatdad.github.io/purrlucent/?path=/story/data-data-table--large-paginated).
 
 ### Page background and text
 

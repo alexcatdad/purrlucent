@@ -133,6 +133,8 @@ test("a submit button submits on Enter in a native field of a form with several 
   await page.locator("#signup").evaluate((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+      form.dataset.submitter =
+        (event as SubmitEvent).submitter?.getAttribute("value") ?? "";
       form.dataset.data = JSON.stringify([
         ...new FormData(form as HTMLFormElement),
       ]);
@@ -142,6 +144,10 @@ test("a submit button submits on Enter in a native field of a form with several 
   await page.getByRole("textbox", { name: "First name" }).fill("Ada");
   await page.keyboard.press("Enter");
   await expect(page.locator("#signup")).toHaveAttribute("data-count", "1");
+  await expect(page.locator("#signup")).toHaveAttribute(
+    "data-submitter",
+    "save",
+  );
   await expect(page.locator("#signup")).toHaveAttribute(
     "data-data",
     JSON.stringify([
@@ -208,30 +214,77 @@ test("a submit button outside the form submits the form named by form, with its 
   );
 });
 
-test("only the button that submitted adds its name and value", async ({
+test("native submitter identifies the activated button and adds its value once", async ({
   page,
 }) => {
   await gotoStory(page, "actions-button--submit-form");
-  await page.locator("#signup").evaluate((form) => {
+  const form = page.locator("#signup");
+  await form.evaluate((el) => {
+    const form = el as HTMLFormElement;
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      form.dataset.data = JSON.stringify([
-        ...new FormData(form as HTMLFormElement),
-      ]);
+      const { submitter } = event;
+      form.dataset.data = JSON.stringify({
+        owner:
+          submitter instanceof HTMLButtonElement && submitter.form === form,
+        button: submitter?.closest("pl-button")?.textContent?.trim(),
+        name: submitter?.getAttribute("name"),
+        value: submitter?.getAttribute("value"),
+        intent: new FormData(form).getAll("intent"),
+        nativeIntent: new FormData(form, submitter).getAll("intent"),
+      });
     });
   });
-  await page.getByRole("button", { name: "Save", exact: true }).click();
-  const data = await page.locator("#signup").getAttribute("data-data");
-  expect(JSON.parse(data!).filter(([k]: string[]) => k === "intent")).toEqual([
-    ["intent", "save"],
-  ]);
-  await page.locator("#signup").evaluate((form) => {
-    form.dataset.data = JSON.stringify([
-      ...new FormData(form as HTMLFormElement),
-    ]);
+  for (const [button, value] of [
+    ["Save", "save"],
+    ["Save as draft", "draft"],
+  ]) {
+    await page.getByRole("button", { name: button, exact: true }).click();
+    const data = await form.getAttribute("data-data");
+    expect(JSON.parse(data!)).toEqual({
+      owner: true,
+      button,
+      name: "intent",
+      value,
+      intent: [value],
+      nativeIntent: [value],
+    });
+  }
+  expect(
+    await form.evaluate((el) =>
+      new FormData(el as HTMLFormElement).has("intent"),
+    ),
+  ).toBe(false);
+  await expect(page.locator("pl-button button[type=submit]")).toHaveCount(0);
+});
+
+test("validation blocks submission and the button honors submit cancellation", async ({
+  page,
+}) => {
+  await gotoStory(page, "actions-button--submit-form");
+  const form = page.locator("#signup");
+  await form.evaluate((el) => {
+    const form = el as HTMLFormElement;
+    form.querySelector("input")!.required = true;
+    form.addEventListener(
+      "invalid",
+      () => {
+        form.dataset.invalid = "";
+      },
+      true,
+    );
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      form.dataset.canceled = String(event.defaultPrevented);
+    });
   });
-  const later = await page.locator("#signup").getAttribute("data-data");
-  expect(JSON.parse(later!).map(([k]: string[]) => k)).not.toContain("intent");
+  const save = page.getByRole("button", { name: "Save", exact: true });
+  await save.click();
+  await expect(form).toHaveAttribute("data-invalid", "");
+  await expect(form).not.toHaveAttribute("data-canceled");
+  await page.getByRole("textbox", { name: "First name" }).fill("Ada");
+  await save.click();
+  await expect(form).toHaveAttribute("data-canceled", "true");
 });
 
 test("form, name and value are attributes and properties", async ({ page }) => {

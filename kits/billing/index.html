@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pricing and billing · Fieldwork</title>
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="../site-chrome.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="kit-skip" href="#main">Skip to main content</a>
+    <header class="kit-header billing-header">
+      <div class="kit-container kit-header-inner">
+        <a href="#pricing-title" class="kit-brand">Fieldwork</a>
+        <nav aria-label="Pricing and billing">
+          <ul class="kit-site-links" role="list">
+            <li><a href="#compare">Compare plans</a></li>
+            <li><a href="#billing">Demo billing</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="kit-container billing-main" tabindex="-1">
+      <section class="pricing" aria-labelledby="pricing-title">
+        <header class="pricing-intro">
+          <h1 id="pricing-title">A plan for every team</h1>
+          <p>Plan projects, share updates, and keep the work in one place.</p>
+          <pl-toggle-group id="period" label="Billing period">
+            <pl-toggle-group-item value="monthly" selected
+              >Monthly</pl-toggle-group-item
+            >
+            <pl-toggle-group-item value="yearly">Yearly</pl-toggle-group-item>
+          </pl-toggle-group>
+          <p class="billing-caption" id="rate-note" role="status">
+            Billed monthly in US dollars.
+          </p>
+        </header>
+        <div class="plan-grid" id="plans"></div>
+      </section>
+
+      <section
+        class="billing-section"
+        id="compare"
+        aria-labelledby="compare-title"
+      >
+        <h2 id="compare-title">Compare plans</h2>
+        <pl-table class="plan-comparison" label="Plan comparison">
+          <table aria-labelledby="compare-title">
+            <thead>
+              <tr id="compare-columns">
+                <th scope="col">Feature</th>
+              </tr>
+            </thead>
+            <tbody id="compare-rows"></tbody>
+          </table>
+        </pl-table>
+      </section>
+
+      <section
+        class="billing-section"
+        id="billing"
+        aria-labelledby="billing-title"
+      >
+        <header>
+          <h2 id="billing-title" tabindex="-1">Demo billing</h2>
+          <p class="billing-caption">
+            Plan changes apply to this sample workspace. No charges are made.
+          </p>
+        </header>
+        <div class="account-grid">
+          <pl-card class="subscription">
+            <h3 slot="title">Subscription</h3>
+            <p class="subscription-plan" id="current-plan">Team · Monthly</p>
+            <p class="billing-caption" id="current-rate">$24 per month</p>
+            <p id="change-note" role="status"></p>
+            <div class="subscription-actions">
+              <a href="#pricing-title">Browse plans</a>
+              <pl-button id="undo" variant="secondary" hidden
+                >Undo plan change</pl-button
+              >
+            </div>
+          </pl-card>
+
+          <pl-card class="invoices">
+            <h3 slot="title">Invoice history</h3>
+            <details>
+              <summary><span>Nov 1, 2026</span><span>$24.00</span></summary>
+              <dl>
+                <div>
+                  <dt>Invoice</dt>
+                  <dd>FW-014</dd>
+                </div>
+                <div>
+                  <dt>Status</dt>
+                  <dd>
+                    <pl-badge variant="success" appearance="soft"
+                      >Paid</pl-badge
+                    >
+                  </dd>
+                </div>
+                <div>
+                  <dt>Plan</dt>
+                  <dd>Team · Monthly</dd>
+                </div>
+                <div>
+                  <dt>Service period</dt>
+                  <dd>Nov 1–30, 2026</dd>
+                </div>
+              </dl>
+            </details>
+            <details>
+              <summary><span>Oct 1, 2026</span><span>$24.00</span></summary>
+              <dl>
+                <div>
+                  <dt>Invoice</dt>
+                  <dd>FW-013</dd>
+                </div>
+                <div>
+                  <dt>Status</dt>
+                  <dd>
+                    <pl-badge variant="success" appearance="soft"
+                      >Paid</pl-badge
+                    >
+                  </dd>
+                </div>
+                <div>
+                  <dt>Plan</dt>
+                  <dd>Team · Monthly</dd>
+                </div>
+                <div>
+                  <dt>Service period</dt>
+                  <dd>Oct 1–31, 2026</dd>
+                </div>
+              </dl>
+            </details>
+          </pl-card>
+        </div>
+      </section>
+    </main>
+
+    <footer class="kit-footer">
+      <div class="kit-container kit-footer-compact">
+        <span>Fieldwork</span>
+        <a href="../admin/index.html">Workspace administration</a>
+      </div>
+    </footer>
+
+    <pl-dialog id="confirmation">
+      <h2 slot="title" id="confirm-title">Change your plan?</h2>
+      <p slot="description" id="confirm-description"></p>
+      <p>This updates the demo subscription. No payment is collected.</p>
+      <pl-button
+        slot="actions"
+        variant="secondary"
+        cancel
+        autofocus
+        data-close="cancel"
+        >Cancel</pl-button
+      >
+      <pl-button slot="actions" variant="primary" data-close="confirm"
+        >Confirm plan change</pl-button
+      >
+    </pl-dialog>
+
+    <template id="plan-template">
+      <pl-card class="plan-card">
+        <h2 slot="title"></h2>
+        <pl-badge slot="actions" variant="accent" appearance="soft" hidden
+          >Current plan</pl-badge
+        >
+        <p class="plan-price"><span></span> <small></small></p>
+        <p class="plan-description"></p>
+        <ul class="plan-features" role="list"></ul>
+        <pl-button slot="footer" size="lg"></pl-button>
+      </pl-card>
+    </template>
+  </body>
+</html>

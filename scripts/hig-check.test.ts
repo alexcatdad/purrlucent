@@ -70,10 +70,49 @@ test("an automated entry naming an existing test passes", () => {
   expect(result).toEqual({ errors: [], pending: [] });
 });
 
-test("an automated entry without a test is pending", () => {
-  const result = checkCatalog(catalog(rule({ check: "automated" })), root());
-  expect(result.errors).toEqual([]);
-  expect(result.pending).toEqual(["color/1"]);
+test("an automated entry without a test or reason fails even when pending rules are allowed", () => {
+  const result = checkCatalog(
+    catalog(rule({ check: "automated" })),
+    root(),
+    true,
+  );
+  expect(result.errors.join("\n")).toContain("missing test or pending reason");
+  expect(result.pending).toEqual([{ id: "color/1" }]);
+});
+
+test("a pending reason explains the gap and only passes when allowed", () => {
+  const pending = "The current contrast test only covers one appearance.";
+  const input = catalog(rule({ check: "automated", pending }));
+  const dir = root();
+  expect(checkCatalog(input, dir).errors.join("\n")).toContain(
+    "pending (no test yet)",
+  );
+  expect(checkCatalog(input, dir, true)).toEqual({
+    errors: [],
+    pending: [{ id: "color/1", reason: pending }],
+  });
+});
+
+test("rules with tests and rubric rules reject a pending reason", () => {
+  const pending = "The current contrast test only covers one appearance.";
+  const result = checkCatalog(
+    catalog(
+      rule({ pending }),
+      rule({
+        id: "color/2",
+        check: "automated",
+        test: "src/a.test.ts > keeps contrast",
+        pending,
+      }),
+    ),
+    root(),
+    true,
+  );
+  expect(result.errors).toHaveLength(2);
+  for (const error of result.errors)
+    expect(error).toContain(
+      "only an automated rule without a test can be pending",
+    );
 });
 
 test("schema violations are reported", () => {

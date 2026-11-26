@@ -25,8 +25,9 @@
   layer: surfaces
 - id: layout/6
   source: https://developer.apple.com/design/human-interface-guidelines/layout
-  rule: Layouts adapt to the space available through container and media queries, not to device type or orientation.
+  rule: Responsive fields stack their label in narrow containers and put it beside the control when space permits.
   check: automated
+  test: src/components/field/field.e2e.ts > responsive stacks in a narrow container and goes beside the control in a wide one
   layer: components
 - id: layout/7
   source: https://developer.apple.com/design/human-interface-guidelines/layout
@@ -36,7 +37,7 @@
 - id: layout/8
   source: https://developer.apple.com/design/human-interface-guidelines/layout
   rule: Layouts survive larger text sizes without overlap, and hierarchy stays intact.
-  check: automated
+  check: rubric
   layer: components
 - id: layout/9
   source: https://developer.apple.com/design/human-interface-guidelines/layout

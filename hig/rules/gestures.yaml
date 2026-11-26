@@ -32,6 +32,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/gestures
   rule: Small controls keep their visual size on touch screens, and their touch target grows instead.
   check: automated
+  pending: The tests check minimum touch sizes, but several visible control faces also grow for coarse pointers.
   layer: behaviors
 - id: gestures/8
   source: https://developer.apple.com/design/human-interface-guidelines/gestures

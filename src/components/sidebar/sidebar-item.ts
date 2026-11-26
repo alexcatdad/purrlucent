@@ -1,6 +1,8 @@
 import { LitElement, html, nothing, svg } from "lit";
 import type { PropertyValues } from "lit";
 import { fill, messages } from "../../behaviors/locale.ts";
+import type { PlMenu } from "../menu/menu.ts";
+import "../menu/menu.ts";
 import { parseLevel, type SidebarLevel } from "./level.ts";
 import { itemStyles } from "./sidebar.css.ts";
 
@@ -46,10 +48,10 @@ const detail = html`<slot name="detail"></slot>`;
  * @csspart control - The link or disclosure button.
  * @csspart disclosure - The disclosure button beside a link.
  * @csspart chevron - The disclosure arrow.
- * @csspart handle - The grip a level 1 item shows while the sidebar is `reorderable`. Drag it with a pointer; the keyboard uses Alt with the Up and Down arrows on the item.
+ * @csspart handle - The grip a level 1 item shows while the sidebar is `reorderable`. Drag it or press it for the move commands. Alt with the Up and Down arrows moves the item from the keyboard.
  * @fires {CustomEvent<{ expanded: boolean }>} pl-toggle - A disclosure button opened or closed. `detail.expanded` holds the new state.
  * @fires {CustomEvent<{ href: string }>} pl-navigate - A plain left click, or Enter, activated the link, before the browser navigates. `detail.href` holds the address. Cancelable: `preventDefault()` stops the navigation, so a router can take over.
- * @fires {CustomEvent<{ from: number, to: number }>} pl-reorder - A drag or Alt with an arrow key asked to move this level 1 item. `from` and `to` are its place among the level 1 items of its section or sidebar. The item does not move itself: the app moves it.
+ * @fires {CustomEvent<{ from: number, to: number }>} pl-reorder - A move command, drag or Alt with an arrow key asked to move this level 1 item. `from` and `to` are its place among the level 1 items of its section or sidebar. The app moves the item.
  */
 export class PlSidebarItem extends LitElement {
   static override shadowRootOptions = {
@@ -67,6 +69,8 @@ export class PlSidebarItem extends LitElement {
     action: { type: Boolean, reflect: true },
     size: { reflect: true },
     reorderable: { type: Boolean, reflect: true },
+    canMoveUp: { state: true },
+    canMoveDown: { state: true },
     chevron: { reflect: true },
     _full: { state: true },
   };
@@ -77,6 +81,9 @@ export class PlSidebarItem extends LitElement {
   declare size: "md" | "lg" | undefined;
   /** Set by the sidebar when it is `reorderable` and this is a level 1 item. */
   declare reorderable: boolean;
+  // Set by the sidebar from this item's position in its section.
+  declare canMoveUp: boolean;
+  declare canMoveDown: boolean;
   /** Set by the sidebar: `end` or `start`, where the disclosure chevron sits. */
   declare chevron: "end" | "start";
   /** Set by the sidebar when level 2 items follow this one. */
@@ -100,6 +107,8 @@ export class PlSidebarItem extends LitElement {
     this.toggleLabel = "";
     this.action = false;
     this.reorderable = false;
+    this.canMoveUp = false;
+    this.canMoveDown = false;
     this.chevron = "end";
   }
 
@@ -221,14 +230,49 @@ export class PlSidebarItem extends LitElement {
   }
 
   override render() {
-    return html`${this.#control()}${
-      this.reorderable && this.level === 1
-        ? html`<span class="handle" part="handle" aria-hidden="true"
-            >${grip}</span
-          >`
-        : nothing
-    }`;
+    const menu = this.reorderable && this.level === 1;
+    return html`${this.#control()}${menu ? this.#reorderMenu() : nothing}`;
   }
+
+  #reorderMenu() {
+    const text = messages(this);
+    const name = fill(text.showOptionsFor, { label: this.#text() });
+    return html`
+      <pl-menu
+        class="reorder-menu"
+        label=${name}
+        placement="end-start"
+        @click=${(event: Event) => event.stopPropagation()}
+        @keydown=${this.#onReorderKeydown}
+        @pl-toggle=${(event: Event) => event.stopPropagation()}
+      >
+        <button
+          slot="trigger"
+          type="button"
+          class="handle"
+          part="handle"
+          aria-label=${name}
+          title=${name}
+        >
+          ${grip}
+        </button>
+        <pl-menu-item value="up" ?disabled=${!this.canMoveUp}
+          >${text.moveUp}</pl-menu-item
+        >
+        <pl-menu-item value="down" ?disabled=${!this.canMoveDown}
+          >${text.moveDown}</pl-menu-item
+        >
+      </pl-menu>
+    `;
+  }
+
+  #onReorderKeydown = (event: KeyboardEvent) => {
+    const menu = event.currentTarget as PlMenu;
+    if (event.key !== "Escape" || !menu.open) return;
+    event.preventDefault();
+    event.stopPropagation();
+    menu.hide();
+  };
 
   #control() {
     // Opens a reorder with Alt and an arrow key; a screen reader announces it.

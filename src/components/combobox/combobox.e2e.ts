@@ -229,6 +229,106 @@ test("Enter chooses the active option, closes and fires pl-change", async ({
   expect(await recorded(page)).toHaveLength(1);
 });
 
+test("Enter commits the only enabled match without arrow navigation", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  await record(page, "pl-change");
+  await combo(page).fill("gal");
+  await expect(option(page, "Gala")).toBeVisible();
+  expect(await activeDescendant(page)).toBeNull();
+  await combo(page).press("Enter");
+  await expect(combo(page)).toHaveValue("Gala");
+  await expect(listbox(page)).toBeHidden();
+  expect(await recorded(page)).toEqual([{ value: "Gala" }]);
+});
+
+test("Enter reports search text normalized to an exact option label", async ({
+  page,
+}) => {
+  await gotoStory(page, story("preselected"));
+  const input = combo(page);
+  await input.fill("gala");
+  await record(page, "pl-input");
+  const host = page.locator("#combo");
+  await host.evaluate((el) =>
+    el.addEventListener("input", () =>
+      el.setAttribute("data-native-input", ""),
+    ),
+  );
+  await input.press("Enter");
+  await expect(input).toHaveValue("Gala");
+  expect(await recorded(page)).toEqual([{ text: "Gala" }]);
+  await expect(host).toHaveAttribute("data-native-input", "");
+});
+
+test("a multiple combobox searches, selects and removes choices with the keyboard", async ({
+  page,
+}) => {
+  await gotoStory(page, story("multiple"));
+  await record(page, "pl-change");
+  const input = combo(page, "Apple varieties");
+  await input.press("ArrowDown");
+  await expect(listbox(page)).toHaveAttribute("aria-multiselectable", "true");
+  await expect(option(page, "Fuji")).toHaveAttribute("aria-selected", "true");
+  await expect(option(page, "Granny Smith")).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await input.fill("gal");
+  await input.press("Enter");
+  await expect(input).toHaveValue("");
+  const gala = page.getByRole("button", { name: "Remove Gala" });
+  await expect(gala).toBeVisible();
+  expect(await submitted(page)).toEqual([
+    ["variety", "fuji"],
+    ["variety", "granny-smith"],
+    ["variety", "gala"],
+  ]);
+  await input.press("Backspace");
+  await expect(gala).toHaveCount(0);
+  await page.getByRole("button", { name: "Remove Fuji" }).press("Enter");
+  await expect(input).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "Remove Granny Smith" }),
+  ).toBeVisible();
+  expect(await recorded(page)).toEqual([
+    { value: "gala", values: ["fuji", "granny-smith", "gala"] },
+    { value: "gala", values: ["fuji", "granny-smith"] },
+    { value: "fuji", values: ["granny-smith"] },
+  ]);
+});
+
+test("a required multiple combobox follows form reset and a disabled fieldset", async ({
+  page,
+}) => {
+  await gotoStory(page, story("multiple"));
+  const input = combo(page, "Apple varieties");
+  const form = page.locator("#form");
+  await expect(input).toHaveAttribute("aria-required", "true");
+  await input.press("Backspace");
+  await input.press("Backspace");
+  expect(
+    await form.evaluate((el) => (el as HTMLFormElement).checkValidity()),
+  ).toBe(false);
+  await expect(input).toHaveAttribute("aria-invalid", "true");
+  expect(await submitted(page)).toEqual([]);
+  await form.evaluate((el) => (el as HTMLFormElement).reset());
+  await expect(input).not.toHaveAttribute("aria-invalid");
+  const removeFuji = page.getByRole("button", { name: "Remove Fuji" });
+  await expect(removeFuji).toBeVisible();
+  expect(await submitted(page)).toEqual([
+    ["variety", "fuji"],
+    ["variety", "granny-smith"],
+  ]);
+  await page
+    .locator("#fieldset")
+    .evaluate((el) => el.setAttribute("disabled", ""));
+  await expect(input).toBeDisabled();
+  await expect(removeFuji).toBeDisabled();
+  expect(await submitted(page)).toEqual([]);
+});
+
 test("Escape closes the list, a second Escape clears the text", async ({
   page,
 }) => {
@@ -630,6 +730,65 @@ const abc = `
   <pl-option value="b">Beta</pl-option>
   <pl-option value="c">Gamma</pl-option>`;
 
+test("a multiple combobox uses selected defaults from the first options to arrive", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<form id="form"><pl-combobox label="Probe" name="letter" multiple></pl-combobox></form>`,
+  );
+  const host = page.locator("#form pl-combobox");
+  const form = page.locator("#form");
+  const input = combo(page, "Probe");
+  const removeAlpha = page.getByRole("button", { name: "Remove Alpha" });
+  await expect(input).toHaveValue("");
+  await form.evaluate((el) => (el as HTMLFormElement).reset());
+  await host.evaluate((el) => {
+    el.innerHTML = '<pl-option value="a" selected>Alpha</pl-option>';
+  });
+  await expect(removeAlpha).toBeVisible();
+  await input.press("Backspace");
+  await expect(removeAlpha).toHaveCount(0);
+  await host.evaluate((el) => {
+    el.innerHTML = '<pl-option value="b" selected>Beta</pl-option>';
+  });
+  await expect(page.getByRole("button", { name: "Remove Beta" })).toHaveCount(
+    0,
+  );
+  await form.evaluate((el) => (el as HTMLFormElement).reset());
+  expect(await submitted(page)).toEqual([["letter", "a"]]);
+});
+
+test("changing an option value updates its selected state and keeps the current choices", async ({
+  page,
+}) => {
+  await gotoStory(page, story("default"));
+  await mount(
+    page,
+    `<form id="form"><pl-combobox label="Probe" name="letter" multiple></pl-combobox></form>`,
+  );
+  const host = page.locator("#form pl-combobox");
+  await host.evaluate((el) => {
+    (el as HTMLElement & { values: string[] }).values = ["a"];
+  });
+  await expect(page.getByRole("button", { name: "Remove a" })).toBeVisible();
+  await host.evaluate((el, options) => {
+    el.innerHTML = options;
+  }, abc);
+  await combo(page, "Probe").press("ArrowDown");
+  const alpha = option(page, "Alpha");
+  await expect(alpha).toHaveAttribute("aria-selected", "true");
+  await alpha.evaluate((el) => {
+    (el as HTMLElement & { value: string }).value = "a2";
+  });
+  await expect(alpha).toHaveAttribute("aria-selected", "false");
+  await expect(
+    page.getByRole("button", { name: "Remove Alpha" }),
+  ).toBeVisible();
+  expect(await submitted(page)).toEqual([["letter", "a"]]);
+});
+
 test("a form reset returns a combobox to its starting value attribute", async ({
   page,
 }) => {
@@ -1007,6 +1166,7 @@ for (const name of [
   "disabled",
   "allow-custom",
   "in-form",
+  "multiple",
   "open",
   "filtered",
   "no-results",

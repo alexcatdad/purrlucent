@@ -203,6 +203,33 @@ test.describe("coarse pointer on a wide screen", () => {
   });
 });
 
+test.describe("coarse pointer at 390 pixels", () => {
+  test.use({ viewport: { width: 390, height: 600 }, hasTouch: true });
+
+  test("the ellipses leave room for all seven touch controls on one row", async ({
+    page,
+  }) => {
+    await open(page, "navigation-pagination--many");
+    const buttons = page
+      .getByRole("navigation", { name: "Pagination" })
+      .getByRole("button");
+    await expect(buttons).toHaveCount(7);
+    const boxes = await buttons.evaluateAll((elements) =>
+      elements.map((element) => {
+        const { y, width, height } = element.getBoundingClientRect();
+        return { y, width, height };
+      }),
+    );
+    for (const { y, width, height } of boxes) {
+      expect(y).toBe(boxes[0]!.y);
+      expect(width).toBeGreaterThanOrEqual(44);
+      expect(height).toBeGreaterThanOrEqual(44);
+    }
+    await item(page, "Next page").tap();
+    await expect(item(page, "11")).toHaveAttribute("aria-current", "page");
+  });
+});
+
 for (const globals of ["", "material:glass", "theme:dark", "contrast:more"]) {
   test(`axe finds no WCAG 2.2 AA violations (${globals || "default"})`, async ({
     page,

@@ -1,7 +1,7 @@
 import { css } from "lit";
 
 /*
- * A row of equal square items: the arrows, the pages and the ellipsis. The
+ * A row of controls with compact ellipses marking omitted pages. The
  * current page takes the selected fill, as a selected toggle group item does.
  * Under a coarse pointer the size tokens already reach the touch minimum.
  */
@@ -36,17 +36,19 @@ export const paginationStyles = css`
     display: flex;
   }
 
-  .control,
-  .gap {
+  @media (pointer: coarse) {
+    ul {
+      column-gap: var(--pl-space-0-5);
+    }
+  }
+
+  .control {
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-inline-size: var(--_size);
     min-block-size: var(--_size);
-  }
-
-  .control {
     padding: var(--pl-space-1) var(--pl-space-2);
     border: 0;
     border-radius: var(--pl-radius-control);

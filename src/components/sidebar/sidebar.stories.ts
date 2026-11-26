@@ -4,6 +4,7 @@ import { expect } from "storybook/test";
 import "../avatar/avatar.ts";
 import "../button/button.ts";
 import "../menu/menu.ts";
+import type { PlSidebarItem } from "./sidebar-item.ts";
 import "./sidebar.ts";
 import type { PlSidebar } from "./sidebar.ts";
 
@@ -249,15 +250,53 @@ export const Rows: Story = {
   `,
 };
 
-/** Level 1 items show a grip and can be reordered with a drag or Alt with the arrow keys. */
+/** Press a grip for move commands, drag it, or press Alt with an arrow key on an item. */
 export const Reorderable: Story = {
   render: () => html`
-    <pl-sidebar id="sidebar" label="Library" reorderable>
+    <pl-sidebar
+      id="sidebar"
+      label="Library"
+      reorderable
+      @pl-reorder=${(event: CustomEvent<{ from: number; to: number }>) => {
+        const { from, to } = event.detail;
+        const item = event.target as PlSidebarItem;
+        const peers = [
+          ...item.parentElement!.querySelectorAll<PlSidebarItem>(
+            ":scope > pl-sidebar-item",
+          ),
+        ].filter((peer) => peer.level === 1);
+        const destination = peers[to]!;
+        if (from < to) destination.after(item);
+        else destination.before(item);
+      }}
+    >
       <pl-sidebar-item id="first" href="#first" selected>First</pl-sidebar-item>
       <pl-sidebar-item id="second" href="#second">Second</pl-sidebar-item>
       <pl-sidebar-item id="third" href="#third">Third</pl-sidebar-item>
     </pl-sidebar>
   `,
+};
+
+/** The menu opens from the grip and reflects the item's available moves. */
+export const ReorderMenu: Story = {
+  render: Reorderable.render,
+  play: async ({ canvasElement, userEvent }) => {
+    const second = canvasElement.querySelector<PlSidebarItem>("#second")!;
+    await second.updateComplete;
+    const menu = second.shadowRoot!.querySelector("pl-menu")!;
+    const grip = menu.querySelector<HTMLButtonElement>("button")!;
+    await userEvent.click(grip);
+    await menu.updateComplete;
+    const up = menu.querySelector("pl-menu-item")!;
+    await expect(up).toBeVisible();
+    await userEvent.click(up);
+    await expect(second.parentElement?.firstElementChild).toBe(second);
+    await userEvent.click(grip);
+    await menu.updateComplete;
+    await up.updateComplete;
+    await expect(up).toBeVisible();
+    await expect(up).toHaveAttribute("aria-disabled", "true");
+  },
 };
 
 /** A label and a description wider than the row end in an ellipsis; the full text shows as a title only then. A reorderable sidebar keeps the same label width while its grip is hidden. */

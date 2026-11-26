@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="form-action 'none'" />
+    <title>Account and onboarding · Fieldwork</title>
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="kit-skip" href="#main">Skip to main content</a>
+    <div class="kit-container">
+      <header class="onboarding-header">
+        <strong>Fieldwork</strong>
+        <nav class="related-kits" aria-label="Related kits">
+          <a href="../admin/index.html">Administration</a>
+          <a href="../billing/index.html">Billing</a>
+        </nav>
+      </header>
+
+      <div class="onboarding-layout">
+        <aside class="flow-menu">
+          <h2>Account and onboarding</h2>
+          <p>Try the flows with sample details. Nothing is sent.</p>
+          <nav aria-label="Account flows">
+            <ul role="list">
+              <li>
+                <a href="#create-account" aria-current="location"
+                  >Create an account</a
+                >
+              </li>
+              <li><a href="#reset-password">Reset a password</a></li>
+              <li><a href="#accept-invite">Accept an invitation</a></li>
+              <li><a href="#first-run">Set up a workspace</a></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <main id="main" tabindex="-1">
+          <p id="onboarding-unavailable">Enable JavaScript to try the forms.</p>
+
+          <section
+            id="create-account"
+            data-flow="create-account"
+            aria-labelledby="create-title"
+          >
+            <h1 id="create-title" tabindex="-1">Create your account</h1>
+            <pl-step-indicator
+              label="Account creation"
+              steps='["Account","Password","Complete"]'
+            ></pl-step-indicator>
+            <p>Enter the name and email address you’ll use with Fieldwork.</p>
+            <form method="post" novalidate data-next="create-password">
+              <pl-error-summary></pl-error-summary>
+              <div class="field">
+                <label for="account-name">Full name</label>
+                <input
+                  id="account-name"
+                  name="full-name"
+                  autocomplete="name"
+                  required
+                  pattern=".*\S.*"
+                  aria-describedby="account-name-error"
+                  data-required-message="Enter your full name."
+                  data-invalid-message="Enter your full name."
+                />
+                <span id="account-name-error" class="field-error" hidden></span>
+              </div>
+              <div class="field">
+                <label for="account-email">Email address</label>
+                <input
+                  id="account-email"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                  aria-describedby="account-email-error"
+                  data-required-message="Enter your email address."
+                  data-invalid-message="Enter an email address like sam@example.com."
+                />
+                <span
+                  id="account-email-error"
+                  class="field-error"
+                  hidden
+                ></span>
+              </div>
+              <div class="form-actions">
+                <button type="submit">Continue</button>
+              </div>
+            </form>
+          </section>
+
+          <section
+            id="create-password"
+            data-flow="create-account"
+            aria-labelledby="password-title"
+            hidden
+          >
+            <h1 id="password-title" tabindex="-1">Choose a password</h1>
+            <pl-step-indicator
+              label="Account creation"
+              steps='["Account","Password","Complete"]'
+              current-step="2"
+            ></pl-step-indicator>
+            <form method="post" novalidate data-next="account-created">
+              <pl-error-summary></pl-error-summary>
+              <div class="field">
+                <label for="account-password">Password</label>
+                <p id="account-password-hint">Use at least 8 characters.</p>
+                <input
+                  id="account-password"
+                  type="password"
+                  name="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  aria-describedby="account-password-hint account-password-error"
+                  data-required-message="Enter a password."
+                  data-invalid-message="Use at least 8 characters for your password."
+                />
+                <span
+                  id="account-password-error"
+                  class="field-error"
+                  hidden
+                ></span>
+              </div>
+              <div class="field">
+                <label for="account-confirm">Confirm your password</label>
+                <input
+                  id="account-confirm"
+                  type="password"
+                  name="password-confirmation"
+                  autocomplete="new-password"
+                  required
+                  aria-describedby="account-confirm-error"
+                  data-required-message="Confirm your password."
+                />
+                <span
+                  id="account-confirm-error"
+                  class="field-error"
+                  hidden
+                ></span>
+              </div>
+              <div class="form-actions">
+                <a href="#create-account">Back</a>
+                <button type="submit">Create account</button>
+              </div>
+            </form>
+          </section>
+
+          <section
+            id="account-created"
+            data-flow="create-account"
+            aria-labelledby="created-title"
+            hidden
+          >
+            <h1 id="created-title" tabindex="-1">Your demo account is ready</h1>
+            <pl-step-indicator
+              label="Account creation"
+              steps='["Account","Password","Complete"]'
+              current-step="3"
+            ></pl-step-indicator>
+            <p>Continue to workspace setup.</p>
+            <div class="form-actions">
+              <pl-button href="#first-run" variant="primary"
+                >Set up a workspace</pl-button
+              >
+            </div>
+          </section>
+
+          <section
+            id="reset-password"
+            data-flow="reset-password"
+            aria-labelledby="reset-title"
+            hidden
+          >
+            <h1 id="reset-title" tabindex="-1">Reset your password</h1>
+            <pl-step-indicator
+              label="Password reset"
+              steps='["New password","Complete"]'
+            ></pl-step-indicator>
+            <p>Choose a new password for sam@example.com.</p>
+            <form method="post" novalidate data-next="password-reset">
+              <pl-error-summary></pl-error-summary>
+              <div class="field">
+                <label for="reset-new">New password</label>
+                <p id="reset-new-hint">Use at least 8 characters.</p>
+                <input
+                  id="reset-new"
+                  type="password"
+                  name="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  aria-describedby="reset-new-hint reset-new-error"
+                  data-required-message="Enter a new password."
+                  data-invalid-message="Use at least 8 characters for your new password."
+                />
+                <span id="reset-new-error" class="field-error" hidden></span>
+              </div>
+              <div class="field">
+                <label for="reset-confirm">Confirm your new password</label>
+                <input
+                  id="reset-confirm"
+                  type="password"
+                  name="password-confirmation"
+                  autocomplete="new-password"
+                  required
+                  aria-describedby="reset-confirm-error"
+                  data-required-message="Confirm your new password."
+                />
+                <span
+                  id="reset-confirm-error"
+                  class="field-error"
+                  hidden
+                ></span>
+              </div>
+              <div class="form-actions">
+                <button type="submit">Reset password</button>
+              </div>
+            </form>
+          </section>
+
+          <section
+            id="password-reset"
+            data-flow="reset-password"
+            aria-labelledby="reset-done-title"
+            hidden
+          >
+            <h1 id="reset-done-title" tabindex="-1">Password reset complete</h1>
+            <pl-step-indicator
+              label="Password reset"
+              steps='["New password","Complete"]'
+              current-step="2"
+            ></pl-step-indicator>
+            <p>The demo password has been cleared from the form.</p>
+            <div class="form-actions">
+              <pl-button href="#reset-password" variant="secondary"
+                >Return to password reset</pl-button
+              >
+            </div>
+          </section>
+
+          <section
+            id="accept-invite"
+            data-flow="accept-invite"
+            aria-labelledby="invite-title"
+            hidden
+          >
+            <h1 id="invite-title" tabindex="-1">Join Harbor Studio</h1>
+            <pl-step-indicator
+              label="Workspace invitation"
+              steps='["Invitation","Complete"]'
+            ></pl-step-indicator>
+            <p>Dana Kim invited you to collaborate in Fieldwork.</p>
+            <dl class="invite-details">
+              <div>
+                <dt>Invited email</dt>
+                <dd>sam@example.com</dd>
+              </div>
+              <div>
+                <dt>Workspace role</dt>
+                <dd>Editor</dd>
+              </div>
+            </dl>
+            <form method="post" novalidate data-next="invite-accepted">
+              <div class="form-actions">
+                <button type="submit">Accept invitation</button>
+              </div>
+            </form>
+          </section>
+
+          <section
+            id="invite-accepted"
+            data-flow="accept-invite"
+            aria-labelledby="joined-title"
+            hidden
+          >
+            <h1 id="joined-title" tabindex="-1">You joined Harbor Studio</h1>
+            <pl-step-indicator
+              label="Workspace invitation"
+              steps='["Invitation","Complete"]'
+              current-step="2"
+            ></pl-step-indicator>
+            <p>You’re an editor in this demo workspace.</p>
+            <div class="form-actions">
+              <pl-button href="../admin/index.html" variant="primary"
+                >Open the demo workspace</pl-button
+              >
+            </div>
+          </section>
+
+          <section
+            id="first-run"
+            data-flow="first-run"
+            aria-labelledby="profile-title"
+            hidden
+          >
+            <h1 id="profile-title" tabindex="-1">Set up your profile</h1>
+            <pl-step-indicator
+              label="Workspace setup"
+              steps='["Profile","Workspace","Complete"]'
+            ></pl-step-indicator>
+            <p>Choose how teammates will see your name.</p>
+            <form method="post" novalidate data-next="workspace-setup">
+              <pl-error-summary></pl-error-summary>
+              <div class="field">
+                <label for="profile-name">Display name</label>
+                <input
+                  id="profile-name"
+                  name="display-name"
+                  autocomplete="nickname"
+                  required
+                  pattern=".*\S.*"
+                  aria-describedby="profile-name-error"
+                  data-required-message="Enter a display name."
+                  data-invalid-message="Enter a display name."
+                />
+                <span id="profile-name-error" class="field-error" hidden></span>
+              </div>
+              <div class="form-actions">
+                <button type="submit">Continue</button>
+              </div>
+            </form>
+          </section>
+
+          <section
+            id="workspace-setup"
+            data-flow="first-run"
+            aria-labelledby="workspace-title"
+            hidden
+          >
+            <h1 id="workspace-title" tabindex="-1">Name your workspace</h1>
+            <pl-step-indicator
+              label="Workspace setup"
+              steps='["Profile","Workspace","Complete"]'
+              current-step="2"
+            ></pl-step-indicator>
+            <p>Use a name your team will recognize.</p>
+            <form method="post" novalidate data-next="workspace-ready">
+              <pl-error-summary></pl-error-summary>
+              <div class="field">
+                <label for="workspace-name">Workspace name</label>
+                <input
+                  id="workspace-name"
+                  name="workspace-name"
+                  autocomplete="organization"
+                  required
+                  pattern=".*\S.*"
+                  aria-describedby="workspace-name-error"
+                  data-required-message="Enter a workspace name."
+                  data-invalid-message="Enter a workspace name."
+                />
+                <span
+                  id="workspace-name-error"
+                  class="field-error"
+                  hidden
+                ></span>
+              </div>
+              <div class="form-actions">
+                <a href="#first-run">Back</a>
+                <button type="submit">Create workspace</button>
+              </div>
+            </form>
+          </section>
+
+          <section
+            id="workspace-ready"
+            data-flow="first-run"
+            aria-labelledby="ready-title"
+            hidden
+          >
+            <h1 id="ready-title" tabindex="-1">Your demo workspace is ready</h1>
+            <pl-step-indicator
+              label="Workspace setup"
+              steps='["Profile","Workspace","Complete"]'
+              current-step="3"
+            ></pl-step-indicator>
+            <p>Continue to the support queue to try managing requests.</p>
+            <div class="form-actions">
+              <pl-button href="../admin/index.html" variant="primary"
+                >Open the support queue</pl-button
+              >
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

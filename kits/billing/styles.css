@@ -1,0 +1,197 @@
+.billing-header .kit-header-inner {
+  display: flex;
+  gap: var(--pl-space-2) var(--pl-space-5);
+}
+
+.billing-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(var(--pl-space-10), 7vw, 6rem);
+  padding-block: clamp(var(--pl-space-6), 5vw, 4rem);
+}
+
+:where(.billing-main :is(h1, h2, h3, p), #confirmation p) {
+  margin: 0;
+}
+
+.pricing-intro {
+  display: grid;
+  justify-items: center;
+  gap: var(--pl-space-3);
+  margin-block-end: var(--pl-space-8);
+  text-align: center;
+}
+
+.pricing-intro h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+.pricing-intro p {
+  max-inline-size: 40ch;
+}
+
+.pricing-intro pl-toggle-group {
+  inline-size: min(100%, 15rem);
+  margin-block-start: var(--pl-space-3);
+}
+
+.billing-caption,
+.plan-description,
+.plan-price small,
+.invoices dt {
+  color: var(--pl-color-muted-foreground);
+}
+
+.billing-caption {
+  font-size: var(--pl-text-sm);
+}
+
+.plan-grid,
+.account-grid {
+  display: grid;
+  gap: var(--pl-space-4);
+}
+
+.plan-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.plan-card {
+  gap: var(--pl-space-5);
+  border-radius: var(--pl-radius-panel);
+  padding: var(--pl-space-5);
+}
+
+.plan-card[data-current] {
+  border-color: var(--pl-color-accent-mark);
+}
+
+.plan-card::part(header) {
+  align-items: center;
+}
+
+.plan-card h2[slot="title"] {
+  font-size: var(--pl-text-lg);
+}
+
+.plan-card::part(content) {
+  flex: 1;
+}
+
+.plan-card pl-button {
+  inline-size: 100%;
+}
+
+.plan-price {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+.plan-price small {
+  font-size: var(--pl-text-sm);
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+.plan-description {
+  margin-block-start: var(--pl-space-3);
+}
+
+.plan-features {
+  display: grid;
+  gap: var(--pl-space-2);
+  margin-block: var(--pl-space-4) 0;
+  padding-block-start: var(--pl-space-4);
+  padding-inline-start: var(--pl-space-4);
+  border-block-start: 1px solid var(--pl-color-border);
+}
+
+.plan-features li::marker {
+  color: var(--pl-color-accent-mark);
+}
+
+.billing-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pl-space-4);
+}
+
+.plan-comparison table {
+  table-layout: fixed;
+}
+
+.plan-comparison thead th:first-child {
+  inline-size: 34%;
+}
+
+.plan-comparison :is(th, td) {
+  padding-inline: clamp(var(--pl-space-1), 1.5vw, var(--pl-space-4));
+}
+
+.plan-comparison :is(th, td):not(:first-child) {
+  text-align: center;
+}
+
+.account-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  align-items: start;
+}
+
+.subscription-plan {
+  margin-block-end: var(--pl-space-1);
+  font-size: var(--pl-text-xl);
+  font-weight: 650;
+}
+
+.subscription-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pl-space-3);
+  margin-block-start: var(--pl-space-4);
+}
+
+.subscription-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--pl-touch-min);
+}
+
+#change-note:not(:empty) {
+  margin-block-start: var(--pl-space-3);
+}
+
+.invoices details + details {
+  border-block-start: 1px solid var(--pl-color-border);
+}
+
+.invoices summary {
+  min-block-size: var(--pl-touch-min);
+  padding-block: var(--pl-space-3);
+  cursor: var(--pl-cursor-interactive);
+}
+
+.invoices summary span + span {
+  float: inline-end;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.invoices dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pl-space-3);
+  margin-block: 0 var(--pl-space-4);
+  padding: var(--pl-space-3);
+  border-radius: var(--pl-radius-control);
+  background: var(--pl-color-muted-3);
+}
+
+.invoices dd {
+  margin: 0;
+}

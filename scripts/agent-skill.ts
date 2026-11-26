@@ -8,7 +8,12 @@ import { cpSync, copyFileSync } from "node:fs";
 import { basename } from "node:path";
 
 export const SKILL = "skills/purrlucent";
-export const DOCS = ["docs/components.md", "docs/react.md", "docs/install.md"];
+export const DOCS = [
+  "docs/components.md",
+  "docs/react.md",
+  "docs/install.md",
+  "docs/kits.md",
+];
 export const reference = (doc: string) =>
   `${SKILL}/references/${basename(doc)}`;
 

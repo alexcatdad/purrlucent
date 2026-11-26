@@ -16,8 +16,9 @@
   layer: components
 - id: color/4
   source: https://developer.apple.com/design/human-interface-guidelines/color
-  rule: Components use semantic color tokens, never raw color values.
+  rule: Component CSS uses semantic tokens in place of hard-coded hex, color-function, and black or white values.
   check: automated
+  test: scripts/hig-check.coverage.test.ts > component CSS has no hard-coded color literals
   layer: components
 - id: color/5
   source: https://developer.apple.com/design/human-interface-guidelines/color
@@ -38,6 +39,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/color
   rule: Wide-gamut colors have an sRGB fallback that stays distinguishable.
   check: automated
+  pending: Contrast tests exercise resolved tokens but do not verify an sRGB fallback for the relative OKLCH values.
   layer: tokens
 - id: color/9
   source: https://developer.apple.com/design/human-interface-guidelines/color

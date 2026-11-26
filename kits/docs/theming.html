@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Theme Purrlucent — Documentation</title>
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="../site-chrome.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="kit-skip" href="#main">Skip to content</a>
+    <header class="kit-header">
+      <div class="kit-container kit-header-inner">
+        <a class="kit-brand" href="../product-site/index.html">
+          <span class="kit-brand-mark" aria-hidden="true"></span>Purrlucent
+        </a>
+        <nav class="kit-desktop-nav" aria-label="Main">
+          <ul class="kit-site-links">
+            <li><a href="../product-site/index.html#features">Features</a></li>
+            <li><a href="../product-site/index.html#faq">FAQ</a></li>
+            <li><a href="./index.html">Docs</a></li>
+            <li>
+              <a class="kit-action" href="./index.html#install">Install</a>
+            </li>
+          </ul>
+        </nav>
+        <details class="kit-mobile-menu" data-kit-disclosure>
+          <summary class="kit-action">Menu</summary>
+          <nav aria-label="Main">
+            <ul class="kit-site-links">
+              <li>
+                <a href="../product-site/index.html#features">Features</a>
+              </li>
+              <li><a href="../product-site/index.html#faq">FAQ</a></li>
+              <li><a href="./index.html">Docs</a></li>
+              <li>
+                <a class="kit-action" href="./index.html#install">Install</a>
+              </li>
+            </ul>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <div class="kit-container docs-layout">
+      <nav class="docs-side" aria-label="Guides">
+        <h2>Guides</h2>
+        <ul role="list">
+          <li><a href="./index.html">Installation</a></li>
+          <li><a href="./theming.html" aria-current="page">Theming</a></li>
+          <li>
+            <a
+              href="https://github.com/alexcatdad/purrlucent/blob/main/docs/components.md"
+              >Component reference</a
+            >
+          </li>
+        </ul>
+      </nav>
+
+      <main class="docs-page" id="main" tabindex="-1">
+        <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+          <ol role="list">
+            <li><a href="../product-site/index.html">Purrlucent</a></li>
+            <li>
+              <span aria-hidden="true">/</span> <a href="./index.html">Docs</a>
+            </li>
+            <li aria-current="page">
+              <span aria-hidden="true">/</span> Theming
+            </li>
+          </ol>
+        </nav>
+
+        <article aria-labelledby="docs-title">
+          <header class="docs-intro">
+            <h1 id="docs-title">Theme Purrlucent</h1>
+            <p>
+              Apply your app’s palette and let the same components follow the
+              page’s color scheme.
+            </p>
+          </header>
+
+          <details class="docs-mobile-contents" data-kit-disclosure>
+            <summary>Contents</summary>
+            <nav aria-label="Contents">
+              <ul role="list">
+                <li><a href="#color-scheme">Choose a color scheme</a></li>
+                <li><a href="#accent">Set an accent color</a></li>
+              </ul>
+              <ul role="list">
+                <li><a href="./index.html">Installation guide</a></li>
+                <li>
+                  <a
+                    href="https://github.com/alexcatdad/purrlucent/blob/main/docs/components.md"
+                    >Component reference</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </details>
+
+          <section aria-labelledby="color-scheme">
+            <h2 id="color-scheme" tabindex="-1">Choose a color scheme</h2>
+            <p>
+              The tokens enable light and dark mode by default and follow the
+              system setting. To specify one scheme for the page, set
+              <code>color-scheme</code> in your stylesheet.
+            </p>
+            <figure class="docs-code">
+              <figcaption>styles.css</figcaption>
+              <pl-button size="sm" hidden aria-label="Copy dark scheme CSS"
+                >Copy</pl-button
+              >
+              <pre dir="ltr"><code>:root {
+  color-scheme: dark;
+}</code></pre>
+              <p class="docs-copy-status" role="status"></p>
+            </figure>
+          </section>
+
+          <section aria-labelledby="accent">
+            <h2 id="accent" tabindex="-1">Set an accent color</h2>
+            <p>
+              Override the accent token after importing the default tokens. The
+              component fills, accent text, and focus rings use colors derived
+              from this value.
+            </p>
+            <figure class="docs-code">
+              <figcaption>styles.css</figcaption>
+              <pl-button size="sm" hidden aria-label="Copy accent color CSS"
+                >Copy</pl-button
+              >
+              <pre dir="ltr"><code>:root {
+  --pl-color-hot-pink: #429bb4;
+}</code></pre>
+              <p class="docs-copy-status" role="status"></p>
+            </figure>
+            <p>
+              For details on surfaces, spacing, and styling component parts, see
+              the
+              <a
+                href="https://github.com/alexcatdad/purrlucent/blob/main/docs/install.md#theming"
+                >full theming reference</a
+              >.
+            </p>
+          </section>
+        </article>
+
+        <nav class="docs-pagination" aria-label="Previous and next">
+          <a href="./index.html" rel="prev"
+            >Previous<span>Installation</span></a
+          >
+          <a
+            href="https://github.com/alexcatdad/purrlucent/blob/main/docs/components.md"
+            rel="next"
+            >Next<span>Component reference</span></a
+          >
+        </nav>
+      </main>
+
+      <nav class="docs-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ul role="list">
+          <li><a href="#color-scheme">Choose a color scheme</a></li>
+          <li><a href="#accent">Set an accent color</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <footer class="kit-footer">
+      <div class="kit-container kit-footer-compact">
+        <a class="kit-brand" href="../product-site/index.html">
+          <span class="kit-brand-mark" aria-hidden="true"></span>Purrlucent
+        </a>
+        <nav aria-label="Footer">
+          <ul class="kit-footer-links kit-site-links">
+            <li><a href="./index.html">Docs</a></li>
+            <li>
+              <a href="https://github.com/alexcatdad/purrlucent/issues"
+                >Get support</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/alexcatdad/purrlucent/blob/main/LICENSE"
+                >License</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

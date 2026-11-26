@@ -31,6 +31,11 @@
           "description": "Automated rules only: '<test file> > <test name>'. Absent means pending.",
           "pattern": "^[^>]+ > .+$"
         },
+        "pending": {
+          "type": "string",
+          "description": "Reason an automated rule still has no test.",
+          "pattern": "\\S"
+        },
         "layer": { "enum": ["tokens", "behaviors", "surfaces", "components"] }
       }
     }

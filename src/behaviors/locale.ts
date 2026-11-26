@@ -17,14 +17,20 @@ const en = {
   showOptions: "Show options",
   showOptionsFor: "{label}, show options",
   showItemsFor: "{label}, show items",
+  moveUp: "Move up",
+  moveDown: "Move down",
   noResults: "No results",
   addQuery: "Add {query}",
+  removeOption: "Remove {label}",
   sidebar: "Sidebar",
   sidebarFor: "{label} sidebar",
   breadcrumb: "Breadcrumb",
   previousMonth: "Previous month",
   nextMonth: "Next month",
   chooseDate: "Choose date",
+  chooseStartDate: "Choose start date",
+  chooseEndDate: "Choose end date",
+  dateRangeOrder: "Choose an end date on or after the start date.",
   chooseMonths: "Choose months",
   presets: "Presets",
   previousYear: "Previous year",
@@ -52,6 +58,7 @@ const en = {
   uploading: "Uploading",
   processing: "Processing",
   error: "Error",
+  checkForm: "Check the form",
   enterAll: "Enter all {count} characters.",
   checkRequired: "Check this box to continue.",
   switchRequired: "Turn this on to continue.",
@@ -82,9 +89,11 @@ const en = {
   fileRequired: "Choose a file to continue.",
 };
 
-export type PlMessages = typeof en;
+export type PlMessages = Omit<typeof en, "checkForm"> & {
+  checkForm?: string;
+};
 
-const registered = new Map<string, PlMessages>();
+const registered = new Map<string, typeof en>();
 
 /**
  * Registers the built-in text for a language, usually once at app start;
@@ -96,7 +105,11 @@ const registered = new Map<string, PlMessages>();
  */
 export function setMessages(lang: string, text: PlMessages) {
   // English fills any key a table leaves out, such as one added in a later version.
-  registered.set(lang.toLowerCase(), { ...en, ...text });
+  registered.set(lang.toLowerCase(), {
+    ...en,
+    ...text,
+    checkForm: text.checkForm ?? en.checkForm,
+  });
   refresh();
 }
 

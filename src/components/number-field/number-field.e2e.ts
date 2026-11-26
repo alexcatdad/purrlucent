@@ -571,3 +571,35 @@ test.describe("coarse pointer on a wide screen", () => {
     }
   });
 });
+
+test.describe("coarse pointer on a narrow screen", () => {
+  test.use({ viewport: { width: 390, height: 600 }, hasTouch: true });
+
+  test("touches above and below the field leave the value alone", async ({
+    page,
+  }) => {
+    await gotoStory(page, story("labelled"));
+    const host = page.locator("pl-number-field");
+    const field = host.getByRole("spinbutton");
+    const increase = host.getByRole("button", { name: "Increase" });
+    const decrease = host.getByRole("button", { name: "Decrease" });
+
+    for (const width of ["", "6rem"]) {
+      await host.evaluate((el, width) => (el.style.inlineSize = width), width);
+      const group = (await host.locator("[part=group]").boundingBox())!;
+      const up = (await increase.boundingBox())!;
+      const down = (await decrease.boundingBox())!;
+      expect(group.height).toBe(width ? 88 : 44);
+      await page.touchscreen.tap(up.x + up.width / 2, group.y - 8);
+      await page.touchscreen.tap(
+        down.x + down.width / 2,
+        group.y + group.height + 8,
+      );
+      await expect(field).toHaveValue("3");
+      await increase.tap();
+      await expect(field).toHaveValue("4");
+      await decrease.tap();
+      await expect(field).toHaveValue("3");
+    }
+  });
+});

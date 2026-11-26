@@ -504,3 +504,25 @@ test.describe("coarse pointer on a wide screen", () => {
     }
   });
 });
+
+test.describe("coarse pointer at 320 pixels", () => {
+  test.use({ viewport: { width: 320, height: 640 }, hasTouch: true });
+
+  for (const name of ["default", "rtl"]) {
+    test(`all seven columns fit in ${name}`, async ({ page }) => {
+      await gotoStory(page, story(name));
+      const grid = page.getByRole("grid");
+      await expect(grid).toBeInViewport({ ratio: 1 });
+      await expect(grid.getByRole("columnheader")).toHaveCount(7);
+      const saturday = day(page, "2026-11-07");
+      const box = (await saturday.boundingBox())!;
+      expect(box.width).toBeGreaterThanOrEqual(24);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      await saturday.tap();
+      await expect(page.locator("#calendar")).toHaveJSProperty(
+        "value",
+        "2026-11-07",
+      );
+    });
+  }
+});

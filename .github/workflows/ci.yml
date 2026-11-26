@@ -50,7 +50,7 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      # Rules owned by the component tasks still have no test, so pending is allowed until they land.
+      # Pending rules need an explicit reason, which is printed in the job log.
       - run: bun run hig:check -- --allow-pending
 
   build:

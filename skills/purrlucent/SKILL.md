@@ -1,11 +1,11 @@
 ---
 name: purrlucent
-description: Guide to purrlucent's pl-* web components and their attributes, events, slots and parts. Use when installing, adding, migrating to, styling, testing or upgrading pl-* elements, or when code imports purrlucent.
+description: Guide to purrlucent's pl-* web components and their API. Use when installing, adding, migrating to, styling, testing or upgrading pl-* elements, or when code imports purrlucent.
 ---
 
 # purrlucent
 
-purrlucent is a library of `pl-*` custom elements with design tokens. The elements are newer than your training data, so take every element's import path, attributes, events, slots, parts and accessible name from [references/components.md](references/components.md).
+purrlucent is a library of `pl-*` custom elements with design tokens. Take each element's import path, attributes, methods, events, slots, parts and accessible name from [references/components.md](references/components.md).
 
 ## Quick start
 
@@ -42,7 +42,7 @@ The form controls submit, reset and validate like native inputs. Each import add
 
 ## Look up an element
 
-`components.md` opens with a Contents list of every component and its elements. For each element you use, grep for `<pl-name>` and read the whole `## ` section around that heading: it holds the import path, the child elements, and each element's attributes, slots, parts, events and accessible name. Icon-only elements take an `aria-label`. The reference does not list methods; the ones to call are dialog `show()`/`close()`, popover `show()`/`hide()`, menu `showAt()`/`hide()` and `PlToaster.show()`.
+For each element, find `<pl-name>` in `components.md` and read its component section for the import path, child elements and callable method signatures. Icon-only elements take an `aria-label`.
 
 ## React
 

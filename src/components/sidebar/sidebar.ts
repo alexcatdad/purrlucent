@@ -45,7 +45,7 @@ const sidebarIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
  * @attr {boolean} collapsed - The sidebar is hidden, leaving only its toggle, or nothing with `no-toggle`. Set it to control the sidebar; changing it from outside fires no `pl-collapse`.
  * @attr {number} collapse-below - The viewport width in px at and below which the sidebar collapses on its own and opens as a modal panel. `0` turns this off. Defaults to 600.
  * @attr {boolean} no-toggle - Hides the built-in toggle button; a collapsed sidebar then takes no space at all. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.
- * @attr {boolean} reorderable - Level 1 items show a grip, on hover and keyboard focus or always on a touch screen, and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
+ * @attr {boolean} reorderable - Level 1 items show a grip on hover and keyboard focus, or always on a touch screen. Press it for move commands, drag it, or use Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.
  * @attr {string} chevron - Where the disclosure chevron of a group sits: `end` (default), after the label and the detail, so icons and labels line up with plain rows, or `start`, before the icon.
  * @attr {string} shortcut - A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known. A key press needs `mod`, `ctrl` or `alt` to count, so typing is never taken.
  * @attr {string} toggle-label - The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.
@@ -118,6 +118,7 @@ export class PlSidebar extends LitElement {
     orientation: "vertical",
     wrap: false,
     tabStops: "all",
+    ignore: (event) => this.#fromReorderMenu(event),
   });
 
   constructor() {
@@ -133,6 +134,7 @@ export class PlSidebar extends LitElement {
     this.chevron = "end";
     this.shortcut = "";
     this._narrow = false;
+    this.addEventListener("click", this.#suppressDragClick, { capture: true });
   }
 
   /** The items in document order, loose or inside a section. */
@@ -148,12 +150,20 @@ export class PlSidebar extends LitElement {
   #sync(reveal = false) {
     let parent: PlSidebarItem | undefined;
     const items = this.#items();
+    const lastPeer = new Map<HTMLElement, PlSidebarItem>();
     items.forEach((item, i) => {
       // A group of level 2 items never reaches across a section boundary.
       if (item.parentElement !== items[i - 1]?.parentElement)
         parent = undefined;
       item.chevron = this.chevron;
       if (item.level === 1) {
+        if (this.reorderable) {
+          const container = item.parentElement!;
+          const previous = lastPeer.get(container);
+          item.canMoveUp = !!previous;
+          if (previous) previous.canMoveDown = true;
+          lastPeer.set(container, item);
+        }
         parent = item;
         const next = items[i + 1];
         item.expandable =
@@ -170,18 +180,26 @@ export class PlSidebar extends LitElement {
         item.hidden = parent ? !parent.expanded : false;
       }
     });
+    for (const item of lastPeer.values()) item.canMoveDown = false;
     this.requestUpdate();
   }
 
   #onSlotchange = () => this.#sync(true);
+
+  #fromReorderMenu(event: Event) {
+    return event
+      .composedPath()
+      .some(
+        (node) =>
+          node instanceof Element && node.matches("pl-menu.reorder-menu"),
+      );
+  }
 
   #onClick = (event: MouseEvent) => {
     const item = event.target;
     // A parent link selects; its disclosure button, like any group button, does not.
     const origin = event.composedPath()[0];
     if (!(item instanceof PlSidebarItem)) return;
-    // A press on the grip only moves the item.
-    if (origin instanceof Element && origin.closest("[part=handle]")) return;
     // A modified click opens the link elsewhere; this page stays current.
     const plain =
       event.button === 0 &&
@@ -231,7 +249,8 @@ export class PlSidebar extends LitElement {
 
   #onKeydown = (event: KeyboardEvent) => {
     const item = event.target;
-    if (!(item instanceof PlSidebarItem)) return;
+    if (!(item instanceof PlSidebarItem) || this.#fromReorderMenu(event))
+      return;
     const origin = event.composedPath()[0];
     if (event.key === " " && origin instanceof HTMLAnchorElement) {
       // Native links ignore Space; APG selects and activates the link.
@@ -249,19 +268,7 @@ export class PlSidebar extends LitElement {
       (event.key === "ArrowUp" || event.key === "ArrowDown")
     ) {
       event.preventDefault();
-      const peers = this.#peers(item);
-      const from = peers.indexOf(item);
-      const to = from + (event.key === "ArrowUp" ? -1 : 1);
-      if (to >= 0 && to < peers.length) {
-        this.#reorder(item, from, to);
-        // Moving the item in the page drops its focus; an app that renders
-        // later than this microtask has moved it by the next frame.
-        const refocus = () => {
-          if (!item.matches(":focus-within")) item.focus();
-        };
-        queueMicrotask(refocus);
-        requestAnimationFrame(refocus);
-      }
+      this.#reorderStep(item, event.key === "ArrowUp" ? -1 : 1, item);
       return;
     }
     if (event.key !== "Escape") return;
@@ -292,6 +299,37 @@ export class PlSidebar extends LitElement {
     );
   }
 
+  #onReorderSelect = (event: CustomEvent<{ value: "up" | "down" }>) => {
+    const item = event.target;
+    const menu = event.composedPath()[0];
+    if (
+      !(item instanceof PlSidebarItem) ||
+      !(menu instanceof Element) ||
+      !menu.matches("pl-menu.reorder-menu") ||
+      menu.getRootNode() !== item.shadowRoot
+    )
+      return;
+    event.stopPropagation();
+    if (!this.reorderable || item.level !== 1) return;
+    const grip = menu.querySelector<HTMLButtonElement>("[part=handle]")!;
+    this.#reorderStep(item, event.detail.value === "up" ? -1 : 1, grip);
+  };
+
+  #reorderStep(item: PlSidebarItem, offset: -1 | 1, focus: HTMLElement) {
+    const peers = this.#peers(item);
+    const from = peers.indexOf(item);
+    const to = from + offset;
+    if (from < 0 || to < 0 || to >= peers.length) return;
+    this.#reorder(item, from, to);
+    // Moving the item in the page drops focus, including in apps that render
+    // the move after this event has finished.
+    const refocus = () => {
+      if (!item.matches(":focus-within")) focus.focus();
+    };
+    queueMicrotask(refocus);
+    requestAnimationFrame(refocus);
+  }
+
   #reorder(item: PlSidebarItem, from: number, to: number) {
     item.dispatchEvent(
       new CustomEvent("pl-reorder", {
@@ -304,12 +342,28 @@ export class PlSidebar extends LitElement {
 
   #drag?: {
     item: PlSidebarItem;
+    grip: HTMLButtonElement;
+    pointer: number;
     peers: PlSidebarItem[];
     from: number;
     to: number;
     y: number;
     min: number;
     max: number;
+    moved: boolean;
+  };
+  #draggedGrip?: HTMLButtonElement;
+
+  #suppressDragClick = (event: MouseEvent) => {
+    if (
+      event.detail === 0 ||
+      !this.#draggedGrip ||
+      !event.composedPath().includes(this.#draggedGrip)
+    )
+      return;
+    this.#draggedGrip = undefined;
+    event.preventDefault();
+    event.stopPropagation();
   };
 
   #onPointerdown = (event: PointerEvent) => {
@@ -318,13 +372,15 @@ export class PlSidebar extends LitElement {
     const grip = origin instanceof Element && origin.closest("[part=handle]");
     if (
       !this.reorderable ||
-      !grip ||
+      !(grip instanceof HTMLButtonElement) ||
       !(item instanceof PlSidebarItem) ||
       item.level !== 1 ||
+      !event.isTrusted ||
       !event.isPrimary ||
       (event.pointerType === "mouse" && event.button !== 0)
     )
       return;
+    this.#draggedGrip = undefined;
     const peers = this.#peers(item);
     const from = peers.indexOf(item);
     grip.setPointerCapture(event.pointerId);
@@ -333,6 +389,8 @@ export class PlSidebar extends LitElement {
     const nav = this.renderRoot.querySelector("nav")?.getBoundingClientRect();
     this.#drag = {
       item,
+      grip,
+      pointer: event.pointerId,
       peers,
       from,
       to: from,
@@ -341,16 +399,21 @@ export class PlSidebar extends LitElement {
       // scrolled out of the nav or taller than it.
       min: nav ? Math.min(0, nav.top - box.top) : -Infinity,
       max: nav ? Math.max(0, nav.bottom - box.bottom) : Infinity,
+      moved: false,
     };
-    item.toggleAttribute("data-dragging", true);
-    // Keeps the press from selecting text or starting a native drag.
-    event.preventDefault();
   };
 
   #onPointermove = (event: PointerEvent) => {
     const drag = this.#drag;
-    if (!drag) return;
-    const dy = Math.min(Math.max(event.clientY - drag.y, drag.min), drag.max);
+    if (!drag || event.pointerId !== drag.pointer) return;
+    const delta = event.clientY - drag.y;
+    if (!drag.moved) {
+      // A tap on the grip opens its menu, even with a little pointer movement.
+      if (Math.abs(delta) < 4) return;
+      drag.moved = true;
+      drag.item.setAttribute("data-dragging", "");
+    }
+    const dy = Math.min(Math.max(delta, drag.min), drag.max);
     drag.item.style.setProperty("translate", `0 ${dy}px`);
     // Its place is the number of other items whose middle is above the pointer.
     drag.to = drag.peers.filter((peer) => {
@@ -361,12 +424,15 @@ export class PlSidebar extends LitElement {
 
   #onPointerend = (event: PointerEvent) => {
     const drag = this.#drag;
-    if (!drag) return;
+    if (!drag || event.pointerId !== drag.pointer) return;
     this.#drag = undefined;
+    if (!drag.moved) return;
     drag.item.removeAttribute("data-dragging");
     drag.item.style.removeProperty("translate");
-    if (event.type === "pointerup" && drag.to !== drag.from)
-      this.#reorder(drag.item, drag.from, drag.to);
+    if (event.type === "pointerup") {
+      this.#draggedGrip = drag.grip;
+      if (drag.to !== drag.from) this.#reorder(drag.item, drag.from, drag.to);
+    }
   };
 
   // Narrow screen, any pointer: the sidebar collapses on its own, so the app's
@@ -623,6 +689,8 @@ export class PlSidebar extends LitElement {
         @pointermove=${this.#onPointermove}
         @pointerup=${this.#onPointerend}
         @pointercancel=${this.#onPointerend}
+        @lostpointercapture=${this.#onPointerend}
+        @pl-select=${this.#onReorderSelect}
         @pl-toggle=${() => this.#sync()}
       >
         <slot @slotchange=${this.#onSlotchange}></slot>

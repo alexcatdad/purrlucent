@@ -10,7 +10,7 @@
     "accessibility",
     "react"
   ],
-  "homepage": "https://alexcatdad.github.io/purrlucent/",
+  "homepage": "https://alexcatdad.github.io/purrlucent/?path=/docs/install--docs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexcatdad/purrlucent.git"
@@ -24,6 +24,12 @@
   },
   "files": [
     "dist",
+    "kits",
+    "docs/components.md",
+    "docs/install.md",
+    "docs/kits.md",
+    "docs/react.md",
+    "SECURITY.md",
     "NOTICE",
     "THIRD_PARTY_NOTICES"
   ],
@@ -130,6 +136,10 @@
       "types": "./dist/types/components/date-picker/date-picker.d.ts",
       "default": "./dist/date-picker.js"
     },
+    "./date-range": {
+      "types": "./dist/types/components/date-range/date-range.d.ts",
+      "default": "./dist/date-range.js"
+    },
     "./dialog": {
       "types": "./dist/types/components/dialog/dialog.d.ts",
       "default": "./dist/dialog.js"
@@ -141,6 +151,10 @@
     "./empty": {
       "types": "./dist/types/components/empty/empty.d.ts",
       "default": "./dist/empty.js"
+    },
+    "./error-summary": {
+      "types": "./dist/types/components/error-summary/error-summary.d.ts",
+      "default": "./dist/error-summary.js"
     },
     "./field": {
       "types": "./dist/types/components/field/field.d.ts",
@@ -258,6 +272,10 @@
       "types": "./dist/types/components/spinner/spinner.d.ts",
       "default": "./dist/spinner.js"
     },
+    "./step-indicator": {
+      "types": "./dist/types/components/step-indicator/step-indicator.d.ts",
+      "default": "./dist/step-indicator.js"
+    },
     "./switch": {
       "types": "./dist/types/components/switch/switch.d.ts",
       "default": "./dist/switch.js"
@@ -313,7 +331,7 @@
     "hig:review": "bun scripts/rubric-prompt.ts review origin/main",
     "notices": "bun scripts/third-party-notices.ts",
     "changeset": "changeset",
-    "version-packages": "changeset version && bun fmt CHANGELOG.md",
+    "version-packages": "changeset version && bun scripts/version-readme-links.ts && bun fmt CHANGELOG.md",
     "prestorybook": "cem analyze",
     "storybook": "storybook dev -p 6006",
     "prebuild-storybook": "cem analyze",

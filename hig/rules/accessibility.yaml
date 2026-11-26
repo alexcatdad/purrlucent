@@ -2,16 +2,19 @@
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
   rule: Text and icons can be enlarged to at least 200 percent without clipping or overlap.
   check: automated
+  pending: Zoom checks measure horizontal overflow without verifying that meaningful icons grow or detecting overlapping elements.
   layer: components
 - id: accessibility/2
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
-  rule: Text and meaningful icons meet WCAG AA contrast, in light, dark and increased-contrast appearances.
+  rule: Semantic text pairs reach 4.5 to 1 and focus, input border and selection pairs reach 3 to 1 in light, dark and increased contrast.
   check: automated
+  test: src/tokens/tokens.e2e.ts > every text role meets 4.5:1 against background in all four color schemes
   layer: tokens
 - id: accessibility/3
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
-  rule: When default contrast falls short, a higher-contrast variant applies when the user asks for more contrast.
+  rule: Glass bars become opaque and retain legible labels when increased contrast is requested in light appearance.
   check: automated
+  test: src/tokens/tokens.e2e.ts > glass falls back to solid under increased contrast
   layer: tokens
 - id: accessibility/4
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
@@ -22,7 +25,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
   rule: Every control is at least 44 by 44 CSS pixels to hit, with room between neighbors, on coarse pointers.
   check: automated
-  test: src/behaviors/interaction.e2e.ts > a coarse pointer on a wide screen keeps the hit area at 44 by 44
+  pending: The wide-screen probe in src/behaviors/interaction.e2e.ts verifies one 44-by-44 touch target. Calendar days can be narrower in small containers, and adjacent target spacing remains unmeasured.
   layer: behaviors
 - id: accessibility/6
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
@@ -39,6 +42,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
   rule: Every control exposes a name, role and state that a screen reader can announce.
   check: automated
+  pending: Per-component screen reader and role tests exist, but they do not establish coverage for every control and state.
   layer: components
 - id: accessibility/9
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
@@ -49,4 +53,5 @@
   source: https://developer.apple.com/design/human-interface-guidelines/accessibility
   rule: Fast or blinking animation is avoided, and the reduced-motion preference is honored.
   check: automated
+  pending: Reduced-motion tests exist, but there is no check for flashing or high-frequency animation across components.
   layer: behaviors

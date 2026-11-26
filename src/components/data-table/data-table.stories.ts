@@ -82,6 +82,39 @@ export const Playground: Story = {
 // function would change the sort or selection before the test starts.
 export const Default: Story = { render };
 
+const inventoryColumns: PlDataTableColumn[] = [
+  { key: "id", label: "SKU", sortable: true },
+  { key: "warehouse", label: "Warehouse", sortable: true },
+  { key: "stock", label: "In stock", sortable: true, align: "end" },
+];
+const warehouses = ["Central", "East", "West"];
+const inventory = Array.from({ length: 1_000 }, (_, index) => ({
+  id: `SKU-${String(index + 1).padStart(4, "0")}`,
+  warehouse: warehouses[index % warehouses.length],
+  stock: (index * 29) % 500,
+}));
+
+/** A 1,000-record inventory renders 25 rows at a time. Sorting and filtering apply to all records. */
+export const LargePaginated: Story = {
+  render: () => html`
+    <pl-data-table
+      pl-texture=${previewTexture()}
+      id="control"
+      caption="Inventory"
+      page-size="25"
+      filterable
+      .columns=${inventoryColumns}
+      .rows=${inventory}
+    ></pl-data-table>
+  `,
+  play: async ({ canvasElement }) => {
+    const table = await control(canvasElement);
+    const rows = table.shadowRoot!.querySelectorAll("tbody tr");
+    await expect(rows).toHaveLength(25);
+    await expect(rows[0]).toHaveTextContent("SKU-0001");
+  },
+};
+
 export const Glass: Story = {
   render,
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },
