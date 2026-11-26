@@ -245,8 +245,12 @@ test("range: calendar picks and programmatic changes update linked validity", as
 }) => {
   await gotoStory(page, story("range"));
   await page.getByRole("button", { name: "Choose end date" }).click();
-  const calendar = dialog(page, "Choose end date");
-  await calendar.getByRole("button", { name: "Previous month" }).click();
+  await expect(dialog(page, "Choose end date")).toBeVisible();
+  // The calendar is projected through the dialog's slot from the popover's light DOM.
+  await page
+    .locator("#end pl-calendar")
+    .getByRole("button", { name: "Previous month" })
+    .click();
   await day(page, "2026-11-12", "#end").click();
   const end = field(page, "#end");
   await expect(end).toHaveValue("11/12/2026");

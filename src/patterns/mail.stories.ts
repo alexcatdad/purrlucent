@@ -639,6 +639,12 @@ class MailDemo extends LitElement {
       display: none;
     }
 
+    /* The drawer takes over the narrow actions while preserving their space
+       and the trigger for native focus restoration. */
+    .shell:has(+ pl-drawer[open]) .mobile-actions {
+      opacity: 0;
+    }
+
     @container (max-width: 40rem) {
       .folders-pane,
       pl-resizable-handle,

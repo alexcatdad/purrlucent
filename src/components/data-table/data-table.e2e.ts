@@ -404,7 +404,8 @@ test("the paged table reads each row key at most once per update", async ({
   page,
 }) => {
   await open(page, "data-data-table--large-paginated");
-  const keyReads = await page.locator("#control").evaluate(async (el) => {
+  const host = page.locator("pl-data-table#control");
+  const keyReads = await host.evaluate(async (el) => {
     const table = el as PlDataTable;
     let reads = 0;
     table.rowKey = "lookupKey";
