@@ -19,7 +19,7 @@ for (const route of [
     if (route === "admin/index")
       await expect(page.locator("#queue-results")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expectAccessible(page.locator("body"));
+    await expectAccessible(page.locator("body"), { singleDocument: true });
     await page.addStyleTag({ content: "html { font-size: 200%; }" });
     const overflow = await page.evaluate(
       () =>

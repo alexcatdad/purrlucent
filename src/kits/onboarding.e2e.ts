@@ -5,7 +5,7 @@ const kit = "/kits/onboarding/index.html";
 test.describe("with JavaScript disabled", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("the form never posts its entries", async ({ page }) => {
+  test("the form never posts its entries", async ({ browserName, page }) => {
     let posted = false;
     await page.route("**/*", (route) => {
       if (route.request().method() !== "POST") return route.continue();
@@ -13,16 +13,34 @@ test.describe("with JavaScript disabled", () => {
       return route.abort();
     });
     await page.goto(kit);
-    const originalUrl = page.url();
     await expect(
       page.getByText("Enable JavaScript to try the forms."),
     ).toBeVisible();
+    await expect(
+      page.locator('meta[http-equiv="Content-Security-Policy"]'),
+    ).toHaveAttribute("content", "form-action 'none'");
     await page.getByRole("textbox", { name: "Full name" }).fill("Sam Avery");
     await page
       .getByRole("textbox", { name: "Email address" })
       .fill("sam@example.com");
-    await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page).toHaveURL(originalUrl);
+    // Chromium forwards the browser's CSP diagnostic through Playwright.
+    const violation =
+      browserName === "chromium"
+        ? page.waitForEvent("console", (message) => {
+            const text = message.text();
+            return (
+              text.includes("form-action 'none'") &&
+              text.includes("request has been blocked")
+            );
+          })
+        : undefined;
+    await Promise.all([
+      violation,
+      // CSP rejects the navigation before Chromium can finish a navigation wait.
+      page
+        .getByRole("button", { name: "Continue" })
+        .click({ noWaitAfter: true }),
+    ]);
     expect(posted).toBe(false);
   });
 });
