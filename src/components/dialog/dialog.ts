@@ -59,6 +59,11 @@ type CloseReason = "user" | "programmatic";
  * inside with `data-close="value"` closes the dialog with that return value.
  * The page cannot scroll while a dialog is open.
  *
+ * Opening and closing animate: the dialog fades and scales, and the scrim
+ * fades. `pl-close` fires as the close starts, not after the animation.
+ * Reduced motion makes both instant, and a browser without the CSS `overlay`
+ * property closes at once.
+ *
  * With `nonmodal` the dialog opens without blocking the page: the rest of the
  * page stays interactive, and there is no scrim, focus trap or scroll lock.
  * Use it for a panel that works beside the page, such as an in-context

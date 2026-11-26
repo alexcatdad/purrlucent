@@ -135,6 +135,43 @@ export const StableHeight: Story = {
   `,
 };
 
+const segmented = (width = "") => html`
+  <div style=${width ? `inline-size:${width}` : ""}>
+    <pl-tabs id="control" label="Contract" variant="segmented" stable-height>
+      ${[
+        "Overview",
+        "Parties",
+        "Terms",
+        "Pricing",
+        "Documents",
+        "Signatures",
+        "History",
+        "Notes",
+      ].map(
+        (name) => html`
+          <pl-tab value=${name.toLowerCase()}>${name}</pl-tab>
+          <pl-tab-panel value=${name.toLowerCase()}
+            >${name} of the contract.</pl-tab-panel
+          >
+        `,
+      )}
+    </pl-tabs>
+  </div>
+`;
+
+/** `variant="segmented"`: a capsule as wide as its tabs, with the selected tab a raised pill. */
+export const Segmented: Story = { render: () => segmented() };
+
+/** A segmented list wider than its room scrolls sideways and fades the edge with more tabs. */
+export const SegmentedOverflow: Story = {
+  render: () => segmented("16rem"),
+};
+
+export const SegmentedGlass: Story = {
+  render: () => segmented(),
+  globals: { material: "glass" },
+};
+
 export const Glass: Story = {
   render,
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },

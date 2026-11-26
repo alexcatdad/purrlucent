@@ -960,6 +960,89 @@ test("in light mode the scrim dims the page with shade at 30%", async ({
   expect(a).toBeCloseTo(0.3, 2);
 });
 
+test('a sheet with pl-material="solid" stays solid inside glass', async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"), "material:glass");
+  await expect(sheet(page)).toBeVisible();
+  const surface = dialogEl(page).locator("dialog");
+  const filter = () =>
+    surface.evaluate((el) => getComputedStyle(el).backdropFilter);
+  await expect.poll(filter).toMatch(/blur\([\d.]+px\) saturate\(/);
+  await dialogEl(page).evaluate((el) =>
+    el.setAttribute("pl-material", "solid"),
+  );
+  await expect.poll(filter).toBe("none");
+  expect(
+    await surface.evaluate((el) => getComputedStyle(el).backgroundColor),
+  ).toBe(
+    await page.evaluate(() => {
+      const probe = document.createElement("div");
+      probe.style.background = "var(--pl-color-surface)";
+      document.body.append(probe);
+      const color = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return color;
+    }),
+  );
+});
+
+/** Closes the open dialog from code and lists the properties it then transitions on itself and its scrim. */
+const closeAnimations = (page: Page) =>
+  dialogEl(page).evaluate(async (el) => {
+    const host = el as HTMLElement & {
+      open: boolean;
+      updateComplete: Promise<unknown>;
+    };
+    host.open = false;
+    await host.updateComplete;
+    const dialog = el.shadowRoot!.querySelector("dialog")!;
+    const running = dialog.getAnimations({ subtree: true });
+    return {
+      animations: running.length,
+      properties: running.map((a) => (a as CSSTransition).transitionProperty),
+      overlay: CSS.supports("overlay", "auto"),
+      pointerEvents: [
+        getComputedStyle(dialog).pointerEvents,
+        getComputedStyle(dialog, "::backdrop").pointerEvents,
+      ],
+    };
+  });
+
+test("closing plays the open transition in reverse, and the closing dialog takes no presses", async ({
+  page,
+  browserName,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await gotoStory(page, story("open-sheet"));
+  await expect(sheet(page)).toBeVisible();
+  const dialog = dialogEl(page).locator("dialog");
+  // The open transition ends first, so only the close is counted.
+  await expect
+    .poll(() =>
+      dialog.evaluate((el) => el.getAnimations({ subtree: true }).length),
+    )
+    .toBe(0);
+  const { properties, overlay, pointerEvents } = await closeAnimations(page);
+  // Firefox has no overlay, so it closes at once.
+  test.skip(!overlay, "no CSS overlay");
+  expect(properties).toEqual(expect.arrayContaining(["opacity", "scale"]));
+  // WebKit does not report ::backdrop through getComputedStyle.
+  expect(
+    new Set(
+      browserName === "webkit" ? pointerEvents.slice(0, 1) : pointerEvents,
+    ),
+  ).toEqual(new Set(["none"]));
+  await expect(sheet(page)).toBeHidden();
+});
+
+test("under reduced motion the close is instant", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await gotoStory(page, story("open-sheet"));
+  await expect(sheet(page)).toBeVisible();
+  expect((await closeAnimations(page)).animations).toBe(0);
+});
+
 test.describe("nonmodal", () => {
   test("opens without blocking the page, the scrim or the scroll lock", async ({
     page,

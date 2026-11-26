@@ -8,13 +8,17 @@ export default meta;
 type Story = StoryObj;
 
 // Every token group is read from the stylesheets (rules whose selector is
-// :root), so a token added to tokens.css shows up here without editing the story.
+// :root, alone or with the solid material that restates it), so a token added
+// to tokens.css shows up here without editing the story.
 const tokens = (prefix: string): string[] => {
   const names = new Set<string>();
   const walk = (rules: CSSRuleList) => {
     for (const rule of rules) {
       if (rule instanceof CSSStyleRule) {
-        if (rule.selectorText === ":root")
+        if (
+          rule.selectorText.replace(/,\s*\[pl-material="solid"\]/, "") ===
+          ":root"
+        )
           for (const name of rule.style)
             if (name.startsWith(prefix)) names.add(name);
       } else if ("cssRules" in rule) walk(rule.cssRules as CSSRuleList);

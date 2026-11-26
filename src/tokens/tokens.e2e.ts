@@ -67,15 +67,18 @@ const measure = (target: Locator) =>
 
 const bar = (page: Page) => measure(page.locator("#bar"));
 
-/** A bare element wearing the control material and the edge, appended after the story renders. */
-const addControl = async (page: Page) => {
-  await page.evaluate(() => {
+/** A bare element wearing the control material and the edge, appended after the story renders, optionally inside a pl-material wrapper. */
+const addControl = async (page: Page, material?: string) => {
+  await page.evaluate((material) => {
     const probe = document.createElement("div");
     probe.id = "control";
     probe.style.cssText =
       "background: var(--pl-material-control); backdrop-filter: var(--pl-material-control-filter); box-shadow: var(--pl-material-edge)";
-    document.body.append(probe);
-  });
+    const wrapper = document.createElement("div");
+    if (material) wrapper.setAttribute("pl-material", material);
+    wrapper.append(probe);
+    document.body.append(material ? wrapper : probe);
+  }, material);
   return page.locator("#control");
 };
 test("solid mode computes the material filter to none", async ({ page }) => {
@@ -339,11 +342,13 @@ test("glass controls cast a shadow", async ({ page }) => {
 // Under a fallback the control keeps its solid-mode look, so it is compared
 // with the same probe once the material is switched to solid. The solid face
 // is the neutral secondary tint, which is translucent by design.
-const expectSolidControl = async (page: Page) => {
-  const control = await addControl(page);
+const expectSolidControl = async (page: Page, material?: string) => {
+  const control = await addControl(page, material);
   const fallback = await measure(control);
   const shadow = await control.evaluate((el) => getComputedStyle(el).boxShadow);
-  const elevation = await rootToken(page, "--pl-elevation-control");
+  const elevation = await control.evaluate((el) =>
+    getComputedStyle(el).getPropertyValue("--pl-elevation-control").trim(),
+  );
   await page.evaluate(() =>
     document.documentElement.setAttribute("pl-material", "solid"),
   );
@@ -354,6 +359,14 @@ const expectSolidControl = async (page: Page) => {
     await control.evaluate((el) => getComputedStyle(el).boxShadow),
   );
 };
+
+test('pl-material="solid" inside glass makes controls solid', async ({
+  page,
+}) => {
+  await openMaterials(page, "glass", "light");
+  expect((await bar(page)).filter).not.toBe("none");
+  await expectSolidControl(page, "solid");
+});
 
 test("reduced transparency makes controls solid", async ({
   page,
