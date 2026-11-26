@@ -1,6 +1,6 @@
 # Components
 
-This page is generated from the code by `bun scripts/component-docs.ts`. Each component has its own import path; `import "purrlucent"` loads all of them. Examples for every component are in Storybook.
+This page is generated from the code by `bun scripts/component-docs.ts`. Each component has its own import path. `import "purrlucent"` loads every component except the chart. Import `purrlucent/chart` and install its optional peer `@tanstack/charts` to use the chart. Storybook has examples for the components.
 
 ## Contents
 
@@ -25,6 +25,7 @@ This page is generated from the code by `bun scripts/component-docs.ts`. Each co
 - [Context menu](#context-menu): `pl-context-menu`
 - [Data table](#data-table): `pl-data-table`
 - [Date picker](#date-picker): `pl-date-picker`
+- [Date range](#date-range): `pl-date-range`
 - [Dialog](#dialog): `pl-dialog`
 - [Drawer](#drawer): `pl-drawer`
 - [Empty](#empty): `pl-empty`
@@ -110,6 +111,10 @@ A stack of disclosure sections: each `pl-accordion-item` is a heading with a but
 | ---------- | --------- | ------- | ------------------------------------------------------------------ |
 | `multiple` | `boolean` | `false` | Several items may be open at once.                                 |
 | `level`    | `number`  | `3`     | The heading level, 1 to 6, of every item's heading. Defaults to 3. |
+
+**Properties**
+
+- `items: PlAccordionItem[]` The items of this accordion, in order.
 
 **Slots**
 
@@ -197,12 +202,11 @@ import "purrlucent/avatar";
 
 A round picture of a person. When there is no `src`, or the image fails to load, it shows the initials of `name`. With a `name` the host is an image named by it, and the picture and the initials are hidden from assistive technology so the name is read once. Without a `name` the avatar is decorative and has no role.
 
-| Attribute | Type                               | Default     | Description                                                       |
-| --------- | ---------------------------------- | ----------- | ----------------------------------------------------------------- |
-| `src`     | `string`                           | `""`        | The image address.                                                |
-| `name`    | `string`                           | `""`        | The person's name. It gives the accessible name and the initials. |
-| `size`    | `"sm" \| "md" \| "lg" \| "xl"`     | `"md"`      | `sm`, `md` (default), `lg` or `xl`.                               |
-| `_status` | `"loading" \| "loaded" \| "error"` | `"loading"` |                                                                   |
+| Attribute | Type                           | Default | Description                                                       |
+| --------- | ------------------------------ | ------- | ----------------------------------------------------------------- |
+| `src`     | `string`                       | `""`    | The image address.                                                |
+| `name`    | `string`                       | `""`    | The person's name. It gives the accessible name and the initials. |
+| `size`    | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `sm`, `md` (default), `lg` or `xl`.                               |
 
 **Parts**
 
@@ -284,7 +288,6 @@ One step of the trail. With an `href` it is a link; without, it is plain text. T
 | `target`  | `string \| undefined` |         | Where to open the link, such as `_blank`.                            |
 | `rel`     | `string \| undefined` |         | The link relationship.                                               |
 | `current` | `boolean`             | `false` | The page the trail ends on. Set by `pl-breadcrumb` on the last step. |
-| `_full`   | `string \| undefined` |         |                                                                      |
 
 **Slots**
 
@@ -379,7 +382,7 @@ import "purrlucent/button";
 
 ### `<pl-button>`
 
-A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link; set it again to rename the link. `focus()` focuses the inner link, and a `tabindex` set on the host, as a toolbar's arrow-key focus does, moves to it too. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns. A submit button also takes Enter in a native single-line `input` of its form, as a native submit button does, and submits the form it names with `form` from outside it. Its `name` and `value` are submitted only when it is the button that submitted, as a native submit button's are.
+A button. The label is the slotted text and is required for an accessible name; an `icon` button takes an `aria-label` instead. A destructive button never takes the filled primary look. With `type="submit"` or `type="reset"` it submits or resets the form it is in; the default `button` does neither. With an `href` it is a link that looks like a button: a real `a` in its shadow root takes the focus, so opening in a new tab, the context menu and copying the address work as on any link. The `click` reaches the host and can be cancelled with `preventDefault()` for client-side routing; otherwise the browser follows the link. A disabled link has no address and cannot be focused. An icon link's `aria-label` moves to the inner link; set it again to rename the link. `focus()` focuses the inner link, and a `tabindex` set on the host, as a toolbar's arrow-key focus does, moves to it too. In a dialog, `default` marks the button Return activates (not from a multi-line text field) and `cancel` the one Escape or Command-Period activates. The default button draws as primary unless it has another variant. A destructive button cannot be the default; the dialog warns. A submit button also takes Enter in a native single-line `input` of its form, as a native submit button does, and submits the form it names with `form` from outside it. Its `name` and `value` are submitted only when it is the button that submitted, as a native submit button's are. In a `submit` listener, `event.submitter` is a temporary native button. Its `name`, `value` and `form` are available during submission, and `event.submitter.closest("pl-button")` returns this component until submission finishes.
 
 | Attribute     | Type                              | Default       | Description                                                                                              |
 | ------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
@@ -401,6 +404,11 @@ A button. The label is the slotted text and is required for an accessible name; 
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
+
+**Methods**
+
+- `focus(options?: FocusOptions)`
+- `click()`
 
 **Slots**
 
@@ -455,7 +463,10 @@ A month calendar for choosing one day, as the WAI-ARIA date grid: the days are a
 | `name`           | `string`                  | `""`    | The name submitted with a form.                                                                                                                           |
 | `prev-label`     | `string`                  | `""`    | The previous month button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous month".                       |
 | `next-label`     | `string`                  | `""`    | The next month button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next month".                               |
-| `_focus`         | `string`                  | `""`    | The day that holds the tab stop, and with it the month on show. Empty until a day is chosen or focused.                                                   |
+
+**Methods**
+
+- `focusDay()` Moves focus to the day that holds the tab stop: the selected day, or today.
 
 **Parts**
 
@@ -521,8 +532,15 @@ A row of slides that scrolls with the browser's own scrolling and CSS scroll-sna
 | `next-label`     | `string` | `""`    | The accessible name of the Next button. Defaults to the page language's text (see `setMessages`), in English "Next slide".                                        |
 | `page-label`     | `string` | `""`    | The accessible name of a page's dot; `{page}` is its number. Defaults to the page language's text (see `setMessages`), in English "Go to slide {page}".           |
 | `slide-label`    | `string` | `""`    | The name of each slide; `{page}` is its number and `{total}` the count. Defaults to the page language's text (see `setMessages`), in English "{page} of {total}". |
-| `index`          | `number` | `0`     | The current page, from 0. Change it with `goTo`.                                                                                                                  |
-| `count`          | `number` | `0`     |                                                                                                                                                                   |
+
+**Properties**
+
+- `index: number` The current page, from 0. Change it with `goTo`.
+- `count: number` The number of carousel items.
+
+**Methods**
+
+- `goTo(index: number)` Scrolls to a page, instantly under reduced motion. Out of range is clamped.
 
 **Slots**
 
@@ -566,6 +584,12 @@ A chart that is named, themed and keyboard-operable by default, drawn by TanStac
 | `legend`       | `boolean`                | `false` | Lists the series, or a donut's slices, with their colors under the chart.                                                                |
 | `show-table`   | `boolean`                | `false` | Shows the table of values under the chart. It is always in the page for assistive technology.                                            |
 
+**Properties**
+
+- `data: ChartRow[]` The rows to draw. Assign a new array to redraw.
+- `definition: ChartDefinition` A TanStack chart definition, for charts the simple form cannot describe.
+- `format: (value: number) => string` Formats a value for the ticks, the tooltip and the table. Defaults to the locale's number format.
+
 **Parts**
 
 - `legend`: The list of series.
@@ -600,6 +624,10 @@ A checkbox: a choice that is on, off or mixed. The slotted text is its label and
 | `required`      | `boolean`              | `false` | The form is invalid while the box is unchecked.                     |
 | `disabled`      | `boolean`              | `false` | No focus, no feedback, nothing submitted.                           |
 | `readonly`      | `boolean`              | `false` | The state shows and submits but a press does not change it.         |
+
+**Properties**
+
+- `type: string` Always `checkbox`, as on a native checkbox, so form libraries read `checked`.
 
 **Slots**
 
@@ -655,7 +683,7 @@ import "purrlucent/combobox";
 
 ### `<pl-combobox>`
 
-A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `pl-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `pl-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis. With `manual-filter` the list is never narrowed or reordered here: the app listens to `pl-input` and replaces the options itself, as when it searches on a server. A `pl-option` with the `action` attribute is a row that fires `pl-action` instead of choosing a value; it is always listed, and the `action-label` attribute adds such a row ("Add" and the typed text) while text has been typed. While the app's lookup is running, `busy` keeps the "no results" row from showing. The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
+A text field with a list of suggestions. It follows the editable combobox pattern with list autocomplete: a native input inside does the editing and keeps focus, the `pl-option` children are the choices, and the list shows the ones whose label matches the typed text (starting with it first, then containing it). It takes part in forms like `pl-input`: it submits `name` with `value`, a form reset returns it to the option marked `selected`, and a disabled fieldset disables it. A `slot="label"` element is a visible label that names the field; without it, `label` becomes the accessible name, and without both a native `<label for>` names it. Leaving the field with text that matches no option restores the last chosen option's label, or keeps the text as the value when `allow-custom` is set. Empty text means no value. Return with the list closed presses the form's default button, as in a text field. Once the field has been left, a required field with no value shows the validation message below it. The list is as wide as the field: a long option wraps, and a long value ends in an ellipsis. With `manual-filter` the list is never narrowed or reordered here: the app listens to `pl-input` and replaces the options itself, as when it searches on a server. A `pl-option` with the `action` attribute is a row that fires `pl-action` instead of choosing a value; it is always listed, and the `action-label` attribute adds such a row ("Add" and the typed text) while text has been typed. While the app's lookup is running, `busy` keeps the "no results" row from showing. With `multiple`, the input searches independently of the choices. Choosing an option toggles it, and each choice has a remove button. Backspace in an empty input removes the last choice. The form submits one entry per choice under the same name, and reset restores the starting choices. The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
 
 | Attribute       | Type                   | Default | Description                                                                                                                                                                                  |
 | --------------- | ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -665,6 +693,7 @@ A text field with a list of suggestions. It follows the editable combobox patter
 | `label`         | `string`               | `""`    | The accessible name when there is no slotted label.                                                                                                                                          |
 | `placeholder`   | `string`               | `""`    | Hint shown while the field is empty.                                                                                                                                                         |
 | `required`      | `boolean`              | `false` | The form is invalid while there is no value.                                                                                                                                                 |
+| `multiple`      | `boolean`              | `false` | Allows more than one choice. Use the `values` property to read or set them.                                                                                                                  |
 | `disabled`      | `boolean`              | `false` | No focus, no list, nothing submitted.                                                                                                                                                        |
 | `size`          | `"md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `lg` or `xl`.                                                                                                                                                                |
 | `allow-custom`  | `boolean`              | `false` | Text that matches no option becomes the value.                                                                                                                                               |
@@ -674,8 +703,10 @@ A text field with a list of suggestions. It follows the editable combobox patter
 | `manual-filter` | `boolean`              | `false` | The app filters the options; the typed text does not narrow the list.                                                                                                                        |
 | `busy`          | `boolean`              | `false` | The app's lookup is running: the "no results" row is not shown, only the action row.                                                                                                         |
 | `action-label`  | `string \| null`       | `null`  | Shows an action row while text is typed. Its text defaults to the page language's text (see `setMessages`), in English "Add {query}"; `{query}` stands for the typed text.                   |
-| `_active`       | `PlOption \| null`     | `null`  |                                                                                                                                                                                              |
-| `_labelled`     | `boolean`              | `false` |                                                                                                                                                                                              |
+
+**Properties**
+
+- `values: readonly string[]` The choices in multiple mode, in selection order. Defaults to the options marked `selected`.
 
 **Slots**
 
@@ -691,15 +722,18 @@ A text field with a list of suggestions. It follows the editable combobox patter
 - `button`: The chevron button that toggles the list.
 - `listbox`: The popup.
 - `empty`: The "no results" row.
+- `selections`: The list of selected items in multiple mode.
+- `selection`: A selected item.
+- `remove`: A selected item's remove button.
 - `message`: The validation message below the field.
 
 **Events**
 
 - `name`:
 - `pl-input`: The text changed through typing, Escape, or leaving the field (the text was cleared or restored). `detail.text` holds it.
-- `pl-change`: The value changed. `detail.value` holds it.
+- `pl-change`: In single mode `detail.value` is the chosen value. In multiple mode it is the value added or removed, and `detail.values` holds all current choices.
 - `pl-action`: An action row was chosen. `detail.query` holds the typed text, empty when nothing was typed.
-- `input`: After each pl-input, as a native input fires it.
+- `input`: When the search text or multiple selection changes.
 - `change`: After each pl-change.
 
 ## Command
@@ -717,6 +751,10 @@ One command in a `pl-command`. Its text is the label, and the search matches aga
 | `value`    | `string`  | `""`    | What `pl-select` reports. Defaults to the label.          |
 | `disabled` | `boolean` | `false` | Skipped by the keyboard and cannot be activated.          |
 | `detail`   | `string`  | `""`    | Trailing text such as a shortcut. The `detail` slot wins. |
+
+**Properties**
+
+- `label: string` The item's own text, without its icon or detail.
 
 **Slots**
 
@@ -749,14 +787,13 @@ A labelled run of `pl-command-item` children. The group hides while the search l
 
 A command palette: a search field above a list of commands that is always showing. It follows the editable combobox pattern with list autocomplete: a native input does the editing and keeps focus, the `pl-command-item` children (loose or inside `pl-command-group`) are the options, and the active one is the input's active descendant. Typing hides the items whose label does not contain the text, case-insensitively, and groups left empty; the first item that remains becomes active, and a "No results" row shows when none does. Down and Up move the active item with wrap and skip disabled ones, Home and End jump to the first and last, Enter activates it, and Escape clears the text. Escape with no text is left to the page, so inside a `pl-dialog` it closes the dialog. Activating an item, with Enter or a click, fires `pl-select`. It does not close or reset anything itself. Put `autofocus` on it to focus the search field when a dialog opens.
 
-| Attribute     | Type                    | Default | Description                                                                                                                     |
-| ------------- | ----------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `label`       | `string`                | `""`    | The accessible name of the field and the list. Defaults to the page language's text (see `setMessages`), in English "Commands". |
-| `placeholder` | `string`                | `""`    | Hint shown while the field is empty. Defaults to the page language's text (see `setMessages`), in English "Search".             |
-| `query`       | `string`                | `""`    | The text in the search field.                                                                                                   |
-| `empty-label` | `string`                | `""`    | The text shown when no item matches. Defaults to the page language's text (see `setMessages`), in English "No results".         |
-| `clear-label` | `string`                | `""`    | The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".               |
-| `_active`     | `PlCommandItem \| null` | `null`  |                                                                                                                                 |
+| Attribute     | Type     | Default | Description                                                                                                                     |
+| ------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `label`       | `string` | `""`    | The accessible name of the field and the list. Defaults to the page language's text (see `setMessages`), in English "Commands". |
+| `placeholder` | `string` | `""`    | Hint shown while the field is empty. Defaults to the page language's text (see `setMessages`), in English "Search".             |
+| `query`       | `string` | `""`    | The text in the search field.                                                                                                   |
+| `empty-label` | `string` | `""`    | The text shown when no item matches. Defaults to the page language's text (see `setMessages`), in English "No results".         |
+| `clear-label` | `string` | `""`    | The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".               |
 
 **Slots**
 
@@ -840,7 +877,14 @@ A native table drawn from `columns` and `rows`, with sortable headings and optio
 | `row-menu`          | `boolean`             | `false`       | Gives each row a menu to pin it, in model mode.                                                                                                                                     |
 | `row-menu-label`    | `string`              | `""`          | Prefix of each row menu's accessible name, followed by the row's first cell. Defaults to the page language's text (see `setMessages`), in English "Row options".                    |
 | `cell-select`       | `boolean`             | `false`       | The cells take a roving focus and shift-click or shift-arrow selects a rectangle, in model mode.                                                                                    |
-| `focusCell`         | `string \| undefined` |               | The id of the cell that holds the roving tab stop.                                                                                                                                  |
+
+**Properties**
+
+- `columns: PlDataTableColumn[]` Column definitions when no model is supplied.
+- `rows: PlDataTableRow[]` Data rows when no model is supplied.
+- `selected: string[]` The keys of the selected rows.
+- `model: PlDataTableModel | undefined` A table to draw as it is; see the class description.
+- `renderCell: PlCellRenderer | undefined` Draws a cell's content in place of its text; see the class description.
 
 **Slots**
 
@@ -890,8 +934,12 @@ A field for one day. The text entry takes the day as the locale writes it (`11/2
 | `calendar-label`  | `string`                  | `""`    | The calendar button's and the popover's accessible name. Defaults to the page language's text (see `setMessages`), in English "Choose date".                                |
 | `invalid-message` | `string`                  | `""`    | The message for text that is not a day. Defaults to the page language's text (see `setMessages`), in English "Enter a valid date."                                          |
 | `range-message`   | `string`                  | `""`    | The message for a day outside `min` and `max` or one of the disabled days. Defaults to the page language's text (see `setMessages`), in English "Choose an available date." |
-| `_text`           | `string`                  | `""`    | What the entry shows. It follows `value`, except while the typed text is not a day.                                                                                         |
-| `_labelled`       | `boolean`                 | `false` |                                                                                                                                                                             |
+
+**Methods**
+
+- `checkValidity()`
+- `reportValidity()`
+- `setCustomValidity(message: string)`
 
 **Slots**
 
@@ -914,6 +962,21 @@ A field for one day. The text entry takes the day as the locale writes it (`11/2
 - `input`: After each edit, as a native input fires it.
 - `change`: After each pl-change, as a native input fires it.
 
+## Date range
+
+```ts
+import "purrlucent/date-range";
+```
+
+### `<pl-date-range>`
+
+Pairs two date pickers. When both fields are enabled and contain available dates, an editable end must be on or after the start. The end field shows the order error and blocks form submission. Each picker retains its own name, bounds, required state, reset value and labels. The calendar triggers default to distinct accessible names, which each picker can override with `calendar-label`.
+
+**Slots**
+
+- `start`: The `pl-date-picker` for the first day of the range.
+- `end`: The `pl-date-picker` for the last day of the range.
+
 ## Dialog
 
 ```ts
@@ -934,8 +997,15 @@ A modal dialog. A native `<dialog>` inside opened with `showModal()` gives the t
 | `closable`    | `boolean`            | `false`   | A sheet shows a close button in its header. It asks to close like Escape.                                                   |
 | `close-label` | `string`             | `""`      | The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Close".           |
 | `nonmodal`    | `boolean`            | `false`   | Opens without blocking the page: no scrim, inert page or scroll lock. Set it before opening.                                |
-| `_scrolls`    | `boolean`            | `false`   |                                                                                                                             |
-| `_actions`    | `number`             | `0`       |                                                                                                                             |
+
+**Properties**
+
+- `returnValue: string` The value returned when the dialog last closed.
+
+**Methods**
+
+- `show()` Opens the dialog modally, or without blocking the page with `nonmodal`.
+- `close(returnValue = "")` Closes the dialog. `returnValue` is reported by `pl-close`.
 
 **Slots**
 
@@ -986,7 +1056,15 @@ A modal panel anchored to an edge of the screen. A native `<dialog>` inside open
 | `expand-label` | `string`       | `""`       | The grabber's accessible name while it grows the sheet. Defaults to the page language's text (see `setMessages`), in English "Expand".                           |
 | `close-label`  | `string`       | `""`       | The grabber's accessible name while it closes the sheet. Defaults to the page language's text (see `setMessages`), in English "Close".                           |
 | `dismissible`  | `boolean`      | `false`    | Pressing the backdrop also asks to close.                                                                                                                        |
-| `_scrolls`     | `boolean`      | `false`    |                                                                                                                                                                  |
+
+**Properties**
+
+- `returnValue: string` The value returned when the drawer last closed.
+
+**Methods**
+
+- `show()` Opens the drawer modally.
+- `close(returnValue = "")` Closes the drawer. `returnValue` is reported by `pl-close`.
 
 **Slots**
 
@@ -1055,7 +1133,6 @@ Lays out and wires a label, a control, a description and an error message for a 
 | ------------- | -------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `orientation` | `"vertical" \| "horizontal" \| "responsive"` | `"vertical"` | `vertical` (default), `horizontal` or `responsive`. Horizontal puts the label beside the control, and before it for a checkbox or switch, which the field puts first. Responsive is horizontal when the field is at least 32rem wide. |
 | `invalid`     | `boolean`                                    | `false`      | Shows the `error` slot and marks the control invalid.                                                                                                                                                                                 |
-| `_hasError`   | `boolean`                                    | `false`      |                                                                                                                                                                                                                                       |
 
 **Slots**
 
@@ -1102,15 +1179,23 @@ import "purrlucent/file-input";
 
 A file picker. A button opens the system file dialog and the chosen names are listed beside it; files can also be dropped on the field. The slotted text is a visible label; without it, `label` becomes the group's accessible name. The `files` property holds the chosen files as an array and takes a `FileList` or an array. It takes part in forms like a native file input: it submits the files under `name`, a reset clears it, a disabled fieldset disables it, and `required` makes the form invalid while nothing is chosen. It carries its own label, description and message, and also works inside a `pl-field`: the host's `aria-invalid`, `aria-describedby` and `aria-errormessage` are forwarded to the button, and a `<label for>` pointing at it names the group. `aria-required` is not, since a button cannot be required in ARIA.
 
-| Attribute   | Type                  | Default | Description                                                                                                                           |
-| ----------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`     | `string \| undefined` |         | The accessible name when there is no slotted label.                                                                                   |
-| `name`      | `string`              | `""`    | The name the files are submitted under.                                                                                               |
-| `accept`    | `string \| undefined` |         | The kinds of file allowed: extensions such as `.pdf`, types such as `image/png`, or wildcards such as `image/*`, separated by commas. |
-| `multiple`  | `boolean`             | `false` | More than one file can be chosen.                                                                                                     |
-| `required`  | `boolean`             | `false` | The form is invalid while no file is chosen.                                                                                          |
-| `disabled`  | `boolean`             | `false` | No focus, no dropping, nothing submitted.                                                                                             |
-| `_labelled` | `boolean`             | `false` |                                                                                                                                       |
+| Attribute  | Type                  | Default | Description                                                                                                                           |
+| ---------- | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`    | `string \| undefined` |         | The accessible name when there is no slotted label.                                                                                   |
+| `name`     | `string`              | `""`    | The name the files are submitted under.                                                                                               |
+| `accept`   | `string \| undefined` |         | The kinds of file allowed: extensions such as `.pdf`, types such as `image/png`, or wildcards such as `image/*`, separated by commas. |
+| `multiple` | `boolean`             | `false` | More than one file can be chosen.                                                                                                     |
+| `required` | `boolean`             | `false` | The form is invalid while no file is chosen.                                                                                          |
+| `disabled` | `boolean`             | `false` | No focus, no dropping, nothing submitted.                                                                                             |
+
+**Properties**
+
+- `files: File[]` The chosen files.
+
+**Methods**
+
+- `checkValidity()`
+- `reportValidity()`
 
 **Slots**
 
@@ -1146,6 +1231,11 @@ Supplementary content that previews what its trigger points at: a floating card 
 | `label`     | `string`                                | `""`       | The card's accessible name. Optional.                                                                                                             |
 | `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | Where the card opens: `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                            |
 | `open`      | `boolean`                               | `false`    | The card is showing. Opening it closes any other open hover card in the same document or shadow root, except one that holds it or sits inside it. |
+
+**Methods**
+
+- `show()`
+- `hide()`
 
 **Slots**
 
@@ -1196,7 +1286,12 @@ A single-line text field. A native input inside does the editing, so typing, sel
 | `autocomplete` | `string \| undefined`          |          | The autofill hint.                                                                                                                                   |
 | `inputmode`    | `string \| undefined`          |          | The virtual keyboard hint.                                                                                                                           |
 | `clear-label`  | `string`                       | `""`     | The clear button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Clear".                                    |
-| `_labelled`    | `boolean`                      | `false`  |                                                                                                                                                      |
+
+**Methods**
+
+- `checkValidity()`
+- `reportValidity()`
+- `setCustomValidity(message: string)`
 
 **Slots**
 
@@ -1262,10 +1357,12 @@ A one-time code field. One native input does the editing, so typing, paste, the 
 | `disabled`           | `boolean`              | `false`     | No focus, nothing submitted.                                                                                                                       |
 | `pattern`            | `string \| undefined`  |             | A regular expression the whole value must match.                                                                                                   |
 | `incomplete-message` | `string \| undefined`  |             | The message shown for a code shorter than `length`. Defaults to the page language's text (see `setMessages`), in English "Enter all N characters." |
-| `_labelled`          | `boolean`              | `false`     |                                                                                                                                                    |
-| `_focused`           | `boolean`              | `false`     |                                                                                                                                                    |
-| `_start`             | `number`               | `0`         |                                                                                                                                                    |
-| `_end`               | `number`               | `0`         |                                                                                                                                                    |
+
+**Methods**
+
+- `checkValidity()`
+- `reportValidity()`
+- `setCustomValidity(message: string)`
 
 **Slots**
 
@@ -1374,21 +1471,27 @@ import "purrlucent/menu";
 
 One command in a `pl-menu`. Its text is the label. With `type` it becomes a checkbox or radio item; radio items in a run (no separator, label or other kind of item between them) are a group. A nested `pl-menu` in the `submenu` slot makes it open a submenu. With `href` it is a link: a real anchor covers the row, so middle-click, open in a new tab and copy link work. Choosing an item dispatches a `click` event on the item itself, then the menu fires `pl-select`.
 
-| Attribute            | Type                          | Default | Description                                                                          |
-| -------------------- | ----------------------------- | ------- | ------------------------------------------------------------------------------------ |
-| `value`              | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.                                     |
-| `type`               | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.                                    |
-| `checked`            | `boolean`                     | `false` | Checked, for a checkbox or radio item.                                               |
-| `disabled`           | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.                                     |
-| `destructive`        | `boolean`                     | `false` | The command deletes or discards something.                                           |
-| `detail`             | `string`                      | `""`    | Trailing text such as a shortcut. The `detail` slot wins.                            |
-| `description`        | `string`                      | `""`    | A second, muted line under the label. The `description` slot wins.                   |
-| `href`               | `string`                      | `""`    | Makes the item a link to this URL. Choosing it closes the menu and follows the link. |
-| `target`             | `string`                      | `""`    | Where the link opens, such as `_blank`.                                              |
-| `rel`                | `string`                      | `""`    | The link's relationship, such as `noopener`.                                         |
-| `indent`             | `boolean`                     | `false` | Reserves the check column. The menu sets it.                                         |
-| `hasSubmenu`         | `boolean`                     | `false` |                                                                                      |
-| `hasDescriptionSlot` | `boolean`                     | `false` |                                                                                      |
+| Attribute     | Type                          | Default | Description                                                                          |
+| ------------- | ----------------------------- | ------- | ------------------------------------------------------------------------------------ |
+| `value`       | `string`                      | `""`    | What `pl-select` reports. Defaults to the label.                                     |
+| `type`        | `"" \| "checkbox" \| "radio"` | `""`    | `checkbox` or `radio`. Empty for a plain command.                                    |
+| `checked`     | `boolean`                     | `false` | Checked, for a checkbox or radio item.                                               |
+| `disabled`    | `boolean`                     | `false` | Skipped by the keyboard and cannot be activated.                                     |
+| `destructive` | `boolean`                     | `false` | The command deletes or discards something.                                           |
+| `detail`      | `string`                      | `""`    | Trailing text such as a shortcut. The `detail` slot wins.                            |
+| `description` | `string`                      | `""`    | A second, muted line under the label. The `description` slot wins.                   |
+| `href`        | `string`                      | `""`    | Makes the item a link to this URL. Choosing it closes the menu and follows the link. |
+| `target`      | `string`                      | `""`    | Where the link opens, such as `_blank`.                                              |
+| `rel`         | `string`                      | `""`    | The link's relationship, such as `noopener`.                                         |
+| `indent`      | `boolean`                     | `false` | Reserves the check column. The menu sets it.                                         |
+
+**Properties**
+
+- `label: string` The item's own text, without its detail or submenu.
+
+**Methods**
+
+- `click()` Activates the item. A link item clicks its anchor, so the browser follows the link.
 
 **Slots**
 
@@ -1425,7 +1528,12 @@ A menu: a list of commands that opens from a trigger (the menu button pattern), 
 | `label`     | `string`        | `""`             | The accessible name of the menu.                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `open`      | `boolean`       | `false`          | The menu is showing.                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `placement` | `MenuPlacement` | `"bottom-start"` | Where the menu opens from its trigger: `bottom-start` (default), `bottom-end`, `top-start`, `top-end`, `start` or `end` (beside the trigger, centred), or `start-start`, `start-end`, `end-start` or `end-end` (beside the trigger, with the menu's top, for `-start`, or bottom, for `-end`, level with the trigger's). Start and end follow the text direction. It flips when the side has no room. From a `pl-sidebar-item`, a side placement opens past the sidebar's edge. |
-| `hasHeader` | `boolean`       | `false`          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+
+**Methods**
+
+- `showAt(x: number, y: number)` Opens the menu with its corner at viewport point (x, y), for a context menu.
+- `show()` Opens the menu at its trigger with the first item focused, as a keyboard open does.
+- `hide()`
 
 **Slots**
 
@@ -1537,6 +1645,12 @@ A scrolling transcript for a chat. The element is the scroll viewport (a named, 
 | `peek`                    | `number \| null`              | `null`    | Pixels of the previous row left visible above an anchor. Defaults to the 16-spacing-unit token.                                                                                         |
 | `button-label`            | `string`                      | `""`      | The accessible name of the built-in scroll-to-end button. Defaults to the page language's text (see `setMessages`), in English "Scroll to latest".                                      |
 
+**Methods**
+
+- `scrollToMessage(id: string, { align = "start", behavior = "smooth", }: PlMessageScrollerMessageOptions = {}): boolean` Scrolls the message with this `message-id` into view and stops following new content until the reader reaches the end again. Returns `false` when no message has that id.
+- `scrollToEnd({ behavior = "smooth", }: PlMessageScrollerScrollOptions = {}): boolean` Scrolls to the end and follows new content again when `auto-scroll` is on. Returns `false` when the content is already at its end.
+- `scrollToStart({ behavior = "smooth", }: PlMessageScrollerScrollOptions = {}): boolean` Scrolls to the start. Returns `false` when the content is already at its start.
+
 **Slots**
 
 - default: The rows: `pl-message-scroller-item` or any element.
@@ -1583,10 +1697,14 @@ Chooses a range of whole months, one year at a time. The months of the year on s
 | `prev-label`  | `string`              | `""`    | The previous year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Previous year".                                     |
 | `next-label`  | `string`              | `""`    | The next year button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Next year".                                             |
 | `clear-label` | `string`              | `""`    | The Clear button's text. Defaults to the page language's text (see `setMessages`), in English "Clear".                                                                |
-| `_focus`      | `number`              | `-1`    | The month index that holds the tab stop, and with it the year on show; -1 until one is chosen or focused.                                                             |
-| `_anchor`     | `number`              | `-1`    | The first month of a range still being chosen, or -1.                                                                                                                 |
-| `_preview`    | `number`              | `-1`    | The month the pointer or focus is on while a range is being chosen, which would end it; -1 for none.                                                                  |
-| `_labelled`   | `boolean`             | `false` |                                                                                                                                                                       |
+
+**Properties**
+
+- `presets: Array<{ label: string; start: string; end: string }>` Ready-made ranges shown as buttons beside the months (under them when narrow). `start` and `end` are `yyyy-mm`. Choosing one sets the range, fires the same events as choosing it by hand and closes the popover. A preset outside `min` and `max` is disabled. Empty by default, which shows no list. Property only.
+
+**Methods**
+
+- `focusMonth()` Moves focus to the month that holds the tab stop.
 
 **Slots**
 
@@ -1631,6 +1749,11 @@ One entry of a `pl-navigation-menu`. With an `href` it is a link. With children 
 | `href`    | `string \| undefined` |         | The destination of a link item. Ignored when the item has a panel.                                                                                                 |
 | `current` | `boolean`             | `false` | This item is, or holds, the current page: `aria-current="page"` on a link, `"true"` on a disclosure button. Mark a panel link yourself with `aria-current="page"`. |
 | `open`    | `boolean`             | `false` | The panel is showing. Opening it closes the other panels in the same menu.                                                                                         |
+
+**Methods**
+
+- `show()`
+- `hide()`
 
 **Slots**
 
@@ -1689,7 +1812,12 @@ A numeric field with up and down stepper buttons, following the WAI-ARIA spinbut
 | `disabled`       | `boolean`               | `false`    | No focus, nothing submitted.                                                                                        |
 | `increase-label` | `string`                | `""`       | The up button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Increase".   |
 | `decrease-label` | `string`                | `""`       | The down button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Decrease". |
-| `_labelled`      | `boolean`               | `false`    |                                                                                                                     |
+
+**Methods**
+
+- `checkValidity()`
+- `reportValidity()`
+- `setCustomValidity(message: string)`
 
 **Slots**
 
@@ -1765,6 +1893,11 @@ A non-modal floating panel anchored to a trigger. The trigger is any focusable c
 | `align`     | `Align`                                 | `"center"` | How the panel lines up with the trigger on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the trigger. |
 | `open`      | `boolean`                               | `false`    | The panel is showing. Opening it closes any other open popover in the same document or shadow root, except one that holds it or sits inside it.                                                        |
 
+**Methods**
+
+- `show()`
+- `hide()`
+
 **Slots**
 
 - default: The panel's content.
@@ -1825,6 +1958,12 @@ The chat composer: a text field that grows from one line to about eight, then sc
 | `busy`        | `boolean`             | `false` | A reply is streaming: the send button becomes Stop.                        |
 | `send-label`  | `string \| undefined` |         | The send button's accessible name. Defaults to the page language's "Send". |
 | `stop-label`  | `string \| undefined` |         | The stop button's accessible name. Defaults to the page language's "Stop". |
+
+**Methods**
+
+- `focus(options?: FocusOptions)`
+- `checkValidity()`
+- `reportValidity()`
 
 **Slots**
 
@@ -1906,6 +2045,10 @@ The divider between two panels of a `pl-resizable` group, following the WAI-ARIA
 | `disabled`    | `boolean`                    | `false`        | The divider cannot be moved, collapses nothing and takes no focus.                                  |
 | `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |                                                                                                     |
 
+**Properties**
+
+- `dragging` Set by the group while the divider is being dragged.
+
 ### `<pl-resizable-panel>`
 
 One pane of a `pl-resizable` group. Sizes are percentages of the group.
@@ -1929,6 +2072,10 @@ Panels that people resize by dragging the dividers between them: a split view. P
 | Attribute     | Type                         | Default        | Description                                                                  |
 | ------------- | ---------------------------- | -------------- | ---------------------------------------------------------------------------- |
 | `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | `horizontal` (default) puts the panels side by side, `vertical` stacks them. |
+
+**Properties**
+
+- `sizes: number[]` Every panel's size in percent, in order, 0 for a collapsed panel. Setting it lays the panels out again.
 
 **Slots**
 
@@ -1977,7 +2124,6 @@ One choice in a `pl-select`. Its text is the label. The select marks the chosen 
 | `selected` | `boolean` | `false` | The select's starting choice.                                                                     |
 | `disabled` | `boolean` | `false` | Cannot be chosen.                                                                                 |
 | `action`   | `boolean` | `false` | In a `pl-combobox`, a row that fires `pl-action` with the typed text instead of choosing a value. |
-| `chosen`   | `boolean` | `false` |                                                                                                   |
 
 **Slots**
 
@@ -2001,7 +2147,6 @@ A pop-up button: shows the chosen option and opens a list to choose another. It 
 | `disabled`    | `boolean`                      | `false` | No focus, no list, nothing submitted.                                             |
 | `size`        | `"sm" \| "md" \| "lg" \| "xl"` | `"md"`  | `md` (default), `sm` for dense rows (the height of a small button), `lg` or `xl`. |
 | `open`        | `boolean`                      | `false` | The list is showing.                                                              |
-| `_labelled`   | `boolean`                      | `false` |                                                                                   |
 
 **Slots**
 
@@ -2059,7 +2204,6 @@ One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set by 
 | `expanded`     | `boolean`                   | `false` |                                                                                                                                                                                                                                                                                                                                                                                    |
 | `reorderable`  | `boolean`                   | `false` | Set by the sidebar when it is `reorderable` and this is a level 1 item.                                                                                                                                                                                                                                                                                                            |
 | `chevron`      | `"end" \| "start"`          | `"end"` | Set by the sidebar: `end` or `start`, where the disclosure chevron sits.                                                                                                                                                                                                                                                                                                           |
-| `_full`        | `string \| undefined`       |         | The full text of a label or description that is cut off, shown as the control's title.                                                                                                                                                                                                                                                                                             |
 
 **Slots**
 
@@ -2073,13 +2217,13 @@ One entry of a `pl-sidebar`. It renders a link, or, when `expandable` is set by 
 - `control`: The link or disclosure button.
 - `disclosure`: The disclosure button beside a link.
 - `chevron`: The disclosure arrow.
-- `handle`: The grip a level 1 item shows while the sidebar is `reorderable`. Drag it with a pointer; the keyboard uses Alt with the Up and Down arrows on the item.
+- `handle`: The grip a level 1 item shows while the sidebar is `reorderable`. Drag it or press it for the move commands. Alt with the Up and Down arrows moves the item from the keyboard.
 
 **Events**
 
 - `pl-toggle`: A disclosure button opened or closed. `detail.expanded` holds the new state.
 - `pl-navigate`: A plain left click, or Enter, activated the link, before the browser navigates. `detail.href` holds the address. Cancelable: `preventDefault()` stops the navigation, so a router can take over.
-- `pl-reorder`: A drag or Alt with an arrow key asked to move this level 1 item. `from` and `to` are its place among the level 1 items of its section or sidebar. The item does not move itself: the app moves it.
+- `pl-reorder`: A move command, drag or Alt with an arrow key asked to move this level 1 item. `from` and `to` are its place among the level 1 items of its section or sidebar. The app moves the item.
 
 ### `<pl-sidebar-section>`
 
@@ -2106,13 +2250,18 @@ A navigation sidebar: a `nav` landmark holding `pl-sidebar-item` children, loose
 | `collapsed`      | `boolean`          | `false` | The sidebar is hidden, leaving only its toggle, or nothing with `no-toggle`. Set it to control the sidebar; changing it from outside fires no `pl-collapse`.                                                                                                             |
 | `collapse-below` | `number`           |         | The width in px at and below which the sidebar collapses on its own; 0 turns it off.                                                                                                                                                                                     |
 | `no-toggle`      | `boolean`          | `false` | Hides the built-in toggle button; a collapsed sidebar then takes no space at all. Open and close the sidebar with `toggle()`, `show()`, `hide()`, `collapsed` or `shortcut`.                                                                                             |
-| `reorderable`    | `boolean`          | `false` | Level 1 items show a grip, on hover and keyboard focus or always on a touch screen, and can be moved with a pointer drag or Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.                                            |
+| `reorderable`    | `boolean`          | `false` | Level 1 items show a grip on hover and keyboard focus, or always on a touch screen. Press it for move commands, drag it, or use Alt with the Up and Down arrows. The sidebar fires `pl-reorder` on the item and the app moves it.                                        |
 | `chevron`        | `"end" \| "start"` | `"end"` | `end` (default) or `start`, where a group's disclosure chevron sits.                                                                                                                                                                                                     |
 | `shortcut`       | `string`           | `""`    | A key combination that toggles the sidebar from anywhere in the page, such as `mod+b`. `mod` is Command on Apple platforms and Control elsewhere; `alt`, `shift` and `ctrl` are also known. A key press needs `mod`, `ctrl` or `alt` to count, so typing is never taken. |
 | `toggle-label`   | `string`           | `""`    | The toggle button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Sidebar", which becomes "<label> sidebar" when `label` is set.                                                                                                |
 | `label`          | `string`           | `""`    | Accessible name of the navigation landmark.                                                                                                                                                                                                                              |
 | `size`           | `"md" \| "lg"`     | `"md"`  | `md` (default) or `lg`, the larger rows.                                                                                                                                                                                                                                 |
-| `_narrow`        | `boolean`          | `false` |                                                                                                                                                                                                                                                                          |
+
+**Methods**
+
+- `toggle()` Hides the sidebar when it is shown, and shows it when it is hidden. Fires `pl-collapse`.
+- `show()` Shows the sidebar. Fires `pl-collapse` when it was hidden.
+- `hide()` Hides the sidebar. Fires `pl-collapse` when it was shown.
 
 **Slots**
 
@@ -2225,6 +2374,10 @@ A switch: an on/off setting that takes effect at once. The slotted text is its l
 | `required` | `boolean`              | `false` | The form is invalid while the switch is off.                      |
 | `disabled` | `boolean`              | `false` | No focus, no feedback, nothing submitted.                         |
 
+**Properties**
+
+- `type: string` Always `checkbox`, as on a native switch, so form libraries read `checked`.
+
 **Slots**
 
 - default: The label.
@@ -2257,8 +2410,6 @@ Styles a native table. Slot one `<table>` (with `<caption>`, `<thead>`, `<tbody>
 | `striped`       | `boolean`                             | `false` | Even body rows get a faint alternate fill; hover and selection override it.  |
 | `density`       | `"regular" \| "compact" \| undefined` |         | Row height and cell padding. Unset, it follows the page's `data-pl-density`. |
 | `sticky-header` | `boolean`                             | `false` | The header cells stay at the top while the rows scroll.                      |
-| `_scrollable`   | `boolean`                             | `false` |                                                                              |
-| `_caption`      | `string`                              | `""`    |                                                                              |
 
 **Slots**
 
@@ -2361,7 +2512,12 @@ A multi-line text field. A native textarea inside does the editing, so typing, s
 | `disabled`    | `boolean`              | `false`      | No focus, nothing submitted.                                                     |
 | `minlength`   | `string \| undefined`  |              | Shortest valid value.                                                            |
 | `maxlength`   | `string \| undefined`  |              | Longest allowed value.                                                           |
-| `_labelled`   | `boolean`              | `false`      |                                                                                  |
+
+**Methods**
+
+- `checkValidity()`
+- `reportValidity()`
+- `setCustomValidity(message: string)`
 
 **Slots**
 
@@ -2398,6 +2554,10 @@ A non-blocking status message: a title, an optional description, an optional act
 | `duration`    | `number`         | `6000`      | Milliseconds before it dismisses itself. Defaults to 6000. 0 keeps it. Ignored when there is an action.             |
 | `close-label` | `string`         | `""`        | The close button's accessible name. Defaults to the page language's text (see `setMessages`), in English "Dismiss". |
 
+**Methods**
+
+- `close(reason: PlToastCloseReason = "close")` Closes the toast and fires `pl-close` with the reason.
+
 **Slots**
 
 - `title`: The heading.
@@ -2416,6 +2576,11 @@ A non-blocking status message: a title, an optional description, an optional act
 ### `<pl-toaster>`
 
 The region toasts appear in: a stack at the inline-end bottom edge of the viewport (the left under right-to-left), in the top layer, newest last. Place one per page, early, and leave it in the document: a live region announces what is added to it, so it must exist before the first toast. It is a polite `status` that announces each addition on its own. Show a toast from script. `toaster.show()` adds one to that toaster; `PlToaster.show()` uses the page's first `pl-toaster`, and makes one when there is none (that first toast then waits a moment so it is announced). Both return the `pl-toast`, which is removed when it closes. `js PlToaster.show({ title: "Message deleted", description: "It is gone from every device.", action: { label: "Undo", onClick: () => restore() }, }); PlToaster.show({ title: "Not saved", variant: "destructive" }); ` Both take an `id`: a toast shown with the id of one that is still there replaces it where it stands, which keeps one toast for one ongoing thing. A string description keeps its line breaks; a node, such as a collapsed `details` element, is shown as it is. A long description scrolls. Or write `pl-toast` elements inside it.
+
+**Methods**
+
+- `show(options: PlToastOptions): PlToast` Adds a toast to this toaster and returns it. A toast with the `id` of one already here takes its place.
+- `PlToaster.show(options: PlToastOptions): PlToast` Adds a toast to the page's first toaster, making one when there is none.
 
 **Slots**
 
@@ -2456,6 +2621,11 @@ A button that holds an on or off state, announced as `aria-pressed`. It is a `pl
 | `icon`        | `boolean`                         | `false`       |                                                                                                          |
 | `destructive` | `boolean`                         | `false`       |                                                                                                          |
 | `disabled`    | `boolean`                         | `false`       |                                                                                                          |
+
+**Methods**
+
+- `focus(options?: FocusOptions)`
+- `click()`
 
 **Slots**
 
@@ -2536,10 +2706,6 @@ Free space between items. Items before it stay at the leading edge and items aft
 
 The title of the window or document a toolbar belongs to, with an optional subtitle. It is text, not a control, and not a tab stop. A long title shrinks to at most half the bar and ends in an ellipsis; its full text is still the accessible name.
 
-| Attribute    | Type      | Default | Description |
-| ------------ | --------- | ------- | ----------- |
-| `_subtitled` | `boolean` | `false` |             |
-
 **Slots**
 
 - default: The title.
@@ -2587,7 +2753,6 @@ Shows `text` in a small bubble beside its content (the target): after a delay on
 | `text`      | `string`                                | `""`       | What the bubble says. Required unless the `content` slot is used.                                                                                                                                     |
 | `placement` | `"top" \| "bottom" \| "start" \| "end"` | `"bottom"` | `bottom` (default), `top`, `start` or `end`. It flips when the side has no room.                                                                                                                      |
 | `align`     | `Align`                                 | `"center"` | How the bubble lines up with the target on a `top` or `bottom` placement: `center` (default), `start` or `end` edge. `start` and `end` follow the text direction. It has no effect beside the target. |
-| `shown`     | `boolean`                               | `false`    |                                                                                                                                                                                                       |
 
 **Slots**
 

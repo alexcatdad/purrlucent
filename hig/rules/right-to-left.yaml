@@ -1,8 +1,9 @@
 - id: right-to-left/1
   source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
-  rule: Text alignment and layout follow the interface direction, using logical start and end properties.
+  rule: Prose table headings and the first column follow the logical start edge in right-to-left text.
   check: automated
-  layer: components
+  test: src/typography/typography.e2e.ts > text aligns to the start edge under right-to-left
+  layer: surfaces
 - id: right-to-left/2
   source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
   rule: A paragraph aligns to its own language, and every item in one list aligns the same way.
@@ -17,6 +18,7 @@
   source: https://developer.apple.com/design/human-interface-guidelines/right-to-left
   rule: Progress and sequence controls such as sliders and back buttons mirror.
   check: automated
+  pending: Progress indicators and sliders have tests. The exported Back glyph leaves mirroring to its caller.
   layer: components
 - id: right-to-left/5
   source: https://developer.apple.com/design/human-interface-guidelines/right-to-left

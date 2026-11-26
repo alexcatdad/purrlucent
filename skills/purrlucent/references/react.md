@@ -4,9 +4,10 @@ purrlucent's elements are standard custom elements, which React 19 supports dire
 
 ## Set up
 
-Install the package as the [install guide](./install.md) describes. Then, in your entry file (for example `src/main.tsx` in a Vite app), load the tokens and the components you use. Each import defines its elements once:
+Install the package as the [install guide](./install.md) describes. In a TypeScript app entry such as `src/main.tsx`, load the JSX types, tokens and components you use. The component imports register the elements in the browser.
 
 ```ts
+import type {} from "purrlucent/react";
 import "purrlucent/tokens.css";
 import "purrlucent/button";
 import "purrlucent/select";
@@ -16,7 +17,7 @@ Add the page background, text color and font from the install guide to your glob
 
 ## Types
 
-`purrlucent/react` adds every `pl-*` element to React's JSX types, with its props and its events. Load it once, for example in `src/vite-env.d.ts`:
+`purrlucent/react` adds every `pl-*` element to React's JSX types, with its props and its events. If your project keeps ambient types in `src/vite-env.d.ts`, you can move the type-only import there.
 
 ```ts
 import type {} from "purrlucent/react";
@@ -227,4 +228,21 @@ select.shadowRoot!.querySelector('[part="listbox"]');
 
 ## Server rendering
 
-The elements render in the browser only. A client-rendered app, such as a Vite single-page app, needs nothing more. With server rendering, render them on the client only.
+In a server-rendered app, load the component module on the client. This example renders a native submit button on the server and on the first client render. Once the browser registers the custom element, React replaces the button.
+
+```tsx
+import { useEffect, useState } from "react";
+import type {} from "purrlucent/react";
+
+export function SaveButton() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    void import("purrlucent/button").then(() => setReady(true));
+  }, []);
+  return ready ? (
+    <pl-button type="submit">Save</pl-button>
+  ) : (
+    <button type="submit">Save</button>
+  );
+}
+```

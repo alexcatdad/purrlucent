@@ -146,6 +146,7 @@ export class PlDialog extends LitElement {
     this.addEventListener("keydown", this.#onKeydown);
   }
 
+  /** The value returned when the dialog last closed. */
   get returnValue(): string {
     return this.#returnValue;
   }

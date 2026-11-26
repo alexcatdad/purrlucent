@@ -126,6 +126,61 @@ export const comboboxStyles = css`
     color: var(--pl-color-muted-foreground);
   }
 
+  [part="selections"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [part="selection"] {
+    display: flex;
+    align-items: center;
+    max-inline-size: 100%;
+    border-radius: var(--pl-radius-control);
+    padding-inline-start: var(--pl-space-2);
+    background: var(--pl-color-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  [part="remove"] {
+    display: grid;
+    flex: none;
+    place-items: center;
+    min-inline-size: var(--pl-size-hit-min);
+    min-block-size: var(--pl-size-hit-min);
+    border: 0;
+    border-radius: var(--pl-radius-control);
+    padding: 0;
+    background: none;
+    color: inherit;
+    cursor: var(--pl-cursor-interactive);
+  }
+
+  [part="remove"]:focus-visible {
+    outline: var(--pl-ring-width) solid var(--pl-color-ring);
+    outline-offset: calc(var(--pl-ring-width) * -1);
+  }
+
+  [part="remove"] svg {
+    inline-size: var(--pl-icon-sm);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  :host(:disabled) [part="selection"] {
+    background: var(--pl-color-secondary-disabled);
+    color: var(--pl-color-disabled-foreground);
+  }
+
+  [part="remove"]:disabled {
+    cursor: var(--pl-cursor-disabled);
+  }
+
   @media (forced-colors: active) {
     [part="button"] {
       color: ButtonText;

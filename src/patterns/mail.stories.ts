@@ -2,6 +2,7 @@ import { patternPanel } from "../../.storybook/backdrop.css.ts";
 import { LensController } from "../behaviors/lens.ts";
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { LitElement, css, html, type PropertyValues } from "lit";
+import { expect } from "storybook/test";
 import { plaintextRtl } from "../../.storybook/isolate.ts";
 import { repeat } from "lit/directives/repeat.js";
 import "../components/badge/badge.ts";
@@ -430,9 +431,6 @@ class MailDemo extends LitElement {
         </pl-empty>
       </div>`;
     return html`<article class="reading" aria-label="Message">
-      <pl-button class="back" variant="ghost" @click=${() => this.#back()}
-        >Back to list</pl-button
-      >
       <h2 tabindex="-1">${m.subject}</h2>
       <p class="meta">${m.from}, ${m.time}</p>
       <div class="actions">
@@ -448,16 +446,27 @@ class MailDemo extends LitElement {
     const unread = this.messages.filter(
       (m) => m.folder === "inbox" && m.unread,
     ).length;
+    const compose = html`<pl-button
+      variant="primary"
+      size="lg"
+      @click=${() => this.#compose()}
+      >Compose</pl-button
+    >`;
     return html`<div class="shell">
+        <div class="mobile-actions">
+          ${
+            this.opened
+              ? html`<pl-button variant="ghost" @click=${() => this.#back()}
+                  >Back to list</pl-button
+                >`
+              : ""
+          }
+          ${compose}
+        </div>
         <pl-resizable class=${this.opened ? "opened" : ""}>
           <pl-resizable-panel class="folders-pane" size="20" min="16" max="30">
             <div class="folders">
-              <pl-button
-                variant="primary"
-                size="lg"
-                @click=${() => this.#compose()}
-                >Compose</pl-button
-              >
+              ${compose}
               <pl-sidebar
                 label="Folders"
                 @pl-change=${(event: Event) => {
@@ -616,15 +625,17 @@ class MailDemo extends LitElement {
     }
 
     .shell {
+      display: flex;
+      flex-direction: column;
       container-type: inline-size;
       block-size: 100%;
     }
 
     pl-resizable {
-      block-size: 100%;
+      flex: 1;
     }
 
-    .back {
+    .mobile-actions {
       display: none;
     }
 
@@ -640,8 +651,17 @@ class MailDemo extends LitElement {
         flex: 1 1 0% !important;
       }
 
-      .back {
-        display: inline-flex;
+      .mobile-actions {
+        display: flex;
+        flex: none;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--pl-gap-controls);
+        padding: var(--pl-space-3);
+      }
+
+      .mobile-actions > pl-button:last-child {
+        margin-inline-start: auto;
       }
     }
 
@@ -757,7 +777,7 @@ export const Default: Story = {
   render: () => page(html`<mail-demo selected="m2"></mail-demo>`),
 };
 
-/** On a narrow screen one pane shows at a time: the list, then the opened message with a Back button. */
+/** On a narrow screen the list and the opened message share a Compose action. */
 export const Narrow: Story = {
   render: () =>
     page(
@@ -765,6 +785,25 @@ export const Narrow: Story = {
         <mail-demo></mail-demo>
       </div>`,
     ),
+};
+
+export const NarrowCompose: Story = {
+  ...Narrow,
+  play: async ({ canvasElement, userEvent }) => {
+    const mail = canvasElement.querySelector<MailDemo>("mail-demo")!;
+    await mail.updateComplete;
+    const root = mail.shadowRoot!;
+    const message = root.querySelector('pl-item[data-id="m1"]')!;
+    await userEvent.click(message.shadowRoot!.querySelector("a")!);
+    await expect(root.querySelector(".reading h2")).toBeVisible();
+
+    const compose = root.querySelector('.mobile-actions [variant="primary"]')!;
+    await expect(compose).toBeVisible();
+    await userEvent.click(compose);
+    const drawer = root.querySelector("pl-drawer")!;
+    await drawer.updateComplete;
+    await expect(drawer.shadowRoot!.querySelector("dialog")).toBeVisible();
+  },
 };
 
 export const Rtl: Story = {

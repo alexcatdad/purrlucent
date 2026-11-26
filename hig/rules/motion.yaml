@@ -5,9 +5,10 @@
   layer: components
 - id: motion/2
   source: https://developer.apple.com/design/human-interface-guidelines/motion
-  rule: Motion is optional, so it is never the only way to convey information, and reduced motion removes or softens it.
+  rule: Indeterminate progress remains visible when its animation stops for reduced motion.
   check: automated
-  layer: behaviors
+  test: src/components/progress/progress.e2e.ts > the indeterminate segment stays visible without motion
+  layer: components
 - id: motion/3
   source: https://developer.apple.com/design/human-interface-guidelines/motion
   rule: Feedback motion follows the user's input and behaves believably.
@@ -16,7 +17,7 @@
 - id: motion/4
   source: https://developer.apple.com/design/human-interface-guidelines/motion
   rule: Feedback animations are short and precise.
-  check: automated
+  check: rubric
   layer: tokens
 - id: motion/5
   source: https://developer.apple.com/design/human-interface-guidelines/motion

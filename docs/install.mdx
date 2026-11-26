@@ -3,4 +3,11 @@ import install from "./install.md?raw";
 
 <Meta title="Install" />
 
-<Markdown>{install}</Markdown>
+<Markdown options={{ overrides: { a: { props: { target: "_top" } } } }}>
+  {install
+    .replace("(./components.md)", "(./?path=/docs/components-reference--docs)")
+    .replace(
+      "(./react.md#set-up)",
+      "(https://github.com/alexcatdad/purrlucent/blob/main/docs/react.md#set-up)",
+    )}
+</Markdown>

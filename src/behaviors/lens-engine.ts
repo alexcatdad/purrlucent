@@ -79,6 +79,16 @@ export function displacementMap(
 
 const NS = "http://www.w3.org/2000/svg";
 
+function svgElement<K extends keyof SVGElementTagNameMap>(
+  tag: K,
+  attributes: Record<string, string>,
+): SVGElementTagNameMap[K] {
+  const element = document.createElementNS(NS, tag);
+  for (const [name, value] of Object.entries(attributes))
+    element.setAttribute(name, value);
+  return element;
+}
+
 /** A filter shared by every host of one size in one tree, removed with its last user. */
 type Lens = {
   filter: SVGFilterElement;
@@ -122,9 +132,8 @@ function lensFor(tree: Tree, w: number, h: number, r: number): Lens {
         0,
         0,
       );
-    const filter = document.createElementNS(NS, "filter");
-    filter.id = `pl-lens-${next++}`;
-    for (const [name, value] of Object.entries({
+    const filter = svgElement("filter", {
+      id: `pl-lens-${next++}`,
       x: "0",
       y: "0",
       width: `${w}`,
@@ -132,9 +141,33 @@ function lensFor(tree: Tree, w: number, h: number, r: number): Lens {
       filterUnits: "userSpaceOnUse",
       primitiveUnits: "userSpaceOnUse",
       "color-interpolation-filters": "sRGB",
-    }))
-      filter.setAttribute(name, value);
-    filter.innerHTML = `<feFlood flood-color="rgb(128 128 128)" result="still"/><feImage href="${canvas.toDataURL()}" width="${w}" height="${h}" preserveAspectRatio="none" result="rim"/><feMerge result="map"><feMergeNode in="still"/><feMergeNode in="rim"/></feMerge><feDisplacementMap in="SourceGraphic" in2="map" scale="${lensScale(w, h)}" xChannelSelector="R" yChannelSelector="G"/>`;
+    });
+    const merge = svgElement("feMerge", { result: "map" });
+    merge.append(
+      svgElement("feMergeNode", { in: "still" }),
+      svgElement("feMergeNode", { in: "rim" }),
+    );
+    filter.append(
+      svgElement("feFlood", {
+        "flood-color": "rgb(128 128 128)",
+        result: "still",
+      }),
+      svgElement("feImage", {
+        href: canvas.toDataURL(),
+        width: String(w),
+        height: String(h),
+        preserveAspectRatio: "none",
+        result: "rim",
+      }),
+      merge,
+      svgElement("feDisplacementMap", {
+        in: "SourceGraphic",
+        in2: "map",
+        scale: String(lensScale(w, h)),
+        xChannelSelector: "R",
+        yChannelSelector: "G",
+      }),
+    );
     entry.svg.append(filter);
     lens = { filter, users: 0, key, lenses: entry.lenses };
     entry.lenses.set(key, lens);

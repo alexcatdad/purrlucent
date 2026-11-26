@@ -189,7 +189,9 @@ export class PlDataTable extends LitElement {
     focusCell: { state: true },
   };
 
+  /** Column definitions when no model is supplied. */
   declare columns: PlDataTableColumn[];
+  /** Data rows when no model is supplied. */
   declare rows: PlDataTableRow[];
   /** The keys of the selected rows. */
   declare selected: string[];
@@ -222,7 +224,7 @@ export class PlDataTable extends LitElement {
   declare model: PlDataTableModel | undefined;
   /** Draws a cell's content in place of its text; see the class description. */
   declare renderCell: PlCellRenderer | undefined;
-  /** The id of the cell that holds the roving tab stop. */
+  // The id of the cell that holds the roving tab stop.
   declare focusCell: string | undefined;
 
   /** The cell a shift-click or shift-arrow range grows from. */
@@ -264,12 +266,13 @@ export class PlDataTable extends LitElement {
     return String(row[this.rowKey] ?? index);
   }
 
-  /** Every row in display order, each with its key. */
-  get #sorted() {
-    const view = this.rows.map((row, index) => ({
-      row,
-      key: this.#key(row, index),
-    }));
+  /** Rows in display order, keyed by their original positions when needed. */
+  #ordered(matches?: Set<PlDataTableRow>) {
+    const view: { row: PlDataTableRow; key: string }[] = [];
+    this.rows.forEach((row, index) => {
+      if (!matches || matches.has(row))
+        view.push({ row, key: this.#key(row, index) });
+    });
     if (this.manualSort || !this.sortColumn) return view;
     const column = this.sortColumn;
     const sign = this.sortDirection === "descending" ? -1 : 1;
@@ -278,10 +281,10 @@ export class PlDataTable extends LitElement {
 
   /** The rows that match the filter, over all pages, in display order. */
   get #view() {
-    const sorted = this.#sorted;
-    if (this.manualFilter || !this.filter.trim()) return sorted;
-    const kept = new Set(filterRows(this.rows, this.columns, this.filter));
-    return sorted.filter((v) => kept.has(v.row));
+    if (this.manualFilter || !this.filter.trim()) return this.#ordered();
+    return this.#ordered(
+      new Set(filterRows(this.rows, this.columns, this.filter)),
+    );
   }
 
   #pages(matching: number) {
@@ -308,9 +311,6 @@ export class PlDataTable extends LitElement {
       resize: this.resizeLabel || own.resize,
       rowOptions: this.rowMenuLabel || own.rowOptions,
     };
-    // A filter that leaves fewer rows than the page needs moves to the last page.
-    if (!this.model && this.pageSize > 0)
-      this.page = clampPage(this.page, this.#pages(this.#view.length));
   }
 
   protected override updated() {
@@ -361,7 +361,11 @@ export class PlDataTable extends LitElement {
 
   #select(keys: Set<string>) {
     // Row order, and only rows that exist.
-    this.selected = this.#sorted.map((v) => v.key).filter((k) => keys.has(k));
+    const selected: string[] = [];
+    if (keys.size)
+      for (const { key } of this.#ordered())
+        if (keys.has(key)) selected.push(key);
+    this.selected = selected;
     this.#emit("pl-selection-change", { keys: [...this.selected] });
   }
 
@@ -1016,11 +1020,17 @@ export class PlDataTable extends LitElement {
   override render() {
     if (this.model) return this.#renderModel(this.model);
     const view = this.#view;
+    const paginated = this.pageSize > 0;
+    const pages = paginated ? this.#pages(view.length) : 1;
+    // Clamp before Lit reflects the page, using the same rows we will render.
+    if (paginated) this.page = clampPage(this.page, pages);
     const shown = this.manualPagination
       ? view
       : pageRows(view, this.page, this.pageSize);
     const chosen = new Set(this.selected);
-    const picked = view.filter((v) => chosen.has(v.key)).length;
+    let picked = 0;
+    if (this.selectable && chosen.size)
+      for (const { key } of view) if (chosen.has(key)) picked++;
     const first = this.columns[0]?.key;
     const span = this.columns.length + (this.selectable ? 1 : 0);
     return html`${this.#filterField(this.filter)}<pl-table
@@ -1091,11 +1101,7 @@ export class PlDataTable extends LitElement {
             }
           </tbody>
         </table> </pl-table
-      >${
-        this.pageSize > 0
-          ? this.#pager(this.page, this.#pages(view.length))
-          : nothing
-      }`;
+      >${paginated ? this.#pager(this.page, pages) : nothing}`;
   }
 }
 

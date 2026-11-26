@@ -96,6 +96,14 @@ test("the agent skill ships with the docs it reads", () => {
   expect(missing).toEqual([]);
 });
 
+test("the README links to this release and each guide ships in the package", () => {
+  const readme = readFileSync(join(installed, "README.md"), "utf8");
+  for (const path of [...DOCS, "SECURITY.md"]) {
+    expect(existsSync(join(installed, path)), path).toBe(true);
+    expect(readme).toContain(`/blob/v${manifest.version}/${path})`);
+  }
+});
+
 test("every component has an export with types", () => {
   const untyped = components.filter(
     (name) => typeof manifest.exports[`./${name}`] !== "object",
@@ -165,6 +173,14 @@ export function App() {
         <span slot="label">Fruit</span>
         <pl-option value="a">A</pl-option>
       </pl-select>
+      <pl-combobox multiple values={["a"]} onpl-change={(e) => {
+        e.detail.value satisfies string;
+        e.detail.values satisfies string[] | undefined;
+      }} />
+      <pl-date-range>
+        <pl-date-picker slot="start" name="start" />
+        <pl-date-picker slot="end" name="end" />
+      </pl-date-range>
       <pl-dialog ref={dialog} variant="alert" className="x" />
       <pl-month-range-picker presets={[{ label: "Q1", start: "2026-01", end: "2026-03" }]} />
       {/* @ts-expect-error not a prop of pl-button */}
@@ -205,8 +221,9 @@ test.skipIf(!process.env.CI)(
       join(app, "main.ts"),
       modules.map((m) => `import "${m}";`).join("\n"),
     );
+    writeFileSync(join(app, "glass.ts"), 'import "purrlucent/toolbar";');
     const built = await Bun.build({
-      entrypoints: [join(app, "main.ts")],
+      entrypoints: [join(app, "main.ts"), join(app, "glass.ts")],
       outdir: join(app, "out"),
       target: "browser",
     });
@@ -221,6 +238,14 @@ ${all.map((tag) => `<${tag}>${tag}</${tag}>`).join("\n")}
     writeFileSync(
       join(app, "out/tokens.css"),
       readFileSync(join(installed, "dist/tokens.css")),
+    );
+    writeFileSync(
+      join(app, "out/glass.html"),
+      `<!doctype html><html pl-material="glass">
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script'">
+<link rel="stylesheet" href="tokens.css">
+<pl-toolbar label="Actions">Actions</pl-toolbar>
+<script type="module" src="glass.js"></script></html>`,
     );
     const server = Bun.serve({
       port: 0,
@@ -251,6 +276,10 @@ ${all.map((tag) => `<${tag}>${tag}</${tag}>`).join("\n")}
       );
       expect(state.notUpgraded).toEqual([]);
       expect(state.spacing).not.toBe("");
+      await page.goto(`http://localhost:${server.port}/glass.html`);
+      const displacement = page.locator("feDisplacementMap").first();
+      await displacement.waitFor({ state: "attached", timeout: 10_000 });
+      expect(await displacement.getAttribute("in2")).toBe("map");
       expect(errors).toEqual([]);
     } finally {
       await browser.close();

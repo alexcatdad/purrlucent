@@ -6,7 +6,7 @@
 - id: dark-mode/2
   source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
   rule: Every component looks right and stays legible in both appearances.
-  check: automated
+  check: rubric
   layer: components
 - id: dark-mode/3
   source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
@@ -33,4 +33,5 @@
   source: https://developer.apple.com/design/human-interface-guidelines/dark-mode
   rule: Text uses the label color tokens that adapt to each appearance.
   check: automated
+  pending: Token and rendered contrast are checked separately, but the rendered text checks do not verify which token a component uses.
   layer: components

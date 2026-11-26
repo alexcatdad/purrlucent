@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { userEvent } from "storybook/test";
 import "./date-picker.ts";
+import "../date-range/date-range.ts";
 import type { PlDatePicker } from "./date-picker.ts";
 import { widths } from "../../../.storybook/widths.ts";
 
@@ -134,28 +135,40 @@ export const Open: Story = {
   },
 };
 
-/** A start and an end date. Only days from min to max, and not the disabled ones, can be chosen. */
+/** A form with a start and an end date. Both fields enforce their own bounds, and the end must be on or after the start. */
 export const Range: Story = {
   render: () =>
     column(
-      html`<pl-date-picker
-          id="picker"
-          locale="en-US"
-          value="2026-11-18"
-          min="2026-11-09"
-          max="2026-12-20"
-          disabled-dates="2026-11-25"
-          >Start</pl-date-picker
-        >
-        <pl-date-picker
-          id="end"
-          locale="en-US"
-          value="2026-12-02"
-          min="2026-11-09"
-          max="2026-12-20"
-          disabled-dates="2026-11-25"
-          >End</pl-date-picker
-        >`,
+      html`<form id="form">
+        <fieldset id="fieldset" style="border:0;padding:0;margin:0">
+          <pl-date-range>
+            <pl-date-picker
+              id="picker"
+              slot="start"
+              name="start"
+              locale="en-US"
+              value="2026-11-18"
+              min="2026-11-09"
+              max="2026-12-20"
+              disabled-dates="2026-11-25"
+              required
+              >Start</pl-date-picker
+            >
+            <pl-date-picker
+              id="end"
+              slot="end"
+              name="end"
+              locale="en-US"
+              value="2026-12-02"
+              min="2026-11-09"
+              max="2026-12-20"
+              disabled-dates="2026-11-25"
+              required
+              >End</pl-date-picker
+            >
+          </pl-date-range>
+        </fieldset>
+      </form>`,
     ),
 };
 

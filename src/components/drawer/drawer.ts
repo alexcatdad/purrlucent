@@ -141,6 +141,7 @@ export class PlDrawer extends LitElement {
     this.addEventListener("click", this.#onActivate);
   }
 
+  /** The value returned when the drawer last closed. */
   get returnValue(): string {
     return this.#returnValue;
   }

@@ -26,6 +26,11 @@ import { localeOf, messages } from "../../behaviors/locale.ts";
 
 const calendarGlyph = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>`;
 
+/** @internal Connects an endpoint to the other picker in its date range. */
+export const dateRangeLink = Symbol("dateRangeLink");
+
+type RangeLink = { endpoint: "start" | "end"; peer?: PlDatePicker };
+
 /**
  * A field for one day. The text entry takes the day as the locale writes it
  * (`11/22/2026`, `22.11.2026`) or as an ISO day (`2026-11-22`); the button
@@ -132,6 +137,7 @@ export class PlDatePicker extends LitElement {
   /** The value last reported with pl-change. */
   #committed = "";
   #custom = "";
+  #range: (RangeLink & { owner: HTMLElement }) | undefined;
 
   constructor() {
     super();
@@ -217,11 +223,21 @@ export class PlDatePicker extends LitElement {
     this.#sync();
   }
 
+  /** @internal A range may detach only links it owns, even after a slot is moved. */
+  [dateRangeLink](owner: HTMLElement, link?: RangeLink) {
+    if (!link && this.#range?.owner !== owner) return;
+    this.#range = link && { ...link, owner };
+    this.requestUpdate();
+    this.#sync();
+  }
+
   formResetCallback() {
     this.#touched = false;
     this.#typing = false;
-    this.value = this.getAttribute("value") ?? "";
+    const initial = this.getAttribute("value");
+    this.value = isIso(initial) ? initial : "";
     this.#showValue();
+    this.#sync();
     this.requestUpdate();
   }
 
@@ -252,6 +268,8 @@ export class PlDatePicker extends LitElement {
   /** Writes the value into the entry in the locale's format. */
   #showValue() {
     this._text = isIso(this.value) ? formatDay(this.value, this.#locale) : "";
+    const input = this.#input;
+    if (input) input.value = this._text;
   }
 
   /** The locale the entry's day is written in. */
@@ -294,15 +312,46 @@ export class PlDatePicker extends LitElement {
         : this.#off(parsed)
           ? this.rangeMessage || messages(this).unavailableDate
           : "";
-    input.setCustomValidity(this.#custom || message);
-    const invalid = this.#touched && !input.validity.valid;
+    const range = this.#range;
+    const peer = range?.peer;
+    const peerRange = peer && peer.#range;
+    const linked =
+      peerRange && peerRange.owner === range?.owner && peerRange.peer === this;
+    const validates =
+      input.willValidate && !this.readonly && !this.matches(":disabled");
+    const reversed =
+      range?.endpoint === "end" &&
+      peer &&
+      linked &&
+      validates &&
+      !peer.matches(":disabled") &&
+      isIso(peer.value) &&
+      !peer.#off(peer.value) &&
+      isIso(this.value) &&
+      peer.value > this.value;
+    input.setCustomValidity(
+      this.#custom ||
+        message ||
+        (reversed ? messages(this).dateRangeOrder : ""),
+    );
+    const invalid =
+      validates &&
+      !!(this.#touched || (reversed && peer.#touched)) &&
+      !input.validity.valid;
     this.#internals.setFormValue(this.value || null);
-    this.#internals.setValidity(input.validity, input.validationMessage, input);
+    if (validates)
+      this.#internals.setValidity(
+        input.validity,
+        input.validationMessage,
+        input,
+      );
+    else this.#internals.setValidity({});
     this.#setState("user-invalid", invalid);
     if (invalid) input.setAttribute("aria-invalid", "true");
     else input.removeAttribute("aria-invalid");
     forwardAria(this, input);
     syncFieldMessage(this.renderRoot as ShadowRoot, input, invalid);
+    if (range?.endpoint === "start" && peer && linked) peer.#sync();
   }
 
   #emit(name: "pl-input" | "pl-change") {
@@ -362,6 +411,7 @@ export class PlDatePicker extends LitElement {
     this.#touched = true;
     this.value = event.detail.value;
     this.#showValue();
+    this.#sync();
     this.#emit("pl-input");
     fireNative(this, "input");
     this.#commit();
@@ -380,6 +430,14 @@ export class PlDatePicker extends LitElement {
 
   override render() {
     const off = this.matches(":disabled");
+    const text = messages(this);
+    const calendarLabel =
+      this.calendarLabel ||
+      (this.#range?.endpoint === "start"
+        ? text.chooseStartDate
+        : this.#range?.endpoint === "end"
+          ? text.chooseEndDate
+          : text.chooseDate);
     return html`<label part="label" for="control"><slot></slot></label>
       <div part="field">
         <input
@@ -402,17 +460,14 @@ export class PlDatePicker extends LitElement {
           @blur=${this.#onBlur}
           @keydown=${this.#onKeydown}
         />
-        <pl-popover
-          label=${this.calendarLabel || messages(this).chooseDate}
-          @pl-toggle=${this.#onToggle}
-        >
+        <pl-popover label=${calendarLabel} @pl-toggle=${this.#onToggle}>
           <pl-button
             slot="trigger"
             part="trigger"
             icon
             variant="ghost"
             size=${this.size}
-            aria-label=${this.calendarLabel || messages(this).chooseDate}
+            aria-label=${calendarLabel}
             ?disabled=${off || this.readonly}
           >
             ${calendarGlyph}

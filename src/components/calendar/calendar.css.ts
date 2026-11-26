@@ -1,9 +1,9 @@
 import { css } from "lit";
 
 /*
- * A month is a table of seven columns, each one cell wide. The cell is a size
- * token, so it grows to the 44 point touch target on a coarse pointer, and the
- * header and the grid take their width from it. Selected, today and disabled
+ * A month is a table of seven equal columns. The cell token sets the day
+ * height and preferred width, and the columns share the available space
+ * when the container is narrower. Selected, today and disabled
  * days are told apart by more than colour: the selected day is filled, today is
  * bold, a disabled day is dimmed and not pressable.
  */
@@ -12,6 +12,9 @@ export const calendarStyles = css`
     --_cell: var(--pl-size-lg);
 
     display: inline-block;
+    inline-size: calc(var(--_cell) * 7);
+    max-inline-size: 100%;
+    min-inline-size: 0;
     color: var(--pl-color-foreground);
     font: 400 var(--pl-text-sm) / var(--pl-leading-normal) var(--pl-font-sans);
   }
@@ -24,7 +27,7 @@ export const calendarStyles = css`
     display: flex;
     align-items: center;
     gap: var(--pl-gap-controls);
-    inline-size: calc(var(--_cell) * 7);
+    inline-size: 100%;
     margin-block-end: var(--pl-space-2);
   }
 
@@ -88,7 +91,7 @@ export const calendarStyles = css`
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
-    inline-size: calc(var(--_cell) * 7);
+    inline-size: 100%;
   }
 
   [part="weekday"] {
@@ -97,6 +100,7 @@ export const calendarStyles = css`
     font-size: var(--pl-text-xs);
     font-weight: 400;
     text-align: center;
+    overflow-wrap: anywhere;
   }
 
   /* The full name stays in the title; the browser's dotted underline goes. */

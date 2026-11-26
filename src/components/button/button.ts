@@ -37,6 +37,10 @@ export type PlButtonSize = "sm" | "md" | "lg" | "xl";
  * form, as a native submit button does, and submits the form it names with
  * `form` from outside it. Its `name` and `value` are submitted only when it
  * is the button that submitted, as a native submit button's are.
+ * In a `submit` listener, `event.submitter` is a temporary native button.
+ * Its `name`, `value` and `form` are available during submission, and
+ * `event.submitter.closest("pl-button")` returns this component until
+ * submission finishes.
  *
  * @attr {string} size - `md` (default), `sm` for dense tables and toolbars, `lg` or `xl`.
  * @attr {string} form - The `id` of the form a submit or reset button acts on, when it is not inside that form.
@@ -149,11 +153,22 @@ export class PlButton extends LitElement {
       const { internals } = this.pressable;
       const { form } = internals;
       if (this.type === "submit" && form) {
-        // The button's entry is in the form data only while it submits.
-        if (this.name) internals.setFormValue(this.value ?? "");
+        const submitter = this.ownerDocument.createElement("button");
+        submitter.type = "submit";
+        submitter.hidden = true;
+        submitter.name = this.name ?? "";
+        submitter.value = this.value ?? "";
+        const formId = this.getAttribute("form");
+        if (formId !== null) submitter.setAttribute("form", formId);
+        // The disabled submitter supplies identity. Only the host supplies a
+        // form entry, so FormData includes it with or without a submitter.
+        submitter.disabled = true;
+        this.append(submitter);
+        if (this.name) internals.setFormValue(submitter.value);
         try {
-          form.requestSubmit();
+          form.requestSubmit(submitter);
         } finally {
+          submitter.remove();
           internals.setFormValue(null);
         }
       } else if (this.type === "reset") form?.reset();

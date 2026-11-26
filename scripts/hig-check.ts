@@ -8,6 +8,7 @@ export type Rule = {
   rule: string;
   check: "automated" | "rubric";
   test?: string;
+  pending?: string;
   layer: "tokens" | "behaviors" | "surfaces" | "components";
 };
 export type Catalog = { file: string; slug: string; rules: Rule[] }[];
@@ -76,9 +77,10 @@ function testExists(root: string, test: string): boolean {
 export function checkCatalog(
   catalog: Catalog,
   root = ".",
-): { errors: string[]; pending: string[] } {
+  allowPending = false,
+): { errors: string[]; pending: { id: string; reason?: string }[] } {
   const errors: string[] = [];
-  const pending: string[] = [];
+  const pending: { id: string; reason?: string }[] = [];
   const seen = new Set<string>();
   for (const { file, slug, rules } of catalog) {
     if (!Array.isArray(rules)) {
@@ -100,10 +102,19 @@ export function checkCatalog(
         errors.push(`${at}: rule text uses an Apple trademark`);
       if (rule.check === "rubric" && rule.test)
         errors.push(`${at}: a rubric rule has no test`);
+      if (rule.pending && (rule.check === "rubric" || rule.test))
+        errors.push(
+          `${at}: only an automated rule without a test can be pending`,
+        );
       if (rule.check === "automated") {
-        if (!rule.test) pending.push(rule.id);
-        else if (!testExists(root, rule.test))
+        if (!rule.test) {
+          pending.push({ id: rule.id, reason: rule.pending });
+          if (!rule.pending)
+            errors.push(`${at}: missing test or pending reason`);
+          else if (!allowPending) errors.push(`${at}: pending (no test yet)`);
+        } else if (!testExists(root, rule.test)) {
           errors.push(`${at}: missing test "${rule.test}"`);
+        }
       }
     }
   }
@@ -150,10 +161,14 @@ if (import.meta.main) {
     for (const r of rubricFor(args, rules))
       console.log(`${r.id}\t${r.rule}\t${r.source}`);
   } else {
-    const { errors, pending } = checkCatalog(loadCatalog());
+    const { errors, pending } = checkCatalog(
+      loadCatalog(),
+      ".",
+      args.includes("--allow-pending"),
+    );
     errors.push(...checkOutOfScope());
-    if (!args.includes("--allow-pending"))
-      errors.push(...pending.map((id) => `${id}: pending (no test yet)`));
+    for (const { id, reason } of pending)
+      if (reason) console.log(`${id}: pending — ${reason}`);
     for (const e of errors) console.error(e);
     console.log(
       `hig:check: ${errors.length} errors, ${pending.length} pending`,

@@ -30,13 +30,15 @@
   layer: tokens
 - id: icons/7
   source: https://developer.apple.com/design/human-interface-guidelines/icons
-  rule: Icons are vector SVG and scale cleanly.
+  rule: Built-in inline glyphs use vector SVG with a view box so they can scale.
   check: automated
+  test: scripts/hig-check.coverage.test.ts > inline glyphs use scalable SVG view boxes and no embedded images
   layer: tokens
 - id: icons/8
   source: https://developer.apple.com/design/human-interface-guidelines/icons
-  rule: An icon without a visible label has an accessible text alternative.
+  rule: A button with only an icon can take its accessible name from aria-label.
   check: automated
+  test: src/components/button/button.e2e.ts > an icon button takes its name from aria-label
   layer: components
 - id: icons/9
   source: https://developer.apple.com/design/human-interface-guidelines/icons

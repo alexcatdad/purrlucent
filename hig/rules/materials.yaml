@@ -27,8 +27,9 @@
   layer: surfaces
 - id: materials/6
   source: https://developer.apple.com/design/human-interface-guidelines/materials
-  rule: Blur and tint choices keep contrast and visual separation between a surface and what lies behind it.
+  rule: Clear glass dims the background and keeps text and focus indicators distinguishable over light or dark content.
   check: automated
+  test: src/surfaces/surfaces.e2e.ts > clear glass dims its backdrop and its labels hold over white or black
   layer: surfaces
 - id: materials/7
   source: https://developer.apple.com/design/human-interface-guidelines/materials

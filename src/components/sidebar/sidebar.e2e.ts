@@ -1566,6 +1566,10 @@ test.describe("reorderable", () => {
     page,
   }) => {
     await open(page, "reorderable");
+    // Use the same items without the story's application-level event handler.
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.replaceWith(el.cloneNode(true)));
     await listen(page, "pl-reorder");
     await page.locator("#second a").focus();
     await page.keyboard.press("Alt+ArrowUp");
@@ -1591,14 +1595,6 @@ test.describe("reorderable", () => {
 
   test("focus stays on the item when the app moves it", async ({ page }) => {
     await open(page, "reorderable");
-    await page.evaluate(() => {
-      document
-        .querySelector("#sidebar")
-        ?.addEventListener("pl-reorder", (event) => {
-          const item = event.target as HTMLElement;
-          item.previousElementSibling?.before(item);
-        });
-    });
     await page.locator("#second a").focus();
     await page.keyboard.press("Alt+ArrowUp");
     await expect.poll(() => order(page)).toEqual(["second", "first", "third"]);
@@ -1620,7 +1616,8 @@ test.describe("reorderable", () => {
     await page.mouse.up();
     await expect(page.locator("#first")).not.toHaveAttribute("data-dragging");
     expect(await heard(page)).toEqual([{ from: 0, to: 2 }]);
-    expect(await order(page)).toEqual(["first", "second", "third"]);
+    expect(await order(page)).toEqual(["second", "third", "first"]);
+    await expect(page.getByRole("menu")).toHaveCount(0);
     expect(
       await page.locator("#first").evaluate((el) => el.style.translate),
     ).toBe("");
@@ -1637,14 +1634,79 @@ test.describe("reorderable", () => {
     await page.mouse.move(x, y + 6, { steps: 3 });
     await page.mouse.up();
     expect(await heard(page)).toEqual([]);
+    await expect(page.getByRole("menu")).toHaveCount(0);
   });
 
   test("pressing the grip does not select the item", async ({ page }) => {
     await open(page, "reorderable");
     await listen(page, "pl-change");
+    const item = page.locator("#second");
+    await item.evaluate((el) => {
+      el.addEventListener("click", () => el.setAttribute("data-activated", ""));
+    });
     await page.locator("#second [part=handle]").click();
+    await expect(page.getByRole("menuitem", { name: "Move up" })).toBeVisible();
     expect(await heard(page)).toEqual([]);
+    await expect(item).not.toHaveAttribute("data-activated");
     await expect(page.locator("#second a")).not.toHaveAttribute("aria-current");
+  });
+
+  test("the keyboard can open the move menu and dismiss it without moving", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    const grip = page.getByRole("button", { name: "Second, show options" });
+    await page.locator("#second a").focus();
+    await page.keyboard.press("Tab");
+    await expect(grip).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("menuitem", { name: "Move up" })).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("menu")).toHaveCount(0);
+    await expect(grip).toBeFocused();
+    expect(await order(page)).toEqual(["first", "second", "third"]);
+  });
+
+  test("move command availability respects section boundaries", async ({
+    page,
+  }) => {
+    await open(page, "sections");
+    await page
+      .locator("#sidebar")
+      .evaluate((el) => el.setAttribute("reorderable", ""));
+    const firstFolder = page.locator("#work [part=handle]");
+    await firstFolder.click();
+    await expect(
+      page.getByRole("menuitem", { name: "Move up" }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole("menuitem", { name: "Move down" }),
+    ).toBeEnabled();
+    await page.keyboard.press("Escape");
+    await page.locator("#archive [part=handle]").click();
+    await expect(
+      page.getByRole("menuitem", { name: "Move down" }),
+    ).toBeDisabled();
+    await expect(page.getByRole("menuitem", { name: "Move up" })).toBeEnabled();
+  });
+
+  test("loose rows on either side of a section can move past each other", async ({
+    page,
+  }) => {
+    await open(page, "reorderable");
+    await page.locator("#sidebar").evaluate((sidebar) => {
+      const section = document.createElement("pl-sidebar-section");
+      section.label = "Folders";
+      section.innerHTML =
+        '<pl-sidebar-item id="folder">Folder</pl-sidebar-item>';
+      sidebar.querySelector("#second")!.before(section);
+      sidebar.querySelector("#third")!.remove();
+    });
+    await listen(page, "pl-reorder");
+    await page.locator("#first [part=handle]").click();
+    await page.getByRole("menuitem", { name: "Move down" }).click();
+    expect(await heard(page)).toEqual([{ from: 0, to: 1 }]);
+    expect(await order(page)).toEqual(["folder", "second", "first"]);
   });
 
   test("a reorderable item tells assistive technology about the keys", async ({
@@ -1816,6 +1878,33 @@ test.describe("reorder grips", () => {
       ).toBe(true);
       for (const id of ["first", "second", "third"])
         await expect(grip(page, id)).toHaveCSS("opacity", "1");
+    });
+
+    test("tapping move commands reorders without selecting the row in RTL", async ({
+      page,
+    }) => {
+      await open(page, "reorderable", "dir:rtl");
+      await listen(page, "pl-reorder");
+      const handle = grip(page, "second");
+      await handle.tap();
+      const up = page.getByRole("menuitem", { name: "Move up" });
+      const down = page.getByRole("menuitem", { name: "Move down" });
+      await up.tap();
+      await expect
+        .poll(() => order(page))
+        .toEqual(["second", "first", "third"]);
+      expect(await heard(page)).toEqual([{ from: 1, to: 0 }]);
+      await expect(page.locator("#first a")).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
+      await expect(handle).toBeFocused();
+      await handle.tap();
+      await expect(up).toBeDisabled();
+      await down.tap();
+      await expect
+        .poll(() => order(page))
+        .toEqual(["first", "second", "third"]);
     });
   });
 });

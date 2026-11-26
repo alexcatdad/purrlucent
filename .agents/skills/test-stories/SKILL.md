@@ -5,6 +5,8 @@ description: Run the Storybook story tests of a project, with their accessibilit
 
 Prerequisites:
 
+In this repository browser suites run in CI. See [the development commands](../../../README.md#develop) and review the pull request’s `unit` and `e2e` checks.
+
 1. Storybook must be installed in the project. Invoke the `/storybook-init` skill to set up Storybook, but only if the user explicitly invoked this skill and approves a Storybook installation.
 2. Storybook must be 11.0 or later. An 11.0 prerelease (`11.0.0-alpha.x`, `-beta.x` or `-rc.x`) or a canary build (`0.0.0-pr-*`) also counts. Treat a request to set up or install Storybook as approval to perform any required Storybook upgrade. For other requests, invoke the `/storybook-upgrade` skill only after the user explicitly approves an upgrade.
 

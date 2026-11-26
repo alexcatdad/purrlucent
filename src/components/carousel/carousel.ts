@@ -83,6 +83,7 @@ export class PlCarousel extends LitElement {
   declare slideLabel: string;
   /** The current page, from 0. Change it with `goTo`. */
   declare index: number;
+  /** The number of carousel items. */
   declare count: number;
 
   #frame = 0;

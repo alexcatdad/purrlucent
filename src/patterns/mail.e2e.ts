@@ -177,6 +177,23 @@ test("on a narrow screen the list and the message take turns", async ({
   await expect(rows(root).first()).toBeVisible();
 });
 
+test("Compose opens from the list and the message on a narrow screen", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 600 });
+  const root = await gotoStory(page, story("narrow"));
+  const action = compose(root);
+  for (const reading of [false, true]) {
+    if (reading) await rowLink(root, /Lunch on Thursday/).click();
+    await expect(action).toBeVisible();
+    await action.focus();
+    await page.keyboard.press("Enter");
+    await expect(root.getByRole("textbox", { name: "To" })).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(action).toBeFocused();
+  }
+});
+
 test("under rtl the reading pane sits at the left of the list", async ({
   page,
 }) => {

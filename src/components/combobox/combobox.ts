@@ -16,13 +16,16 @@ import { inputStyles } from "../input/input.css.ts";
 import { filterIndexes } from "../select/match.ts";
 import { PopupController } from "../select/popup.ts";
 import { listboxStyles } from "../select/select.css.ts";
-import type { PlOption } from "../select/select.ts";
-import "../select/select.ts";
+import { PlOption } from "../select/select.ts";
 import { comboboxStyles } from "./combobox.css.ts";
 
 const chevron = html`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 9l6 6l6 -6" />
 </svg>`;
+const removeGlyph = html`<svg viewBox="0 0 24 24" aria-hidden="true">
+  <path d="m6 6 12 12M18 6 6 18" />
+</svg>`;
+const initialValues: readonly string[] = [];
 
 /** `ariaActiveDescendantElement` is missing from the DOM typings. */
 type ActiveDescendantHost = HTMLInputElement & {
@@ -55,6 +58,11 @@ type ActiveDescendantHost = HTMLInputElement & {
  * text has been typed. While the app's lookup is running, `busy` keeps the "no
  * results" row from showing.
  *
+ * With `multiple`, the input searches independently of the choices. Choosing
+ * an option toggles it, and each choice has a remove button. Backspace in an
+ * empty input removes the last choice. The form submits one entry per choice
+ * under the same name, and reset restores the starting choices.
+ *
  * The default width is 40 spacing units (160px), not the container's. Set `inline-size` on the element, for example `inline-size: 100%`, to change it.
  *
  * @attr {string} value - The chosen option's value, or the custom text.
@@ -63,6 +71,8 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @attr {string} label - The accessible name when there is no slotted label.
  * @attr {string} placeholder - Hint shown while the field is empty.
  * @attr {boolean} required - The form is invalid while there is no value.
+ * @attr {boolean} multiple - Allows more than one choice. Use the `values` property to read or set them.
+ * @property {readonly string[]} values - The choices in multiple mode, in selection order. Defaults to the options marked `selected`.
  * @attr {boolean} disabled - No focus, no list, nothing submitted.
  * @attr {string} size - `md` (default), `lg` or `xl`.
  * @attr {boolean} allow-custom - Text that matches no option becomes the value.
@@ -81,11 +91,14 @@ type ActiveDescendantHost = HTMLInputElement & {
  * @csspart button - The chevron button that toggles the list.
  * @csspart listbox - The popup.
  * @csspart empty - The "no results" row.
+ * @csspart selections - The list of selected items in multiple mode.
+ * @csspart selection - A selected item.
+ * @csspart remove - A selected item's remove button.
  * @csspart message - The validation message below the field.
  * @fires {CustomEvent<{ text: string }>} pl-input - The text changed through typing, Escape, or leaving the field (the text was cleared or restored). `detail.text` holds it.
- * @fires {CustomEvent<{ value: string }>} pl-change - The value changed. `detail.value` holds it.
+ * @fires {CustomEvent<{ value: string; values?: string[] }>} pl-change - In single mode `detail.value` is the chosen value. In multiple mode it is the value added or removed, and `detail.values` holds all current choices.
  * @fires {CustomEvent<{ query: string }>} pl-action - An action row was chosen. `detail.query` holds the typed text, empty when nothing was typed.
- * @fires input - After each pl-input, as a native input fires it.
+ * @fires input - When the search text or multiple selection changes.
  * @fires change - After each pl-change.
  */
 export class PlCombobox extends LitElement {
@@ -100,11 +113,13 @@ export class PlCombobox extends LitElement {
   static override styles = [inputStyles, listboxStyles, comboboxStyles];
   static override properties = {
     value: { reflect: true },
+    values: { attribute: false },
     text: { reflect: true },
     name: { reflect: true },
     label: { reflect: true },
     placeholder: { reflect: true },
     required: { type: Boolean, reflect: true },
+    multiple: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
     size: { reflect: true },
     allowCustom: { type: Boolean, reflect: true, attribute: "allow-custom" },
@@ -119,11 +134,13 @@ export class PlCombobox extends LitElement {
   };
 
   declare value: string;
+  declare values: readonly string[];
   declare text: string;
   declare name: string;
   declare label: string;
   declare placeholder: string;
   declare required: boolean;
+  declare multiple: boolean;
   declare disabled: boolean;
   declare size: "md" | "lg" | "xl";
   declare allowCustom: boolean;
@@ -142,11 +159,21 @@ export class PlCombobox extends LitElement {
     () => this.#field,
     () => this.#listbox,
   );
-  readonly #watch = new MutationObserver(() => this.#onOptions());
+  readonly #watch = new MutationObserver((records) => {
+    if (
+      records.some(
+        ({ type, target }) =>
+          type !== "attributes" || target instanceof PlOption,
+      )
+    )
+      this.#onOptions();
+  });
   // The typed text narrows the list only after an edit, not when it merely
   // opens on the chosen label.
   #filtering = false;
   #start: string | undefined;
+  #startValues: readonly string[] | undefined;
+  #selectedLabels = new Map<string, string>();
   #touched = false;
 
   constructor() {
@@ -158,11 +185,13 @@ export class PlCombobox extends LitElement {
       this.#syncForm();
     });
     this.value = "";
+    this.values = initialValues;
     this.text = "";
     this.name = "";
     this.label = "";
     this.placeholder = "";
     this.required = false;
+    this.multiple = false;
     this.disabled = false;
     this.size = "md";
     this.allowCustom = false;
@@ -222,7 +251,7 @@ export class PlCombobox extends LitElement {
   }
 
   get #chosen(): PlOption | undefined {
-    return this.value
+    return !this.multiple && this.value
       ? this.#options.find((o) => !o.action && o.optionValue === this.value)
       : undefined;
   }
@@ -241,14 +270,36 @@ export class PlCombobox extends LitElement {
 
   formResetCallback() {
     this.#touched = false;
-    this.value = this.#start ?? "";
-    this.#filtering = false;
-    this.#syncText();
+    if (this.multiple) {
+      if (this.#startValues !== undefined) this.values = [...this.#startValues];
+      this.text = "";
+      this.#hide();
+    } else {
+      this.value = this.#start ?? "";
+      this.#filtering = false;
+      this.#syncText();
+    }
     // An unchanged value schedules no update, but the touched state must clear.
     this.#syncForm();
   }
 
   formStateRestoreCallback(state: string) {
+    if (this.multiple) {
+      try {
+        const values: unknown = JSON.parse(state);
+        if (
+          Array.isArray(values) &&
+          values.every((value) => typeof value === "string")
+        ) {
+          this.values = values;
+          this.text = "";
+          this.#hide();
+        }
+      } catch {
+        // Autocomplete may provide text instead of a saved selection.
+      }
+      return;
+    }
     this.value = state;
     this.#filtering = false;
     this.#syncText();
@@ -259,9 +310,18 @@ export class PlCombobox extends LitElement {
     // Not rendered yet: the first update syncs.
     const input = this.shadowRoot?.querySelector<HTMLInputElement>("input");
     if (!input) return;
-    this.#internals.setFormValue(this.value);
+    if (this.multiple) {
+      const data = new FormData();
+      if (this.name) {
+        for (const value of this.values) data.append(this.name, value);
+      }
+      this.#internals.setFormValue(data, JSON.stringify(this.values));
+    } else this.#internals.setFormValue(this.value);
     this.#internals.setValidity(
-      { valueMissing: this.required && !this.value },
+      {
+        valueMissing:
+          this.required && !(this.multiple ? this.values.length : this.value),
+      },
       nativeMessage(this, "select", "selectRequired"),
       input,
     );
@@ -302,8 +362,31 @@ export class PlCombobox extends LitElement {
     fireNative(this, "change");
   }
 
-  #close() {
-    this.#commit();
+  #toggleValue(value: string, label?: string) {
+    // A custom choice is possible even before any options have loaded.
+    this.#startValues ??= [...this.values];
+    if (this.values.includes(value)) {
+      this.values = this.values.filter((selected) => selected !== value);
+    } else {
+      this.values = [...this.values, value];
+      if (label) this.#selectedLabels.set(value, label);
+    }
+    this.#touched = true;
+    this.#syncForm();
+    this.#emit("pl-change", { value, values: [...this.values] });
+    fireNative(this, "input", "change");
+  }
+
+  #chooseMultiple(value: string, label?: string) {
+    const edited = !!this.text;
+    this.text = "";
+    this.#hide();
+    this.#toggleValue(value, label);
+    if (edited) this.#emit("pl-input", { text: "" });
+  }
+
+  #close(option?: PlOption) {
+    this.#commit(option);
     this.#hide();
   }
 
@@ -314,9 +397,10 @@ export class PlCombobox extends LitElement {
   }
 
   // Resolves the typed text into a value when the user is done with it.
-  #commit() {
+  #commit(option?: PlOption) {
     const before = this.text;
-    this.#resolve();
+    if (option) this.#setValue(option.optionValue, option.label);
+    else this.#resolve();
     // An app that mirrors the text must learn that leaving changed it.
     if (this.text === before) return;
     this.#emit("pl-input", { text: this.text });
@@ -324,13 +408,12 @@ export class PlCombobox extends LitElement {
   }
 
   #resolve() {
+    if (this.multiple) {
+      this.text = "";
+      return;
+    }
     const text = this.text;
-    const hit = this.#options.find(
-      (o) =>
-        !o.action &&
-        !o.disabled &&
-        o.label.toLowerCase() === text.toLowerCase(),
-    );
+    const hit = this.#textMatch;
     if (hit) this.#setValue(hit.optionValue, hit.label);
     // Empty text beside a value that shows nothing was never typed: keep it.
     else if (this.allowCustom || (!text && (this.#chosen || !this.value))) {
@@ -341,8 +424,33 @@ export class PlCombobox extends LitElement {
     }
   }
 
+  get #textMatch() {
+    const text = this.text.toLowerCase();
+    return this.#options.find(
+      (option) =>
+        !option.action &&
+        !option.disabled &&
+        option.label.toLowerCase() === text,
+    );
+  }
+
+  get #soleMatch() {
+    if (
+      !this.#filtering ||
+      !this.text.trim() ||
+      this.manualFilter ||
+      this.busy ||
+      this.allowCustom
+    )
+      return undefined;
+    const matches = this.#listed.filter(
+      (option) => !option.action && !option.disabled,
+    );
+    return matches.length === 1 ? matches[0] : undefined;
+  }
+
   #choose(option: PlOption) {
-    if (option.disabled) return;
+    if (option.disabled || this.matches(":disabled")) return;
     if (option.action) {
       // Typed text stays the query after Escape; a chosen label is not typed.
       const query =
@@ -353,8 +461,11 @@ export class PlCombobox extends LitElement {
       this.#emit("pl-action", { query });
       return;
     }
-    this.#setValue(option.optionValue, option.label);
-    this.#hide();
+    if (this.multiple) this.#chooseMultiple(option.optionValue, option.label);
+    else {
+      this.#setValue(option.optionValue, option.label);
+      this.#hide();
+    }
   }
 
   #toggle() {
@@ -398,7 +509,16 @@ export class PlCombobox extends LitElement {
   #onKeydown = (event: KeyboardEvent) => {
     if (event.isComposing || event.ctrlKey || event.metaKey) return;
     const { key, altKey } = event;
-    if (key === "ArrowDown" || key === "ArrowUp") {
+    if (
+      key === "Backspace" &&
+      !altKey &&
+      this.multiple &&
+      !this.text &&
+      this.values.length
+    ) {
+      event.preventDefault();
+      this.#toggleValue(this.values.at(-1)!);
+    } else if (key === "ArrowDown" || key === "ArrowUp") {
       event.preventDefault();
       if (altKey) {
         if (key === "ArrowDown") this.#show(this.#chosen);
@@ -418,7 +538,16 @@ export class PlCombobox extends LitElement {
     } else if (key === "Enter") {
       if (this.open) {
         event.preventDefault();
-        if (this._active) this.#choose(this._active);
+        const active = this._active;
+        if (active && !active.disabled && this.#rows.includes(active)) {
+          this.#choose(active);
+          return;
+        }
+        const choice = this.#textMatch ?? this.#soleMatch;
+        if (!this.multiple) this.#close(choice);
+        else if (choice) this.#choose(choice);
+        else if (this.multiple && this.allowCustom && this.text.trim())
+          this.#chooseMultiple(this.text);
         else this.#close();
       } else {
         // The typed text becomes the value before the form reads it.
@@ -433,7 +562,8 @@ export class PlCombobox extends LitElement {
       } else if (this.text) {
         event.preventDefault();
         this.#filtering = false;
-        this.#setValue("", "");
+        if (this.multiple) this.text = "";
+        else this.#setValue("", "");
         this.#emit("pl-input", { text: "" });
         // Typing fires the inner input's own input event; clearing does not.
         fireNative(this, "input");
@@ -448,9 +578,12 @@ export class PlCombobox extends LitElement {
 
   #onOptions = () => {
     this.#syncLabelled();
-    // An option the app removed can no longer be chosen.
-    if (this._active && !this.#rows.includes(this._active)) this._active = null;
-    if (this.#start === undefined && this.#options.length) {
+    if (
+      this._active &&
+      (this._active.disabled || !this.#rows.includes(this._active))
+    )
+      this._active = null;
+    if (!this.multiple && this.#start === undefined && this.#options.length) {
       this.#start =
         this.value || this.#options.find((o) => o.selected)?.optionValue || "";
       if (!this.value) this.value = this.#start;
@@ -465,6 +598,8 @@ export class PlCombobox extends LitElement {
       childList: true,
       subtree: true,
       characterData: true,
+      attributes: true,
+      attributeFilter: ["value", "disabled", "action"],
     });
     this.#syncLabelled();
   }
@@ -481,8 +616,43 @@ export class PlCombobox extends LitElement {
   protected override willUpdate(changed: PropertyValues<this>) {
     if (this.open && this.matches(":disabled")) this.#hide();
     // Not on the first update: a starting `text` attribute is kept.
-    if (changed.get("value") !== undefined && !this.#filtering) {
+    if (
+      !this.multiple &&
+      changed.get("value") !== undefined &&
+      !this.#filtering
+    ) {
       this.#syncText();
+    }
+    if (changed.has("multiple") && changed.get("multiple") !== undefined) {
+      if (this.multiple) this.text = "";
+      else this.#syncText();
+      this.#hide();
+      this.#onOptions();
+    }
+    if (this.multiple) {
+      const options = this.#options.filter((option) => !option.action);
+      if (
+        this.#startValues === undefined &&
+        this.values === initialValues &&
+        options.length
+      ) {
+        this.values = options
+          .filter((option) => option.selected)
+          .map((option) => option.optionValue);
+      }
+      const unique = new Set(this.values);
+      if (unique.size !== this.values.length) this.values = [...unique];
+      if (this.#startValues === undefined && this.values !== initialValues)
+        this.#startValues = [...this.values];
+      const labels = new Map(
+        options.map((option) => [option.optionValue, option.label]),
+      );
+      this.#selectedLabels = new Map(
+        this.values.map((value) => [
+          value,
+          labels.get(value) ?? this.#selectedLabels.get(value) ?? value,
+        ]),
+      );
     }
   }
 
@@ -492,7 +662,9 @@ export class PlCombobox extends LitElement {
     const input = this.#input;
     const builtin = this.#builtin;
     for (const option of [...this.#options, ...(builtin ? [builtin] : [])]) {
-      option.chosen = option === chosen;
+      option.chosen = this.multiple
+        ? !option.action && this.values.includes(option.optionValue)
+        : option === chosen;
       option.toggleAttribute("data-active", option === this._active);
     }
     const root = this.shadowRoot!;
@@ -544,7 +716,8 @@ export class PlCombobox extends LitElement {
           aria-label=${ifDefined(name)}
           placeholder=${this.placeholder || nothing}
           .value=${this.text}
-          ?required=${this.required}
+          ?required=${this.required && !this.multiple}
+          aria-required=${this.required && this.multiple ? "true" : nothing}
           ?disabled=${disabled}
           @input=${this.#onInput}
           @keydown=${this.#onKeydown}
@@ -569,6 +742,39 @@ export class PlCombobox extends LitElement {
           ${chevron}
         </button>
       </div>
+      ${
+        this.multiple && this.values.length
+          ? html`<ul part="selections" role="list">
+              ${this.values.map((value) => {
+                const label = this.#selectedLabels.get(value) ?? value;
+                const duplicate = this.values.some(
+                  (choice) =>
+                    choice !== value &&
+                    this.#selectedLabels.get(choice) === label,
+                );
+                const text = messages(this);
+                const name = duplicate
+                  ? fill(text.labelValue, { label, value })
+                  : label;
+                return html`<li part="selection">
+                  <span>${label}</span>
+                  <button
+                    type="button"
+                    part="remove"
+                    aria-label=${fill(text.removeOption, { label: name })}
+                    ?disabled=${disabled}
+                    @click=${() => {
+                      this.#input.focus();
+                      if (this.values.includes(value)) this.#toggleValue(value);
+                    }}
+                  >
+                    ${removeGlyph}
+                  </button>
+                </li>`;
+              })}
+            </ul>`
+          : nothing
+      }
       ${fieldMessage}
       <div
         part="listbox"
@@ -577,6 +783,7 @@ export class PlCombobox extends LitElement {
         popover="manual"
         aria-label=${ifDefined(name)}
         aria-labelledby=${labelledby}
+        aria-multiselectable=${this.multiple ? "true" : nothing}
         @mousedown=${(event: Event) => event.preventDefault()}
         @pointerover=${this.#onPointerover}
       >

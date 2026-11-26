@@ -446,6 +446,10 @@ export const itemStyles = [
       }
     }
 
+    .reorder-menu {
+      display: contents;
+    }
+
     .handle {
       position: absolute;
       inset-block: 0;
@@ -454,12 +458,27 @@ export const itemStyles = [
       display: grid;
       place-items: center;
       inline-size: var(--_grip);
+      border: 0;
+      border-radius: var(--pl-radius-row);
+      padding: 0;
+      background: transparent;
       color: var(--pl-color-muted-foreground);
       cursor: grab;
       touch-action: none;
       user-select: none;
       opacity: 0;
       transition: opacity var(--pl-duration-fast) var(--pl-ease-out);
+    }
+
+    .handle:focus-visible {
+      outline: var(--pl-ring-width) solid var(--pl-color-ring);
+      outline-offset: calc(var(--pl-ring-width) * -1);
+    }
+
+    @media (forced-colors: active) {
+      .handle:focus-visible {
+        outline-color: Highlight;
+      }
     }
 
     /* Shown on hover and while the row has focus; a touch screen has no

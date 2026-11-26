@@ -1,23 +1,11 @@
 # Purrlucent
 
-[![npm](https://img.shields.io/npm/v/purrlucent)](https://www.npmjs.com/package/purrlucent)
-[![CI](https://github.com/alexcatdad/purrlucent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alexcatdad/purrlucent/actions/workflows/ci.yml)
-[![License](https://img.shields.io/npm/l/purrlucent)](LICENSE)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/purrlucent)](https://bundlephobia.com/package/purrlucent)
+[purrlucent on npm](https://www.npmjs.com/package/purrlucent) ·
+[CI workflow runs](https://github.com/alexcatdad/purrlucent/actions/workflows/ci.yml) ·
+[Apache-2.0 license](LICENSE) ·
+[Bundle size on Bundlephobia](https://bundlephobia.com/package/purrlucent)
 
-Web components for apps: buttons, form controls, menus, dialogs and navigation, built with Lit and plain CSS custom properties. They work in any framework or none, follow Apple's Human Interface Guidelines as guidance, and have their own look.
-
-- **Framework-agnostic.** Standard custom elements with shadow DOM. Each one has its own import path.
-- **Accessible.** Every component follows the matching WAI-ARIA pattern, works with a keyboard, supports right-to-left text, increased contrast, forced colors and reduced motion, and has 44 by 44 px targets with a coarse pointer.
-- **Themeable.** Five palette colors and one spacing base; every other color and size is calculated from them. Light and dark follow the page's `color-scheme`.
-- **Forms.** The input controls take part in forms like native ones: value, reset, validation and disabled fieldsets.
-- **Typed.** The package ships type declarations, a Custom Elements Manifest and React 19 JSX types with typed events.
-
-## Components
-
-Accordion, aspect ratio, attachment, avatar, badge, banner, breadcrumb, bubble, button, button group, calendar, card, carousel, chart, checkbox, collapsible, combobox, command palette, context menu, data table, date picker, dialog, drawer, empty, field, file input, hover card, input, input group, item, kbd, marker, menu, menubar, message, message scroller, month range picker, navigation menu, number field, one-time code input, pagination, popover, progress, prompt input, radio group, resizable panels, scroll area, select, separator, sidebar, skeleton, slider, spinner, switch, table, tabs, textarea, toast, toggle, toggle group, toolbar and tooltip.
-
-The [component reference](docs/components.md) lists every element with its attributes, slots, parts and events. Storybook has an example of each state. The chart is not part of `import "purrlucent"`: import `purrlucent/chart` and install its optional peer, `@tanstack/charts`.
+Purrlucent provides web components for apps, including buttons, form controls, menus, dialogs and navigation. The components use Lit and CSS custom properties, work with any framework, and draw on Apple's Human Interface Guidelines.
 
 ## Use
 
@@ -25,24 +13,40 @@ The [component reference](docs/components.md) lists every element with its attri
 npm install purrlucent
 ```
 
+In your app's JavaScript or TypeScript entry point, import the tokens and the components you use.
+
 ```ts
 import "purrlucent/tokens.css";
 import "purrlucent/button";
-import "purrlucent/switch";
 ```
+
+Add the registered element to your page.
 
 ```html
-<form>
-  <pl-switch name="wifi" checked>Wi-Fi</pl-switch>
-  <pl-button type="submit" variant="primary">Save</pl-button>
-</form>
+<pl-button>Save</pl-button>
 ```
 
-From 0.27.1, every version is published from GitHub Actions with a provenance statement. The [install guide](docs/install.md) covers installing, verifying the package, the page background, fonts, light and dark, glass mode and theming. For a React app, see [Use with React](docs/react.md).
+The guides cover package verification, page styles, light and dark modes, glass, theming and React integration. [Install guide](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/install.md) · [Use with React](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/react.md)
+
+From 0.27.1, every version is published from GitHub Actions with a provenance statement.
+
+- **Framework-agnostic.** Standard custom elements with shadow DOM and a separate import path for each component.
+- **Accessible.** Components support keyboard use, right-to-left text, increased contrast, forced colors and reduced motion. Touch controls use a 44 px target token. Calendar days fit seven columns and can be narrower in small containers.
+- **Themeable.** The tokens derive the rest of the colors and sizes from three palette colors, three tone colors and one spacing base. Light and dark follow the page's `color-scheme`.
+- **Forms.** Input controls participate in native forms, including submission, reset, validation and disabled fieldsets.
+- **Typed.** The package ships type declarations, a Custom Elements Manifest and React 19 JSX types with typed events.
+
+## Components
+
+Use a date range to validate a start and end day, a combobox to search and select several values, or a data table to sort, filter and page through records. The catalog also includes navigation, dialogs, layout and feedback components.
+
+The reference lists each element’s import, attributes, properties, methods, slots, parts and events. Copies of the guides ship in the package’s `docs/` directory. [Component reference](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/docs/components.md) · [Storybook examples](https://alexcatdad.github.io/purrlucent/?path=/story/actions-button--default)
+
+The chart uses its own import, `purrlucent/chart`, and requires the optional peer dependency `@tanstack/charts`. The root import loads the other components.
 
 ## Security
 
-See [SECURITY.md](SECURITY.md) to report a vulnerability.
+See [SECURITY.md](https://github.com/alexcatdad/purrlucent/blob/v0.31.0/SECURITY.md) to report a vulnerability.
 
 ## Browser support
 

@@ -2,11 +2,13 @@
   source: https://developer.apple.com/design/human-interface-guidelines/typography
   rule: Body text is at least 13 CSS pixels on desktop and 17 on touch devices, and nothing is below 10 or 11.
   check: automated
+  pending: The body token is 16 CSS pixels at the default root size on both fine and coarse pointers.
   layer: tokens
 - id: typography/2
   source: https://developer.apple.com/design/human-interface-guidelines/typography
-  rule: Thin and light font weights are avoided; regular and heavier weights carry text.
+  rule: Library CSS uses regular or heavier weight for explicit font-weight values.
   check: automated
+  test: scripts/hig-check.coverage.test.ts > library CSS has no explicit font weights below regular
   layer: tokens
 - id: typography/3
   source: https://developer.apple.com/design/human-interface-guidelines/typography
@@ -15,18 +17,21 @@
   layer: tokens
 - id: typography/4
   source: https://developer.apple.com/design/human-interface-guidelines/typography
-  rule: Few typefaces are used; the font stack uses system fonts and ships no Apple fonts.
+  rule: The type tokens provide system fallbacks, and the library bundles no font files or font faces.
   check: automated
+  test: scripts/hig-check.coverage.test.ts > type tokens use system fallbacks and the library ships no font assets
   layer: tokens
 - id: typography/5
   source: https://developer.apple.com/design/human-interface-guidelines/typography
   rule: A named set of text styles carries size, weight and line height, and components use those styles.
   check: automated
+  pending: Size and line-height tokens exist, but component weights are often authored in the component itself.
   layer: tokens
 - id: typography/6
   source: https://developer.apple.com/design/human-interface-guidelines/typography
   rule: Layouts adapt to every text size, with little truncation and no overlapping.
   check: automated
+  pending: Existing zoom tests check horizontal overflow without measuring text overlap or truncation.
   layer: components
 - id: typography/7
   source: https://developer.apple.com/design/human-interface-guidelines/typography

@@ -2,10 +2,9 @@ import { css } from "lit";
 import { fieldStyles } from "../input/input.css.ts";
 
 /*
- * The drawn stepper is two halves, --_sw wide and half the field tall. Each
- * button is a hit-min square that straddles the middle, so a coarse pointer
- * still gets 44 px per button, and the halves are drawn on the button's
- * ::before. In an inside stepper the hit areas reach over the input.
+ * The fine-pointer stepper draws two halves on each button's ::before.
+ * On touch each visible button is also its complete hit area. The buttons
+ * share a row when there is room and stack at narrower field widths.
  */
 export const numberFieldStyles = [
   fieldStyles,
@@ -14,15 +13,17 @@ export const numberFieldStyles = [
       --_sw: calc(var(--pl-spacing) * 5);
       --_stw: max(var(--_sw), var(--pl-size-hit-min));
       --_gap: calc(var(--_stw) - var(--_sw));
+      --_stepper-width: var(--_stw);
+      --_group-h: var(--_h);
       --_btn: var(--pl-color-secondary);
 
-      inline-size: calc(var(--pl-spacing) * 16 + var(--_stw));
+      inline-size: calc(var(--pl-spacing) * 16 + var(--_stepper-width));
       justify-items: start;
     }
 
     :host([stepper="outside"]) {
       inline-size: calc(
-        var(--pl-spacing) * 15 + var(--pl-gap-controls) + var(--_stw)
+        var(--pl-spacing) * 15 + var(--pl-gap-controls) + var(--_stepper-width)
       );
     }
 
@@ -45,6 +46,7 @@ export const numberFieldStyles = [
     [part="field"] {
       flex: 1;
       min-inline-size: 0;
+      block-size: var(--_group-h);
       padding-inline-end: calc(var(--_stw) + var(--_pad));
     }
 
@@ -66,7 +68,7 @@ export const numberFieldStyles = [
     :host([stepper="outside"]) [part="stepper"] {
       position: relative;
       flex: none;
-      block-size: var(--_h);
+      block-size: var(--_group-h);
     }
 
     /* Outside, the drawn halves sit against the field and the hit area extends away from it. */
@@ -165,6 +167,92 @@ export const numberFieldStyles = [
       stroke-width: 1.4;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    @media (pointer: coarse) {
+      :host {
+        --_stepper-width: calc(var(--pl-size-hit-min) * 2);
+        --_group-h: max(var(--_h), var(--_stepper-width));
+        --_gap: 0;
+      }
+
+      [part="group"] {
+        container-type: inline-size;
+        block-size: auto;
+      }
+
+      [part="field"] {
+        padding-inline-end: calc(var(--pl-size-hit-min) + var(--_pad));
+      }
+
+      [part="stepper"] {
+        display: grid;
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        inline-size: var(--pl-size-hit-min);
+      }
+
+      :host([stepper="outside"]) [part="stepper"] button,
+      [part="stepper"] :is([part="increment"], [part="decrement"]) {
+        position: relative;
+        inset: auto;
+        place-items: center;
+        inline-size: 100%;
+        block-size: 100%;
+        padding: 0;
+      }
+
+      [part="stepper"] button::before {
+        inline-size: 100%;
+        block-size: 100%;
+      }
+
+      /* Two touch targets plus enough room for the input and its padding. */
+      @container (min-width: 9rem) {
+        [part="field"],
+        [part="stepper"] {
+          --_group-h: var(--_h);
+        }
+
+        [part="field"] {
+          padding-inline-end: calc(var(--_stepper-width) + var(--_pad));
+        }
+
+        [part="stepper"] {
+          grid-template: 1fr / repeat(2, minmax(0, 1fr));
+          inline-size: var(--_stepper-width);
+        }
+
+        [part="increment"] {
+          grid-area: 1 / 2;
+        }
+
+        [part="decrement"] {
+          grid-area: 1 / 1;
+        }
+
+        :host([stepper="outside"]) [part="stepper"]::after,
+        [part="stepper"]::after {
+          inset-block: var(--pl-space-1);
+          inset-inline: calc(50% - 0.5px) auto;
+          inline-size: 1px;
+          block-size: auto;
+        }
+
+        [part="increment"]::before {
+          border-radius: 0;
+          border-start-end-radius: var(--pl-radius-control);
+          border-end-end-radius: var(--pl-radius-control);
+        }
+
+        [part="decrement"]::before {
+          border-radius: 0;
+        }
+
+        :host([stepper="outside"]) [part="decrement"]::before {
+          border-start-start-radius: var(--pl-radius-control);
+          border-end-start-radius: var(--pl-radius-control);
+        }
+      }
     }
 
     @media (hover: hover) {
