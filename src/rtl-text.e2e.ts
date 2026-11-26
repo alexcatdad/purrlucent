@@ -1,6 +1,24 @@
 import { expect, test, type Page } from "@playwright/test";
 import { gotoStory } from "../e2e/helpers/story.ts";
 
+test("the Components reference remains LTR after viewing an RTL story", async ({
+  page,
+}) => {
+  await page.goto("/?path=/story/foundations-surfaces--glass");
+  const preview = page.frameLocator("#storybook-preview-iframe");
+  await expect(preview.locator("#storybook-root")).toHaveCSS(
+    "direction",
+    "rtl",
+  );
+
+  await page.getByRole("row", { name: "Components reference" }).press("Enter");
+  const heading = preview
+    .locator(".sbdocs-content")
+    .getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText("Components");
+  await expect(heading).toHaveCSS("direction", "ltr");
+});
+
 /** Right-to-left stories that hold English sentences. */
 const STORIES = [
   "feedback-banner--rtl",

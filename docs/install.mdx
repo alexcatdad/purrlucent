@@ -1,9 +1,10 @@
 import { Markdown, Meta } from "@storybook/addon-docs/blocks";
+import { guideOptions } from "../.storybook/guide-markdown";
 import install from "./install.md?raw";
 
 <Meta title="Install" />
 
-<Markdown options={{ overrides: { a: { props: { target: "_top" } } } }}>
+<Markdown options={guideOptions}>
   {install
     .replace("(./components.md)", "(./?path=/docs/components-reference--docs)")
     .replace("(./kits.md)", "(./?path=/docs/starter-kits--docs)")

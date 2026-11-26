@@ -4,6 +4,7 @@ import { STORY_GROUPS } from "../.storybook/groups";
 import config from "../.storybook/main";
 
 const placement: Record<string, readonly string[]> = {
+  "Starter kits": [],
   Foundations: [
     "Tokens",
     "Typography",
@@ -78,8 +79,9 @@ const titles = (readdirSync("src", { recursive: true }) as string[])
   })
   .sort();
 
-test('every story title is "<group>/<Name>"', () => {
+test('component story titles are "<group>/<Name>"', () => {
   for (const title of titles) {
+    if (title === "Starter kits") continue;
     const parts = title.split("/");
     expect(parts, title).toHaveLength(2);
     const [group = "", name = ""] = parts;
@@ -91,6 +93,7 @@ test('every story title is "<group>/<Name>"', () => {
 test("the component placement matches the design", () => {
   const expected = Object.entries(placement)
     .flatMap(([group, names]) => names.map((name) => `${group}/${name}`))
+    .concat("Starter kits")
     .sort();
   expect(titles).toEqual(expected);
 });
