@@ -16,7 +16,7 @@ const toolbar = (description: string, items: string[]) => ({
   toolbar: { items, dynamicTitle: true },
 });
 
-// Each global becomes an attribute on the document root. The tokens layer reads
+// These globals become attributes on the document root. The tokens layer reads
 // pl-material. Theme "light" or "dark" sets an inline color-scheme on <html>,
 // where the tokens' light-dark() values resolve; "system" leaves the shipped
 // behavior (follow the OS). Storybook only: shipped tokens are unchanged. The
@@ -27,7 +27,6 @@ const attributes = {
   theme: "data-theme",
   contrast: "data-contrast",
   density: "data-pl-density",
-  dir: "dir",
 } as const;
 
 const preview: Preview = {
@@ -58,11 +57,24 @@ const preview: Preview = {
       options: { rules: { "target-size": { enabled: true } } },
     },
   },
+  beforeEach: ({ globals, viewMode }) => {
+    if (viewMode !== "story") return;
+    // Canvas overlays can mount on the body. Restore the direction on navigation.
+    const root = document.documentElement;
+    const previous = root.getAttribute("dir");
+    root.dir = globals.dir;
+    return () => {
+      if (previous === null) root.removeAttribute("dir");
+      else root.setAttribute("dir", previous);
+    };
+  },
   decorators: [
-    (story, { globals, viewMode }) => {
+    (story, { canvasElement, globals, viewMode }) => {
       for (const [global, attribute] of Object.entries(attributes)) {
         document.documentElement.setAttribute(attribute, globals[global]);
       }
+      // Inline examples share the preview document with the surrounding docs.
+      if (viewMode === "docs" && canvasElement) canvasElement.dir = globals.dir;
       document.documentElement.style.colorScheme =
         globals.theme === "system" ? "" : globals.theme;
       applyKnobs(document.documentElement, globals);

@@ -1,4 +1,5 @@
 import { Markdown, Meta, Source } from "@storybook/addon-docs/blocks";
+import { guideOptions } from "../.storybook/guide-markdown";
 import guide from "./kits.md?raw";
 import product from "../kits/product-site/index.html?raw";
 import centered from "../kits/product-site/centered.html?raw";
@@ -50,7 +51,7 @@ export const supportingFiles = [
 
 <Meta title="Starter kits" />
 
-<Markdown options={{ overrides: { a: { props: { target: "_top" } } } }}>
+<Markdown options={guideOptions}>
   {guide.replace("(./install.md)", "(./?path=/docs/install--docs)")}
 </Markdown>
 
@@ -58,35 +59,35 @@ export const supportingFiles = [
 
 <ul>
   <li>
-    <a href="./kits/product-site/index.html" target="_top">
+    <a href="./?path=/story/starter-kits--product-site" target="_top">
       Product site
     </a>{" "}
     ·{" "}
-    <a href="./kits/product-site/centered.html" target="_top">
+    <a href="./?path=/story/starter-kits--centered-hero" target="_top">
       Centered hero and compact footer
     </a>
   </li>
   <li>
-    <a href="./kits/onboarding/index.html" target="_top">
+    <a href="./?path=/story/starter-kits--onboarding" target="_top">
       Onboarding
     </a>
   </li>
   <li>
-    <a href="./kits/admin/index.html" target="_top">
+    <a href="./?path=/story/starter-kits--admin" target="_top">
       Admin
     </a>
   </li>
   <li>
-    <a href="./kits/billing/index.html" target="_top">
+    <a href="./?path=/story/starter-kits--billing" target="_top">
       Billing
     </a>
   </li>
   <li>
-    <a href="./kits/docs/index.html" target="_top">
+    <a href="./?path=/story/starter-kits--documentation" target="_top">
       Documentation
     </a>{" "}
     ·{" "}
-    <a href="./kits/docs/theming.html" target="_top">
+    <a href="./?path=/story/starter-kits--theming-article" target="_top">
       Theming article
     </a>
   </li>

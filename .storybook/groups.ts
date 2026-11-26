@@ -1,5 +1,6 @@
 // The sidebar groups, in display order.
 export const STORY_GROUPS = [
+  "Starter kits",
   "Foundations",
   "Actions",
   "Forms",

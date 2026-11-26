@@ -1,0 +1,84 @@
+import { expect, test } from "@playwright/test";
+
+const examples = [
+  {
+    id: "product-site",
+    name: "Product site",
+    heading: "Web components for your app.",
+  },
+  {
+    id: "centered-hero",
+    name: "Centered hero and compact footer",
+    heading: "Web components for your app.",
+  },
+  { id: "onboarding", name: "Onboarding", heading: "Create your account" },
+  { id: "admin", name: "Admin", heading: "Support queue" },
+  { id: "billing", name: "Billing", heading: "A plan for every team" },
+  {
+    id: "documentation",
+    name: "Documentation",
+    heading: "Install Purrlucent",
+  },
+  {
+    id: "theming-article",
+    name: "Theming article",
+    heading: "Theme Purrlucent",
+  },
+];
+
+for (const { id, name, heading } of examples) {
+  test(`the starter kit guide opens ${name} as a Storybook story`, async ({
+    page,
+  }) => {
+    await page.goto("/?path=/docs/starter-kits--docs");
+    const preview = page.frameLocator("#storybook-preview-iframe");
+    await preview.getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(
+      new RegExp(`[?&]path=/story/starter-kits--${id}(?:&|$)`),
+    );
+
+    // Selecting the story expands its group and reveals its virtualized row.
+    const sidebar = page.getByRole("navigation", { name: "Stories" });
+    const row = sidebar.getByRole("row", { name, exact: true });
+    await expect(row).toHaveAttribute("data-selected", "true");
+    const frame = preview.locator("iframe").and(preview.getByTitle(name));
+    const example = frame.contentFrame();
+    await expect(
+      example.getByRole("heading", { name: heading, level: 1, exact: true }),
+    ).toBeVisible();
+
+    if (id === "product-site") {
+      await expect
+        .poll(() =>
+          frame.evaluate((el) => {
+            const { width, height } = el.getBoundingClientRect();
+            return width >= innerWidth - 1 && height >= innerHeight - 1;
+          }),
+        )
+        .toBe(true);
+      const faq = example.getByRole("button", {
+        name: "Do I need a specific framework?",
+        exact: true,
+      });
+      await expect(faq).toHaveAttribute("aria-expanded", "false");
+      await faq.press("Enter");
+      await expect(faq).toHaveAttribute("aria-expanded", "true");
+
+      await row.press("ArrowDown");
+      const centered = sidebar.getByRole("row", {
+        name: "Centered hero and compact footer",
+        exact: true,
+      });
+      await expect(centered).toBeFocused();
+      await centered.press("Enter");
+      await expect(page).toHaveURL(
+        /[?&]path=\/story\/starter-kits--centered-hero(?:&|$)/,
+      );
+      await expect(centered).toHaveAttribute("data-selected", "true");
+    }
+
+    if (id === "centered-hero") {
+      await expect(example.locator(".product-hero-centered h1")).toBeVisible();
+    }
+  });
+}
