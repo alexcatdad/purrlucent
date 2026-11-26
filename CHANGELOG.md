@@ -1,5 +1,13 @@
 # purrlucent
 
+## 0.31.0
+
+### Minor Changes
+
+- c4f9a19: pl-dialog animates its close as well as its open: the dialog fades and scales to 0.96, and the scrim fades out. `pl-close` still fires as the close starts. Reduced motion stays instant, and a browser without the CSS `overlay` property closes at once. While a dialog or drawer closes, it and its scrim take no presses.
+- c4f9a19: `pl-material="solid"` on any element inside glass keeps that subtree solid: surfaces, controls and fields take the solid materials and elevation, as under reduced transparency. Set it on `pl-dialog` or `pl-drawer` to keep modal sheets solid on a glass page.
+- c4f9a19: pl-tabs takes `variant="segmented"`: the tab list is a capsule as wide as its tabs, on the strong control material (glass on a glass page), with the selected tab a raised pill and no underline. A segmented list wider than its room scrolls sideways and fades the edges that have more tabs past them. The default stays the underline list.
+
 ## 0.30.1
 
 ### Patch Changes
