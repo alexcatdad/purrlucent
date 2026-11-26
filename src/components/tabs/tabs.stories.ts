@@ -115,6 +115,26 @@ export const HideScrollbar: Story = {
   `,
 };
 
+/** `stable-height` keeps the panel area at the tallest panel, so what follows does not move. */
+export const StableHeight: Story = {
+  render: () => html`
+    <pl-tabs id="control" label="Order" stable-height>
+      <pl-tab value="request">Request</pl-tab>
+      <pl-tab value="history">History</pl-tab>
+      <pl-tab-panel value="request" id="request">
+        <p>Item: Oak desk.</p>
+        <p>Quantity: 2.</p>
+        <p>Delivery: Thursday.</p>
+        <p>Note: Leave at reception.</p>
+      </pl-tab-panel>
+      <pl-tab-panel value="history" id="history">
+        <a href="#placed">Placed on Monday.</a>
+      </pl-tab-panel>
+    </pl-tabs>
+    <p id="after">After the tabs.</p>
+  `,
+};
+
 export const Glass: Story = {
   render,
   globals: { material: "glass", theme: "dark", contrast: "more", dir: "ltr" },

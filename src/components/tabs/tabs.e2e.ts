@@ -296,3 +296,73 @@ test.describe("hide-scrollbar", () => {
     await expectAccessible(await open(page, "navigation-tabs--hide-scrollbar"));
   });
 });
+
+test.describe("stable-height", () => {
+  const stable = "navigation-tabs--stable-height";
+  const afterTop = async (page: Page) =>
+    (await page.locator("#after").boundingBox())!.y;
+
+  test("switching tabs keeps what follows in place", async ({ page }) => {
+    await open(page, stable);
+    const before = await afterTop(page);
+    await tab(page, "History").click();
+    await expect(page.locator("#history")).toBeVisible();
+    expect(await afterTop(page)).toBeCloseTo(before, 0);
+    const request = (await page.locator("#request").boundingBox())!.y;
+    const history = (await page.locator("#history").boundingBox())!.y;
+    expect(history).toBeCloseTo(request, 0);
+  });
+
+  test("a panel not shown is inert, invisible and not read", async ({
+    page,
+  }) => {
+    const root = await open(page, stable);
+    const history = page.locator("#history");
+    await expect(history).toHaveJSProperty("inert", true);
+    await expect(history).toHaveJSProperty("hidden", false);
+    await expect(history).toBeHidden();
+    await expect(root).toMatchAriaSnapshot(`
+      - tablist "Order":
+        - tab "Request" [selected]
+        - tab "History"
+      - tabpanel "Request"
+    `);
+    await expect(page.getByRole("tabpanel", { name: "History" })).toHaveCount(
+      0,
+    );
+    await tab(page, "Request").focus();
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#request")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#history a")).not.toBeFocused();
+  });
+
+  test("content that grows still resizes the area", async ({ page }) => {
+    await open(page, stable);
+    const before = await afterTop(page);
+    await page.locator("#history").evaluate((el) => {
+      for (let i = 0; i < 8; i++) {
+        const line = document.createElement("p");
+        line.textContent = "Line";
+        el.append(line);
+      }
+    });
+    await expect.poll(() => afterTop(page)).toBeGreaterThan(before + 1);
+  });
+
+  test("without the attribute, other panels collapse and none stay inert", async ({
+    page,
+  }) => {
+    await open(page, stable);
+    await page
+      .locator("#control")
+      .evaluate((el) => el.removeAttribute("stable-height"));
+    const history = page.locator("#history");
+    await expect(history).toHaveJSProperty("hidden", true);
+    await expect(history).toHaveJSProperty("inert", false);
+  });
+
+  test("axe finds no violations", async ({ page }) => {
+    await expectAccessible(await open(page, stable));
+  });
+});
