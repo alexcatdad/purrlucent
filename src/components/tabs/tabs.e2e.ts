@@ -366,3 +366,48 @@ test.describe("stable-height", () => {
     await expectAccessible(await open(page, stable));
   });
 });
+
+test.describe("segmented", () => {
+  const list = (page: Page) => page.locator("#control [part=list]");
+
+  test("the list is a capsule as wide as its tabs, the selected tab a raised pill with no underline", async ({
+    page,
+  }) => {
+    await open(page, "navigation-tabs--segmented");
+    const [listWidth, hostWidth] = await list(page).evaluate((el) => [
+      el.getBoundingClientRect().width,
+      (el.getRootNode() as ShadowRoot).host.getBoundingClientRect().width,
+    ]);
+    expect(listWidth).toBeLessThan(hostWidth);
+    const look = (name: string) =>
+      tab(page, name).evaluate((el) => ({
+        fill: getComputedStyle(el).backgroundColor,
+        line: getComputedStyle(el, "::after").blockSize,
+      }));
+    const selected = await look("Overview");
+    expect(selected.fill).not.toBe("rgba(0, 0, 0, 0)");
+    expect(selected.line).toBe("0px");
+    expect((await look("Parties")).fill).toBe("rgba(0, 0, 0, 0)");
+  });
+
+  test("a list wider than its room scrolls, fades the cut edge, and the keyboard still selects", async ({
+    page,
+  }) => {
+    await open(page, "navigation-tabs--segmented-overflow");
+    await expect(list(page)).toHaveAttribute("data-scrollable", "end");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("End");
+    await expect(tab(page, "Notes")).toBeFocused();
+    expect(await selectedValue(page)).toBe("notes");
+    await expect(list(page)).toHaveAttribute("data-scrollable", "start");
+  });
+
+  for (const globals of ["", "material:glass", "theme:dark", "contrast:more"])
+    test(`axe finds no violations (${globals || "solid"})`, async ({
+      page,
+    }) => {
+      await expectAccessible(
+        await open(page, "navigation-tabs--segmented", globals),
+      );
+    });
+});

@@ -5,6 +5,7 @@ import { interactionStyles } from "../../behaviors/interaction.css.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
+import { markScrollEdges } from "../../behaviors/scroll-edges.ts";
 import { panelStyles, tabStyles, tabsStyles } from "./tabs.css.ts";
 
 let ids = 0;
@@ -113,6 +114,7 @@ export class PlTabPanel extends LitElement {
  * @attr {string} orientation - `horizontal` (default) or `vertical`.
  * @attr {string} label - The accessible name of the tab list.
  * @attr {boolean} hide-scrollbar - Hides the scrollbar of a tab list that overflows. The list stays scrollable by touch, wheel and keyboard.
+ * @attr {string} variant - `underline` (default): a full-width list with a line under the selected tab. `segmented`: a capsule as wide as its tabs, with the selected tab a raised pill, as in Apple's segmented tab views; it takes glass on a glass page. A segmented list wider than its room scrolls sideways and fades the edges that have more tabs past them.
  * @attr {boolean} stable-height - The panel area keeps the height of the tallest panel, so switching tabs does not move what follows. Every panel stays laid out: the ones not shown are invisible and `inert`, so they take no focus and are not read. Content that grows still resizes the area.
  * @slot - `pl-tab-panel` elements. `pl-tab` elements go in the tab list on their own.
  * @csspart list - The tab list.
@@ -137,8 +139,10 @@ export class PlTabs extends LitElement {
       attribute: "stable-height",
       reflect: true,
     },
+    variant: { reflect: true },
   };
   declare value: string;
+  declare variant: "underline" | "segmented";
   declare hideScrollbar: boolean;
   declare stableHeight: boolean;
   declare orientation: "horizontal" | "vertical";
@@ -157,6 +161,7 @@ export class PlTabs extends LitElement {
     this.label = "";
     this.hideScrollbar = false;
     this.stableHeight = false;
+    this.variant = "underline";
     const vertical = () => this.orientation === "vertical";
     this.#roving = new RovingFocusController(this, {
       items: () => this.#enabled,
@@ -198,12 +203,24 @@ export class PlTabs extends LitElement {
     super.connectedCallback();
     // After the roving focus controller's own keydown listener, so focus has moved.
     this.addEventListener("keydown", this.#onKeydown);
+    // A reconnect does not render again, so the list is observed again here.
+    const list = this.renderRoot?.querySelector("[part=list]");
+    if (list) this.#resize.observe(list);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this.#onKeydown);
+    this.#resize.disconnect();
   }
+
+  readonly #resize = new ResizeObserver(() => this.#edges());
+
+  /** A segmented list fades the edges it can scroll toward. */
+  #edges = () => {
+    const list = this.renderRoot.querySelector("[part=list]");
+    if (list) markScrollEdges(list, this.variant === "segmented");
+  };
 
   /** Automatic activation: a key that moved focus selects the tab that now has it. */
   #onKeydown = (event: KeyboardEvent) => {
@@ -250,6 +267,9 @@ export class PlTabs extends LitElement {
         this.#inerted.add(panel);
       } else if (this.#inerted.delete(panel)) panel.inert = false;
     }
+    const list = this.renderRoot.querySelector("[part=list]")!;
+    this.#resize.observe(list);
+    this.#edges();
     // The tab stop is the selected tab, or the first enabled one.
     this.#roving.activate(
       Math.max(
@@ -264,6 +284,7 @@ export class PlTabs extends LitElement {
       <div
         part="list"
         role="tablist"
+        @scroll=${this.#edges}
         aria-label=${ifDefined(this.label || undefined)}
         aria-orientation=${
           this.orientation === "vertical" ? "vertical" : "horizontal"

@@ -4,6 +4,7 @@ import { LensController } from "../../behaviors/lens.ts";
 import { fireNative } from "../../behaviors/native-events.ts";
 import { PressableController } from "../../behaviors/pressable.ts";
 import { RovingFocusController } from "../../behaviors/roving-focus.ts";
+import { markScrollEdges } from "../../behaviors/scroll-edges.ts";
 import { SelectionController } from "../../behaviors/selection.ts";
 import { pickValue } from "./pick-value.ts";
 import { groupStyles, itemStyles } from "./toggle-group.css.ts";
@@ -222,23 +223,8 @@ export class PlToggleGroup extends LitElement {
 
   readonly #resize = new ResizeObserver(() => this.#edges());
 
-  /**
-   * Mirrors the edges a fit-content group can scroll toward to
-   * `data-scrollable` ("start", "end" or both), which fades them. scrollLeft
-   * runs negative under rtl, so its size is the distance from the start.
-   */
-  #edges = () => {
-    const room = this.scrollWidth - this.clientWidth;
-    const from = Math.abs(this.scrollLeft);
-    const value =
-      this.fitContent && room > 1
-        ? [from > 1 && "start", from < room - 1 && "end"]
-            .filter(Boolean)
-            .join(" ")
-        : "";
-    if (value) this.setAttribute("data-scrollable", value);
-    else this.removeAttribute("data-scrollable");
-  };
+  /** A fit-content group fades the edges it can scroll toward. */
+  #edges = () => markScrollEdges(this, this.fitContent);
 
   /**
    * A key that moved focus also selects the item that now has it. Up and

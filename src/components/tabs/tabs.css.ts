@@ -48,6 +48,58 @@ export const tabsStyles = css`
     border-inline-end: 1px solid var(--pl-color-border);
   }
 
+  /* Segmented: a capsule as wide as its tabs on the strong control material,
+     which keeps grey text at 4.5:1 on glass, with the selected tab a raised
+     pill inside it. The tabs read the pill and the radius from here. */
+  :host([variant="segmented"]) [part="list"] {
+    --_ind-block-size: 0px;
+    --_ind-inline-size: 0px;
+    --_tab-radius: var(--pl-radius-control-inner);
+    --_tab-selected-text: var(--pl-color-foreground);
+    --_pill: light-dark(var(--pl-color-raised), var(--pl-color-muted-pressed));
+    --_pill-shadow: 0 calc(var(--pl-spacing) / 4) var(--pl-spacing)
+      color-mix(in srgb, var(--pl-color-shade) 20%, transparent);
+    --_fade: calc(var(--pl-spacing) * 6);
+    --_fade-dir: to right;
+    --_fade-start: 0px;
+    --_fade-end: 0px;
+
+    align-self: flex-start;
+    max-inline-size: 100%;
+    box-sizing: border-box;
+    gap: 0;
+    padding: var(--pl-space-0-5);
+    border: 0;
+    border-radius: var(--pl-radius-control);
+    background: var(--pl-material-control-strong);
+    backdrop-filter: var(--pl-lens,) var(--pl-material-control-filter);
+    box-shadow: var(--pl-material-edge);
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pl-color-thumb) var(--pl-color-track);
+
+    /* An edge with more tabs past it fades, as in toggle-group's fit-content. */
+    mask-image: linear-gradient(
+      var(--_fade-dir),
+      transparent,
+      Canvas var(--_fade-start),
+      Canvas calc(100% - var(--_fade-end)),
+      transparent
+    );
+  }
+
+  :host([variant="segmented"]:dir(rtl)) [part="list"] {
+    --_fade-dir: to left;
+  }
+
+  :host([variant="segmented"]) [part="list"][data-scrollable~="start"] {
+    --_fade-start: var(--_fade);
+  }
+
+  :host([variant="segmented"]) [part="list"][data-scrollable~="end"] {
+    --_fade-end: var(--_fade);
+  }
+
   :host([hide-scrollbar]) [part="list"] {
     scrollbar-width: none;
   }
@@ -75,9 +127,23 @@ export const tabsStyles = css`
     visibility: hidden;
   }
 
+  /* Increased contrast outlines the capsule instead of lighting its edge. */
+  @media (prefers-contrast: more) {
+    :host([variant="segmented"]) [part="list"] {
+      box-shadow: var(--pl-boundary);
+      scrollbar-color: var(--pl-color-input-border) var(--pl-color-track);
+    }
+  }
+
   @media (forced-colors: active) {
     [part="list"] {
       border-color: CanvasText;
+    }
+
+    :host([variant="segmented"]) [part="list"] {
+      outline: 1px solid CanvasText;
+      mask-image: none;
+      scrollbar-color: auto;
     }
   }
 `;
@@ -97,7 +163,14 @@ export const tabStyles = css`
   }
 
   :host::before {
-    border-radius: var(--pl-radius-control);
+    border-radius: var(--_tab-radius, var(--pl-radius-control));
+  }
+
+  /* The raised pill of a segmented list. */
+  :host([selected]) {
+    border-radius: var(--_tab-radius, 0);
+    background-color: var(--_pill, transparent);
+    box-shadow: var(--_pill-shadow, none);
   }
 
   [part="label"] {
@@ -131,7 +204,7 @@ export const tabStyles = css`
   }
 
   :host([selected]:not(:state(disabled))) {
-    color: var(--pl-color-accent-text);
+    color: var(--_tab-selected-text, var(--pl-color-accent-text));
   }
 
   /* The ring sits inside the tab: the list clips anything outside. */
@@ -150,6 +223,7 @@ export const tabStyles = css`
       color: HighlightText;
       forced-color-adjust: none;
       background-color: Highlight;
+      box-shadow: none;
     }
 
     :host([selected]:not(:state(disabled)))::after {
