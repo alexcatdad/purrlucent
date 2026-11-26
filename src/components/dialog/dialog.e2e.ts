@@ -960,6 +960,33 @@ test("in light mode the scrim dims the page with shade at 30%", async ({
   expect(a).toBeCloseTo(0.3, 2);
 });
 
+test('a sheet with pl-material="solid" stays solid inside glass', async ({
+  page,
+}) => {
+  await gotoStory(page, story("open-sheet"), "material:glass");
+  await expect(sheet(page)).toBeVisible();
+  const surface = dialogEl(page).locator("dialog");
+  const filter = () =>
+    surface.evaluate((el) => getComputedStyle(el).backdropFilter);
+  await expect.poll(filter).toMatch(/blur\([\d.]+px\) saturate\(/);
+  await dialogEl(page).evaluate((el) =>
+    el.setAttribute("pl-material", "solid"),
+  );
+  await expect.poll(filter).toBe("none");
+  expect(
+    await surface.evaluate((el) => getComputedStyle(el).backgroundColor),
+  ).toBe(
+    await page.evaluate(() => {
+      const probe = document.createElement("div");
+      probe.style.background = "var(--pl-color-surface)";
+      document.body.append(probe);
+      const color = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return color;
+    }),
+  );
+});
+
 test.describe("nonmodal", () => {
   test("opens without blocking the page, the scrim or the scroll lock", async ({
     page,

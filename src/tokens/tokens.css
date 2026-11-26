@@ -456,9 +456,12 @@
 /* Surface materials. Solid is the default. Glass is opt-in with
    pl-material="glass" on any ancestor, for the controls and navigation layer:
    controls, bars, capsules (a bar with no fill of its own), sidebars, panels
-   and sheets. Content stays solid. */
+   and sheets. Content stays solid. pl-material="solid" inside glass restores
+   the solid materials for that subtree, as the reduced-transparency fallback
+   does. */
 @layer pl.tokens {
-  :root {
+  :root,
+  [pl-material="solid"] {
     --pl-color-surface: color-mix(
       in srgb,
       var(--pl-color-background),
@@ -475,6 +478,7 @@
     --pl-material-sheet-filter: none;
     --pl-material-highlight: transparent;
     --pl-material-edge: 0 0 transparent;
+    --pl-material-chrome-text: initial;
     --pl-material-control: var(--pl-color-secondary);
     --pl-material-control-pressed: var(--pl-color-secondary-pressed);
     --pl-material-control-filter: none;
@@ -770,7 +774,8 @@
      the glass block above sets its own panel shadow. */
   @media (prefers-contrast: more) {
     :root,
-    [pl-material="glass"] {
+    [pl-material="glass"],
+    [pl-material="solid"] {
       --pl-material-ring: light-dark(var(--pl-color-ink), #fff);
       --pl-material-selected: light-dark(
         var(--pl-color-accent-text),

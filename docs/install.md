@@ -190,6 +190,14 @@ For controls over photos and video, such as a player's bar, set `pl-glass="clear
 </div>
 ```
 
+### Solid inside glass
+
+To keep part of a glass page solid, such as modal sheets, set `pl-material="solid"` on it. Inside, surfaces, controls and fields take the solid materials and elevation, as under reduced transparency, while the rest of the page keeps glass. It works on any element, `pl-dialog` and `pl-drawer` included:
+
+```html
+<pl-dialog pl-material="solid"></pl-dialog>
+```
+
 ### Tint
 
 `--pl-material-tint` mixes a color into the glass fill, by `--pl-material-tint-strength` (0% by default). Set both on the `pl-material="glass"` element. Apple tints glass sparingly, to mark a primary action, so keep the strength low and check text contrast:
