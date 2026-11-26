@@ -6,10 +6,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 const wcag22aa = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 /** Runs axe with WCAG 2.2 AA tags on the locator's subtree and fails on any violation. */
-export async function expectAccessible(
-  locator: Locator,
-  { singleDocument = false } = {},
-): Promise<void> {
+export async function expectAccessible(locator: Locator): Promise<void> {
   // Colors read mid-transition are neither the start nor the end state. A
   // transition only exists after the next frame's style recalculation.
   await locator.page().evaluate(async () => {
@@ -26,13 +23,10 @@ export async function expectAccessible(
   await locator.evaluate((el) => el.setAttribute("data-axe-target", ""));
   try {
     // gotoStory switches off the addon's own axe run, so this one is alone.
-    const audit = new AxeBuilder({ page: locator.page() }).include(
-      "[data-axe-target]",
-    );
-    // Standalone kit pages have no frames. Run axe directly in that document.
-    if (singleDocument)
-      audit.setLegacyMode().options({ resultTypes: ["violations"] });
-    const { violations } = await audit.withTags(wcag22aa).analyze();
+    const { violations } = await new AxeBuilder({ page: locator.page() })
+      .include("[data-axe-target]")
+      .withTags(wcag22aa)
+      .analyze();
     expect(violations).toEqual([]);
   } finally {
     await locator.evaluate((el) => el.removeAttribute("data-axe-target"));
